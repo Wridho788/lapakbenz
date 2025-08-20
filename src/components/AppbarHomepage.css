@@ -1,0 +1,148 @@
+/* AppbarHomepage Component Styles */
+.appbar-homepage {
+  background: linear-gradient(135deg, #161129 0%, #23203a 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 12px rgba(22, 17, 41, 0.15);
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  min-height: 56px;
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+
+.appbar-homepage::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.appbar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.appbar-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.appbar-avatar:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.appbar-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.appbar-notif-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.6rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  position: relative;
+  backdrop-filter: blur(4px);
+}
+
+.appbar-notif-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.appbar-notif-btn:active {
+  transform: scale(0.95);
+}
+
+/* Notification badge */
+.appbar-notif-btn::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #ff4757;
+  border-radius: 50%;
+  border: 2px solid #161129;
+  /* Show only when there are notifications */
+  display: none;
+}
+
+.appbar-notif-btn.has-notification::after {
+  display: block;
+  animation: pulse 2s infinite;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Responsive */
+@media (max-width: 430px) {
+  .appbar-homepage {
+    padding: 0.6rem 0.8rem;
+    min-height: 52px;
+  }
+  
+  .appbar-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .appbar-name {
+    font-size: 1rem;
+  }
+  
+  .appbar-notif-btn {
+    font-size: 1.3rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Dark mode enhancement */
+@media (prefers-color-scheme: dark) {
+  .appbar-homepage {
+    background: linear-gradient(135deg, #0f0f17 0%, #1a1829 100%);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .appbar-homepage,
+  .appbar-avatar,
+  .appbar-notif-btn {
+    transition: none;
+  }
+  
+  .appbar-notif-btn.has-notification::after {
+    animation: none;
+  }
+}
