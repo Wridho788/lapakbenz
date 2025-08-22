@@ -51,16 +51,15 @@
 }
 
 .appbar-notif-btn {
-  background: rgba(255, 255, 255, 0.1);
+  background: #161129;
   border: none;
   color: #fff;
   font-size: 1.5rem;
   cursor: pointer;
-  padding: 0.6rem;
-  border-radius: 50%;
+  padding: 15px;
+  border-radius: 100%;
   transition: all 0.2s ease;
   position: relative;
-  backdrop-filter: blur(4px);
 }
 
 .appbar-notif-btn:hover {
@@ -69,10 +68,35 @@
 }
 
 .appbar-notif-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.75);
 }
 
-/* Notification badge */
+/* Notification badge with count */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #161129;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+  animation: bounceIn 0.5s ease-out;
+  z-index: 1;
+}
+
+.notification-badge:empty {
+  display: none;
+}
+
+/* Red dot indicator (fallback) */
 .appbar-notif-btn::after {
   content: '';
   position: absolute;
@@ -83,13 +107,12 @@
   background: #ff4757;
   border-radius: 50%;
   border: 2px solid #161129;
-  /* Show only when there are notifications */
+  /* Show only when there are notifications but no badge */
   display: none;
 }
 
 .appbar-notif-btn.has-notification::after {
-  display: block;
-  animation: pulse 2s infinite;
+  display: none; /* Hide dot when badge is shown */
 }
 
 /* Animations */
@@ -101,6 +124,21 @@
   50% {
     transform: scale(1.2);
     opacity: 0.8;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 

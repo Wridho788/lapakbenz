@@ -1,0 +1,30 @@
+/* FAB positioning context styles */
+.event-page .fab {
+  bottom: 1.5rem; /* No bottom nav */
+}
+
+.dashboard-page .fab {
+  bottom: 5rem; /* Above bottom nav */
+}
+
+/* Default for pages with bottom nav */
+.fab {
+  bottom: 5rem;
+}
+
+/* Override for pages without bottom nav */
+.event-page .fab,
+.notifications-page .fab {
+  bottom: 1.5rem;
+}
+
+@media (max-width: 430px) {
+  .event-page .fab,
+  .notifications-page .fab {
+    bottom: 1.25rem;
+  }
+  
+  .dashboard-page .fab {
+    bottom: 4.5rem;
+  }
+}

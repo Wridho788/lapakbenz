@@ -109,7 +109,7 @@
        max-width: 430px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 1rem 1rem 0 0;
+    border-radius: 1rem 1rem 0 0; 
   }
 }
 
