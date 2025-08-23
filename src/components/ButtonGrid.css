@@ -1,0 +1,132 @@
+/* Button Grid Component Styles */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.grid-button {
+  background: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 80px;
+}
+
+.grid-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  background: #f8f9fa;
+}
+
+.grid-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.button-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #161129 0%, #23203a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.grid-button:hover .button-icon {
+  background: linear-gradient(135deg, #23203a 0%, #2a254d 100%);
+  transform: scale(1.05);
+}
+
+.button-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #161129;
+  text-align: center;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 430px) {
+  .button-grid {
+    gap: 0.5rem;
+  }
+  
+  .grid-button {
+    padding: 0.75rem 0.25rem;
+    min-height: 70px;
+  }
+  
+  .button-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+  
+  .button-label {
+    font-size: 0.65rem;
+  }
+}
+
+/* Alternative layout for very small screens */
+@media (max-width: 320px) {
+  .button-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .grid-button {
+    padding: 1rem 0.5rem;
+    min-height: 80px;
+  }
+  
+  .button-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+  
+  .button-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .grid-button,
+  .button-icon {
+    transition: none;
+  }
+  
+  .grid-button:hover {
+    transform: none;
+  }
+  
+  .grid-button:hover .button-icon {
+    transform: none;
+  }
+}
+
+/* Focus states for keyboard navigation */
+.grid-button:focus {
+  outline: 2px solid #161129;
+  outline-offset: 2px;
+}
+
+.grid-button:focus:not(:focus-visible) {
+  outline: none;
+}

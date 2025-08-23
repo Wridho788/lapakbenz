@@ -2,9 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../contexts/NotificationContext';
 import { SectionWrapper } from '../components/SectionWrapper';
+import { PointCard } from '../components/PointCard';
+import { ButtonGrid } from '../components/ButtonGrid';
+import { Partnership } from '../components/Partnership';
+import { CompletedEvent } from '../components/CompletedEvent';
 import { AppbarHomepage } from '../components/AppbarHomepage';
 import { FAB } from '../components/FAB';
 import BottomNav from '../components/BottomNav';
+import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const { unreadCount, addNotification } = useNotifications();
@@ -27,6 +32,25 @@ const Dashboard: React.FC = () => {
     });
   };
 
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
+  const handleEventHistoryClick = () => {
+    console.log('Event History clicked');
+    // TODO: Navigate to event history page
+  };
+
+  const handleTransactionClick = () => {
+    console.log('Transaction clicked');
+    // TODO: Navigate to transaction page
+  };
+
+  const handleRedeemClick = () => {
+    console.log('Redeem clicked');
+    // TODO: Navigate to redeem page
+  };
+
   return (
     <div className="dashboard-page">
       <AppbarHomepage 
@@ -36,28 +60,23 @@ const Dashboard: React.FC = () => {
         onNotificationClick={handleNotificationClick}
       />
       <div className="dashboard-content">
-        <SectionWrapper title="My Account">
-          <div>User Info</div>
+        <PointCard points={5000} />
+        
+        <ButtonGrid 
+          onProfileClick={handleProfileClick}
+          onEventHistoryClick={handleEventHistoryClick}
+          onTransactionClick={handleTransactionClick}
+          onRedeemClick={handleRedeemClick}
+        />
+        
+        <SectionWrapper title="Partnership">
+          <Partnership />
         </SectionWrapper>
-        <SectionWrapper title="My Point">
-          <div>100 Points</div>
+        
+        <SectionWrapper title="Completed Event">
+          <CompletedEvent />
         </SectionWrapper>
-        <SectionWrapper title="Notification Demo">
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <button 
-              style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #ddd', background: '#f5f5f5', cursor: 'pointer' }}
-              onClick={addTestNotification}
-            >
-              Add Test Notification
-            </button>
-            <button 
-              style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #ddd', background: '#f5f5f5', cursor: 'pointer' }}
-              onClick={() => console.log(`Current unread: ${unreadCount}`)}
-            >
-              Check Count ({unreadCount})
-            </button>
-          </div>
-        </SectionWrapper>
+        
         <SectionWrapper title="Sections">
           <div>Section List</div>
         </SectionWrapper>

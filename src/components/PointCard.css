@@ -1,0 +1,105 @@
+/* Point Card Component Styles */
+.point-card {
+  background: #F6F6F6;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+}
+
+.point-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.point-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.point-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.point-label {
+  font-size: 16px;
+  font-weight: 400;
+  color: #161129;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.point-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #161129;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.point-image {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.point-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 430px) {
+  .point-card {
+    padding: 1.25rem;
+  }
+  
+  .point-content {
+    gap: 0.75rem;
+  }
+  
+  .point-label {
+    font-size: 0.9rem;
+  }
+  
+  .point-value {
+    font-size: 1.75rem;
+  }
+  
+  .point-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Animation for point value changes */
+.point-value {
+  transition: all 0.3s ease;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .point-card {
+    transition: none;
+  }
+  
+  .point-card:hover {
+    transform: none;
+  }
+  
+  .point-value {
+    transition: none;
+  }
+}

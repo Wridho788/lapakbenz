@@ -1,0 +1,99 @@
+import React, { useState, useEffect } from 'react';
+import './Partnership.css';
+
+interface PartnershipProps {
+  className?: string;
+}
+
+export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Sample sponsor images - you can modify this array to add more sponsors
+  const sponsors = [
+    {
+      id: 1,
+      name: 'Kutus Kutus',
+      image: '/kutus-kutus.png',
+      alt: 'Kutus Kutus Logo'
+    },
+    {
+      id: 2,
+      name: 'Kutus Kutus',
+      image: '/kutus-kutus.png',
+      alt: 'Kutus Kutus Logo'
+    },
+    {
+      id: 3,
+      name: 'Kutus Kutus',
+      image: '/kutus-kutus.png',
+      alt: 'Kutus Kutus Logo'
+    },
+    {
+      id: 4,
+      name: 'Kutus Kutus',
+      image: '/kutus-kutus.png',
+      alt: 'Kutus Kutus Logo'
+    }
+  ];
+
+  // Auto slide every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % sponsors.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [sponsors.length]);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  return (
+    <div className={`partnership ${className || ''}`}>
+      <div className="partnership-slider">
+        <div 
+          className="partnership-slides"
+          style={{
+            transform: `translateX(-${currentSlide * 100}%)`,
+          }}
+        >
+          {sponsors.map((sponsor) => (
+            <div key={sponsor.id} className="partnership-slide">
+              <img
+                src={sponsor.image}
+                alt={sponsor.alt}
+                className="sponsor-image"
+                onError={(e) => {
+                  // Fallback if image doesn't load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Dots Indicator - Now outside slider container */}
+      <div className="slider-dots">
+        {sponsors.map((_, index) => (
+          <div
+            key={index}
+            className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
+            onClick={() => goToSlide(index)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                goToSlide(index);
+              }
+            }}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
