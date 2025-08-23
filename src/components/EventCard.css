@@ -1,0 +1,138 @@
+/* Event Card Component Styles */
+.event-card {
+  flex: 0 0 145px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.event-card-image-container {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+}
+
+.event-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-card-image {
+  transform: scale(1.05);
+}
+
+.event-card-content {
+  padding: 0.75rem;
+}
+
+.event-card-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #161129;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-card-date {
+  font-size: 0.7rem;
+  color: #6B7280;
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+}
+
+.event-card-chapter {
+  font-size: 0.7rem;
+  color: #9CA3AF;
+  margin: 0 0 0.25rem 0;
+  font-weight: 400;
+}
+
+.event-card-type {
+  font-size: 0.65rem;
+  color: #161129;
+  margin: 0;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive Design */
+@media (max-width: 430px) {
+  .event-card {
+    flex: 0 0 130px;
+  }
+  
+  .event-card-image-container {
+    height: 90px;
+  }
+  
+  .event-card-content {
+    padding: 0.5rem;
+  }
+  
+  .event-card-title {
+    font-size: 0.75rem;
+  }
+  
+  .event-card-date {
+    font-size: 0.65rem;
+  }
+  
+  .event-card-chapter {
+    font-size: 0.65rem;
+  }
+  
+  .event-card-type {
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .event-card {
+    flex: 0 0 120px;
+  }
+  
+  .event-card-image-container {
+    height: 80px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .event-card,
+  .event-card-image {
+    transition: none;
+  }
+  
+  .event-card:hover {
+    transform: none;
+  }
+  
+  .event-card:hover .event-card-image {
+    transform: none;
+  }
+}
+
+/* Focus states for keyboard navigation */
+.event-card:focus {
+  outline: 2px solid #161129;
+  outline-offset: 2px;
+}
+
+.event-card:focus:not(:focus-visible) {
+  outline: none;
+}

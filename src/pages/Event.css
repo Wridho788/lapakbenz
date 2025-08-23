@@ -60,7 +60,6 @@
 .event-card {
   background: #fff;
   border-radius: 16px;
-  padding: 1.25rem;
   box-shadow: 0 2px 12px rgba(22, 17, 41, 0.08);
   transition: all 0.2s ease;
   cursor: pointer;
@@ -251,7 +250,7 @@
   }
   
   .event-card {
-    padding: 0.875rem;
+    padding: 0.01rem;
   }
   
   .event-tabs button {

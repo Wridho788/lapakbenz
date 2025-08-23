@@ -1,8 +1,6 @@
 /* Partnership Component Styles */
 .partnership {
   width: 100%;
-  margin: 1rem 0;
-  padding-bottom: 1rem; /* Space for dots */
 }
 
 .partnership-slider {
@@ -41,7 +39,6 @@
   align-items: center;
   gap: 8px;
   margin-top: 1.5rem;
-  padding: 10px;
 }
 
 .slider-dot {
@@ -71,7 +68,7 @@
 /* Responsive Design */
 @media (max-width: 430px) {
   .partnership {
-    padding-bottom: 2rem;
+    padding-bottom: 0.1rem;
   }
   
   .partnership-slider {

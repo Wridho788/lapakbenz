@@ -1,4 +1,5 @@
 import React from 'react';
+import { EventCard } from './EventCard';
 import './CompletedEvent.css';
 
 interface EventItem {
@@ -59,30 +60,25 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
     }
   ];
 
+  const handleEventClick = (eventId: number) => {
+    console.log('Event clicked:', eventId);
+    // TODO: Navigate to event detail page or handle event click
+  };
+
   return (
     <div className={`completed-event ${className || ''}`}>
       <div className="event-scroll-container">
         {completedEvents.map((event) => (
-          <div key={event.id} className="event-item">
-            <div className="event-image-container">
-              <img
-                src={event.image}
-                alt={event.title}
-                className="event-image"
-                onError={(e) => {
-                  // Fallback if image doesn't load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                }}
-              />
-            </div>
-            <div className="event-content">
-              <h3 className="event-title">{event.title}</h3>
-              <p className="event-date">{event.date}</p>
-              <p className="event-chapter">{event.chapter}</p>
-              <p className="event-type">{event.type}</p>
-            </div>
-          </div>
+          <EventCard
+            key={event.id}
+            id={event.id}
+            image={event.image}
+            title={event.title}
+            date={event.date}
+            chapter={event.chapter}
+            type={event.type}
+            onClick={handleEventClick}
+          />
         ))}
       </div>
     </div>

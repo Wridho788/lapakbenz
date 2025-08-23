@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MdNotifications } from 'react-icons/md';
 import { useNotifications } from '../contexts/NotificationContext';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
 import { ButtonGrid } from '../components/ButtonGrid';
 import { Partnership } from '../components/Partnership';
 import { CompletedEvent } from '../components/CompletedEvent';
+import { UpcomingNews } from '../components/UpcomingNews';
 import { AppbarHomepage } from '../components/AppbarHomepage';
 import { FAB } from '../components/FAB';
 import BottomNav from '../components/BottomNav';
@@ -24,6 +26,15 @@ const Dashboard: React.FC = () => {
     navigate('/notifications');
   };
 
+  // Icon component with fallback
+  const NotificationIcon = () => {
+    try {
+      return <MdNotifications size={24} />;
+    } catch (error) {
+      return <span style={{ fontSize: '24px' }}>🔔</span>;
+    }
+  };
+
   const addTestNotification = () => {
     addNotification({
       title: 'Test Notification',
@@ -33,7 +44,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    navigate('/login');
   };
 
   const handleEventHistoryClick = () => {
@@ -77,12 +88,12 @@ const Dashboard: React.FC = () => {
           <CompletedEvent />
         </SectionWrapper>
         
-        <SectionWrapper title="Sections">
-          <div>Section List</div>
+        <SectionWrapper title="Upcoming News">
+          <UpcomingNews />
         </SectionWrapper>
       </div>
       <FAB 
-        icon={<span style={{ fontSize: '24px' }}>🔔</span>}
+        icon={<NotificationIcon />}
         onClick={handleFABClick} 
         ariaLabel="Notifications" 
       />
