@@ -20,24 +20,11 @@
   backdrop-filter: blur(8px);
 }
 
-.fab svg {
-  width: 24px !important;
-  height: 24px !important;
-  color: white !important;
-  fill: white !important;
-  display: block !important;
-}
-
-.fab * {
-  color: white !important;
-  fill: white !important;
-}
-
-.fab span {
-  color: white !important;
-  font-size: 24px !important;
-  line-height: 1 !important;
-  display: block !important;
+.fab-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* Make image white */
 }
 
 .fab:hover {

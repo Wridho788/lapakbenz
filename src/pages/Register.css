@@ -9,9 +9,9 @@
   border-radius: 20px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   padding: 2rem;
-  max-width: 400px;
+  max-width: 390px;
   position: relative;
-  margin: 2rem auto;
+  margin: 2rem 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.5rem;
 }
 
 .form-group {
@@ -136,6 +136,7 @@
   color: #ffffff;
   border: none;
   padding: 0.875rem 1.5rem;
+  width: 100%;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
@@ -168,10 +169,12 @@
   font-size: 1.1rem;
 }
 
+.terms-group {
+  margin: 1rem 0;
+}
 /* Responsive */
 @media (max-width: 430px) {
   .register-card {
-    margin: 1.5rem;
     padding: 1.5rem;
     border-radius: 8px;
   }

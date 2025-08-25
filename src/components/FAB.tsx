@@ -1,27 +1,15 @@
 import React from 'react';
-import { MdNotifications } from 'react-icons/md';
 import './FAB.css';
 
 export type FABProps = {
-  icon?: React.ReactNode;
   onClick?: () => void;
   ariaLabel?: string;
 };
 
 export const FAB: React.FC<FABProps> = ({ 
-  icon, 
   onClick, 
-  ariaLabel = "Floating Action Button" 
+  ariaLabel = "Notifications" 
 }) => {
-  // Fallback icon jika tidak ada icon yang diberikan
-  const defaultIcon = (
-    <span style={{ fontSize: '24px', color: 'white', lineHeight: 1 }}>
-      🔔
-    </span>
-  );
-
-  const displayIcon = icon || <MdNotifications style={{ fontSize: '24px', color: 'white', display: 'block' }} /> || defaultIcon;
-
   return (
     <button
       className="fab"
@@ -29,7 +17,11 @@ export const FAB: React.FC<FABProps> = ({
       aria-label={ariaLabel}
       title={ariaLabel}
     >
-      {displayIcon}
+      <img 
+        src="/notification.png" 
+        alt="Notification" 
+        className="fab-icon"
+      />
     </button>
   );
 };

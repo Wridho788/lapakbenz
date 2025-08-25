@@ -52,8 +52,43 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
+/* Actions container */
+.appbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .appbar-notif-btn {
-  background: #161129;
+  background: rgba(255, 255, 255, 0);
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.appbar-notif-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.appbar-notif-btn:active {
+  transform: scale(0.75);
+}
+
+/* Cart button styling */
+.appbar-cart-btn {
+  background: rgba(255, 255, 255, 0);
   border: none;
   color: #fff;
   font-size: 1.5rem;
@@ -64,12 +99,12 @@
   position: relative;
 }
 
-.appbar-notif-btn:hover {
+.appbar-cart-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
 }
 
-.appbar-notif-btn:active {
+.appbar-cart-btn:active {
   transform: scale(0.75);
 }
 
@@ -95,6 +130,31 @@
 }
 
 .notification-badge:empty {
+  display: none;
+}
+
+/* Cart badge with count */
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #161129;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+  animation: bounceIn 0.5s ease-out;
+  z-index: 1;
+}
+
+.cart-badge:empty {
   display: none;
 }
 
@@ -145,6 +205,88 @@
 }
 
 /* Responsive */
+/* Large desktop styling (min 1200px) */
+@media (min-width: 1200px) {
+  .appbar-homepage {
+    padding: 0.9rem 1.25rem;
+    min-height: 60px;
+  }
+  
+  .appbar-avatar {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .appbar-name {
+    font-size: 1.2rem;
+  }
+  
+  .appbar-actions {
+    gap: 0.9rem;
+  }
+  
+  .appbar-notif-btn,
+  .appbar-cart-btn {
+    font-size: 1.6rem;
+    padding: 6px;
+  }
+}
+
+/* Desktop styling (769px - 1199px) */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .appbar-homepage {
+    padding: 0.8rem 1.1rem;
+    min-height: 58px;
+  }
+  
+  .appbar-avatar {
+    width: 42px;
+    height: 42px;
+  }
+  
+  .appbar-name {
+    font-size: 1.15rem;
+  }
+  
+  .appbar-actions {
+    gap: 0.8rem;
+  }
+  
+  .appbar-notif-btn,
+  .appbar-cart-btn {
+    font-size: 1.55rem;
+    padding: 6px;
+  }
+}
+
+/* Tablet styling (431px - 768px) */
+@media (min-width: 431px) and (max-width: 768px) {
+  .appbar-homepage {
+    padding: 0.7rem 0.9rem;
+    min-height: 54px;
+  }
+  
+  .appbar-avatar {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .appbar-name {
+    font-size: 1.05rem;
+  }
+  
+  .appbar-actions {
+    gap: 0.65rem;
+  }
+  
+  .appbar-notif-btn,
+  .appbar-cart-btn {
+    font-size: 1.4rem;
+    padding: 6px;
+  }
+}
+
+/* Mobile styling (max 430px) */
 @media (max-width: 430px) {
   .appbar-homepage {
     padding: 0.6rem 0.8rem;
@@ -160,9 +302,14 @@
     font-size: 1rem;
   }
   
-  .appbar-notif-btn {
+  .appbar-actions {
+    gap: 0.5rem;
+  }
+  
+  .appbar-notif-btn,
+  .appbar-cart-btn {
     font-size: 1.3rem;
-    padding: 0.5rem;
+    padding: 0.4rem;
   }
 }
 
@@ -178,11 +325,14 @@
 @media (prefers-reduced-motion: reduce) {
   .appbar-homepage,
   .appbar-avatar,
-  .appbar-notif-btn {
+  .appbar-notif-btn,
+  .appbar-cart-btn {
     transition: none;
   }
   
-  .appbar-notif-btn.has-notification::after {
+  .appbar-notif-btn.has-notification::after,
+  .cart-badge,
+  .notification-badge {
     animation: none;
   }
 }

@@ -4,7 +4,7 @@
 }
 
 .dashboard-page .fab {
-  bottom: 5rem; /* Above bottom nav */
+  bottom: 5.5rem; /* Above bottom nav */
 }
 
 /* Default for pages with bottom nav */
@@ -25,6 +25,6 @@
   }
   
   .dashboard-page .fab {
-    bottom: 4.5rem;
+    bottom: 5.5rem;
   }
 }

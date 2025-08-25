@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdNotifications } from 'react-icons/md';
+import { MdNotifications, MdShoppingCart } from 'react-icons/md';
 import './AppbarHomepage.css';
 
 export type AppbarHomepageProps = {
@@ -8,13 +8,17 @@ export type AppbarHomepageProps = {
   name: string;
   onNotificationClick?: () => void;
   notificationCount?: number;
+  onCartClick?: () => void;
+  cartCount?: number;
 };
 
 export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({ 
   avatar, 
   name, 
   onNotificationClick,
-  notificationCount = 0
+  notificationCount = 0,
+  onCartClick,
+  cartCount = 0
 }) => {
   const navigate = useNavigate();
 
@@ -25,25 +29,48 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
     navigate('/notifications');
   };
 
+  const handleCartClick = () => {
+    if (onCartClick) {
+      onCartClick();
+    }
+    // TODO: Navigate to cart page
+    console.log('Cart clicked');
+  };
+
   return (
     <header className="appbar-homepage">
       <div className="appbar-user-info">
         <img src={avatar} alt="avatar" className="appbar-avatar" />
         <span className="appbar-name">Hi, {name} !</span>
       </div>
-      <button
-        className={`appbar-notif-btn ${notificationCount > 0 ? 'has-notification' : ''}`}
-        onClick={handleNotificationClick}
-        aria-label={`Notifications (${notificationCount})`}
-        title={`You have ${notificationCount} notification${notificationCount !== 1 ? 's' : ''}`}
-      >
-        <MdNotifications />
-        {notificationCount > 0 && (
-          <span className="notification-badge">
-            {notificationCount > 99 ? '99+' : notificationCount}
-          </span>
-        )}
-      </button>
+      <div className="appbar-actions">
+        <button
+          className={`appbar-notif-btn ${notificationCount > 0 ? 'has-notification' : ''}`}
+          onClick={handleNotificationClick}
+          aria-label={`Notifications (${notificationCount})`}
+          title={`You have ${notificationCount} notification${notificationCount !== 1 ? 's' : ''}`}
+        >
+          <MdNotifications />
+          {notificationCount > 0 && (
+            <span className="notification-badge">
+              {notificationCount > 99 ? '99+' : notificationCount}
+            </span>
+          )}
+        </button>
+        <button
+          className={`appbar-cart-btn ${cartCount > 0 ? 'has-items' : ''}`}
+          onClick={handleCartClick}
+          aria-label={`Shopping Cart (${cartCount})`}
+          title={`You have ${cartCount} item${cartCount !== 1 ? 's' : ''} in cart`}
+        >
+          <MdShoppingCart />
+          {cartCount > 0 && (
+            <span className="cart-badge">
+              {cartCount > 99 ? '99+' : cartCount}
+            </span>
+          )}
+        </button>
+      </div>
     </header>
   );
 };

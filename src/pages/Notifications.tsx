@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import { useNotifications } from '../contexts/NotificationContext';
-import BottomNav from '../components/BottomNav';
+// import BottomNav from '../components/BottomNav';
+import { AppbarDefault } from '../components/AppbarDefault';
 import type { NotificationItem } from '../contexts/NotificationContext';
 import './Notifications.css';
 
@@ -45,18 +46,10 @@ const Notifications: React.FC = () => {
 
   return (
     <div className="notifications-page">
-      <header className="notifications-header">
-        <button 
-          className="back-button"
-          onClick={() => navigate(-1)}
-          aria-label="Go back"
-        >
-          ←
-        </button>
-        <h1 className="notifications-title">
-          Notifications ({unreadCount})
-        </h1>
-      </header>
+      <AppbarDefault 
+        title={`Notifications (${unreadCount})`} 
+        onBack={() => navigate(-1)} 
+      />
 
       <div className="notifications-list">
         {notifications.map((notification) => (

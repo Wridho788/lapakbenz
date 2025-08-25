@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdNotifications } from 'react-icons/md';
 import { useNotifications } from '../contexts/NotificationContext';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
@@ -14,7 +13,7 @@ import BottomNav from '../components/BottomNav';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
-  const { unreadCount, addNotification } = useNotifications();
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
 
   const handleNotificationClick = () => {
@@ -24,23 +23,6 @@ const Dashboard: React.FC = () => {
 
   const handleFABClick = () => {
     navigate('/notifications');
-  };
-
-  // Icon component with fallback
-  const NotificationIcon = () => {
-    try {
-      return <MdNotifications size={24} />;
-    } catch (error) {
-      return <span style={{ fontSize: '24px' }}>🔔</span>;
-    }
-  };
-
-  const addTestNotification = () => {
-    addNotification({
-      title: 'Test Notification',
-      message: 'This is a test notification added from dashboard demo.',
-      isRead: false
-    });
   };
 
   const handleProfileClick = () => {
@@ -62,6 +44,11 @@ const Dashboard: React.FC = () => {
     // TODO: Navigate to redeem page
   };
 
+  const handleCartClick = () => {
+    console.log('Cart clicked');
+    // TODO: Navigate to cart page
+  };
+
   return (
     <div className="dashboard-page">
       <AppbarHomepage 
@@ -69,6 +56,8 @@ const Dashboard: React.FC = () => {
         name="User" 
         notificationCount={unreadCount}
         onNotificationClick={handleNotificationClick}
+        cartCount={3}
+        onCartClick={handleCartClick}
       />
       <div className="dashboard-content">
         <PointCard points={5000} />
@@ -93,7 +82,6 @@ const Dashboard: React.FC = () => {
         </SectionWrapper>
       </div>
       <FAB 
-        icon={<NotificationIcon />}
         onClick={handleFABClick} 
         ariaLabel="Notifications" 
       />

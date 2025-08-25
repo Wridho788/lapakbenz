@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdSend, MdArrowBack } from 'react-icons/md';
-import { AppbarDefault } from '../components/AppbarDefault';
+import { AppbarAuth } from '../components/AppbarAuth';
 import './ForgotPassword.css';
 
 const ForgotPassword: React.FC = () => {
@@ -29,10 +29,15 @@ const ForgotPassword: React.FC = () => {
     navigate('/login');
   };
 
+  const handleCartClick = () => {
+    console.log('Cart clicked from ForgotPassword');
+    // TODO: Navigate to cart page
+  };
+
   if (isSubmitted) {
     return (
       <div className="forgot-password-page">
-        <AppbarDefault title="Reset Password" onBack={handleAppbarBack} />
+        <AppbarAuth title="Reset Password" onBack={handleAppbarBack} />
         <div className="forgot-password-card">
           <h1 className="forgot-password-title">Check Your Email</h1>
           <div className="success-content">
@@ -60,12 +65,10 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <div className="forgot-password-page">
-      <AppbarDefault title="Forgot Password" onBack={handleAppbarBack} />
+      <AppbarAuth title="Forgot Password" onBack={handleAppbarBack} />
       <div className="forgot-password-card">
-        <h1 className="forgot-password-title">Forgot Password?</h1>
-        <p className="forgot-password-subtitle">
-          Enter your email or phone number and we'll send you a link to reset your password.
-        </p>
+        <h1 className="forgot-password-title">Forgot Password</h1>
+        {/* <p className="forgot-password-subtitle">Input your e-mail/phone number </p> */}
 
         <form onSubmit={handleSubmit} className="forgot-password-form">
           <div className="form-group">
@@ -78,7 +81,7 @@ const ForgotPassword: React.FC = () => {
               value={emailOrPhone}
               onChange={(e) => setEmailOrPhone(e.target.value)}
               className="form-input"
-              placeholder="Enter your email or phone number"
+              placeholder="Input your e-mail/phone number"
               required
             />
           </div>
