@@ -5,6 +5,8 @@ import {
   ENDPOINT_SLIDER,
   ENDPOINT_SPLASH,
   ENDPOINT_EVENT,
+  ENDPOINT_ARTICLE,
+  ENDPOINT_EVENT_BY_ID
 } from "./constants";
 
 export const getLedger = async () => {
@@ -22,7 +24,26 @@ export const getSplash = async () => {
   return response.data;
 };
 
-export const postEvent = async (data: any) => {
-  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT}`, data);
+export const postEvent = async (data?: any) => {
+  const defaultPayload = {
+    status: "1",
+    limit: 100,
+    offset: 0,
+    chapter: ""
+  };
+  const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT}`, payload);
+  return response.data;
+};
+
+export const getEventById = async (id: string) => {
+  const response = await axios.get(`${BASE_URL}${ENDPOINT_EVENT_BY_ID}${id}`);
+  return response.data;
+};
+
+export const postArticle = async (data?: any) => {
+  const defaultPayload = {"category":24,"limit":10,"offset":0,"orderby":"","order":"asc"};
+  const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_ARTICLE}`, payload);
   return response.data;
 };

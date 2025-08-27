@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { usePostArticle } from '../api/hooks';
 import { MdDateRange, MdAccessTime } from 'react-icons/md';
 import './UpcomingNews.css';
 
 interface NewsItem {
-  id: number;
-  image: string;
+  id: string;
+  name: string;
+  category: string;
   title: string;
   date: string;
-  time: string;
+  lang: string;
+  text: string;
+  image: string;
+  publish: string;
+  front: string;
+  permalink: string;
+  created: string;
 }
 
 interface UpcomingNewsProps {
@@ -15,48 +23,30 @@ interface UpcomingNewsProps {
 }
 
 export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
-  // Sample upcoming news data
-  const upcomingNews: NewsItem[] = [
-    {
-      id: 1,
-      image: '/manohara-w202-03-jul-24.png',
-      title: 'Manohara W202.03 Jul-24',
-      date: '30 Jul 2024',
-      time: '30-07-2024 - 00-00-00'
-    },
-    {
-      id: 2,
-      image: '/manohara-w202-03-jul-24.png',
-      title: 'Leadership Summit 2024',
-      date: '15 Aug 2024',
-      time: '15-08-2024 - 09-00-00'
-    },
-    {
-      id: 3,
-      image: '/manohara-w202-03-jul-24.png',
-      title: 'Community Gathering',
-      date: '22 Aug 2024',
-      time: '22-08-2024 - 14-30-00'
-    },
-    {
-      id: 4,
-      image: '/manohara-w202-03-jul-24.png',
-      title: 'Workshop Training',
-      date: '05 Sep 2024',
-      time: '05-09-2024 - 10-00-00'
-    },
-    {
-      id: 5,
-      image: '/manohara-w202-03-jul-24.png',
-      title: 'Annual Conference',
-      date: '20 Sep 2024',
-      time: '20-09-2024 - 08-00-00'
+  const articleMutation = usePostArticle();
+  // Trigger API postArticle on mount
+  useEffect(() => {
+    articleMutation.mutate({}); // payload default
+  }, []);
+  // Logging response/error
+  useEffect(() => {
+    if (articleMutation.data) {
+      console.log('Article API response:', articleMutation.data);
     }
-  ];
+    if (articleMutation.error) {
+      console.error('Article API error:', articleMutation.error);
+    }
+  }, [articleMutation.data, articleMutation.error]);
+  // Ambil hasil articleMutation.data.content.result sebagai upcomingNews
+  const upcomingNews: NewsItem[] = articleMutation.data?.content?.result ?? [];
 
-  const handleNewsClick = (newsId: number) => {
-    console.log('News clicked:', newsId);
-    // TODO: Navigate to news detail page or handle news click
+  const handleNewsClick = (newsId: string) => {
+    const news = upcomingNews.find(item => item.id === newsId);
+    if (news && news.text) {
+      window.open(news.text, '_blank');
+    } else {
+      console.log('News clicked:', newsId);
+    }
   };
 
   return (
@@ -96,7 +86,7 @@ export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
               </div>
               <div className="news-time-info">
                 <MdAccessTime className="news-icon" />
-                <span className="news-time">{news.time}</span>
+                <span className="news-time">{news.created}</span>
               </div>
             </div>
           </div>

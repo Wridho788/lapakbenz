@@ -2,13 +2,13 @@ import React from 'react';
 import './EventCard.css';
 
 interface EventCardProps {
-  id: number;
+  id: string;
   image: string;
-  title: string;
-  date: string;
+  title: string; // code
+  date: string; // dates
   chapter: string;
-  type: string;
-  onClick?: (id: number) => void;
+  type: string; // type_desc
+  onClick?: (id: string) => void;
   className?: string;
 }
 

@@ -1,14 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+// Simple modal component
+const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.ReactNode }> = ({
+  open,
+  onClose,
+  children,
+}) => {
+  if (!open) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.5)',
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          background: '#fff',
+          margin: '5% auto',
+          padding: 24,
+          borderRadius: 8,
+          maxWidth: 400,
+          position: 'relative',
+        }}
+      >
+        <button style={{ position: 'absolute', top: 8, right: 8 }} onClick={onClose}>
+          Tutup
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
 import { EventCard } from './EventCard';
 import './CompletedEvent.css';
+import { usePostEvent, useEventById } from '../api/hooks';
 
 interface EventItem {
-  id: number;
-  image: string;
-  title: string;
-  date: string;
+  id: string;
+  chapter_id: string;
   chapter: string;
-  type: string;
+  code: string;
+  name: string;
+  dates: string;
+  time: string;
+  desc: string;
+  image: string;
+  fee: number;
+  minimum_participants: string;
+  type: number;
+  type_desc: string;
+  done: number;
+  done_desc: string;
 }
 
 interface CompletedEventProps {
@@ -16,54 +63,37 @@ interface CompletedEventProps {
 }
 
 export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => {
-  // Sample completed events data
-  const completedEvents: EventItem[] = [
-    {
-      id: 1,
-      image: '/bea2x.jpg',
-      title: 'SOTRBEABEA2x',
-      date: '19 Juni 2024',
-      chapter: 'MBW202.05',
-      type: 'PRIVATE'
-    },
-    {
-      id: 2,
-      image: '/bea2x.jpg',
-      title: 'BEABEA Training',
-      date: '15 Mei 2024',
-      chapter: 'MBW202.04',
-      type: 'PUBLIC'
-    },
-    {
-      id: 3,
-      image: '/bea2x.jpg',
-      title: 'Advanced Workshop',
-      date: '10 April 2024',
-      chapter: 'MBW202.03',
-      type: 'PRIVATE'
-    },
-    {
-      id: 4,
-      image: '/bea2x.jpg',
-      title: 'Community Meetup',
-      date: '20 Maret 2024',
-      chapter: 'MBW202.02',
-      type: 'PUBLIC'
-    },
-    {
-      id: 5,
-      image: '/bea2x.jpg',
-      title: 'Leadership Summit',
-      date: '5 Februari 2024',
-      chapter: 'MBW202.01',
-      type: 'PRIVATE'
+  const eventMutation = usePostEvent();
+  // Trigger API event POST on mount
+  useEffect(() => {
+    eventMutation.mutate({ eventType: 'completed' }); // sesuaikan payload jika perlu
+  }, []);
+  // Logging response/error
+  useEffect(() => {
+    if (eventMutation.data) {
+      console.log('Event API response:', eventMutation.data);
     }
-  ];
+    if (eventMutation.error) {
+      console.error('Event API error:', eventMutation.error);
+    }
+  }, [eventMutation.data, eventMutation.error]);
+  // Ambil hasil eventMutation.data.content.result sebagai completedEvents
+  const completedEvents: EventItem[] = eventMutation.data?.content?.result ?? [];
 
-  const handleEventClick = (eventId: number) => {
-    console.log('Event clicked:', eventId);
-    // TODO: Navigate to event detail page or handle event click
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const eventByIdQuery = useEventById(selectedEventId ?? '');
+
+  const handleEventClick = (eventId: string) => {
+    setSelectedEventId(eventId);
+    setModalOpen(true);
   };
+
+  useEffect(() => {
+    if (eventByIdQuery.error) {
+      console.error('Event by ID error:', eventByIdQuery.error);
+    }
+  }, [eventByIdQuery.error]);
 
   return (
     <div className={`completed-event ${className || ''}`}>
@@ -73,14 +103,74 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
             key={event.id}
             id={event.id}
             image={event.image}
-            title={event.title}
-            date={event.date}
+            title={event.code}
+            date={event.dates}
             chapter={event.chapter}
-            type={event.type}
+            type={event.type_desc}
             onClick={handleEventClick}
           />
         ))}
       </div>
+      <Modal open={modalOpen && !!eventByIdQuery.data?.content} onClose={() => setModalOpen(false)}>
+        {eventByIdQuery.data?.content ? (
+          <div>
+            <img
+              src={eventByIdQuery.data.content.image}
+              alt={eventByIdQuery.data.content.name}
+              style={{ width: '100%', borderRadius: 8, marginBottom: 12 }}
+            />
+            <h2>
+              {eventByIdQuery.data.content.code} - {eventByIdQuery.data.content.name}
+            </h2>
+            <p>{eventByIdQuery.data.content.desc}</p>
+            <div style={{ display: 'flex', gap: 24 }}>
+              {/* Kolom kiri */}
+              <div style={{ flex: 1 }}>
+                <p>
+                  <b>Event Date:</b>
+                  <br />
+                  {eventByIdQuery.data.content.dates} - {eventByIdQuery.data.content.time}
+                </p>
+                <p>
+                  <b>Chapter:</b>
+                  <br />
+                  {eventByIdQuery.data.content.chapter}
+                </p>
+                <p>
+                  <b>Type:</b>
+                  <br />
+                  {eventByIdQuery.data.content.type_desc}
+                </p>
+                <p>
+                  <b>Description:</b>
+                  <br />
+                  {eventByIdQuery.data.content.desc}
+                </p>
+              </div>
+              {/* Kolom kanan */}
+              <div style={{ flex: 1 }}>
+                <p>
+                  <b>Minimum Participation:</b>
+                  <br />
+                  {eventByIdQuery.data.content.minimum_participants}
+                </p>
+                <p>
+                  <b>Contribution Fee:</b>
+                  <br />
+                  {eventByIdQuery.data.content.fee}
+                </p>
+                <p>
+                  <b>Status:</b>
+                  <br />
+                  {eventByIdQuery.data.content.done_desc}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
+      </Modal>
     </div>
   );
 };

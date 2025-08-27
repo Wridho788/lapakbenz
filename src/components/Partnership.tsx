@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSlider } from '../api/hooks';
 import './Partnership.css';
 
 interface PartnershipProps {
@@ -6,35 +7,53 @@ interface PartnershipProps {
 }
 
 export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
+  const { data: sliderData, isLoading, error } = useSlider();
+
+  useEffect(() => {
+    if (sliderData) {
+      console.log('Slider API data:', sliderData);
+    }
+    if (error) {
+      console.error('Slider API error:', error);
+    }
+  }, [sliderData, error]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Sample sponsor images - you can modify this array to add more sponsors
-  const sponsors = [
-    {
-      id: 1,
-      name: 'Kutus Kutus',
-      image: '/kutus-kutus.png',
-      alt: 'Kutus Kutus Logo'
-    },
-    {
-      id: 2,
-      name: 'Kutus Kutus',
-      image: '/kutus-kutus.png',
-      alt: 'Kutus Kutus Logo'
-    },
-    {
-      id: 3,
-      name: 'Kutus Kutus',
-      image: '/kutus-kutus.png',
-      alt: 'Kutus Kutus Logo'
-    },
-    {
-      id: 4,
-      name: 'Kutus Kutus',
-      image: '/kutus-kutus.png',
-      alt: 'Kutus Kutus Logo'
-    }
-  ];
+  // Use API data if available, otherwise fallback to default
+  type Sponsor = {
+    id: number | string;
+    name: string;
+    image: string;
+    alt?: string;
+  };
+  const sponsors: Sponsor[] = sliderData?.content?.result && Array.isArray(sliderData.content.result)
+    ? sliderData.content.result
+    : [
+        {
+          id: 1,
+          name: 'Kutus Kutus',
+          image: '/kutus-kutus.png',
+          alt: 'Kutus Kutus Logo'
+        },
+        {
+          id: 2,
+          name: 'Kutus Kutus',
+          image: '/kutus-kutus.png',
+          alt: 'Kutus Kutus Logo'
+        },
+        {
+          id: 3,
+          name: 'Kutus Kutus',
+          image: '/kutus-kutus.png',
+          alt: 'Kutus Kutus Logo'
+        },
+        {
+          id: 4,
+          name: 'Kutus Kutus',
+          image: '/kutus-kutus.png',
+          alt: 'Kutus Kutus Logo'
+        }
+      ];
 
   // Auto slide every 5 seconds
   useEffect(() => {
@@ -58,7 +77,7 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
             transform: `translateX(-${currentSlide * 100}%)`,
           }}
         >
-          {sponsors.map((sponsor) => (
+          {sponsors.map((sponsor: Sponsor) => (
             <div key={sponsor.id} className="partnership-slide">
               <img
                 src={sponsor.image}
@@ -77,7 +96,7 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
 
       {/* Dots Indicator - Now outside slider container */}
       <div className="slider-dots">
-        {sponsors.map((_, index) => (
+  {sponsors.map((_: Sponsor, index: number) => (
           <div
             key={index}
             className={`slider-dot ${index === currentSlide ? 'active' : ''}`}
