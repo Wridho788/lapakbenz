@@ -36,6 +36,37 @@ const PaymentConfirmation: React.FC = () => {
     }
   ];
 
+  const billingOptions = [
+    { id: 'EVT001', name: 'Workshop UI/UX Design - Rp 150,000' },
+    { id: 'EVT002', name: 'Tech Career Talk - Rp 75,000' },
+    { id: 'EVT003', name: 'Digital Marketing Bootcamp - Rp 200,000' },
+    { id: 'EVT004', name: 'React JS Workshop - Rp 180,000' }
+  ];
+
+  const bankOptions = [
+    'Bank BCA',
+    'Bank Mandiri', 
+    'Bank BRI',
+    'Bank BNI',
+    'Bank CIMB Niaga',
+    'Bank Danamon',
+    'Bank Permata',
+    'Bank OCBC NISP',
+    'Bank Maybank',
+    'Bank Panin',
+    'Bank BTN',
+    'Bank Mega',
+    'Bank Sinarmas',
+    'Bank Commonwealth',
+    'Bank Bukopin'
+  ];
+
+  const handleSubmitPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Payment submitted');
+    // Handle payment submission logic here
+  };
+
   return (
     <div className="account-page">
       <AppbarDefault
@@ -46,6 +77,73 @@ const PaymentConfirmation: React.FC = () => {
       />
       
       <div className="account-content">
+        {/* Payment Input Form */}
+        <div className="account-card">
+          <h3>Payment Confirmation</h3>
+          <form onSubmit={handleSubmitPayment}>
+            <div className="form-group">
+              <label>Billing ID</label>
+              <select required>
+                <option value="">Select Event/Service</option>
+                {billingOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Nama Pengirim</label>
+              <input 
+                type="text" 
+                placeholder="Enter sender name" 
+                required 
+              />
+            </div>
+            <div className="form-group">
+              <label>No Rekening Pengirim</label>
+              <input 
+                type="text" 
+                placeholder="Enter account number" 
+                required 
+              />
+            </div>
+            <div className="form-group">
+              <label>Bank Pengirim</label>
+              <select required>
+                <option value="">Select Bank</option>
+                {bankOptions.map((bank) => (
+                  <option key={bank} value={bank}>
+                    {bank}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Jumlah Transfer</label>
+              <input 
+                type="number" 
+                placeholder="Enter amount" 
+                min="0"
+                required 
+              />
+            </div>
+            <div className="form-group">
+              <label>Bank Tujuan</label>
+              <select required>
+                <option value="">Select Destination Bank</option>
+                {bankOptions.map((bank) => (
+                  <option key={bank} value={bank}>
+                    {bank}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="save-btn">Submit Payment Confirmation</button>
+          </form>
+        </div>
+
+        {/* Payment History */}
         <div className="account-card">
           <h3>Payment History</h3>
           {payments.map((payment) => (

@@ -107,6 +107,7 @@
   padding: 1rem;
   flex: 1;
   overflow-y: auto;
+  background-color: white;
 }
 
 .event-list {

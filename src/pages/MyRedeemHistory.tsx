@@ -19,6 +19,9 @@ const MyRedeemHistory: React.FC = () => {
     navigate('/notifications');
   };
 
+  // Uncomment below to test empty state
+  // const redeems: any[] = [];
+
   const redeems = [
     {
       id: '1',
@@ -58,19 +61,27 @@ const MyRedeemHistory: React.FC = () => {
       <div className="account-content">
         <div className="account-card">
           <h3>Redeem History</h3>
-          {redeems.map((redeem) => (
-            <div key={redeem.id} className="redeem-item">
-              <div className="redeem-info">
-                <h4>{redeem.item}</h4>
-                <p>{redeem.points} points</p>
-                <p>Redeemed: {redeem.date}</p>
-                {redeem.expiryDate !== '-' && <p>Expired: {redeem.expiryDate}</p>}
+          {redeems.length > 0 ? (
+            redeems.map((redeem) => (
+              <div key={redeem.id} className="redeem-item">
+                <div className="redeem-info">
+                  <h4>{redeem.item}</h4>
+                  <p>{redeem.points} points</p>
+                  <p>Redeemed: {redeem.date}</p>
+                  {redeem.expiryDate !== '-' && <p>Expired: {redeem.expiryDate}</p>}
+                </div>
+                <div className={`redeem-status ${redeem.status.toLowerCase()}`}>
+                  {redeem.status}
+                </div>
               </div>
-              <div className={`redeem-status ${redeem.status.toLowerCase()}`}>
-                {redeem.status}
-              </div>
+            ))
+          ) : (
+            <div className="empty-state">
+              <img src="/nodata.png" alt="No Data" className="empty-icon" />
+              <h3>No Redeem History</h3>
+              <p>You haven't redeemed any rewards yet. Collect points and redeem exciting rewards to see your history here!</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
       
