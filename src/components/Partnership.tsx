@@ -7,7 +7,7 @@ interface PartnershipProps {
 }
 
 export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
-  const { data: sliderData, isLoading, error } = useSlider();
+  const { data: sliderData, error } = useSlider();
 
   useEffect(() => {
     if (sliderData) {

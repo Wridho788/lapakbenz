@@ -27,20 +27,6 @@ interface EventItem {
   done_desc: string;
 }
 
-interface NewsItem {
-  id: string;
-  name: string;
-  category: string;
-  title: string;
-  date: string;
-  lang: string;
-  text: string;
-  image: string;
-  publish: string;
-  front: string;
-  permalink: string;
-  created: string;
-}
 
 const tabs = ['Upcoming', 'Completed', 'News'];
 

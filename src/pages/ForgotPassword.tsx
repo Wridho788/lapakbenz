@@ -29,10 +29,6 @@ const ForgotPassword: React.FC = () => {
     navigate('/login');
   };
 
-  const handleCartClick = () => {
-    console.log('Cart clicked from ForgotPassword');
-    navigate('/cart');
-  };
 
   if (isSubmitted) {
     return (

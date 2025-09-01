@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdPersonAdd, MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import { MdPersonAdd } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
 import './Register.css';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     chapter: '',
     fullName: '',
@@ -25,13 +23,6 @@ const Register: React.FC = () => {
     agree: '',
   });
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -55,18 +46,11 @@ const Register: React.FC = () => {
     navigate('/login');
   };
 
-  const handleLoginClick = () => {
-    navigate('/login');
-  };
-
   const handleBackClick = () => {
     navigate('/login');
   };
 
-  const handleCartClick = () => {
-    console.log('Cart clicked from Register');
-    navigate('/cart');
-  };
+ 
 
   return (
     <div className="register-page">
@@ -312,10 +296,14 @@ const Register: React.FC = () => {
             </label>
           </div>
           {/* Register Button */}
-          <button type="submit" className="register-button dark-bg">
+            <button
+            type="submit"
+            className="register-button dark-bg"
+            onClick={handleRegister}
+            >
             <span style={{ color: '#fff' }}>Register</span>
             <MdPersonAdd className="register-icon" />
-          </button>
+            </button>
         </form>
       </div>
     </div>

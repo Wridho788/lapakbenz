@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdLogin, MdVisibility, MdVisibilityOff } from 'react-icons/md';
-import { AppbarDefault } from '../components/AppbarDefault';
 import { AppbarAuth } from '../components/AppbarAuth';
 import './Login.css';
 
@@ -33,11 +32,6 @@ const Login: React.FC = () => {
 
   const handleBackClick = () => {
     navigate('/dashboard');
-  };
-
-  const handleCartClick = () => {
-    console.log('Cart clicked from Login');
-    navigate('/cart');
   };
 
   return (
