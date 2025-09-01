@@ -1,41 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// Simple modal component
-const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.ReactNode }> = ({
-  open,
-  onClose,
-  children,
-}) => {
-  if (!open) return null;
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'rgba(0,0,0,0.5)',
-        zIndex: 9999,
-      }}
-    >
-      <div
-        style={{
-          background: '#fff',
-          margin: '5% auto',
-          padding: 24,
-          borderRadius: 8,
-          maxWidth: 400,
-          position: 'relative',
-        }}
-      >
-        <button style={{ position: 'absolute', top: 8, right: 8 }} onClick={onClose}>
-          Tutup
-        </button>
-        {children}
-      </div>
-    </div>
-  );
-};
+
 import { EventCard } from './EventCard';
 import './CompletedEvent.css';
 import { usePostEvent, useEventById } from '../api/hooks';
@@ -171,6 +135,44 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
           <div>Loading...</div>
         )}
       </Modal>
+    </div>
+  );
+};
+
+// Simple modal component
+const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.ReactNode }> = ({
+  open,
+  onClose,
+  children,
+}) => {
+  if (!open) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.5)',
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          background: '#fff',
+          margin: '5% auto',
+          padding: 24,
+          borderRadius: 8,
+          maxWidth: 400,
+          position: 'relative',
+        }}
+      >
+        <button style={{ position: 'absolute', top: 8, right: 8 }} onClick={onClose}>
+          Tutup
+        </button>
+        {children}
+      </div>
     </div>
   );
 };

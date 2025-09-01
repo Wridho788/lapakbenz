@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+.profile-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: 'Poppins', sans-serif;
+}
+
+.profile-content {
+  padding: 20px;
+}
+
+.user-card {
+  background: #161129;
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.user-card-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.user-card-row:last-child {
+  margin-bottom: 0;
+}
+
+.user-card-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-card-item:first-child {
+  margin-right: 20px;
+}
+
+.user-card-label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: white;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.user-card-value {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .profile-content {
+    padding: 16px;
+  }
+  
+  .user-card {
+    padding: 20px;
+  }
+  
+  .user-card-item:first-child {
+    margin-right: 16px;
+  }
+  
+  .user-card-value {
+    font-size: 14px;
+  }
+}
+
+/* Membership Benefits Section */
+.membership-benefits-card {
+  background: #161129;
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.membership-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  margin: 0 0 20px 0;
+  text-align: center;
+  position: relative;
+}
+
+.membership-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background-color: white;
+}
+
+.membership-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 8px;
+}
+
+.membership-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.membership-tab:hover {
+  color: #ccc;
+}
+
+.membership-tab.active {
+  font-weight: 700;
+  color: white;
+}
+
+.membership-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: white;
+}
+
+.membership-content {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Responsive for membership section */
+@media (max-width: 480px) {
+  .membership-benefits-card {
+    padding: 20px;
+  }
+  
+  .membership-tabs {
+    gap: 4px;
+  }
+  
+  .membership-tab {
+    font-size: 10px;
+    padding: 6px 2px;
+  }
+  
+  .membership-title {
+    font-size: 14px;
+  }
+}
+
+/* Account Menu Section */
+.account-menu-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.account-menu-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.account-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.account-menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.account-menu-item:last-child {
+  border-bottom: none;
+}
+
+.account-menu-item:hover {
+  background-color: #f8f8f8;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 8px;
+}
+
+.account-menu-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-menu-icon {
+  width: 24px;
+  height: 24px;
+  color: #333;
+  background-color: #f0f0f0;
+  border-radius: 50%;
+  padding: 6px;
+  box-sizing: content-box;
+}
+
+.account-menu-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #333;
+}
+
+.account-menu-arrow {
+  width: 20px;
+  height: 20px;
+  color: #666;
+}
+
+/* Responsive for account menu */
+@media (max-width: 480px) {
+  .account-menu-card {
+    padding: 16px;
+  }
+  
+  .account-menu-item {
+    padding: 14px 0;
+  }
+  
+  .account-menu-icon {
+    width: 20px;
+    height: 20px;
+    padding: 4px;
+  }
+  
+  .account-menu-text {
+    font-size: 13px;
+  }
+}

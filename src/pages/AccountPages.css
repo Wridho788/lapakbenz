@@ -1,0 +1,331 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+.account-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: 'Poppins', sans-serif;
+}
+
+.account-content {
+  padding: 20px;
+}
+
+.account-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 80px; /* Space for FAB */
+}
+
+.account-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 20px 0;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #161129;
+}
+
+.save-btn {
+  background: #161129;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.save-btn:hover {
+  background: #2a1f3d;
+}
+
+/* List Item Styles */
+.payment-item,
+.event-item,
+.transaction-item,
+.redeem-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.payment-item:last-child,
+.event-item:last-child,
+.transaction-item:last-child,
+.redeem-item:last-child {
+  border-bottom: none;
+}
+
+.payment-info,
+.event-info,
+.transaction-info,
+.redeem-info {
+  flex: 1;
+}
+
+.payment-info h4,
+.event-info h4,
+.transaction-info h4,
+.redeem-info h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.payment-info p,
+.event-info p,
+.transaction-info p,
+.redeem-info p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin: 2px 0;
+}
+
+/* Status Styles */
+.payment-status,
+.event-status,
+.transaction-status,
+.redeem-status {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.payment-status.confirmed,
+.event-status.completed,
+.transaction-status.success,
+.redeem-status.delivered {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.payment-status.pending,
+.event-status.upcoming {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.redeem-status.used {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+/* Transaction Amount */
+.transaction-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.transaction-amount .positive {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.transaction-amount .negative {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+/* Password Requirements */
+.password-requirements {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.password-requirements h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.password-requirements ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.password-requirements li {
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+/* Chat Styles */
+.chat-content {
+  padding: 0;
+}
+
+.chat-container {
+  background: white;
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.support {
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  position: relative;
+}
+
+.message.user .message-content {
+  background: #161129;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message.support .message-content {
+  background: #f0f0f0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+.message-content p {
+  margin: 0 0 4px 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+}
+
+.timestamp {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.chat-input-form {
+  padding: 16px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: white;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 12px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  outline: none;
+}
+
+.chat-input:focus {
+  border-color: #161129;
+}
+
+.send-btn {
+  background: #161129;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.send-btn:hover {
+  background: #2a1f3d;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .account-content {
+    padding: 16px;
+  }
+  
+  .account-card {
+    padding: 20px;
+  }
+  
+  .payment-item,
+  .event-item,
+  .transaction-item,
+  .redeem-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .payment-status,
+  .event-status,
+  .transaction-status,
+  .redeem-status {
+    align-self: flex-end;
+  }
+}

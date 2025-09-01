@@ -1,102 +1,138 @@
-import React, { useState } from 'react';
-import { EventCard } from '../components/EventCard';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // import { MdCalendarToday, MdLocationOn, MdPeople } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
+import { usePostEvent, usePostArticle, useEventById } from '../api/hooks';
 import './Event.css';
 import '../components/FABPositioning.css';
 
-interface EventData {
+// Interface sesuai dengan API response
+interface EventItem {
   id: string;
-  title: string;
-  description: string;
-  date: string;
+  chapter_id: string;
+  chapter: string;
+  code: string;
+  name: string;
+  dates: string;
   time: string;
-  location: string;
-  participants: number;
-  maxParticipants: number;
-  status: 'upcoming' | 'completed';
-  category: 'event' | 'news';
+  desc: string;
+  image: string;
+  fee: number;
+  minimum_participants: string;
+  type: number;
+  type_desc: string;
+  done: number;
+  done_desc: string;
 }
 
-// Dummy data untuk events
-const eventsData: EventData[] = [
-  {
-    id: '1',
-    title: 'UI/UX Design Workshop',
-    description:
-      'Learn the fundamentals of user interface and user experience design. Perfect for beginners looking to start their design journey.',
-    date: '2025-08-15',
-    time: '10:00',
-    location: 'Design Studio Kemang',
-    participants: 25,
-    maxParticipants: 25,
-    status: 'completed',
-    category: 'event',
-  },
-  {
-    id: '2',
-    title: 'Career Talk: Tech Industry',
-    description:
-      'Senior professionals share insights about career paths in technology. Q&A session included.',
-    date: '2025-08-10',
-    time: '19:00',
-    location: 'WeWork SCBD',
-    participants: 40,
-    maxParticipants: 60,
-    status: 'completed',
-    category: 'event',
-  },
-];
-
-const newsData: EventData[] = [
-  {
-    id: 'n1',
-    title: 'New Feature: Event Chat Rooms',
-    description:
-      'We have launched event-specific chat rooms where participants can connect and discuss before, during, and after events. Join the conversation!',
-    date: '2025-08-22',
-    time: '10:00',
-    location: 'Online',
-    participants: 0,
-    maxParticipants: 0,
-    status: 'upcoming',
-    category: 'news',
-  },
-  {
-    id: 'n2',
-    title: 'Partnership with Tech Companies',
-    description:
-      'Merciku has partnered with leading technology companies to bring exclusive opportunities, internships, and job placements to our community members.',
-    date: '2025-08-20',
-    time: '15:30',
-    location: 'Online',
-    participants: 0,
-    maxParticipants: 0,
-    status: 'upcoming',
-    category: 'news',
-  },
-  {
-    id: 'n3',
-    title: 'Mobile App Update v2.1',
-    description:
-      'Latest app update includes improved navigation, notification system, and better user experience. Update now from your app store!',
-    date: '2025-08-18',
-    time: '09:00',
-    location: 'Online',
-    participants: 0,
-    maxParticipants: 0,
-    status: 'upcoming',
-    category: 'news',
-  },
-];
+interface NewsItem {
+  id: string;
+  name: string;
+  category: string;
+  title: string;
+  date: string;
+  lang: string;
+  text: string;
+  image: string;
+  publish: string;
+  front: string;
+  permalink: string;
+  created: string;
+}
 
 const tabs = ['Upcoming', 'Completed', 'News'];
 
+// Simple modal component
+const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.ReactNode }> = ({
+  open,
+  onClose,
+  children,
+}) => {
+  if (!open) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        background: 'rgba(0,0,0,0.5)',
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          background: '#fff',
+          margin: '5% auto',
+          padding: 24,
+          borderRadius: 8,
+          maxWidth: 400,
+          position: 'relative',
+        }}
+      >
+        <button style={{ position: 'absolute', top: 8, right: 8 }} onClick={onClose}>
+          Tutup
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const Event: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  
+  // API hooks
+  const eventMutation = usePostEvent();
+  const articleMutation = usePostArticle();
+  const eventByIdQuery = useEventById(selectedEventId ?? '');
+
+  // Fetch data on mount and tab change
+  useEffect(() => {
+    if (activeTab === 0 || activeTab === 1) {
+      // Fetch events for upcoming/completed
+      const payload = activeTab === 0 
+        ? { status: "0", limit: 100, offset: 0, chapter: "" } // upcoming
+        : { status: "1", limit: 100, offset: 0, chapter: "" }; // completed
+      eventMutation.mutate(payload);
+    } else if (activeTab === 2) {
+      // Fetch articles for news
+      articleMutation.mutate({});
+    }
+  }, [activeTab]);
+
+  // Logging API responses
+  useEffect(() => {
+    if (eventMutation.data) {
+      console.log('Event API response:', eventMutation.data);
+    }
+    if (eventMutation.error) {
+      console.error('Event API error:', eventMutation.error);
+    }
+  }, [eventMutation.data, eventMutation.error]);
+
+  useEffect(() => {
+    if (articleMutation.data) {
+      console.log('Article API response:', articleMutation.data);
+    }
+    if (articleMutation.error) {
+      console.error('Article API error:', articleMutation.error);
+    }
+  }, [articleMutation.data, articleMutation.error]);
+
+  useEffect(() => {
+    if (eventByIdQuery.data) {
+      console.log('Event by ID response:', eventByIdQuery.data);
+    }
+    if (eventByIdQuery.error) {
+      console.error('Event by ID error:', eventByIdQuery.error);
+    }
+  }, [eventByIdQuery.data, eventByIdQuery.error]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -106,16 +142,33 @@ const Event: React.FC = () => {
     navigate('/notifications');
   };
 
+  const handleEventClick = (eventId: string) => {
+    setSelectedEventId(eventId);
+    setModalOpen(true);
+  };
+
   const getFilteredData = () => {
-    switch (activeTab) {
-      case 0: // Upcoming
-        return eventsData.filter((event) => event.status === 'upcoming');
-      case 1: // Completed
-        return eventsData.filter((event) => event.status === 'completed');
-      case 2: // News
-        return newsData;
-      default:
-        return [];
+    if (activeTab === 2) {
+      // News data from article API
+      return articleMutation.data?.content?.result ?? [];
+    } else {
+      // Event data from event API  
+      const events: EventItem[] = eventMutation.data?.content?.result ?? [];
+      if (activeTab === 0) {
+        // Upcoming: done = 0
+        return events.filter((event) => event.done === 0);
+      } else {
+        // Completed: done = 1
+        return events.filter((event) => event.done === 1);
+      }
+    }
+  };
+
+  const isLoading = () => {
+    if (activeTab === 2) {
+      return articleMutation.isPending;
+    } else {
+      return eventMutation.isPending;
     }
   };
 
@@ -137,64 +190,86 @@ const Event: React.FC = () => {
 
       <div className="event-content">
         <div className="event-list">
-          {getFilteredData().map((item) =>
-            tabs[activeTab] === 'News' ? (
-              // <EventCard
-              //   key={item.id}
-              //   id={parseInt(item.id)}
-              //   image="/bea2x.jpg"
-              //   title={item.title}
-              //   date={`${item.date} - ${item.time}`}
-              //   chapter=""
-              //   type=""
-              //   className="custom-event-card"
-              // />
-                          <div key={item.id} className="custom-event-card">
-              <div className="event-row">
-                <div className="event-img-col">
-                  <img src="/bea2x.jpg" alt="Event" style={{ maxWidth: '70px', height: '50px', objectFit: 'cover', borderRadius: '8px' }} />
-                </div>
-                <div className="event-info-col">
-                  <div className="event-title-row">
-                    <h3 className="event-title">SOTRBEABEA2x - BEA2x</h3>
-                  </div>
-                  <div className="event-date-row">
-                    <span className="event-date">19 Jun 2024 - 00-00-00</span>
-                  </div>
-                </div>
-              </div>
+          {isLoading() ? (
+            <div className="loading-state">
+              <p>Loading...</p>
             </div>
-
-            ) : (
-              <div key={item.id} className="custom-event-card">
-                <div className="event-row">
-                  <div className="event-img-col">
-                    <img
-                      src="/bea2x.jpg"
-                      alt="Event"
-                      style={{
-                        maxWidth: '70px',
-                        height: '50px',
-                        objectFit: 'cover',
-                        borderRadius: '8px',
-                      }}
-                    />
-                  </div>
-                  <div className="event-info-col">
-                    <div className="event-title-row">
-                      <h3 className="event-title">SOTRBEABEA2x - BEA2x</h3>
-                      <span className="event-chapter">MBW202.05</span>
+          ) : (
+            getFilteredData().map((item: any) =>
+              tabs[activeTab] === 'News' ? (
+                <div 
+                  key={item.id} 
+                  className="custom-event-card"
+                  onClick={() => item.text && window.open(item.text, '_blank')}
+                  style={{ cursor: item.text ? 'pointer' : 'default' }}
+                >
+                  <div className="event-row">
+                    <div className="event-img-col">
+                      <img
+                        src={item.image || "/bea2x.jpg"}
+                        alt={item.title || "News"}
+                        style={{
+                          maxWidth: '70px',
+                          height: '50px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                        }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/bea2x.jpg";
+                        }}
+                      />
                     </div>
-                    <div className="event-date-row">
-                      <span className="event-date">19 Jun 2024 - 00-00-00</span>
+                    <div className="event-info-col">
+                      <div className="event-title-row">
+                        <h3 className="event-title">{item.title || item.name}</h3>
+                      </div>
+                      <div className="event-date-row">
+                        <span className="event-date">{item.created || item.date}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ),
+              ) : (
+                <div 
+                  key={item.id} 
+                  className="custom-event-card"
+                  onClick={() => handleEventClick(item.id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="event-row">
+                    <div className="event-img-col">
+                      <img
+                        src={item.image || "/bea2x.jpg"}
+                        alt={item.name || "Event"}
+                        style={{
+                          maxWidth: '70px',
+                          height: '50px',
+                          objectFit: 'cover',
+                          borderRadius: '8px',
+                        }}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/bea2x.jpg";
+                        }}
+                      />
+                    </div>
+                    <div className="event-info-col">
+                      <div className="event-title-row">
+                        <h3 className="event-title">{item.code} - {item.name}</h3>
+                        <span className="event-chapter">{item.chapter}</span>
+                      </div>
+                      <div className="event-date-row">
+                        <span className="event-date">{item.dates} - {item.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ),
+            )
           )}
 
-          {getFilteredData().length === 0 && (
+          {!isLoading() && getFilteredData().length === 0 && (
             <div className="empty-state">
               <img src="/nodata.png" alt="No Data" className="empty-icon" />
               <h3>No {tabs[activeTab]}</h3>
@@ -203,6 +278,65 @@ const Event: React.FC = () => {
           )}
         </div>
       </div>
+      <Modal open={modalOpen && !!eventByIdQuery.data?.content} onClose={() => setModalOpen(false)}>
+        {eventByIdQuery.data?.content ? (
+          <div>
+            <img
+              src={eventByIdQuery.data.content.image}
+              alt={eventByIdQuery.data.content.name}
+              style={{ width: '100%', borderRadius: 8, marginBottom: 12 }}
+            />
+            <h2>
+              {eventByIdQuery.data.content.code} - {eventByIdQuery.data.content.name}
+            </h2>
+            <div style={{ display: 'flex', gap: 24 }}>
+              {/* Kolom kiri */}
+              <div style={{ flex: 1 }}>
+                <p>
+                  <b>Event Date:</b>
+                  <br />
+                  {eventByIdQuery.data.content.dates} - {eventByIdQuery.data.content.time}
+                </p>
+                <p>
+                  <b>Chapter:</b>
+                  <br />
+                  {eventByIdQuery.data.content.chapter}
+                </p>
+                <p>
+                  <b>Type:</b>
+                  <br />
+                  {eventByIdQuery.data.content.type_desc}
+                </p>
+                <p>
+                  <b>Description:</b>
+                  <br />
+                  {eventByIdQuery.data.content.desc}
+                </p>
+              </div>
+              {/* Kolom kanan */}
+              <div style={{ flex: 1 }}>
+                <p>
+                  <b>Minimum Participation:</b>
+                  <br />
+                  {eventByIdQuery.data.content.minimum_participants}
+                </p>
+                <p>
+                  <b>Contribution Fee:</b>
+                  <br />
+                  {eventByIdQuery.data.content.fee}
+                </p>
+                <p>
+                  <b>Status:</b>
+                  <br />
+                  {eventByIdQuery.data.content.done_desc}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>Loading...</div>
+        )}
+      </Modal>
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>
   );
