@@ -1,8 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { CartProvider } from './contexts/CartContext';
 import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Event from './pages/Event';
+import Product from './pages/Product';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 import Profile from './pages/Profile';
 import Notifications from './pages/Notifications';
 import Login from './pages/Login';
@@ -20,12 +25,17 @@ import './App.css';
 function App() {
   return (
     <NotificationProvider>
-      <Router>
-        <MainLayout>
-          <Routes>
+      <CartProvider>
+        <Router>
+          <MainLayout>
+            <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/event" element={<Event />} />
+            <Route path="/product" element={<Product />} />
+            <Route path="/product/:productId" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/login" element={<Login />} />
@@ -38,11 +48,10 @@ function App() {
             <Route path="/profile/redeem-history" element={<MyRedeemHistory />} />
             <Route path="/profile/change-password" element={<ChangePassword />} />
             <Route path="/profile/live-chat" element={<LiveChat />} />
-          </Routes>
-        </MainLayout>
-      </Router>
+            </Routes>
+          </MainLayout>
+        </Router>
+      </CartProvider>
     </NotificationProvider>
   );
-}
-
-export default App;
+}export default App;

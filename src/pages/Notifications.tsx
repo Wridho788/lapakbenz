@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import { useNotifications } from '../contexts/NotificationContext';
+import { useCart } from '../contexts/CartContext';
 // import BottomNav from '../components/BottomNav';
 import { AppbarDefault } from '../components/AppbarDefault';
 import type { NotificationItem } from '../contexts/NotificationContext';
@@ -11,6 +12,11 @@ import './Notifications.css';
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
   const { notifications, unreadCount, markAsRead } = useNotifications();
+  const { cartCount } = useCart();
+
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
 
   const formatDateTime = (date: Date): string => {
     const day = date.getDate().toString().padStart(2, '0');
@@ -49,6 +55,8 @@ const Notifications: React.FC = () => {
       <AppbarDefault 
         title={`Notifications (${unreadCount})`} 
         onBack={() => navigate(-1)} 
+        onCartClick={handleCartClick}
+        cartCount={cartCount}
       />
 
       <div className="notifications-list">

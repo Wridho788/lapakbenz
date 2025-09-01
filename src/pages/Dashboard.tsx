@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../contexts/NotificationContext';
+import { useCart } from '../contexts/CartContext';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
 import { ButtonGrid } from '../components/ButtonGrid';
@@ -14,6 +15,7 @@ import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const { unreadCount } = useNotifications();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
 
   const handleNotificationClick = () => {
@@ -26,27 +28,27 @@ const Dashboard: React.FC = () => {
   };
 
   const handleProfileClick = () => {
-    navigate('/login');
+    navigate('/profile');
   };
 
   const handleEventHistoryClick = () => {
     console.log('Event History clicked');
-    // TODO: Navigate to event history page
+    navigate('/profile/event-history');
   };
 
   const handleTransactionClick = () => {
     console.log('Transaction clicked');
-    // TODO: Navigate to transaction page
+    navigate('/profile/transaction-history');
   };
 
   const handleRedeemClick = () => {
     console.log('Redeem clicked');
-    // TODO: Navigate to redeem page
+    navigate('/profile/redeem-history');
   };
 
   const handleCartClick = () => {
     console.log('Cart clicked');
-    // TODO: Navigate to cart page
+    navigate('/cart');
   };
 
   return (
@@ -56,7 +58,7 @@ const Dashboard: React.FC = () => {
         name="User" 
         notificationCount={unreadCount}
         onNotificationClick={handleNotificationClick}
-        cartCount={3}
+        cartCount={cartCount}
         onCartClick={handleCartClick}
       />
       <div className="dashboard-content">

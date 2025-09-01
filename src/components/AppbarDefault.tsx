@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MdArrowBack, MdShoppingCart } from 'react-icons/md';
 import './AppbarDefault.css';
 
@@ -15,11 +16,14 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
   onCartClick, 
   cartCount = 0 
 }) => {
+  const navigate = useNavigate();
+
   const handleCartClick = () => {
     if (onCartClick) {
       onCartClick();
+    } else {
+      navigate('/cart');
     }
-    console.log('Cart clicked from AppbarDefault');
   };
 
   return (

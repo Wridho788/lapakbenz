@@ -65,7 +65,7 @@ const Register: React.FC = () => {
 
   const handleCartClick = () => {
     console.log('Cart clicked from Register');
-    // TODO: Navigate to cart page
+    navigate('/cart');
   };
 
   return (

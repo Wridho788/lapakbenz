@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 // import { MdCalendarToday, MdLocationOn, MdPeople } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
+import { useCart } from '../contexts/CartContext';
 import { usePostEvent, usePostArticle, useEventById } from '../api/hooks';
 import './Event.css';
 import '../components/FABPositioning.css';
@@ -86,6 +87,7 @@ const Event: React.FC = () => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const { cartCount } = useCart();
   
   // API hooks
   const eventMutation = usePostEvent();
@@ -138,6 +140,10 @@ const Event: React.FC = () => {
     navigate(-1);
   };
 
+  const handleCartClick = () => {
+    navigate('/cart');
+  };
+
   const handleNotificationClick = () => {
     navigate('/notifications');
   };
@@ -174,7 +180,7 @@ const Event: React.FC = () => {
 
   return (
     <div className="event-page">
-      <AppbarDefault title="Events" onBack={handleBackClick} />
+      <AppbarDefault title="Events" onBack={handleBackClick} onCartClick={handleCartClick} cartCount={cartCount} />
 
       <div className="event-tabs">
         {tabs.map((tab, idx) => (

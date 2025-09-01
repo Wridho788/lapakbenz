@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MdOutlineHome, MdOutlineEvent, MdOutlineAccountCircle } from 'react-icons/md';
+import { MdOutlineHome, MdOutlineEvent, MdOutlineAccountCircle, MdOutlineShoppingBag } from 'react-icons/md';
 import './BottomNav.css';
 
 interface NavItem {
@@ -14,6 +14,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { to: '/', icon: MdOutlineHome, label: 'Home', end: true },
   { to: '/event', icon: MdOutlineEvent, label: 'Event' },
+  { to: '/product', icon: MdOutlineShoppingBag, label: 'Product' },
   { to: '/profile', icon: MdOutlineAccountCircle, label: 'Profile' },
 ];
 

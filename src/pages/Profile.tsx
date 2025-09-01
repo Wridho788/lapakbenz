@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
+import { useCart } from '../contexts/CartContext';
 import {
   MdPerson,
   MdPayment,
@@ -17,6 +18,7 @@ import { FAB } from '../components/FAB';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { cartCount } = useCart();
   const [activeMembershipTab, setActiveMembershipTab] = useState(0);
 
   const membershipTabs = ['BASIC', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
@@ -26,8 +28,7 @@ const Profile: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    // Navigate to cart page or handle cart action
-    console.log('Cart clicked');
+    navigate('/cart');
   };
 
   // Sample user data - replace with actual data from API/state
@@ -98,7 +99,7 @@ const Profile: React.FC = () => {
         title="Profile"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
-        cartCount={0}
+        cartCount={cartCount}
       />
 
       <div className="profile-content">

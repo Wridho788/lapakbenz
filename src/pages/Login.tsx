@@ -37,7 +37,7 @@ const Login: React.FC = () => {
 
   const handleCartClick = () => {
     console.log('Cart clicked from Login');
-    // TODO: Navigate to cart page
+    navigate('/cart');
   };
 
   return (

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdNotifications, MdShoppingCart } from 'react-icons/md';
+import { useCart } from '../contexts/CartContext';
 import './AppbarHomepage.css';
 
 export type AppbarHomepageProps = {
@@ -18,9 +19,13 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
   onNotificationClick,
   notificationCount = 0,
   onCartClick,
-  cartCount = 0
+  cartCount: propCartCount = 0
 }) => {
   const navigate = useNavigate();
+  const { cartCount } = useCart();
+  
+  // Use cart count from context if not provided as prop
+  const displayCartCount = propCartCount || cartCount;
 
   const handleNotificationClick = () => {
     if (onNotificationClick) {
@@ -32,9 +37,9 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
   const handleCartClick = () => {
     if (onCartClick) {
       onCartClick();
+    } else {
+      navigate('/cart');
     }
-    // TODO: Navigate to cart page
-    console.log('Cart clicked');
   };
 
   return (
@@ -58,15 +63,15 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
           )}
         </button>
         <button
-          className={`appbar-cart-btn ${cartCount > 0 ? 'has-items' : ''}`}
+          className={`appbar-cart-btn ${displayCartCount > 0 ? 'has-items' : ''}`}
           onClick={handleCartClick}
-          aria-label={`Shopping Cart (${cartCount})`}
-          title={`You have ${cartCount} item${cartCount !== 1 ? 's' : ''} in cart`}
+          aria-label={`Shopping Cart (${displayCartCount})`}
+          title={`You have ${displayCartCount} item${displayCartCount !== 1 ? 's' : ''} in cart`}
         >
           <MdShoppingCart />
-          {cartCount > 0 && (
+          {displayCartCount > 0 && (
             <span className="cart-badge">
-              {cartCount > 99 ? '99+' : cartCount}
+              {displayCartCount > 99 ? '99+' : displayCartCount}
             </span>
           )}
         </button>

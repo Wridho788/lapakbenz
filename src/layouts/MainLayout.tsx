@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { AppbarDefault } from '../components/AppbarDefault';
 
 interface MainLayoutProps {
   children: React.ReactNode;
