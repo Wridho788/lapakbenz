@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { useNotifications as useNotificationsApi, useUnreadNotifications } from '../api/hooks';
 
 export interface NotificationItem {
   id: string;
@@ -12,71 +13,126 @@ export interface NotificationItem {
 interface NotificationContextType {
   notifications: NotificationItem[];
   unreadCount: number;
+  isLoading: boolean;
+  error: Error | null;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   addNotification: (notification: Omit<NotificationItem, 'id' | 'timestamp'>) => void;
+  refetch: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
-// Dummy data notifications
-const initialNotifications: NotificationItem[] = [
-  {
-    id: '1',
-    title: 'Welcome to Merciku App!',
-    message: 'Selamat datang di aplikasi Merciku! Nikmati berbagai fitur menarik yang telah kami siapkan untuk Anda. Jangan lupa untuk mengeksplorasi semua menu dan fitur yang tersedia.',
-    isRead: false,
-    timestamp: new Date('2025-08-22T10:30:00')
-  },
-  {
-    id: '2',
-    title: 'Update Profil Anda',
-    message: 'Kami menyarankan Anda untuk melengkapi profil Anda agar dapat menikmati pengalaman yang lebih personal. Silakan kunjungi halaman profil untuk menambahkan foto dan informasi lainnya.',
-    isRead: true,
-    timestamp: new Date('2025-08-22T09:15:00')
-  },
-  {
-    id: '3',
-    title: 'Event Spesial Minggu Ini',
-    message: 'Jangan lewatkan event spesial minggu ini! Dapatkan poin bonus dan hadiah menarik dengan mengikuti berbagai aktivitas yang telah kami siapkan. Event berlangsung hingga akhir minggu.',
-    isRead: false,
-    timestamp: new Date('2025-08-21T16:45:00')
-  },
-  {
-    id: '4',
-    title: 'Poin Anda Bertambah!',
-    message: 'Selamat! Poin Anda telah bertambah 50 poin dari aktivitas terakhir. Total poin Anda saat ini adalah 150 poin. Gunakan poin untuk mendapatkan berbagai reward menarik.',
-    isRead: true,
-    timestamp: new Date('2025-08-21T14:20:00')
-  },
-  {
-    id: '5',
-    title: 'Maintenance Terjadwal',
-    message: 'Aplikasi akan mengalami maintenance terjadwal pada tanggal 25 Agustus 2025 pukul 02:00 - 04:00 WIB. Mohon maaf atas ketidaknyamanan yang mungkin terjadi selama periode maintenance.',
-    isRead: false,
-    timestamp: new Date('2025-08-20T11:00:00')
+// Helper function to transform API notification to local format
+const transformApiNotification = (apiNotification: any): NotificationItem => {
+  try {
+    return {
+      id: apiNotification.id || `api-${Date.now()}-${Math.random()}`,
+      title: apiNotification.subject || 'Notification',
+      message: apiNotification.content || '',
+      isRead: apiNotification.reading === "1" || apiNotification.reading === 1,
+      timestamp: apiNotification.created ? new Date(apiNotification.created) : new Date(),
+    };
+  } catch (error) {
+    console.error('📋 Error transforming single notification:', error, apiNotification);
+    // Return a safe fallback notification
+    return {
+      id: `error-${Date.now()}`,
+      title: 'Error Loading Notification',
+      message: 'There was an error loading this notification.',
+      isRead: true,
+      timestamp: new Date(),
+    };
   }
-];
+};
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [localNotifications, setLocalNotifications] = useState<NotificationItem[]>([]);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  // Initialize auth token
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setAuthToken(token);
+  }, []);
+
+  // Fetch all notifications
+  const { 
+    data: notificationData, 
+    isLoading: notificationLoading, 
+    error: notificationError,
+    refetch: refetchNotifications
+  } = useNotificationsApi(authToken);
+
+  // Fetch unread notifications count
+  const { 
+    data: unreadData, 
+    isLoading: unreadLoading, 
+    error: unreadError 
+  } = useUnreadNotifications(authToken);
+
+  // Log errors for debugging
+  React.useEffect(() => {
+    if (notificationError) {
+      console.error('📋 Notification Context - All Notifications Error:', notificationError);
+    }
+    if (unreadError) {
+      console.error('📋 Notification Context - Unread Notifications Error:', unreadError);
+    }
+  }, [notificationError, unreadError]);
+
+  // Transform API data to local format with error handling
+  const apiNotifications: NotificationItem[] = React.useMemo(() => {
+    if (!notificationData?.content || !Array.isArray(notificationData.content)) {
+      console.log('📋 No notification data or invalid format:', notificationData);
+      return [];
+    }
+    
+    try {
+      return notificationData.content.map(transformApiNotification);
+    } catch (error) {
+      console.error('📋 Error transforming notifications:', error);
+      return [];
+    }
+  }, [notificationData]);
+
+  // Combine API notifications with local ones
+  const allNotifications = React.useMemo(() => {
+    return [...localNotifications, ...apiNotifications];
+  }, [localNotifications, apiNotifications]);
+
+  // Calculate unread count from API data with error handling
+  const apiUnreadCount = React.useMemo(() => {
+    if (unreadData?.content && Array.isArray(unreadData.content)) {
+      // Count notifications where reading === "0"
+      return unreadData.content.filter(notification => notification.reading === "0").length;
+    }
+    console.log('📋 No unread data or invalid format:', unreadData);
+    return 0;
+  }, [unreadData]);
+
+  // Total unread count (API + local)
+  const totalUnreadCount = apiUnreadCount + localNotifications.filter(n => !n.isRead).length;
+
+  const isLoading = notificationLoading || unreadLoading;
+  const error = notificationError || unreadError;
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
+    setLocalNotifications(prev => 
       prev.map(notification => 
         notification.id === id 
           ? { ...notification, isRead: true }
           : notification
       )
     );
+    // TODO: Call API to mark notification as read
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
+    setLocalNotifications(prev => 
       prev.map(notification => ({ ...notification, isRead: true }))
     );
+    // TODO: Call API to mark all notifications as read
   };
 
   const addNotification = (newNotification: Omit<NotificationItem, 'id' | 'timestamp'>) => {
@@ -86,15 +142,22 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       timestamp: new Date()
     };
     
-    setNotifications(prev => [notification, ...prev]);
+    setLocalNotifications(prev => [notification, ...prev]);
+  };
+
+  const refetch = () => {
+    refetchNotifications();
   };
 
   const value: NotificationContextType = {
-    notifications,
-    unreadCount,
+    notifications: allNotifications,
+    unreadCount: totalUnreadCount,
+    isLoading,
+    error,
     markAsRead,
     markAllAsRead,
-    addNotification
+    addNotification,
+    refetch
   };
 
   return (
@@ -104,10 +167,10 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   );
 };
 
-export const useNotifications = (): NotificationContextType => {
+export const useNotificationContext = (): NotificationContextType => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotifications must be used within a NotificationProvider');
+    throw new Error('useNotificationContext must be used within a NotificationProvider');
   }
   return context;
 };

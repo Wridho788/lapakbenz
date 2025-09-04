@@ -17,6 +17,18 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
       console.error('Slider API error:', error);
     }
   }, [sliderData, error]);
+
+  // Check if sliderData has valid result
+  const hasValidData =
+    sliderData?.content?.result &&
+    Array.isArray(sliderData.content.result) &&
+    sliderData.content.result.length > 0;
+
+  // Don't render if no valid data
+  if (sliderData && !hasValidData) {
+    return null;
+  }
+
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Use API data if available, otherwise fallback to default
@@ -26,34 +38,10 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
     image: string;
     alt?: string;
   };
-  const sponsors: Sponsor[] = sliderData?.content?.result && Array.isArray(sliderData.content.result)
-    ? sliderData.content.result
-    : [
-        {
-          id: 1,
-          name: 'Kutus Kutus',
-          image: '/kutus-kutus.png',
-          alt: 'Kutus Kutus Logo'
-        },
-        {
-          id: 2,
-          name: 'Kutus Kutus',
-          image: '/kutus-kutus.png',
-          alt: 'Kutus Kutus Logo'
-        },
-        {
-          id: 3,
-          name: 'Kutus Kutus',
-          image: '/kutus-kutus.png',
-          alt: 'Kutus Kutus Logo'
-        },
-        {
-          id: 4,
-          name: 'Kutus Kutus',
-          image: '/kutus-kutus.png',
-          alt: 'Kutus Kutus Logo'
-        }
-      ];
+  const sponsors: Sponsor[] =
+    sliderData?.content?.result && Array.isArray(sliderData.content.result)
+      ? sliderData.content.result
+      : [];
 
   // Auto slide every 5 seconds
   useEffect(() => {
@@ -71,7 +59,7 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
   return (
     <div className={`partnership ${className || ''}`}>
       <div className="partnership-slider">
-        <div 
+        <div
           className="partnership-slides"
           style={{
             transform: `translateX(-${currentSlide * 100}%)`,
@@ -96,7 +84,7 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
 
       {/* Dots Indicator - Now outside slider container */}
       <div className="slider-dots">
-  {sponsors.map((_: Sponsor, index: number) => (
+        {sponsors.map((_: Sponsor, index: number) => (
           <div
             key={index}
             className={`slider-dot ${index === currentSlide ? 'active' : ''}`}

@@ -9,8 +9,12 @@ import {
   ENDPOINT_EVENT_BY_ID
 } from "./constants";
 
-export const getLedger = async () => {
-  const response = await axios.get(`${BASE_URL}${ENDPOINT_LEDGER}`);
+export const getLedger = async (authToken: string) => {
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_LEDGER}`, {}, {
+    headers: {
+      'X-auth-token': authToken,
+    },
+  });
   return response.data;
 };
 

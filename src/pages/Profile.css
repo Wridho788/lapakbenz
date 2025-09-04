@@ -273,3 +273,37 @@
     font-size: 13px;
   }
 }
+
+/* Loading state styles */
+.user-card-value.loading {
+  opacity: 0.6;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Error state styles */
+.user-card.error-state {
+  border: 2px solid #ff6b6b;
+  background: linear-gradient(135deg, #161129 0%, #2a1a3a 100%);
+  transition: all 0.3s ease;
+}
+
+.user-card.error-state:hover {
+  border-color: #ff8e8e;
+  transform: scale(1.02);
+}
+
+.user-card.error-state .user-card-value {
+  color: #ff8e8e;
+}

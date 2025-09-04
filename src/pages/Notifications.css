@@ -10,6 +10,27 @@
   flex-direction: column;
 }
 
+/* Loading and Error States */
+.loading-state,
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.error-state {
+  color: #dc3545;
+}
+
+.loading-state p,
+.error-state p {
+  font-size: 1rem;
+  margin: 0;
+}
+
 .notifications-header {
   background: linear-gradient(135deg, #161129 0%, #23203a 100%);
   color: #fff;

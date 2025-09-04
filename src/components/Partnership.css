@@ -23,7 +23,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
 }
 
 .sponsor-image {
@@ -77,7 +76,7 @@
   }
   
   .partnership-slide {
-    padding: 8px;
+    padding: 1px;
   }
   
   .slider-dots {
@@ -103,7 +102,7 @@
   }
   
   .partnership-slide {
-    padding: 8px;
+    padding: 1px;
   }
   
   .slider-dots {

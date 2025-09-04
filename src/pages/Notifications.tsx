@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import Swal from 'sweetalert2';
-import { useNotifications } from '../contexts/NotificationContext';
+import { useNotificationContext } from '../contexts/NotificationContext';
 import { useCart } from '../contexts/CartContext';
 // import BottomNav from '../components/BottomNav';
 import { AppbarDefault } from '../components/AppbarDefault';
@@ -11,7 +11,7 @@ import './Notifications.css';
 
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
-  const { notifications, unreadCount, markAsRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, isLoading, error } = useNotificationContext();
   const { cartCount } = useCart();
 
   const handleCartClick = () => {
@@ -59,32 +59,46 @@ const Notifications: React.FC = () => {
         cartCount={cartCount}
       />
 
-      <div className="notifications-list">
-        {notifications.map((notification) => (
-          <div
-            key={notification.id}
-            className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
-            onClick={() => handleNotificationClick(notification)}
-          >
-            <div className="notification-icon">
-              <MdMessage />
-            </div>
-            
-            <div className="notification-content">
-              <h3 className="notification-title">{notification.title}</h3>
-              <p className="notification-datetime">
-                {formatDateTime(notification.timestamp)}
-              </p>
-            </div>
-            
-            <div className="notification-arrow">
-              <MdKeyboardArrowRight />
-            </div>
-          </div>
-        ))}
-      </div>
+      {isLoading && (
+        <div className="loading-state">
+          <p>Loading notifications...</p>
+        </div>
+      )}
 
-      {notifications.length === 0 && (
+      {error && (
+        <div className="error-state">
+          <p>Error loading notifications: {error.message}</p>
+        </div>
+      )}
+
+      {!isLoading && !error && (
+        <div className="notifications-list">
+          {notifications.map((notification: NotificationItem) => (
+            <div
+              key={notification.id}
+              className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+              onClick={() => handleNotificationClick(notification)}
+            >
+              <div className="notification-icon">
+                <MdMessage />
+              </div>
+              
+              <div className="notification-content">
+                <h3 className="notification-title">{notification.title}</h3>
+                <p className="notification-datetime">
+                  {formatDateTime(notification.timestamp)}
+                </p>
+              </div>
+              
+              <div className="notification-arrow">
+                <MdKeyboardArrowRight />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!isLoading && !error && notifications.length === 0 && (
         <div className="empty-state">
           <MdMessage className="empty-icon" />
           <h3>No Notifications</h3>

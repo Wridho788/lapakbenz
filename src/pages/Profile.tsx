@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useCart } from '../contexts/CartContext';
+import { useProfile, useLedger } from '../api/hooks';
 import {
   MdPerson,
   MdPayment,
@@ -20,6 +21,19 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const [activeMembershipTab, setActiveMembershipTab] = useState(0);
+  
+  // Auth token state
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  // Load auth token from localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setAuthToken(token);
+  }, []); // Remove authToken from dependency to prevent infinite loop
+
+  // API hooks
+  const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile(authToken);
+  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger(authToken);
 
   const membershipTabs = ['BASIC', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
 
@@ -31,13 +45,137 @@ const Profile: React.FC = () => {
     navigate('/cart');
   };
 
-  // Sample user data - replace with actual data from API/state
-  const userData = {
-    points: 0,
-    membership: 'BASIC',
-    name: 'john doe',
-    expiry: '-',
+  // Process user data from API responses
+  const getUserData = () => {
+    // Default values
+    const defaultData = {
+      points: 0,
+      membership: 'BASIC',
+      name: 'Guest User',
+      expiry: '-',
+      memberNo: '-',
+    };
+
+    // If no auth token, return default
+    if (!authToken) {
+      return {
+        ...defaultData,
+        name: 'Please login',
+      };
+    }
+
+    // If still loading, show loading state
+    if (profileLoading || ledgerLoading) {
+      return {
+        ...defaultData,
+        name: 'Loading...',
+      };
+    }
+
+    // If there's an error, show error state with retry option
+    if (profileError || ledgerError) {
+      console.error('Profile Error:', profileError);
+      console.error('Ledger Error:', ledgerError);
+      return {
+        ...defaultData,
+        name: 'Tap to retry',
+      };
+    }
+
+    // Extract points from ledger data
+    let points = 0;
+    if (ledgerData?.content?.point !== undefined) {
+      points = ledgerData.content.point;
+    }
+
+    // Extract profile data
+    let name = defaultData.name;
+    let membership = defaultData.membership;
+    let expiry = defaultData.expiry;
+    let memberNo = defaultData.memberNo;
+
+    if (profileData?.content?.result) {
+      const profile = profileData.content.result;
+      
+      // Combine first_name and last_name for full name
+      const firstName = profile.first_name || '';
+      const lastName = profile.last_name || '';
+      name = `${firstName} ${lastName}`.trim() || defaultData.name;
+      
+      // Get membership from type field
+      if (profile.type) {
+        membership = profile.type.toUpperCase();
+      }
+
+      // Get member number
+      if (profile.member_no) {
+        memberNo = profile.member_no;
+      }
+      
+      // Get expiry from expired field
+      if (profile.expired) {
+        // Format expiry date if it's a valid date
+        try {
+          const expiryDate = new Date(profile.expired);
+          if (!isNaN(expiryDate.getTime())) {
+            expiry = expiryDate.toLocaleDateString('id-ID');
+          } else {
+            expiry = profile.expired;
+          }
+        } catch (error) {
+          expiry = profile.expired;
+        }
+      } else if (profile.expired_format) {
+        expiry = profile.expired_format;
+      } else {
+        // Check if membership has no expiry (like lifetime membership)
+        if (profile.type === 'member' && profile.premium === '0') {
+          expiry = 'No Expiry';
+        }
+      }
+    }
+
+    return {
+      points,
+      membership,
+      name,
+      expiry,
+      memberNo,
+    };
   };
+
+  const userData = getUserData();
+
+  // Debug information (remove in production)
+  useEffect(() => {
+    console.log('=== Profile Debug Info ===');
+    console.log('Auth Token:', authToken ? `${authToken.substring(0, 20)}...` : 'No token');
+    console.log('Profile Data:', profileData);
+    console.log('Ledger Data:', ledgerData);
+    console.log('Profile Loading:', profileLoading);
+    console.log('Ledger Loading:', ledgerLoading);
+    console.log('Profile Error:', profileError);
+    console.log('Ledger Error:', ledgerError);
+    
+    if (profileData?.content?.result) {
+      const profile = profileData.content.result;
+      console.log('Extracted Profile Fields:');
+      console.log('- First Name:', profile.first_name);
+      console.log('- Last Name:', profile.last_name);
+      console.log('- Type (Membership):', profile.type);
+      console.log('- Expired:', profile.expired);
+      console.log('- Expired Format:', profile.expired_format);
+      console.log('- Premium:', profile.premium);
+      console.log('- Member No:', profile.member_no);
+    }
+    
+    if (ledgerData?.content?.point !== undefined) {
+      console.log('Extracted Points:', ledgerData.content.point);
+    }
+    
+    console.log('Processed User Data:', userData);
+    console.log('========================');
+  }, [authToken, profileData, ledgerData, profileLoading, ledgerLoading, profileError, ledgerError, userData]);
 
   // Account menu items
   const accountMenuItems = [
@@ -93,6 +231,15 @@ const Profile: React.FC = () => {
     navigate('/notifications');
   };
 
+  const handleRefresh = () => {
+    // Force reload auth token and refresh data
+    const token = localStorage.getItem('authToken');
+    setAuthToken(token);
+    console.log('🔄 Profile data refreshed');
+  };
+
+  const isError = (profileError || ledgerError) && !profileLoading && !ledgerLoading;
+
   return (
     <div className="profile-page">
       <AppbarDefault
@@ -103,26 +250,38 @@ const Profile: React.FC = () => {
       />
 
       <div className="profile-content">
-        <div className="user-card">
+        <div 
+          className={`user-card ${isError ? 'error-state' : ''}`}
+          onClick={isError ? handleRefresh : undefined}
+          style={{ cursor: isError ? 'pointer' : 'default' }}
+        >
           <div className="user-card-row">
             <div className="user-card-item">
               <div className="user-card-label">POINTS</div>
-              <div className="user-card-value">{userData.points}</div>
+              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
+                {(profileLoading || ledgerLoading) ? '...' : userData.points}
+              </div>
             </div>
             <div className="user-card-item">
               <div className="user-card-label">MEMBERSHIP</div>
-              <div className="user-card-value">{userData.membership}</div>
+              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
+                {(profileLoading || ledgerLoading) ? '...' : userData.membership}
+              </div>
             </div>
           </div>
 
           <div className="user-card-row">
             <div className="user-card-item">
               <div className="user-card-label">NAME</div>
-              <div className="user-card-value">{userData.name}</div>
+              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
+                {(profileLoading || ledgerLoading) ? 'Loading...' : userData.name}
+              </div>
             </div>
             <div className="user-card-item">
               <div className="user-card-label">EXPIRY</div>
-              <div className="user-card-value">{userData.expiry}</div>
+              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
+                {(profileLoading || ledgerLoading) ? '...' : userData.expiry}
+              </div>
             </div>
           </div>
         </div>
