@@ -2,8 +2,9 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import axios from 'axios';
-import { getLedger, getSlider, getSplash, postEvent, postArticle, getEventById } from './api';
+import { getLedger, getSlider, getSplash, postEvent, postArticle, getEventById, getCity } from './api';
 import { customerApi } from './customerApi';
+import { productAPI } from './productApi';
 import type {
   LoginRequest,
   LoginResponse,
@@ -99,6 +100,21 @@ export function useEventById(id: string): UseQueryResult<any, Error> {
     },
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+}
+
+export function useCity(): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['city'],
+    queryFn: async () => {
+      try {
+        return await getCity();
+      } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutes (city data doesn't change often)
     retry: 2,
   });
 }
@@ -383,6 +399,74 @@ export function useLogout(): UseMutationResult<LogoutResponse, Error, string> {
       localStorage.removeItem('userId');
       localStorage.removeItem('userLog');
       console.log('🗑️ Logout successful, localStorage cleared');
+    },
+  });
+}
+
+// Product API Hooks
+interface UseProductsPayload {
+  limit?: number;
+  offset?: number;
+  orderby?: string;
+  order?: 'asc' | 'desc';
+  category?: string;
+}
+
+export function useProducts(payload: UseProductsPayload = {}, authToken?: string | null): UseQueryResult<any, Error> {
+  const defaultPayload = {
+    limit: 3000,
+    offset: 0,
+    orderby: '',
+    order: 'asc' as const,
+    category: '',
+    ...payload
+  };
+
+  return useQuery({
+    queryKey: ['products', JSON.stringify(defaultPayload), authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for products');
+      }
+      try {
+        return await productAPI.getProducts(defaultPayload, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '',
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
+export function useProductCategories(): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['productCategories'],
+    queryFn: async () => {
+      try {
+        return await productAPI.getProductCategories();
+      } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutes (categories don't change often)
+    retry: 2,
+  });
+}
+
+interface UseProductSearchPayload {
+  filter: string;
+}
+
+export function useProductSearch(): UseMutationResult<any, Error, UseProductSearchPayload> {
+  return useMutation({
+    mutationFn: async (payload: UseProductSearchPayload) => {
+      try {
+        return await productAPI.searchProducts(payload);
+      } catch (error) {
+        throw error;
+      }
     },
   });
 }

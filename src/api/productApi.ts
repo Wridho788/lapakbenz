@@ -44,11 +44,10 @@ export const productAPI = {
   },
 
   // GET Product Categories
-  getProductCategories: async (authToken = '') => {
+  getProductCategories: async () => {
     try {
       const response = await apiClient.get(ENDPOINT_PRODUCT_CATEGORY, {
         headers: {
-          'X-auth-token': authToken,
           'Content-Type': 'application/json'
         }
       });
@@ -105,11 +104,10 @@ export const productAPI = {
   },
 
   // POST Product Search
-  searchProducts: async (searchPayload = {}, authToken = '') => {
+  searchProducts: async (searchPayload = {}) => {
     try {
       const response = await apiClient.post(ENDPOINT_PRODUCT_SEARCH, searchPayload, {
         headers: {
-          'X-auth-token': authToken,
           'Content-Type': 'application/json'
         }
       });

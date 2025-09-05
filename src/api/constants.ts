@@ -32,7 +32,7 @@ export const ENDPOINT_ARTICLE_CATEGORY = 'article/category';
 export const ENDPOINT_ARTICLE_GET_PERMALINK = 'article/get_by_permalink';
 export const ENDPOINT_ARTICLE_GET_BY_ID = 'article/get_by_id/';
 // city
-export const ENDPOINT_CITY_GET_CITY = 'city/get_city_rj/';
+export const ENDPOINT_CITY_GET_CITY = 'city/get_city_rj';
 export const ENDPOINT_CITY_GET_PROVINCE = 'city/get_province_rj/';
 export const ENDPOINT_CITY_GET_DISTRICT = 'city/get_district_rj/';
 export const ENDPOINT_GET_DISTRICT = 'city/get_district/';

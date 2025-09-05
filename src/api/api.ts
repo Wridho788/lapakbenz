@@ -6,7 +6,8 @@ import {
   ENDPOINT_SPLASH,
   ENDPOINT_EVENT,
   ENDPOINT_ARTICLE,
-  ENDPOINT_EVENT_BY_ID
+  ENDPOINT_EVENT_BY_ID,
+  ENDPOINT_CITY_GET_CITY
 } from "./constants";
 
 export const getLedger = async (authToken: string) => {
@@ -49,5 +50,12 @@ export const postArticle = async (data?: any) => {
   const defaultPayload = {"category":24,"limit":10,"offset":0,"orderby":"","order":"asc"};
   const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
   const response = await axios.post(`${BASE_URL}${ENDPOINT_ARTICLE}`, payload);
+  return response.data;
+};
+
+export const getCity = async () => {
+  const url = `${BASE_URL}${ENDPOINT_CITY_GET_CITY}`;
+  
+  const response = await axios.get(url);
   return response.data;
 };

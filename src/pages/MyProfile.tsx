@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useProfile, useUpdateProfile, useUploadImage } from '../api/hooks';
+import { useProfile, useUpdateProfile, useUploadImage, useCity } from '../api/hooks';
 import './AccountPages.css';
 
 const MyProfile: React.FC = () => {
@@ -32,6 +33,17 @@ const MyProfile: React.FC = () => {
   const { data: profileData, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile(authToken);
   const updateProfileMutation = useUpdateProfile();
   const uploadImageMutation = useUploadImage();
+  const { data: cityData, isLoading: cityLoading, error: cityError } = useCity();
+
+  // Debug cityData structure
+  useEffect(() => {
+    if (cityData) {
+      console.log('🏙️ City Data Structure:', cityData);
+      console.log('🏙️ City Data Content Result:', cityData.content?.result);
+      console.log('🏙️ Is Content.Result Array?', Array.isArray(cityData.content?.result));
+      console.log('🏙️ Cities Count:', cityData.content?.result?.length);
+    }
+  }, [cityData]);
 
   // Populate form data when profile data is loaded
   useEffect(() => {
@@ -59,6 +71,30 @@ const MyProfile: React.FC = () => {
     }));
   };
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      temail: value
+    }));
+
+    // Validate email format if field is not empty
+    if (value.trim() !== '' && !validateEmail(value)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Email Format',
+        text: 'Please enter a valid email address (e.g., user@example.com)',
+        confirmButtonColor: '#007bff',
+        timer: 3000,
+        timerProgressBar: true
+      });
+    }
+  };
+
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
@@ -67,7 +103,12 @@ const MyProfile: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file || !authToken) {
       if (!authToken) {
-        alert('Please login first');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Authentication Required',
+          text: 'Please login first',
+          confirmButtonColor: '#007bff'
+        });
       }
       return;
     }
@@ -75,61 +116,122 @@ const MyProfile: React.FC = () => {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      alert('Please select a valid image file (JPEG, PNG, GIF)');
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid File Type',
+        text: 'Please select a valid image file (JPEG, PNG, GIF)',
+        confirmButtonColor: '#007bff'
+      });
       return;
     }
 
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      alert('File size must be less than 5MB');
+      Swal.fire({
+        icon: 'error',
+        title: 'File Too Large',
+        text: 'File size must be less than 5MB',
+        confirmButtonColor: '#007bff'
+      });
       return;
     }
 
     try {
       console.log('🖼️ Uploading image:', file.name);
       await uploadImageMutation.mutateAsync({ file, authToken });
-      alert('Profile image updated successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Profile image updated successfully!',
+        confirmButtonColor: '#007bff'
+      });
       // Refresh profile data to get updated image URL
       refetchProfile();
     } catch (error) {
       console.error('Upload image error:', error);
-      alert('Failed to upload image');
+      Swal.fire({
+        icon: 'error',
+        title: 'Upload Failed',
+        text: 'Failed to upload image',
+        confirmButtonColor: '#007bff'
+      });
     }
   };
 
   const handleUpdateProfile = async () => {
     if (!authToken) {
-      alert('Please login first');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Authentication Required',
+        text: 'Please login first',
+        confirmButtonColor: '#007bff'
+      });
       return;
     }
 
-    try {
-      // Prepare payload with current form data (allow empty values)
-      const payload = {
-        tprofession: formData.tprofession,
-        torganization: formData.torganization,
-        tinstagram: formData.tinstagram,
-        taddress: formData.taddress,
-        tzip: formData.tzip,
-        temail: formData.temail,
-        tdob: formData.tdob,
-        ccity: formData.ccity
-      };
+      // Validasi required fields
+      if (!formData.tprofession.trim() ||
+          !formData.torganization.trim() ||
+          !formData.tinstagram.trim() ||
+          !formData.taddress.trim() ||
+          !formData.tdob.trim()) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Required Fields Missing',
+          text: 'Field Profession, Organization, Instagram, Address, dan Date of Birth wajib diisi!',
+          confirmButtonColor: '#007bff'
+        });
+        return;
+      }
 
-      console.log('📤 Update Profile Payload:', payload);
+      // Validasi email format jika email diisi
+      if (formData.temail.trim() !== '' && !validateEmail(formData.temail)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Email Format',
+          text: 'Please enter a valid email address (e.g., user@example.com)',
+          confirmButtonColor: '#007bff'
+        });
+        return;
+      }
 
-      await updateProfileMutation.mutateAsync({
-        data: payload,
-        authToken
-      });
-      alert('Profile updated successfully!');
-      // Refresh profile data to get updated information
-      refetchProfile();
-    } catch (error) {
-      console.error('Update profile error:', error);
-      alert('Failed to update profile');
-    }
+      try {
+        // Prepare payload with current form data (allow empty values)
+        const payload = {
+          tprofession: formData.tprofession,
+          torganization: formData.torganization,
+          tinstagram: formData.tinstagram,
+          taddress: formData.taddress,
+          tzip: formData.tzip,
+          temail: formData.temail,
+          tdob: formData.tdob,
+          ccity: formData.ccity
+        };
+
+        console.log('📤 Update Profile Payload:', payload);
+
+        await updateProfileMutation.mutateAsync({
+          data: payload,
+          authToken
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Profile updated successfully!',
+          confirmButtonColor: '#007bff'
+        });
+        // Refresh profile data to get updated information
+        refetchProfile();
+      } catch (error) {
+        console.error('Update profile error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Update Failed',
+          text: 'Failed to update profile',
+          confirmButtonColor: '#007bff'
+        });
+      }
   };
 
   const handleBackClick = () => {
@@ -275,7 +377,7 @@ const MyProfile: React.FC = () => {
                 <input 
                   type="email" 
                   value={formData.temail}
-                  onChange={(e) => handleInputChange('temail', e.target.value)}
+                  onChange={(e) => handleEmailChange(e.target.value)}
                   placeholder="your.email@example.com" 
                 />
               </div>
@@ -302,45 +404,52 @@ const MyProfile: React.FC = () => {
                 <select 
                   value={formData.ccity}
                   onChange={(e) => handleInputChange('ccity', e.target.value)}
+                  disabled={cityLoading}
                 >
-                  <option value="">Select City</option>
-                  <option value="Jakarta">Jakarta</option>
-                  <option value="Surabaya">Surabaya</option>
-                  <option value="Bandung">Bandung</option>
-                  <option value="Medan">Medan</option>
-                  <option value="Semarang">Semarang</option>
-                  <option value="Makassar">Makassar</option>
-                  <option value="Palembang">Palembang</option>
-                  <option value="Tangerang">Tangerang</option>
-                  <option value="Depok">Depok</option>
-                  <option value="Bekasi">Bekasi</option>
-                  <option value="Bogor">Bogor</option>
-                  <option value="Yogyakarta">Yogyakarta</option>
-                  <option value="Malang">Malang</option>
-                  <option value="Denpasar">Denpasar</option>
-                  <option value="Balikpapan">Balikpapan</option>
-                  <option value="Banjarmasin">Banjarmasin</option>
-                  <option value="Samarinda">Samarinda</option>
-                  <option value="Pontianak">Pontianak</option>
-                  <option value="Pekanbaru">Pekanbaru</option>
-                  <option value="Batam">Batam</option>
-                  <option value="Padang">Padang</option>
-                  <option value="Manado">Manado</option>
-                  <option value="Jayapura">Jayapura</option>
-                  <option value="Ambon">Ambon</option>
-                  <option value="Kupang">Kupang</option>
-                  <option value="Mataram">Mataram</option>
-                  <option value="Banda Aceh">Banda Aceh</option>
-                  <option value="Jambi">Jambi</option>
-                  <option value="Bengkulu">Bengkulu</option>
-                  <option value="Lampung">Lampung</option>
-                  <option value="Serang">Serang</option>
-                  <option value="Pangkal Pinang">Pangkal Pinang</option>
-                  <option value="Tanjung Pinang">Tanjung Pinang</option>
-                  <option value="Gorontalo">Gorontalo</option>
-                  <option value="Mamuju">Mamuju</option>
-                  <option value="Kendari">Kendari</option>
-                  <option value="Palu">Palu</option>
+                  <option value="">
+                    {cityLoading ? 'Loading cities...' : 'Select City'}
+                  </option>
+                  {cityError && (
+                    <option value="" disabled>
+                      Error loading cities
+                    </option>
+                  )}
+                  {cityData && (() => {
+                    // Handle different possible data structures
+                    let cities = [];
+                    
+                    if (Array.isArray(cityData)) {
+                      cities = cityData;
+                    } else if (cityData.content?.result && Array.isArray(cityData.content.result)) {
+                      cities = cityData.content.result;
+                    } else if (Array.isArray(cityData.content)) {
+                      cities = cityData.content;
+                    } else if (cityData.data && Array.isArray(cityData.data)) {
+                      cities = cityData.data;
+                    } else if (cityData.result && Array.isArray(cityData.result)) {
+                      cities = cityData.result;
+                    }
+
+                    if (cities.length === 0) {
+                      return (
+                        <option value="" disabled>
+                          No cities available
+                        </option>
+                      );
+                    }
+
+                    return cities.map((city: any, index: number) => {
+                      // Handle different city object structures
+                      const cityId = city.id || city.city_id || city.value || index;
+                      const cityName = city.name || city.city_name || city.label || city.text || `City ${index + 1}`;
+                      
+                      return (
+                        <option key={cityId} value={cityId}>
+                          {cityName}
+                        </option>
+                      );
+                    });
+                  })()}
                 </select>
               </div>
               <div className="form-group">

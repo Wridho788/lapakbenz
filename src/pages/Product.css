@@ -237,6 +237,55 @@
   line-height: 1.5;
 }
 
+/* Loading and Error States */
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.loading-state p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error-state p {
+  margin: 0 0 16px 0;
+  color: #e74c3c;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.error-state button {
+  background: #161129;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.error-state button:hover {
+  background: #2c1e3f;
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
   .product-grid {
