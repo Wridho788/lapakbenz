@@ -300,9 +300,9 @@ export function useUnreadNotifications(authToken?: string | null): UseQueryResul
   });
 }
 
-export function useNotificationDetail(notificationId: string, authToken?: string | null): UseQueryResult<NotificationDetailResponse, Error> {
+export function useNotificationDetail(notificationId: string, authToken?: string | null, payload?: NotificationPayload): UseQueryResult<NotificationDetailResponse, Error> {
   return useQuery({
-    queryKey: ['notificationDetail', notificationId, authToken],
+    queryKey: ['notificationDetail', notificationId, authToken, JSON.stringify(payload || {})],
     queryFn: async () => {
       if (!authToken || authToken.trim() === '') {
         throw new Error('Valid auth token is required for notification detail');
@@ -311,13 +311,13 @@ export function useNotificationDetail(notificationId: string, authToken?: string
         throw new Error('Notification ID is required');
       }
       try {
-        return await customerApi.getNotificationDetail(notificationId, authToken);
+        return await customerApi.getNotificationDetail(notificationId, authToken, payload);
       } catch (error) {
         throw error;
       }
     },
     enabled: !!authToken && authToken.trim() !== '' && !!notificationId && notificationId.trim() !== '',
-    staleTime: 1000 * 60 * 10, // 10 minutes (notification details don't change often)
+    staleTime: 1000 * 60 * 2, // shorter cache for detail to allow refresh
     retry: 2,
   });
 }
@@ -338,6 +338,29 @@ export function useDecodeToken(authToken?: string | null): UseQueryResult<Decode
     enabled: !!authToken && authToken.trim() !== '',
     staleTime: 1000 * 60 * 15, // 15 minutes (token info doesn't change often)
     retry: 2,
+  });
+}
+
+interface UseUploadImagePayload {
+  file: File;
+  authToken: string;
+}
+
+export function useUploadImage(): UseMutationResult<any, Error, UseUploadImagePayload> {
+  return useMutation({
+    mutationFn: async ({ file, authToken }: UseUploadImagePayload) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for image upload');
+      }
+      if (!file) {
+        throw new Error('File is required for upload');
+      }
+      try {
+        return await customerApi.uploadImage(file, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
   });
 }
 

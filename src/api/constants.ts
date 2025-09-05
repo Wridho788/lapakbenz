@@ -16,7 +16,7 @@ export const ENDPOINT_NOTIF_DETAIL = 'customer/notif_detail/';
 export const ENDPOINT_PAYMENT_CONFIRMATION = 'customer/payment_confirmation/';
 export const ENDPOINT_TICKET_LIST = 'customer/ticket_list/';
 export const ENDPOINT_GET_TICKET = 'customer/get_ticket/';
-export const ENDPOINT_UPLOAD_IMAGE = 'customer/upload_image/';
+export const ENDPOINT_UPLOAD_IMAGE = 'customer/upload_image';
 export const ENDPOINT_DECODE_TOKEN = 'customer/decode_token';
 // product
 export const ENDPOINT_PRODUCT = 'product';

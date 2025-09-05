@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import Swal from 'sweetalert2';
@@ -11,7 +11,48 @@ import './Notifications.css';
 
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
-  const { notifications, unreadCount, markAsRead, isLoading, error } = useNotificationContext();
+  const { notifications, unreadCount, markAsRead, isLoading, error, refetch } = useNotificationContext();
+  const [refreshing, setRefreshing] = useState(false);
+  const pullRef = useRef<HTMLDivElement | null>(null);
+  const startY = useRef<number | null>(null);
+  const pulling = useRef(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const PULL_THRESHOLD = 60;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      startY.current = e.touches[0].clientY;
+      pulling.current = true;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!pulling.current || startY.current === null) return;
+    const diff = e.touches[0].clientY - startY.current;
+    if (diff > 0) {
+      e.preventDefault();
+      setPullDistance(Math.min(diff, 120));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > PULL_THRESHOLD) {
+      triggerRefresh();
+    }
+    pulling.current = false;
+    startY.current = null;
+    setTimeout(() => setPullDistance(0), 150);
+  };
+
+  const triggerRefresh = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setTimeout(() => setRefreshing(false), 300);
+    }
+  }, [refetch, refreshing]);
   const { cartCount } = useCart();
 
   const handleCartClick = () => {
@@ -30,28 +71,65 @@ const Notifications: React.FC = () => {
   };
 
   const handleNotificationClick = async (notification: NotificationItem) => {
-    // Mark as read
-    if (!notification.isRead) {
-      markAsRead(notification.id);
-    }
-
-    // Show SweetAlert with notification message
-    await Swal.fire({
-      title: notification.title,
-      text: notification.message,
-      icon: 'info',
-      confirmButtonText: 'Close',
-      confirmButtonColor: '#161129',
-      customClass: {
-        popup: 'notification-alert',
-        title: 'notification-alert-title',
-        htmlContainer: 'notification-alert-content'
+    // Don't mark as read immediately, wait for user to close alert
+    // Fetch detail via API on demand using raw fetch to utilize new body (keep lightweight here)
+    try {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        const detailPayload = { type: '', campaign: '', read: '0', limit: '2', offset: '0' };
+        const res = await fetch(`${import.meta.env.VITE_API_BASE || 'https://mbapi.dswip.com/'}${'customer/notif_detail/'}${notification.id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-auth-token': token },
+          body: JSON.stringify(detailPayload)
+        });
+        const json = await res.json();
+        const detail = json?.content || {};
+        const result = await Swal.fire({
+          title: detail.subject || notification.title,
+            text: detail.content || notification.message,
+          icon: 'info',
+          confirmButtonText: 'Close',
+          confirmButtonColor: '#161129',
+          customClass: {
+            popup: 'notification-alert',
+            title: 'notification-alert-title',
+            htmlContainer: 'notification-alert-content'
+          }
+        });
+        
+        // Mark as read when user closes the alert
+        if (result.isConfirmed && !notification.isRead) {
+          markAsRead(notification.id);
+        }
       }
-    });
+    } catch (err) {
+      console.error('Detail fetch error', err);
+      const result = await Swal.fire({
+        title: notification.title,
+        text: notification.message,
+        icon: 'info',
+        confirmButtonText: 'Close',
+        confirmButtonColor: '#161129'
+      });
+      
+      // Mark as read when user closes the alert (fallback case)
+      if (result.isConfirmed && !notification.isRead) {
+        markAsRead(notification.id);
+      }
+    }
   };
 
   return (
-    <div className="notifications-page">
+    <div 
+      className="notifications-page" 
+      ref={pullRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        overscrollBehavior: 'contain'
+      }}
+    >
       <AppbarDefault 
         title={`Notifications (${unreadCount})`} 
         onBack={() => navigate(-1)} 
@@ -59,9 +137,21 @@ const Notifications: React.FC = () => {
         cartCount={cartCount}
       />
 
-      {isLoading && (
+      <div style={{
+        height: pullDistance > 0 ? pullDistance : 0,
+        transition: pulling.current ? 'none' : 'height 0.2s ease',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        fontSize: '12px',
+        color: '#555'
+      }}>
+        {(pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') + (refreshing ? ' • refreshing...' : '')}
+      </div>
+
+    {(isLoading || refreshing) && (
         <div className="loading-state">
-          <p>Loading notifications...</p>
+      <p>{refreshing ? 'Refreshing...' : 'Loading notifications...'}</p>
         </div>
       )}
 
@@ -105,8 +195,6 @@ const Notifications: React.FC = () => {
           <p>You don't have any notifications yet.</p>
         </div>
       )}
-      
-      {/* <BottomNav /> */}
     </div>
   );
 };

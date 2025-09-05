@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { MdCalendarToday, MdLocationOn, MdPeople } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
@@ -72,6 +71,12 @@ const Event: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const pullRef = useRef<HTMLDivElement | null>(null);
+  const startY = useRef<number | null>(null);
+  const pulling = useRef(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const PULL_THRESHOLD = 60;
   const navigate = useNavigate();
   const { cartCount } = useCart();
   
@@ -79,6 +84,50 @@ const Event: React.FC = () => {
   const eventMutation = usePostEvent();
   const articleMutation = usePostArticle();
   const eventByIdQuery = useEventById(selectedEventId ?? '');
+
+  // Pull to refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      startY.current = e.touches[0].clientY;
+      pulling.current = true;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!pulling.current || startY.current === null) return;
+    const diff = e.touches[0].clientY - startY.current;
+    if (diff > 0) {
+      e.preventDefault();
+      setPullDistance(Math.min(diff, 120));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > PULL_THRESHOLD) {
+      triggerRefresh();
+    }
+    pulling.current = false;
+    startY.current = null;
+    setTimeout(() => setPullDistance(0), 150);
+  };
+
+  const triggerRefresh = useCallback(async () => {
+    if (refreshing) return;
+    setRefreshing(true);
+    try {
+      // Refresh current tab data
+      if (activeTab === 0 || activeTab === 1) {
+        const payload = activeTab === 0 
+          ? { status: "0", limit: 100, offset: 0, chapter: "" }
+          : { status: "1", limit: 100, offset: 0, chapter: "" };
+        eventMutation.mutate(payload);
+      } else if (activeTab === 2) {
+        articleMutation.mutate({});
+      }
+    } finally {
+      setTimeout(() => setRefreshing(false), 300);
+    }
+  }, [activeTab, eventMutation, articleMutation, refreshing]);
 
   // Fetch data on mount and tab change
   useEffect(() => {
@@ -158,15 +207,36 @@ const Event: React.FC = () => {
 
   const isLoading = () => {
     if (activeTab === 2) {
-      return articleMutation.isPending;
+      return articleMutation.isPending || refreshing;
     } else {
-      return eventMutation.isPending;
+      return eventMutation.isPending || refreshing;
     }
   };
 
   return (
-    <div className="event-page">
+    <div 
+      className="event-page"
+      ref={pullRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        overscrollBehavior: 'contain'
+      }}
+    >
       <AppbarDefault title="Events" onBack={handleBackClick} onCartClick={handleCartClick} cartCount={cartCount} />
+
+      <div style={{
+        height: pullDistance > 0 ? pullDistance : 0,
+        transition: pulling.current ? 'none' : 'height 0.2s ease',
+        display: 'flex',
+        alignItems: 'flex-end',
+        justifyContent: 'center',
+        fontSize: '12px',
+        color: '#555'
+      }}>
+        {(pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') + (refreshing ? ' • refreshing...' : '')}
+      </div>
 
       <div className="event-tabs">
         {tabs.map((tab, idx) => (
@@ -184,7 +254,7 @@ const Event: React.FC = () => {
         <div className="event-list">
           {isLoading() ? (
             <div className="loading-state">
-              <p>Loading...</p>
+              <p>{refreshing ? 'Refreshing...' : 'Loading...'}</p>
             </div>
           ) : (
             getFilteredData().map((item: any) =>

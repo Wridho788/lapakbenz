@@ -12,7 +12,8 @@ import {
   ENDPOINT_GET_BY_ID,
   ENDPOINT_NOTIF,
   ENDPOINT_NOTIF_DETAIL,
-  ENDPOINT_DECODE_TOKEN
+  ENDPOINT_DECODE_TOKEN,
+  ENDPOINT_UPLOAD_IMAGE
 } from './constants';
 import type {
   LoginRequest,
@@ -320,23 +321,37 @@ export const customerApi = {
   /**
    * Get notification detail
    */
-  getNotificationDetail: async (notificationId: string, authToken: string): Promise<NotificationDetailResponse> => {
+  getNotificationDetail: async (notificationId: string, authToken: string, payload?: NotificationPayload): Promise<NotificationDetailResponse> => {
     try {
+      // Default body payload as requested
+      const defaultPayload: NotificationPayload = {
+        type: '',
+        campaign: '',
+        read: '0',
+        limit: '2',
+        offset: '0'
+      };
+      const finalPayload = { ...defaultPayload, ...payload };
+
       console.log('📤 Get Notification Detail API Request:', {
         url: `${BASE_URL}${ENDPOINT_NOTIF_DETAIL}${notificationId}`,
         notificationId,
+        body: finalPayload,
         headers: { 'X-auth-token': authToken }
       });
-      
-      const response = await apiClient.get(
+
+      // Switch to POST to allow body payload (requirement)
+      const response = await apiClient.post(
         `${ENDPOINT_NOTIF_DETAIL}${notificationId}`,
+        JSON.stringify(finalPayload),
         {
           headers: {
             'X-auth-token': authToken,
+            'Content-Type': 'application/json'
           },
         }
       );
-      
+
       console.log('📥 Get Notification Detail API Response:', response.data);
       return response.data;
     } catch (error) {
@@ -372,6 +387,44 @@ export const customerApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Decode Token API Error:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('📥 Error Response:', error.response?.data);
+        console.error('📊 Error Status:', error.response?.status);
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Upload image
+   */
+  uploadImage: async (file: File, authToken: string): Promise<any> => {
+    try {
+      const formData = new FormData();
+      formData.append('userfile', file);
+
+      console.log('📤 Upload Image API Request:', {
+        url: `${BASE_URL}${ENDPOINT_UPLOAD_IMAGE}`,
+        fileName: file.name,
+        fileSize: file.size,
+        headers: { 'X-auth-token': authToken }
+      });
+      
+      const response = await apiClient.post(
+        ENDPOINT_UPLOAD_IMAGE,
+        formData,
+        {
+          headers: {
+            'X-auth-token': authToken,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      
+      console.log('📥 Upload Image API Response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Upload Image API Error:', error);
       if (axios.isAxiosError(error)) {
         console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
@@ -426,6 +479,7 @@ export const {
   getNotifications,
   getNotificationDetail,
   decodeToken,
+  uploadImage,
   logout,
 } = customerApi;
 
