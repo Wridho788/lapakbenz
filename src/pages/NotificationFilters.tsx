@@ -150,8 +150,7 @@ const NotificationFilters: React.FC<NotificationFiltersProps> = ({ authToken }) 
       {data && (
         <div style={{ marginTop: '1rem' }}>
           <strong>API Response:</strong>
-          <p>Total notifications: {data.content?.result?.length || 0}</p>
-          {data.content?.total && <p>Total available: {data.content.total}</p>}
+          <p>Total notifications: {data.content?.length || 0}</p>
         </div>
       )}
     </div>

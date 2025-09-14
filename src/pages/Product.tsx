@@ -128,7 +128,8 @@ const Product: React.FC = () => {
   }, [searchQuery]);
 
   const handleProductClick = (productId: string) => {
-    console.log('Product clicked:', productId);
+    console.log('🛍️ Product clicked with ID:', productId);
+    console.log('🔄 Navigating to product detail page...');
     navigate(`/product/${productId}`);
   };
 

@@ -1,0 +1,109 @@
+import axios from 'axios';
+import { BASE_URL, ENDPOINT_CART, ENDPOINT_CART_ADD, ENDPOINT_CART_CLEAN } from './constants';
+
+// TypeScript interfaces for Cart API
+export interface CartItem {
+  id: string;
+  sku: string;
+  name: string;
+  image: string;
+  qty: number;
+  price: number;
+  amount: number;
+  created: string;
+  updated: string | null;
+}
+
+export interface CartResponse {
+  content: {
+    balance: number;
+    record: number;
+    result: CartItem[];
+  };
+}
+
+export interface AddToCartRequest {
+  sku: string;
+  qty: string;
+}
+
+export interface AddToCartResponse {
+  content: null;
+}
+
+export interface RemoveFromCartResponse {
+  content: null;
+}
+
+// Cart API functions
+export const cartApi = {
+  // Get Cart - GET method
+  async getCart(authToken: string): Promise<CartResponse> {
+    try {
+      const response = await axios.get(`${BASE_URL}${ENDPOINT_CART}`, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
+      });
+
+      console.log('🛒 Cart API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Cart API error:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message || 'Failed to get cart');
+      }
+      throw error;
+    }
+  },
+
+  // Add to Cart - POST method with FormData
+  async addToCart(payload: AddToCartRequest, authToken: string): Promise<AddToCartResponse> {
+    try {
+      // Create FormData
+      const formData = new FormData();
+      formData.append('sku', payload.sku);
+      formData.append('qty', payload.qty);
+
+      const response = await axios.post(`${BASE_URL}${ENDPOINT_CART_ADD}`, formData, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        timeout: 10000
+      });
+
+      console.log('✅ Add to cart API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Add to cart API error:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message || 'Failed to add item to cart');
+      }
+      throw error;
+    }
+  },
+
+  // Remove from Cart - GET method (clean cart)
+  async removeFromCart(authToken: string): Promise<RemoveFromCartResponse> {
+    try {
+      const response = await axios.get(`${BASE_URL}${ENDPOINT_CART_CLEAN}`, {
+        headers: {
+          'X-auth-token': authToken
+        },
+        timeout: 10000
+      });
+
+      console.log('🗑️ Remove from cart API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Remove from cart API error:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message || 'Failed to remove items from cart');
+      }
+      throw error;
+    }
+  }
+};

@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import Notifications from './pages/Notifications';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import RequestOTP from './pages/RequestOTP';
 import ForgotPassword from './pages/ForgotPassword';
 import MyProfile from './pages/MyProfile';
 import PaymentConfirmation from './pages/PaymentConfirmation';
@@ -40,6 +41,7 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/request-otp" element={<RequestOTP />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/profile/my-profile" element={<MyProfile />} />
             <Route path="/profile/payment-confirmation" element={<PaymentConfirmation />} />

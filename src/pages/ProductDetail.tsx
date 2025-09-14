@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MdAdd, MdRemove, MdShoppingCart, MdStar } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
+import { useProductDetail, useAddToCart } from '../api/hooks';
+import Swal from 'sweetalert2';
 import './ProductDetail.css';
 
 interface ProductDetailType {
@@ -25,6 +27,54 @@ const ProductDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { addToCart, cartCount } = useCart();
+  
+  // Auth token state
+  const [authToken, setAuthToken] = useState<string | null>(null);
+
+  // Load auth token from localStorage
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setAuthToken(token);
+    console.log('🔑 Auth token loaded for product detail:', token ? `${token.substring(0, 20)}...` : 'No token');
+  }, []);
+
+  // Log when productId changes
+  useEffect(() => {
+    console.log('📦 ProductDetail page loaded with productId:', productId);
+  }, [productId]);
+
+  // API hook for product detail
+  const { data: productDetailData, isLoading: productLoading, error: productError } = useProductDetail(
+    productId || '',
+    authToken
+  );
+
+  // Add to cart mutation hook
+  const addToCartMutation = useAddToCart();
+
+  // Log the response to console
+  useEffect(() => {
+    if (productDetailData) {
+      console.log('✅ Product Detail API Response:', productDetailData);
+      if (productDetailData.content) {
+        console.log('📋 Product Detail Raw Data:', productDetailData.content);
+      }
+    }
+  }, [productDetailData]);
+
+  // Log loading state
+  useEffect(() => {
+    if (productLoading) {
+      console.log('⏳ Loading product detail...');
+    }
+  }, [productLoading]);
+
+  // Log errors
+  useEffect(() => {
+    if (productError) {
+      console.error('❌ Product Detail Error:', productError);
+    }
+  }, [productError]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -40,25 +90,77 @@ const ProductDetail: React.FC = () => {
     navigate('/notifications');
   };
 
-  // Dummy product data - in real app, this would come from API
-  const productData: ProductDetailType = {
-    id: productId || '1',
-    title: 'Merciku T-Shirt Premium',
-    price: 149000,
-    image: '/bea2x.jpg',
-    category: 'Apparel',
-    rating: 4.8,
-    description: 'Premium quality t-shirt made from 100% cotton with comfortable fit. Perfect for daily wear or casual events. Features the iconic Merciku logo with modern design.',
-    specifications: [
-      'Material: 100% Cotton',
-      'Available sizes: S, M, L, XL, XXL',
-      'Color: Black, White, Navy',
-      'Weight: 180 GSM',
-      'Care: Machine wash cold'
-    ],
-    stock: 25,
-    images: ['/bea2x.jpg', '/bea2x.jpg', '/bea2x.jpg']
+  // Get product data from API or use dummy data as fallback
+  const getProductData = (): ProductDetailType => {
+    // Default dummy data
+    const dummyData: ProductDetailType = {
+      id: productId || '1',
+      title: 'Merciku T-Shirt Premium',
+      price: 149000,
+      image: '/bea2x.jpg',
+      category: 'Apparel',
+      rating: 4.8,
+      description: 'Premium quality t-shirt made from 100% cotton with comfortable fit. Perfect for daily wear or casual events. Features the iconic Merciku logo with modern design.',
+      specifications: [
+        'Material: 100% Cotton',
+        'Available sizes: S, M, L, XL, XXL',
+        'Color: Black, White, Navy',
+        'Weight: 180 GSM',
+        'Care: Machine wash cold'
+      ],
+      stock: 25,
+      images: ['/bea2x.jpg', '/bea2x.jpg', '/bea2x.jpg']
+    };
+
+    // If we have API data, use it
+    if (productDetailData?.content) {
+      const apiProduct = productDetailData.content;
+      
+      // Create images array from available URLs
+      const productImages = [];
+      if (apiProduct.image) productImages.push(apiProduct.image);
+      if (apiProduct.url1) productImages.push(apiProduct.url1);
+      if (apiProduct.url2) productImages.push(apiProduct.url2);
+      if (apiProduct.url3) productImages.push(apiProduct.url3);
+      if (apiProduct.url4) productImages.push(apiProduct.url4);
+      if (apiProduct.url5) productImages.push(apiProduct.url5);
+      if (apiProduct.url6) productImages.push(apiProduct.url6);
+      
+      // Remove duplicates
+      const uniqueImages = [...new Set(productImages)];
+      
+      // Create specifications array from available data
+      const specifications = [];
+      if (apiProduct.sku) specifications.push(`SKU: ${apiProduct.sku}`);
+      if (apiProduct.weight) specifications.push(`Weight: ${apiProduct.weight}g`);
+      if (apiProduct.period) specifications.push(`Available: ${apiProduct.period}`);
+      if (apiProduct.restricted) specifications.push(`Restricted: ${apiProduct.restricted === 'Y' ? 'Yes' : 'No'}`);
+      if (apiProduct.status) specifications.push(`Status: ${apiProduct.status === 1 ? 'Active' : 'Inactive'}`);
+      
+      return {
+        id: apiProduct.id?.toString() || productId || '1',
+        title: apiProduct.name || dummyData.title,
+        price: apiProduct.price || dummyData.price,
+        image: apiProduct.image || dummyData.image,
+        category: 'Product', // API doesn't provide category, use default
+        rating: parseFloat(apiProduct.rating) || dummyData.rating,
+        description: apiProduct.description || apiProduct.shortdesc || dummyData.description,
+        specifications: specifications.length > 0 ? specifications : dummyData.specifications,
+        stock: 25, // API doesn't provide stock info, use default
+        images: uniqueImages.length > 0 ? uniqueImages : dummyData.images
+      };
+    }
+
+    // Return dummy data if no API data
+    return dummyData;
   };
+
+  const productData = getProductData();
+
+  // Log processed product data
+  useEffect(() => {
+    console.log('🔄 Processed Product Data for UI:', productData);
+  }, [productData]);
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
@@ -67,22 +169,70 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  const handleAddToCart = () => {
-    console.log(`Added ${quantity} items to cart:`, productData.title);
-    
-    // Add to cart using context
-    addToCart({
-      id: productData.id,
-      title: productData.title,
-      price: productData.price,
-      image: productData.image
-    }, quantity);
-    
-    // Show success message
-    alert(`Added ${quantity} ${productData.title} to cart!`);
-    
-    // Reset quantity to 1 after adding to cart
-    setQuantity(1);
+  const handleAddToCart = async () => {
+    if (!authToken) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Login Required',
+        text: 'Please login to add items to cart',
+        confirmButtonColor: '#f39c12'
+      });
+      navigate('/login');
+      return;
+    }
+
+    try {
+      console.log(`Adding ${quantity} items to cart:`, productData.title);
+      
+      // Get the SKU from the API data or use the product ID as fallback
+      const productSku = productDetailData?.content?.sku || productData.id;
+      
+      // Add to cart using API
+      await addToCartMutation.mutateAsync({
+        data: {
+          sku: productSku,
+          qty: quantity.toString()
+        },
+        authToken
+      });
+
+      // Show success message with SweetAlert
+      await Swal.fire({
+        icon: 'success',
+        title: 'Added to Cart!',
+        text: `${quantity} ${productData.title} added to cart successfully`,
+        confirmButtonColor: '#28a745',
+        timer: 2000,
+        timerProgressBar: true
+      });
+
+      // Also add to cart context for immediate UI update
+      addToCart({
+        id: productData.id,
+        title: productData.title,
+        price: productData.price,
+        image: productData.image
+      }, quantity);
+      
+      // Reset quantity to 1 after adding to cart
+      setQuantity(1);
+      
+    } catch (error: any) {
+      console.error('Failed to add to cart:', error);
+      
+      let errorMessage = 'Failed to add item to cart. Please try again.';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      await Swal.fire({
+        icon: 'error',
+        title: 'Add to Cart Failed',
+        text: errorMessage,
+        confirmButtonColor: '#d33'
+      });
+    }
   };
 
   const renderStars = (rating: number) => {
@@ -115,7 +265,58 @@ const ProductDetail: React.FC = () => {
         cartCount={cartCount}
       />
 
-      <div className="product-detail-content">
+      {/* Loading State */}
+      {productLoading && (
+        <div className="product-detail-content">
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '200px',
+            background: 'white',
+            borderRadius: '12px',
+            margin: '20px'
+          }}>
+            <p style={{ margin: 0, color: '#666', fontSize: '16px' }}>Loading product details...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {productError && !productLoading && (
+        <div className="product-detail-content">
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '200px',
+            background: 'white',
+            borderRadius: '12px',
+            margin: '20px',
+            textAlign: 'center'
+          }}>
+            <p style={{ margin: '0 0 16px 0', color: '#e74c3c', fontSize: '16px' }}>Failed to load product details</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{
+                background: '#161129',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Product Content - show if not loading and no error, or if we have dummy data */}
+      {(!productLoading && !productError || !authToken) && (
+        <div className="product-detail-content">
         {/* Product Images */}
         <div className="product-images-section">
           <div className="main-image">
@@ -129,7 +330,7 @@ const ProductDetail: React.FC = () => {
             />
           </div>
           <div className="image-thumbnails">
-            {productData.images.map((image, index) => (
+            {productData.images.map((image: string, index: number) => (
               <div
                 key={index}
                 className={`thumbnail ${selectedImageIndex === index ? 'active' : ''}`}
@@ -138,7 +339,7 @@ const ProductDetail: React.FC = () => {
                 <img
                   src={image}
                   alt={`${productData.title} ${index + 1}`}
-                  onError={(e) => {
+                  onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                     const target = e.target as HTMLImageElement;
                     target.src = "/bea2x.jpg";
                   }}
@@ -174,7 +375,7 @@ const ProductDetail: React.FC = () => {
           <div className="product-specifications">
             <h3>Specifications</h3>
             <ul>
-              {productData.specifications.map((spec, index) => (
+              {productData.specifications.map((spec: string, index: number) => (
                 <li key={index}>{spec}</li>
               ))}
             </ul>
@@ -239,14 +440,15 @@ const ProductDetail: React.FC = () => {
             <button
               className="add-to-cart-btn"
               onClick={handleAddToCart}
-              disabled={productData.stock === 0}
+              disabled={productData.stock === 0 || addToCartMutation.isPending}
             >
               <MdShoppingCart className="cart-icon" />
-              <span>Add to Cart</span>
+              <span>{addToCartMutation.isPending ? 'Adding...' : 'Add to Cart'}</span>
             </button>
           </div>
+          </div>
         </div>
-      </div>
+        )}
 
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>

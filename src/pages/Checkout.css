@@ -363,16 +363,9 @@
   border: none;
 }
 
-.continue-shopping-btn {
-  background: linear-gradient(135deg, #161129, #2c5aa0);
-  color: white;
-  box-shadow: 0 4px 16px rgba(22, 17, 41, 0.3);
-}
 
-.continue-shopping-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(22, 17, 41, 0.4);
-}
+
+
 
 .view-orders-btn {
   background: white;

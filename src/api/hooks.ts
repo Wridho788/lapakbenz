@@ -5,6 +5,8 @@ import axios from 'axios';
 import { getLedger, getSlider, getSplash, postEvent, postArticle, getEventById, getCity } from './api';
 import { customerApi } from './customerApi';
 import { productAPI } from './productApi';
+import { chapterApi } from './chapterApi';
+import { cartApi } from './cartApi';
 import type {
   LoginRequest,
   LoginResponse,
@@ -25,6 +27,12 @@ import type {
   DecodeTokenResponse,
   LogoutResponse,
 } from './types';
+import type {
+  CartResponse,
+  AddToCartRequest,
+  AddToCartResponse,
+  RemoveFromCartResponse,
+} from './cartApi';
 
 
 export function useLedger(authToken?: string | null): UseQueryResult<any, Error> {
@@ -464,6 +472,161 @@ export function useProductSearch(): UseMutationResult<any, Error, UseProductSear
     mutationFn: async (payload: UseProductSearchPayload) => {
       try {
         return await productAPI.searchProducts(payload);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+export function useProductDetail(productId: string, authToken?: string | null): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['productDetail', productId, authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for product detail');
+      }
+      if (!productId || productId.trim() === '') {
+        throw new Error('Product ID is required');
+      }
+      try {
+        return await productAPI.getProductDetail(productId, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '' && !!productId && productId.trim() !== '',
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
+// Chapter API Hooks
+interface UseChaptersPayload {
+  limit?: number;
+  offset?: number;
+}
+
+export function useChapters(payload: UseChaptersPayload = {}): UseQueryResult<any, Error> {
+  const defaultPayload = {
+    limit: 100,
+    offset: 0,
+    ...payload
+  };
+
+  return useQuery({
+    queryKey: ['chapters', JSON.stringify(defaultPayload)],
+    queryFn: async () => {
+     
+      try {
+        return await chapterApi.getChapters(defaultPayload);
+      } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
+export function useChapterById(chapterId: string, authToken?: string | null): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['chapterById', chapterId, authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for chapter detail');
+      }
+      if (!chapterId || chapterId.trim() === '') {
+        throw new Error('Chapter ID is required');
+      }
+      try {
+        return await chapterApi.getChapterById(chapterId, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '' && !!chapterId && chapterId.trim() !== '',
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
+export function useChaptersByCustomer(customerId: string, authToken?: string | null): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['chaptersByCustomer', customerId, authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for customer chapters');
+      }
+      if (!customerId || customerId.trim() === '') {
+        throw new Error('Customer ID is required');
+      }
+      try {
+        return await chapterApi.getChaptersByCustomer(customerId, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '' && !!customerId && customerId.trim() !== '',
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
+// Cart API Hooks
+export function useCart(authToken?: string | null): UseQueryResult<CartResponse, Error> {
+  return useQuery({
+    queryKey: ['cart', authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for cart');
+      }
+      try {
+        return await cartApi.getCart(authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '',
+    staleTime: 1000 * 60 * 2, // 2 minutes (cart data should be fresh)
+    retry: 2,
+  });
+}
+
+interface UseAddToCartPayload {
+  data: AddToCartRequest;
+  authToken: string;
+}
+
+export function useAddToCart(): UseMutationResult<AddToCartResponse, Error, UseAddToCartPayload> {
+  return useMutation({
+    mutationFn: async ({ data, authToken }: UseAddToCartPayload) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for adding to cart');
+      }
+      if (!data.sku || data.sku.trim() === '') {
+        throw new Error('SKU is required');
+      }
+      if (!data.qty || data.qty.trim() === '') {
+        throw new Error('Quantity is required');
+      }
+      try {
+        return await cartApi.addToCart(data, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+export function useRemoveFromCart(): UseMutationResult<RemoveFromCartResponse, Error, string> {
+  return useMutation({
+    mutationFn: async (authToken: string) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for removing from cart');
+      }
+      try {
+        return await cartApi.removeFromCart(authToken);
       } catch (error) {
         throw error;
       }
