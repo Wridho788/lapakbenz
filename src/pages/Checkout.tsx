@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MdCheckCircle, MdLocationOn, MdPayment, MdShoppingCart } from 'react-icons/md';
+import { MdCheckCircle, MdLocationOn, MdPayment } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';

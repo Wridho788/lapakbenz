@@ -35,7 +35,6 @@ import type {
 } from './cartApi';
 import { orderApi } from './ordersApi';
 import type {
-  OrderListRequest,
   OrderListResponse,
   OrderAddResponse,
   OrderAddItemRequest,
