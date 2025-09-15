@@ -55,20 +55,20 @@ export const ENDPOINT_RESERVATION_ROOM_CATEGORY = 'reservation/room_category';
 export const ENDPOINT_RESERVATION_ROOM_TABLE = 'reservation/room_table';
 export const ENDPOINT_RESERVATION_ROOM_BY_ID = 'reservation/room_by_id/';
 // order
-export const ENDPOINT_SALES = 'sales';
-export const ENDPOINT_SALES_CLEANING = 'sales/cleaning';
-export const ENDPOINT_SALES_ADD = 'sales/add';
-export const ENDPOINT_SALES_REPORT = 'sales/report';
-export const ENDPOINT_SALES_UPDATE = 'sales/update';
-export const ENDPOINT_SALES_ADD_ITEM = 'sales/add_item';
-export const ENDPOINT_SALES_CHECKOUT = 'sales/checkout/';
-export const ENDPOINT_SALES_CONFIRMATION = 'sales/confirmation/1';
-export const ENDPOINT_SALES_CALLBACK = 'sales/callback/';
-export const ENDPOINT_SALES_DELETE = 'sales/delete/';
-export const ENDPOINT_SALES_DELETE_ITEM = 'sales/delete_item/';
-export const ENDPOINT_SALES_GET = 'sales/get/';
-export const ENDPOINT_SALES_LIST_BONUS_ORDER = 'sales/list_bonus_order';
-export const ENDPOINT_SALES_SET_BONUS_ORDER = 'sales/set_bonus_order';
+export const ENDPOINT_ORDER = 'orders';
+export const ENDPOINT_ORDER_ADD = 'orders/add';
+export const ENDPOINT_ORDER_ADD_ITEM = 'orders/add_item/';
+export const ENDPOINT_ORDER_CHECKOUT = 'orders/checkout/';
+export const ENDPOINT_ORDER_CLEANING = 'orders/cleaning';
+export const ENDPOINT_ORDER_REPORT = 'orders/report';
+export const ENDPOINT_ORDER_UPDATE = 'orders/update';
+export const ENDPOINT_ORDER_CONFIRMATION = 'orders/confirmation/1';
+export const ENDPOINT_ORDER_CALLBACK = 'orders/callback/';
+export const ENDPOINT_ORDER_DELETE = 'orders/delete/';
+export const ENDPOINT_ORDER_DELETE_ITEM = 'orders/delete_item/';
+export const ENDPOINT_ORDER_GET = 'orders/get/';
+export const ENDPOINT_ORDER_LIST_BONUS_ORDER = 'orders/list_bonus_order';
+export const ENDPOINT_ORDER_SET_BONUS_ORDER = 'orders/set_bonus_order';
 
 // pos
 export const ENDPOINT_POS = 'pos';

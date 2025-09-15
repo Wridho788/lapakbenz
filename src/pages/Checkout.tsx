@@ -125,9 +125,9 @@ const Checkout: React.FC = () => {
       <div className="checkout-content">
         {/* Order Summary */}
         <div className="checkout-section">
-          <h3><MdShoppingCart /> Order Items ({checkoutData.items.length})</h3>
+          {/* <h3><MdShoppingCart /> Order Items ({checkoutData.items.length})</h3> */}
           <div className="checkout-items">
-            {checkoutData.items.map((item) => (
+            {/* {checkoutData.items.map((item) => (
               <div key={item.id} className="checkout-item">
                 <div className="item-image">
                   <img src={item.image} alt={item.title} />
@@ -140,7 +140,7 @@ const Checkout: React.FC = () => {
                   <span>Rp {(item.price * item.quantity).toLocaleString('id-ID')}</span>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
 
@@ -171,25 +171,10 @@ const Checkout: React.FC = () => {
           <h3>Payment Summary</h3>
           <div className="payment-summary">
             <div className="summary-row">
-              <span>Subtotal ({checkoutData.items.length} items)</span>
-              <span>Rp {checkoutData.subtotal.toLocaleString('id-ID')}</span>
+              {/* <span>Subtotal ({checkoutData.items.length} items)</span>
+              <span>Rp {checkoutData.subtotal.toLocaleString('id-ID')}</span> */}
             </div>
-            <div className="summary-row">
-              <span>Shipping Fee</span>
-              <span>Rp {checkoutData.shippingFee.toLocaleString('id-ID')}</span>
-            </div>
-            {checkoutData.paymentFee > 0 && (
-              <div className="summary-row">
-                <span>Payment Fee</span>
-                <span>Rp {checkoutData.paymentFee.toLocaleString('id-ID')}</span>
-              </div>
-            )}
-            {checkoutData.pointsDiscount > 0 && (
-              <div className="summary-row discount">
-                <span>Points Discount ({checkoutData.redeemPoints} pts)</span>
-                <span>-Rp {checkoutData.pointsDiscount.toLocaleString('id-ID')}</span>
-              </div>
-            )}
+           
             <div className="summary-divider"></div>
             <div className="summary-row total">
               <span>Total Payment</span>

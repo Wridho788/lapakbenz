@@ -1,0 +1,318 @@
+import axios from 'axios';
+import { BASE_URL, ENDPOINT_ORDER, ENDPOINT_ORDER_ADD, ENDPOINT_ORDER_ADD_ITEM, ENDPOINT_ORDER_CHECKOUT } from './constants';
+import { type UseQueryResult, useQuery, type UseMutationResult, useMutation } from '@tanstack/react-query';
+
+// TypeScript interfaces for Order API
+export interface OrderListRequest {
+  limit?: string;
+  offset?: string;
+  confirm?: string;
+  paid?: string;
+  date?: string;
+}
+
+export interface OrderItem {
+  id: string;
+  club_id: string;
+  club: string;
+  code: string;
+  transcode: string;
+  transno: string;
+  transid: string | null;
+  dates: string;
+  customer: string;
+  amount: string;
+  tax: string;
+  cost: string;
+  discount: string;
+  total: number;
+  payment_type: string;
+  canceled: string | null;
+  canceled_desc: string | null;
+  posted: string;
+  log: string | null;
+  paid_status: string;
+  paid_date: string;
+  items_count: number;
+  created: string;
+  updated: string | null;
+}
+
+export interface OrderListResponse {
+  content: {
+    orderid: number;
+    record: number;
+    result: OrderItem[];
+  };
+}
+
+export interface OrderAddResponse {
+  content: {
+    id: string;
+    club_id: string;
+    code: string;
+    transcode: string;
+    transno: string;
+    transid: string | null;
+    dates: string;
+    customer: string;
+    notes: string | null;
+    amount: string;
+    tax: string;
+    cost: string;
+    discount: string;
+    total: string;
+    payment_type: string;
+    paid_date: string | null;
+    sender_name: string | null;
+    sender_acc: string | null;
+    sender_bank: string | null;
+    sender_amount: string;
+    bank_id: string | null;
+    canceled: string | null;
+    canceled_desc: string | null;
+    approved: string;
+    log: string | null;
+    created: string;
+    updated: string | null;
+    deleted: string | null;
+  };
+}
+
+export interface OrderAddItemRequest {
+  cproduct: string;
+  ctax: string;
+  tqty: string;
+  tdiscount: string;
+}
+
+export interface OrderAddItemResponse {
+  content: string;
+}
+
+export interface OrderCheckoutResponse {
+  error?: string;
+  content: any;
+}
+
+export interface OrderErrorResponse {
+  error: string;
+}
+
+// Order API functions
+export const orderApi = {
+  // Get Orders - POST method
+  async getOrders(
+    payload: OrderListRequest = {
+      limit: "120",
+      offset: "0",
+      confirm: "",
+      paid: "",
+      date: ""
+    },
+    authToken: string
+  ): Promise<OrderListResponse> {
+    try {
+      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER}`, payload, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
+      });
+
+      console.log('📋 Order list API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Order list API error:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message || 'Failed to get orders');
+      }
+      throw error;
+    }
+  },
+
+  // Add Order - POST method with FormData
+  async addOrder(authToken: string): Promise<OrderAddResponse> {
+    try {
+      // Create empty FormData for order creation
+      const formData = new FormData();
+
+      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_ADD}`, formData, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        timeout: 10000
+      });
+
+      console.log('✅ Add order API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Add order API error:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message || 'Failed to add order');
+      }
+      throw error;
+    }
+  },
+
+  // Add Item to Order - POST method with FormData
+  async addItemToOrder(
+    orderId: string,
+    payload: OrderAddItemRequest,
+    authToken: string
+  ): Promise<OrderAddItemResponse> {
+    try {
+      // Create FormData
+      const formData = new FormData();
+      formData.append('cproduct', payload.cproduct);
+      formData.append('ctax', payload.ctax);
+      formData.append('tqty', payload.tqty);
+      formData.append('tdiscount', payload.tdiscount);
+
+      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_ADD_ITEM}${orderId}`, formData, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        timeout: 10000
+      });
+
+      console.log('📦 Add item to order API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Add item to order API error:', error);
+      if (axios.isAxiosError(error)) {
+        // Handle specific 404 error
+        if (error.response?.status === 404) {
+          throw new Error(error.response?.data?.error || 'ID not found');
+        }
+        throw new Error(error.response?.data?.message || error.message || 'Failed to add item to order');
+      }
+      throw error;
+    }
+  },
+
+  // Checkout Order - GET method
+  async checkoutOrder(orderId: string, authToken: string): Promise<OrderCheckoutResponse> {
+    try {
+      const response = await axios.get(`${BASE_URL}${ENDPOINT_ORDER_CHECKOUT}${orderId}`, {
+        headers: {
+          'X-auth-token': authToken
+        },
+        timeout: 10000
+      });
+
+      console.log('💳 Order checkout API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Order checkout API error:', error);
+      if (axios.isAxiosError(error)) {
+        // Handle specific 403 error
+        if (error.response?.status === 403) {
+          throw new Error(error.response?.data?.error || 'Failed to create payment');
+        }
+        throw new Error(error.response?.data?.message || error.message || 'Failed to checkout order');
+      }
+      throw error;
+    }
+  }
+};
+
+// Order API Hooks
+export function useOrders(
+  payload: OrderListRequest = {
+    limit: "120",
+    offset: "0",
+    confirm: "",
+    paid: "",
+    date: ""
+  },
+  authToken?: string | null
+): UseQueryResult<OrderListResponse, Error> {
+  return useQuery({
+    queryKey: ['orders', JSON.stringify(payload), authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for orders');
+      }
+      try {
+        return await orderApi.getOrders(payload, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '',
+    staleTime: 1000 * 60 * 2, // 2 minutes (order data should be relatively fresh)
+    retry: 2,
+  });
+}
+
+export function useAddOrder(): UseMutationResult<OrderAddResponse, Error, string> {
+  return useMutation({
+    mutationFn: async (authToken: string) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for creating order');
+      }
+      try {
+        return await orderApi.addOrder(authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+interface UseAddItemToOrderPayload {
+  orderId: string;
+  data: OrderAddItemRequest;
+  authToken: string;
+}
+
+export function useAddItemToOrder(): UseMutationResult<OrderAddItemResponse, Error, UseAddItemToOrderPayload> {
+  return useMutation({
+    mutationFn: async ({ orderId, data, authToken }: UseAddItemToOrderPayload) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for adding item to order');
+      }
+      if (!orderId || orderId.trim() === '') {
+        throw new Error('Order ID is required');
+      }
+      if (!data.cproduct || data.cproduct.trim() === '') {
+        throw new Error('Product code is required');
+      }
+      if (!data.tqty || data.tqty.trim() === '') {
+        throw new Error('Quantity is required');
+      }
+      try {
+        return await orderApi.addItemToOrder(orderId, data, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+interface UseCheckoutOrderPayload {
+  orderId: string;
+  authToken: string;
+}
+
+export function useCheckoutOrder(): UseMutationResult<OrderCheckoutResponse, Error, UseCheckoutOrderPayload> {
+  return useMutation({
+    mutationFn: async ({ orderId, authToken }: UseCheckoutOrderPayload) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for checkout');
+      }
+      if (!orderId || orderId.trim() === '') {
+        throw new Error('Order ID is required');
+      }
+      try {
+        return await orderApi.checkoutOrder(orderId, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}

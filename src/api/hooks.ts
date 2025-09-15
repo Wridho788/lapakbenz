@@ -33,7 +33,15 @@ import type {
   AddToCartResponse,
   RemoveFromCartResponse,
 } from './cartApi';
-
+import { orderApi } from './ordersApi';
+import type {
+  OrderListRequest,
+  OrderListResponse,
+  OrderAddResponse,
+  OrderAddItemRequest,
+  OrderAddItemResponse,
+  OrderCheckoutResponse,
+} from './ordersApi';
 
 export function useLedger(authToken?: string | null): UseQueryResult<any, Error> {
   return useQuery({
@@ -627,6 +635,112 @@ export function useRemoveFromCart(): UseMutationResult<RemoveFromCartResponse, E
       }
       try {
         return await cartApi.removeFromCart(authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+
+// Order API Hooks
+interface UseOrdersPayload {
+  limit?: string;
+  offset?: string;
+  confirm?: string;
+  paid?: string;
+  date?: string;
+}
+
+export function useOrders(
+  payload: UseOrdersPayload = {
+    limit: "120",
+    offset: "0",
+    confirm: "",
+    paid: "",
+    date: ""
+  },
+  authToken?: string | null
+): UseQueryResult<OrderListResponse, Error> {
+  return useQuery({
+    queryKey: ['orders', JSON.stringify(payload), authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for orders');
+      }
+      try {
+        return await orderApi.getOrders(payload, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '',
+    staleTime: 1000 * 60 * 2, // 2 minutes (order data should be relatively fresh)
+    retry: 2,
+  });
+}
+
+export function useAddOrder(): UseMutationResult<OrderAddResponse, Error, string> {
+  return useMutation({
+    mutationFn: async (authToken: string) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for creating order');
+      }
+      try {
+        return await orderApi.addOrder(authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+interface UseAddItemToOrderPayload {
+  orderId: string;
+  data: OrderAddItemRequest;
+  authToken: string;
+}
+
+export function useAddItemToOrder(): UseMutationResult<OrderAddItemResponse, Error, UseAddItemToOrderPayload> {
+  return useMutation({
+    mutationFn: async ({ orderId, data, authToken }: UseAddItemToOrderPayload) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for adding item to order');
+      }
+      if (!orderId || orderId.trim() === '') {
+        throw new Error('Order ID is required');
+      }
+      if (!data.cproduct || data.cproduct.trim() === '') {
+        throw new Error('Product code is required');
+      }
+      if (!data.tqty || data.tqty.trim() === '') {
+        throw new Error('Quantity is required');
+      }
+      try {
+        return await orderApi.addItemToOrder(orderId, data, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+interface UseCheckoutOrderPayload {
+  orderId: string;
+  authToken: string;
+}
+
+export function useCheckoutOrder(): UseMutationResult<OrderCheckoutResponse, Error, UseCheckoutOrderPayload> {
+  return useMutation({
+    mutationFn: async ({ orderId, authToken }: UseCheckoutOrderPayload) => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for checkout');
+      }
+      if (!orderId || orderId.trim() === '') {
+        throw new Error('Order ID is required');
+      }
+      try {
+        return await orderApi.checkoutOrder(orderId, authToken);
       } catch (error) {
         throw error;
       }
