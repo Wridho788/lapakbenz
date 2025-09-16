@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdShoppingBag, MdOpenInNew } from 'react-icons/md';
+import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdOpenInNew } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useOrderDetail } from '../api/hooks';
 import './OrderDetail.css';
@@ -31,61 +31,7 @@ const OrderDetail: React.FC = () => {
     navigate('/orders');
   };
 
-  const getStatusIcon = (canceled: string | null, posted: string, paymentStatus: string | null) => {
-    if (canceled) {
-      return <MdCancel className="status-icon canceled" />;
-    }
-    
-    // Check payment status first for more accurate status
-    if (paymentStatus === 'success' || posted === '1') {
-      return <MdCheckCircle className="status-icon paid" />;
-    }
-    
-    if (paymentStatus === 'failed' || paymentStatus === 'cancel') {
-      return <MdCancel className="status-icon canceled" />;
-    }
-    
-    return <MdPending className="status-icon pending" />;
-  };
-
-  const getStatusText = (canceled: string | null, posted: string, paymentStatus: string | null) => {
-    if (canceled) {
-      return 'Canceled';
-    }
-    
-    // Check payment status first for more accurate status
-    if (paymentStatus === 'success' || posted === '1') {
-      return 'Paid';
-    }
-    
-    if (paymentStatus === 'failed') {
-      return 'Payment Failed';
-    }
-    
-    if (paymentStatus === 'cancel') {
-      return 'Payment Cancelled';
-    }
-    
-    return 'Pending';
-  };
-
-  const getStatusClass = (canceled: string | null, posted: string, paymentStatus: string | null) => {
-    if (canceled) {
-      return 'canceled';
-    }
-    
-    // Check payment status first for more accurate status
-    if (paymentStatus === 'success' || posted === '1') {
-      return 'paid';
-    }
-    
-    if (paymentStatus === 'failed' || paymentStatus === 'cancel') {
-      return 'canceled';
-    }
-    
-    return 'pending';
-  };
-
+  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
