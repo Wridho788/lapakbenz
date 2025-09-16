@@ -40,6 +40,7 @@ import type {
   OrderAddItemRequest,
   OrderAddItemResponse,
   OrderCheckoutResponse,
+  OrderDetailResponse,
 } from './ordersApi';
 
 export function useLedger(authToken?: string | null): UseQueryResult<any, Error> {
@@ -744,5 +745,36 @@ export function useCheckoutOrder(): UseMutationResult<OrderCheckoutResponse, Err
         throw error;
       }
     },
+  });
+}
+
+export function useOrderDetail(orderId: string, authToken?: string | null): UseQueryResult<OrderDetailResponse, Error> {
+  return useQuery({
+    queryKey: ['orderDetail', orderId, authToken],
+    queryFn: async () => {
+      if (!authToken || authToken.trim() === '') {
+        throw new Error('Valid auth token is required for order details');
+      }
+      if (!orderId || orderId.trim() === '') {
+        throw new Error('Order ID is required');
+      }
+      try {
+        return await orderApi.getOrderDetail(orderId, authToken);
+      } catch (error) {
+        throw error;
+      }
+    },
+    enabled: !!authToken && authToken.trim() !== '' && !!orderId && orderId.trim() !== '',
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on auth errors (401, 403) or not found (404)
+      if (axios.isAxiosError(error) && [401, 403, 404].includes(error.response?.status || 0)) {
+        console.log('🚫 Auth/NotFound error detected, not retrying');
+        return false;
+      }
+      // Retry up to 2 times for other errors
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 }

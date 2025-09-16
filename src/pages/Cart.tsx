@@ -14,6 +14,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useCart, useRemoveFromCart, useAddToCart } from '../api/hooks';
+import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
 import Swal from 'sweetalert2';
 import './Cart.css';
 
@@ -32,13 +33,29 @@ interface PaymentMethod {
   fee: number;
 }
 
+interface OrderingStatus {
+  isOrdering: boolean;
+  currentStep: string;
+  totalSteps: number;
+  currentStepNumber: number;
+  processedItems: number;
+  totalItems: number;
+  error?: string;
+}
+
 const Cart: React.FC = () => {
   const navigate = useNavigate();
   const { cartCount, removeFromCart } = useCartContext();
   const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null);
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
-  // const [redeemPoints, setRedeemPoints] = useState(0);
-  // const [userPoints] = useState(1500); // Dummy user points
+  const [orderingStatus, setOrderingStatus] = useState<OrderingStatus>({
+    isOrdering: false,
+    currentStep: '',
+    totalSteps: 3,
+    currentStepNumber: 0,
+    processedItems: 0,
+    totalItems: 0,
+  });
 
   // Auth token state
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -63,6 +80,11 @@ const Cart: React.FC = () => {
   const removeAllFromCartMutation = useRemoveFromCart();
   const addToCartMutation = useAddToCart();
 
+  // Order API hooks
+  const addOrderMutation = useAddOrder();
+  const addItemToOrderMutation = useAddItemToOrder();
+  const checkoutOrderMutation = useCheckoutOrder();
+
   // Handle quantity change for API cart items
   const handleQuantityChange = async (item: any, newQuantity: number) => {
     if (!authToken) {
@@ -76,7 +98,6 @@ const Cart: React.FC = () => {
     }
 
     if (newQuantity <= 0) {
-      // Remove item if quantity becomes 0
       handleRemoveItem(item.id);
       return;
     }
@@ -84,7 +105,6 @@ const Cart: React.FC = () => {
     try {
       console.log('🔄 Updating quantity for item:', item.sku, 'to:', newQuantity);
 
-      // Add the item with new quantity using SKU
       await addToCartMutation.mutateAsync({
         data: {
           sku: item.sku,
@@ -93,7 +113,6 @@ const Cart: React.FC = () => {
         authToken,
       });
 
-      // Refetch cart data
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to update quantity:', error);
@@ -144,13 +163,6 @@ const Cart: React.FC = () => {
       city: 'Jakarta Pusat',
       zipCode: '10310',
     },
-    {
-      name: 'John Doe',
-      phone: '+62 812-3456-7890',
-      address: 'Jl. Gatot Subroto No. 456, Kuningan',
-      city: 'Jakarta Selatan',
-      zipCode: '12950',
-    },
   ];
 
   const paymentMethods: PaymentMethod[] = [
@@ -177,7 +189,6 @@ const Cart: React.FC = () => {
       return;
     }
 
-    // Show confirmation dialog
     const result = await Swal.fire({
       icon: 'warning',
       title: 'Remove All Items?',
@@ -196,10 +207,8 @@ const Cart: React.FC = () => {
     try {
       console.log('🗑️ Removing all items from cart...');
 
-      // Call API to remove all items
       await removeAllFromCartMutation.mutateAsync(authToken);
 
-      // Show success message
       await Swal.fire({
         icon: 'success',
         title: 'Cart Cleared!',
@@ -209,7 +218,6 @@ const Cart: React.FC = () => {
         timerProgressBar: true,
       });
 
-      // Refetch cart data to update UI
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to clear cart:', error);
@@ -242,41 +250,220 @@ const Cart: React.FC = () => {
   const apiCartCount = getApiCartCount();
   const shippingFee = 15000;
   const paymentFee = selectedPayment?.fee || 0;
-  // const pointsDiscount = redeemPoints * 1000; // 1 point = Rp 1,000
-  const totalPayment = subtotal + shippingFee + paymentFee ;
+  const totalPayment = subtotal + shippingFee + paymentFee;
 
-  const handlePlaceOrder = () => {
+  // New order flow function
+  const handlePlaceOrder = async () => {
+    if (!authToken) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Login Required',
+        text: 'Please login to place order',
+        confirmButtonColor: '#f39c12',
+      });
+      return;
+    }
+
     if (!selectedAddress) {
-      alert('Please select a shipping address');
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Address Required',
+        text: 'Please select a shipping address',
+        confirmButtonColor: '#f39c12',
+      });
       return;
     }
+
     if (!selectedPayment) {
-      alert('Please select a payment method');
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Payment Method Required',
+        text: 'Please select a payment method',
+        confirmButtonColor: '#f39c12',
+      });
       return;
     }
+
     if (!hasApiCartItems) {
-      alert('Your cart is empty');
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Empty Cart',
+        text: 'Your cart is empty',
+        confirmButtonColor: '#f39c12',
+      });
       return;
     }
 
-    const checkoutData = {
-      apiItems: apiCartData?.content?.result || [],
-      address: selectedAddress,
-      payment: selectedPayment,
-      // redeemPoints,
-      total: totalPayment,
-      subtotal,
-      shippingFee,
-      paymentFee,
-      // pointsDiscount,
-      apiCartBalance: apiCartData?.content?.balance || 0,
-    };
+    const cartItems = apiCartData?.content?.result || [];
+    
+    // Initialize ordering status
+    setOrderingStatus({
+      isOrdering: true,
+      currentStep: 'Creating Order...',
+      totalSteps: 3,
+      currentStepNumber: 1,
+      processedItems: 0,
+      totalItems: cartItems.length,
+    });
 
-    // Navigate to checkout page with data
-    navigate('/checkout', { state: checkoutData });
+    console.log('🚀 Starting order process...');
+    console.log('📦 Cart items to process:', cartItems);
+    console.log('📍 Shipping address:', selectedAddress);
+    console.log('💳 Payment method:', selectedPayment);
+    console.log('💰 Total payment:', totalPayment);
+
+    try {
+      // Step 1: Create Order (useAddOrder)
+      console.log('📝 Step 1: Creating new order...');
+      const orderResponse = await addOrderMutation.mutateAsync(authToken);
+      
+      if (!orderResponse?.content?.id) {
+        throw new Error('Failed to create order - no order ID returned');
+      }
+
+      const orderId = orderResponse.content.id;
+      console.log('✅ Step 1 completed: Order created with ID:', orderId);
+      console.log('📋 Order details:', orderResponse.content);
+
+      // Step 2: Add Items to Order (useAddItemToOrder)
+      setOrderingStatus(prev => ({
+        ...prev,
+        currentStep: 'Adding Items to Order...',
+        currentStepNumber: 2,
+      }));
+
+      console.log('📦 Step 2: Adding items to order...');
+      console.log(`🔄 Processing ${cartItems.length} items...`);
+
+      for (let i = 0; i < cartItems.length; i++) {
+        const item = cartItems[i];
+        
+        console.log(`📦 Processing item ${i + 1}/${cartItems.length}:`, {
+          sku: item.sku,
+          name: item.name,
+          quantity: item.qty,
+          price: item.price
+        });
+
+        // Update status for each item
+        setOrderingStatus(prev => ({
+          ...prev,
+          processedItems: i,
+          currentStep: `Adding Item ${i + 1}/${cartItems.length}: ${item.name}...`,
+        }));
+
+        const itemPayload = {
+          cproduct: item.sku,
+          ctax: '0',
+          tqty: item.qty.toString(),
+          tdiscount: '0',
+        };
+
+        console.log(`📤 Sending item payload:`, itemPayload);
+
+        try {
+          const itemResponse = await addItemToOrderMutation.mutateAsync({
+            orderId,
+            data: itemPayload,
+            authToken,
+          });
+
+          console.log(`✅ Item ${i + 1} added successfully:`, itemResponse);
+        } catch (itemError: any) {
+          console.error(`❌ Failed to add item ${i + 1}:`, itemError);
+          throw new Error(`Failed to add item "${item.name}" to order: ${itemError.message}`);
+        }
+      }
+
+      console.log('✅ Step 2 completed: All items added to order');
+
+      // Update status for final processed items
+      setOrderingStatus(prev => ({
+        ...prev,
+        processedItems: cartItems.length,
+      }));
+
+      // Step 3: Checkout Order (useCheckoutOrder)
+      setOrderingStatus(prev => ({
+        ...prev,
+        currentStep: 'Processing Checkout...',
+        currentStepNumber: 3,
+      }));
+
+      console.log('💳 Step 3: Processing checkout for order:', orderId);
+      const checkoutResponse = await checkoutOrderMutation.mutateAsync({
+        orderId,
+        authToken,
+      });
+
+      console.log('✅ Step 3 completed: Checkout processed successfully');
+      console.log('🎉 Final checkout response:', checkoutResponse);
+
+      // Reset ordering status
+      setOrderingStatus({
+        isOrdering: false,
+        currentStep: '',
+        totalSteps: 3,
+        currentStepNumber: 0,
+        processedItems: 0,
+        totalItems: 0,
+      });
+
+      // Check if we have an invoice_url in the response
+      if (checkoutResponse?.content?.invoice_url) {
+        console.log('📄 Invoice URL found:', checkoutResponse.content.invoice_url);
+        
+        // Clear cart after successful order
+        await removeAllFromCartMutation.mutateAsync(authToken);
+        refetchCart();
+
+        // Navigate to invoice page with the invoice_url
+        navigate('/invoice', { 
+          state: { 
+            invoiceUrl: checkoutResponse.content.invoice_url,
+            orderId: checkoutResponse.content.orderid || orderId,
+            transId: checkoutResponse.content.transid
+          } 
+        });
+        return;
+      }
+
+      // Show success message if no invoice_url (fallback)
+      await Swal.fire({
+        icon: 'success',
+        title: 'Order Placed Successfully!',
+        text: `Your order #${orderId} has been created and is being processed.`,
+        confirmButtonColor: '#28a745',
+        timer: 3000,
+        timerProgressBar: true,
+      });
+
+      console.log('🎊 Order process completed successfully!');
+      
+      // Clear cart after successful order
+      await removeAllFromCartMutation.mutateAsync(authToken);
+      refetchCart();
+
+      // Navigate to orders page or home
+      navigate('/orders');
+
+    } catch (error: any) {
+      console.error('❌ Order process failed:', error);
+      
+      setOrderingStatus(prev => ({
+        ...prev,
+        isOrdering: false,
+        error: error.message,
+      }));
+
+      await Swal.fire({
+        icon: 'error',
+        title: 'Order Failed',
+        text: error.message || 'Failed to place order. Please try again.',
+        confirmButtonColor: '#d33',
+      });
+    }
   };
-
-  // const maxRedeemPoints = Math.min(userPoints, Math.floor(subtotal / 1000));
 
   const hasApiCartItems = apiCartData?.content?.result && apiCartData.content.result.length > 0;
 
@@ -313,6 +500,101 @@ const Cart: React.FC = () => {
 
   return (
     <>
+      {/* Ordering Status Modal */}
+      {orderingStatus.isOrdering && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '40px 30px',
+            borderRadius: '20px',
+            textAlign: 'center',
+            maxWidth: '350px',
+            width: '90%',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+          }}>
+            <div style={{
+              width: '60px',
+              height: '60px',
+              border: '4px solid #f3f3f3',
+              borderTop: '4px solid #161129',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 20px',
+            }}></div>
+            
+            <h3 style={{
+              margin: '0 0 15px 0',
+              color: '#161129',
+              fontSize: '18px',
+              fontWeight: '600',
+            }}>
+              Processing Order
+            </h3>
+            
+            <p style={{
+              margin: '0 0 20px 0',
+              color: '#666',
+              fontSize: '14px',
+              lineHeight: '1.4',
+            }}>
+              {orderingStatus.currentStep}
+            </p>
+
+            <div style={{
+              background: '#f8f9ff',
+              borderRadius: '10px',
+              padding: '15px',
+              marginBottom: '15px',
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginBottom: '8px',
+                fontSize: '12px',
+                color: '#666',
+              }}>
+                <span>Step {orderingStatus.currentStepNumber} of {orderingStatus.totalSteps}</span>
+                <span>{orderingStatus.processedItems}/{orderingStatus.totalItems} items</span>
+              </div>
+              
+              <div style={{
+                width: '100%',
+                height: '8px',
+                background: '#e9ecef',
+                borderRadius: '4px',
+                overflow: 'hidden',
+              }}>
+                <div style={{
+                  width: `${(orderingStatus.currentStepNumber / orderingStatus.totalSteps) * 100}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #161129, #2c5aa0)',
+                  transition: 'width 0.3s ease',
+                }}></div>
+              </div>
+            </div>
+
+            <p style={{
+              margin: '0',
+              color: '#999',
+              fontSize: '12px',
+            }}>
+              Please wait, do not close this page
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="cart-page">
         <AppbarDefault
           title={`Shopping Cart (${apiCartCount})`}
@@ -478,38 +760,6 @@ const Cart: React.FC = () => {
             </div>
           </div>
 
-          {/* Redeem Points */}
-          {/* <div className="redeem-section">
-            <h3>
-              <MdRedeem /> Redeem Points
-            </h3>
-            <div className="redeem-card">
-              <div className="points-info">
-                <p>Available Points: {userPoints}</p>
-                <p>Max Redeem: {maxRedeemPoints} points</p>
-              </div>
-              <div className="redeem-controls">
-                <input
-                  type="number"
-                  value={redeemPoints}
-                  onChange={(e) => {
-                    const value = Math.min(
-                      maxRedeemPoints,
-                      Math.max(0, parseInt(e.target.value) || 0),
-                    );
-                    setRedeemPoints(value);
-                  }}
-                  max={maxRedeemPoints}
-                  min={0}
-                  placeholder="Enter points"
-                />
-                <span className="points-value">
-                  = Rp {(redeemPoints * 1000).toLocaleString('id-ID')}
-                </span>
-              </div>
-            </div>
-          </div> */}
-
           {/* Order Summary */}
           <div className="order-summary">
             <h3>Order Summary</h3>
@@ -528,12 +778,6 @@ const Cart: React.FC = () => {
                   <span>Rp {paymentFee.toLocaleString('id-ID')}</span>
                 </div>
               )}
-              {/* {pointsDiscount > 0 && (
-                <div className="summary-row discount">
-                  <span>Points Discount ({redeemPoints} pts)</span>
-                  <span>-Rp {pointsDiscount.toLocaleString('id-ID')}</span>
-                </div>
-              )} */}
               <div className="summary-divider"></div>
               <div className="summary-row total">
                 <span>Total Payment</span>
@@ -550,13 +794,27 @@ const Cart: React.FC = () => {
             <button className="home-btn" onClick={() => navigate('/')}>
               <MdHome size={26} />
             </button>
-            <button className="place-order-btn" onClick={handlePlaceOrder}>
+            <button 
+              className="place-order-btn" 
+              onClick={handlePlaceOrder}
+              disabled={orderingStatus.isOrdering}
+            >
               <MdPayment size={26} />
             </button>
           </div>
         </div>
       </div>
+
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
+
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </>
   );
 };

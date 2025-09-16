@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MdCheckCircle, MdLocationOn, MdPayment } from 'react-icons/md';
+import { MdCheckCircle, MdLocationOn, MdPayment, MdOpenInNew } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
@@ -18,6 +18,14 @@ interface CheckoutData {
   pointsDiscount: number;
 }
 
+interface CheckoutApiResponse {
+  content: {
+    invoice_url: string;
+    transid: number;
+    orderid: string;
+  };
+}
+
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,6 +33,9 @@ const Checkout: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderCompleted, setOrderCompleted] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [transactionId, setTransactionId] = useState<number>(0);
+  const [invoiceUrl, setInvoiceUrl] = useState('');
+  const [showWebview, setShowWebview] = useState(false);
 
   // Get checkout data from navigation state
   const checkoutData = location.state as CheckoutData;
@@ -55,25 +66,89 @@ const Checkout: React.FC = () => {
   const handleConfirmOrder = async () => {
     setIsProcessing(true);
     
-    // Simulate order processing
-    setTimeout(() => {
-      const newOrderId = `ORD-${Date.now()}`;
-      setOrderId(newOrderId);
-      setOrderCompleted(true);
-      setIsProcessing(false);
-      
-      // Clear cart after successful order
-      clearCart();
-      
-      console.log('Order confirmed:', {
-        orderId: newOrderId,
-        ...checkoutData
+    try {
+      // Call the checkout API
+      const response = await fetch(`/api/orders/checkout/${orderId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add authorization header if needed
+          // 'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(checkoutData)
       });
-    }, 3000);
+
+      if (response.ok) {
+        const data: CheckoutApiResponse = await response.json();
+        
+        // Set order details from API response
+        setOrderId(data.content.orderid);
+        setTransactionId(data.content.transid);
+        setInvoiceUrl(data.content.invoice_url);
+        
+        // Clear cart after successful order
+        clearCart();
+        
+        // Show webview to open invoice URL
+        setShowWebview(true);
+        setOrderCompleted(true);
+        
+        console.log('Order confirmed:', data);
+      } else {
+        throw new Error('Failed to process order');
+      }
+    } catch (error) {
+      console.error('Order processing failed:', error);
+      // Handle error (show toast, modal, etc.)
+      alert('Failed to process order. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const openInvoiceUrl = () => {
+    if (invoiceUrl) {
+      // Add https:// if not present
+      const fullUrl = invoiceUrl.startsWith('http') ? invoiceUrl : `https://${invoiceUrl}`;
+      window.open(fullUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleCloseWebview = () => {
+    setShowWebview(false);
   };
 
   if (!checkoutData) {
     return <div>Loading...</div>;
+  }
+
+  // Webview for invoice URL
+  if (showWebview && invoiceUrl) {
+    return (
+      <div className="checkout-page">
+        <AppbarDefault
+          title="Payment"
+          onBack={handleCloseWebview}
+          onCartClick={handleCartClick}
+          cartCount={0}
+        />
+        <div className="webview-container">
+          <div className="webview-header">
+            <p>Complete your payment through the secure payment gateway</p>
+            <button className="open-external-btn" onClick={openInvoiceUrl}>
+              <MdOpenInNew /> Open in Browser
+            </button>
+          </div>
+          <iframe
+            src={invoiceUrl.startsWith('http') ? invoiceUrl : `https://${invoiceUrl}`}
+            title="Payment Gateway"
+            className="payment-webview"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+          />
+        </div>
+        <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
+      </div>
+    );
   }
 
   if (orderCompleted) {
@@ -95,6 +170,9 @@ const Checkout: React.FC = () => {
             <p>Your order has been placed successfully</p>
             <div className="order-id">
               <span>Order ID: {orderId}</span>
+              {transactionId && (
+                <span>Transaction ID: {transactionId}</span>
+              )}
             </div>
             
             <div className="success-actions">

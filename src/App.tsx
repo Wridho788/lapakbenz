@@ -8,7 +8,10 @@ import Product from './pages/Product';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Invoice from './pages/Invoice';
 import Profile from './pages/Profile';
+import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 import Notifications from './pages/Notifications';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -37,6 +40,9 @@ function App() {
             <Route path="/product/:productId" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/invoice" element={<Invoice />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/orders/:orderId" element={<OrderDetail />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/login" element={<Login />} />

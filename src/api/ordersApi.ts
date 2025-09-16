@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL, ENDPOINT_ORDER, ENDPOINT_ORDER_ADD, ENDPOINT_ORDER_ADD_ITEM, ENDPOINT_ORDER_CHECKOUT } from './constants';
+import { BASE_URL, ENDPOINT_ORDER, ENDPOINT_ORDER_ADD, ENDPOINT_ORDER_ADD_ITEM, ENDPOINT_ORDER_CHECKOUT, ENDPOINT_ORDER_GET } from './constants';
 import { type UseQueryResult, useQuery, type UseMutationResult, useMutation } from '@tanstack/react-query';
 
 // TypeScript interfaces for Order API
@@ -92,11 +92,73 @@ export interface OrderAddItemResponse {
 
 export interface OrderCheckoutResponse {
   error?: string;
-  content: any;
+  content?: {
+    invoice_url?: string;
+    transid?: number;
+    orderid?: string;
+    [key: string]: any;
+  };
 }
 
 export interface OrderErrorResponse {
   error: string;
+}
+
+// TypeScript interfaces untuk Get Order Detail
+export interface OrderDetailItem {
+  id: string;
+  order_id: string;
+  product_id: string;
+  product_code: string;
+  product_name: string;
+  product_price: string;
+  quantity: string;
+  tax: string;
+  discount: string;
+  subtotal: string;
+  created: string;
+  updated: string | null;
+}
+
+
+export interface OrderDetailResponse {
+  content: {
+    code: string;
+    dates: string;
+    cust: string;
+    customer: string;
+    amount: number;
+    tax: number;
+    costs: number;
+    discount: number;
+    total: number;
+    payment_type: string;
+    transcode: string;
+    transno: string;
+    transid: string;
+    canceled: string | null;
+    canceled_desc: string | null;
+    posted: string;
+    log: string | null;
+    status: string | null;
+    link_url: string;
+    link_expired: string;
+    paid_date: string | null;
+    canceled_date: string | null;
+    tot_amt: number;
+    items: Array<{
+      id: string;
+      order_id: string;
+      product_id: string;
+      product: string;
+      sku: string;
+      qty: number;
+      discount: number;
+      tax: number;
+      amount: number;
+      price: number;
+    }>;
+  };
 }
 
 // Order API functions
@@ -217,6 +279,35 @@ export const orderApi = {
       }
       throw error;
     }
+  },
+
+  // Get Order Detail - GET method
+  async getOrderDetail(orderId: string, authToken: string): Promise<OrderDetailResponse> {
+    try {
+      const response = await axios.get(`${BASE_URL}${ENDPOINT_ORDER_GET}${orderId}`, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
+      });
+
+      console.log('📋 Order detail API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Order detail API error:', error);
+      if (axios.isAxiosError(error)) {
+        // Handle specific error codes
+        if (error.response?.status === 404) {
+          throw new Error('Order not found');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('Access denied to order details');
+        }
+        throw new Error(error.response?.data?.message || error.message || 'Failed to get order details');
+      }
+      throw error;
+    }
   }
 };
 
@@ -316,3 +407,4 @@ export function useCheckoutOrder(): UseMutationResult<OrderCheckoutResponse, Err
     },
   });
 }
+

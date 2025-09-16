@@ -334,6 +334,9 @@
   border-radius: 12px;
   border: 2px solid #28a745;
   margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .order-id span {
@@ -363,10 +366,6 @@
   border: none;
 }
 
-
-
-
-
 .view-orders-btn {
   background: white;
   color: #161129;
@@ -377,6 +376,65 @@
   background: #161129;
   color: white;
   transform: translateY(-2px);
+}
+
+/* Webview Styles */
+.webview-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px);
+  background: white;
+  margin: 20px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(22, 17, 41, 0.08);
+}
+
+.webview-header {
+  padding: 20px;
+  background: linear-gradient(145deg, #ffffff, #f8f9ff);
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.webview-header p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  text-align: center;
+}
+
+.open-external-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #161129, #2c5aa0);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: center;
+}
+
+.open-external-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(22, 17, 41, 0.3);
+}
+
+.payment-webview {
+  flex: 1;
+  border: none;
+  width: 100%;
+  background: white;
 }
 
 /* Responsive Design */
@@ -416,6 +474,15 @@
   .success-actions {
     max-width: 100%;
   }
+
+  .webview-container {
+    margin: 16px;
+    height: calc(100vh - 72px);
+  }
+
+  .webview-header {
+    padding: 16px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -438,5 +505,19 @@
   
   .order-success h2 {
     font-size: 24px;
+  }
+
+  .webview-container {
+    margin: 12px;
+    height: calc(100vh - 68px);
+  }
+
+  .webview-header {
+    padding: 12px;
+  }
+
+  .open-external-btn {
+    font-size: 13px;
+    padding: 10px 16px;
   }
 }
