@@ -4,7 +4,7 @@ import { MdRefresh, MdShoppingCart, MdCancel, MdCheckCircle, MdPending } from 'r
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useOrders } from '../api/hooks';
 import type { OrderItem } from '../api/ordersApi';
-import './Orders.css';
+import './orders.css';
 
 const Orders: React.FC = () => {
   const navigate = useNavigate();
