@@ -24,6 +24,7 @@ import MyRedeemHistory from './pages/MyRedeemHistory';
 import ChangePassword from './pages/ChangePassword';
 import LiveChat from './pages/LiveChat';
 import MerchantRegistration from './pages/MerchantRegistration';
+import PublicRegistration from './pages/PublicRegistration';
 import './App.css';
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
             <Route path="/profile/change-password" element={<ChangePassword />} />
             <Route path="/profile/live-chat" element={<LiveChat />} />
             <Route path="/merchant-registration/:eventId" element={<MerchantRegistration />} />
+            <Route path="/public-registration/:eventId" element={<PublicRegistration />} />
             </Routes>
           </MainLayout>
         </Router>

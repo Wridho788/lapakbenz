@@ -12,6 +12,7 @@ import {
   getCity,
   getEventsByCustomer,
   registerMerchant,
+  registerPublic,
 } from './api';
 import { customerApi } from './customerApi';
 import { productAPI } from './productApi';
@@ -720,6 +721,42 @@ export function useMerchantRegistration(): UseMutationResult<any, Error, UseMerc
         return await registerMerchant(token!, formData);
       } catch (error) {
         console.error('❌ Merchant Registration Error:', error);
+        throw error;
+      }
+    },
+  });
+}
+
+// Public Registration Hook
+interface UsePublicRegistrationPayload {
+  eventid: string;
+  name: string;
+  type: string;
+  policeno: string;
+  phone: string;
+  email: string;
+  notes: string;
+}
+
+export function usePublicRegistration(): UseMutationResult<any, Error, UsePublicRegistrationPayload> {
+  const { token } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async (payload: UsePublicRegistrationPayload) => {
+      try {
+        const formData = new FormData();
+        formData.append('eventid', payload.eventid);
+        formData.append('name', payload.name);
+        formData.append('type', payload.type);
+        formData.append('policeno', payload.policeno);
+        formData.append('phone', payload.phone);
+        formData.append('email', payload.email);
+        formData.append('notes', payload.notes);
+
+        console.log('👤 Public Registration Payload:', payload);
+        return await registerPublic(token!, formData);
+      } catch (error) {
+        console.error('❌ Public Registration Error:', error);
         throw error;
       }
     },

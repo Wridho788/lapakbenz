@@ -2,29 +2,38 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
-import { useMerchantRegistration } from '../api/hooks';
-import './MerchantRegistration.css';
+import { usePublicRegistration } from '../api/hooks';
+import './PublicRegistration.css';
 
-const MerchantRegistration: React.FC = () => {
+const PublicRegistration: React.FC = () => {
   const navigate = useNavigate();
   const { eventId } = useParams<{ eventId: string }>();
   
   const [formData, setFormData] = useState({
     name: '',
-    cp: '',
-    address: '',
+    type: '',
+    policeno: '',
     phone: '',
     email: '',
-    menu: '',
-    qty: ''
+    notes: ''
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const merchantRegistration = useMerchantRegistration();
+  const publicRegistration = usePublicRegistration();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const vehicleTypes = [
+    { value: '', label: 'Select Vehicle Type' },
+    { value: 'car', label: '🚗 Car' },
+    { value: 'motorcycle', label: '🏍️ Motorcycle' },
+    { value: 'truck', label: '🚛 Truck' },
+    { value: 'van', label: '🚐 Van' },
+    { value: 'bus', label: '🚌 Bus' },
+    { value: 'other', label: '🚙 Other' }
+  ];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -57,13 +66,13 @@ const MerchantRegistration: React.FC = () => {
     const newErrors: {[key: string]: string} = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Business name is required';
+      newErrors.name = 'Full name is required';
     }
-    if (!formData.cp.trim()) {
-      newErrors.cp = 'Contact person is required';
+    if (!formData.type.trim()) {
+      newErrors.type = 'Vehicle type is required';
     }
-    if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
+    if (!formData.policeno.trim()) {
+      newErrors.policeno = 'Police number is required';
     }
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
@@ -73,14 +82,15 @@ const MerchantRegistration: React.FC = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    if (!formData.menu.trim()) {
-      newErrors.menu = 'Menu description is required';
+
+    // Validation: Phone number and police number cannot be the same
+    if (formData.phone.trim() && formData.policeno.trim() && 
+        formData.phone.trim() === formData.policeno.trim()) {
+      newErrors.phone = 'Phone number cannot be the same as police number';
+      newErrors.policeno = 'Police number cannot be the same as phone number';
     }
-    if (!formData.qty.trim()) {
-      newErrors.qty = 'Quantity is required';
-    } else if (isNaN(Number(formData.qty)) || Number(formData.qty) <= 0) {
-      newErrors.qty = 'Please enter a valid quantity';
-    }
+
+    // Notes is optional, so no validation needed
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -111,9 +121,9 @@ const MerchantRegistration: React.FC = () => {
         ...formData
       };
 
-      const result = await merchantRegistration.mutateAsync(payload);
+      const result = await publicRegistration.mutateAsync(payload);
       
-      console.log('✅ Merchant Registration Success:', result);
+      console.log('✅ Public Registration Success:', result);
       
       // Check if registration was successful based on status code and content presence
       if (result.status === 200 && result.content) {
@@ -124,7 +134,7 @@ const MerchantRegistration: React.FC = () => {
           icon: 'success',
           title: '🎉 Registration Successful!',
           html: `
-            <p>Your merchant registration has been submitted successfully.</p>
+            <p>Your public registration has been submitted successfully.</p>
             <br>
             <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
               <p><strong>📋 Registration Details:</strong></p>
@@ -155,7 +165,7 @@ const MerchantRegistration: React.FC = () => {
         });
       }
     } catch (error: any) {
-      console.error('❌ Registration failed:', error.response.data.error);
+      console.error('❌ Registration failed:', error);
       Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
@@ -173,28 +183,28 @@ const MerchantRegistration: React.FC = () => {
   };
 
   return (
-    <div className="merchant-registration-page">
+    <div className="public-registration-page">
       <AppbarDefault 
-        title="Merchant Registration" 
+        title="Public Registration" 
         onBack={handleBackClick} 
       />
       
-      <div className="merchant-registration-content">
+      <div className="public-registration-content">
         <div className="registration-header">
-          <h2>🏪 Register as Merchant</h2>
-          <p>Fill in the details below to register your business for this event</p>
+          <h2>👤 Public Registration</h2>
+          <p>Fill in the details below to register for this event</p>
         </div>
 
         <form onSubmit={handleSubmit} className="registration-form">
           <div className="form-group">
-            <label htmlFor="name">Business Name *</label>
+            <label htmlFor="name">Full Name *</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Enter your business name"
+              placeholder="Enter your full name"
               className={errors.name ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -202,33 +212,37 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="cp">Contact Person *</label>
-            <input
-              type="text"
-              id="cp"
-              name="cp"
-              value={formData.cp}
+            <label htmlFor="type">Vehicle Type *</label>
+            <select
+              id="type"
+              name="type"
+              value={formData.type}
               onChange={handleInputChange}
-              placeholder="Enter contact person name"
-              className={errors.cp ? 'error' : ''}
+              className={errors.type ? 'error' : ''}
               disabled={isSubmitting}
-            />
-            {errors.cp && <span className="error-text">{errors.cp}</span>}
+            >
+              {vehicleTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+            {errors.type && <span className="error-text">{errors.type}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Address *</label>
-            <textarea
-              id="address"
-              name="address"
-              value={formData.address}
+            <label htmlFor="policeno">Police Number *</label>
+            <input
+              type="text"
+              id="policeno"
+              name="policeno"
+              value={formData.policeno}
               onChange={handleInputChange}
-              placeholder="Enter your business address"
-              rows={3}
-              className={errors.address ? 'error' : ''}
+              placeholder="Enter your vehicle police number"
+              className={errors.policeno ? 'error' : ''}
               disabled={isSubmitting}
             />
-            {errors.address && <span className="error-text">{errors.address}</span>}
+            {errors.policeno && <span className="error-text">{errors.policeno}</span>}
           </div>
 
           <div className="form-group">
@@ -262,34 +276,16 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="menu">Menu Description *</label>
+            <label htmlFor="notes">Additional Notes</label>
             <textarea
-              id="menu"
-              name="menu"
-              value={formData.menu}
+              id="notes"
+              name="notes"
+              value={formData.notes}
               onChange={handleInputChange}
-              placeholder="Describe your menu items (e.g., BAKSO REBUS, BAKAR, AYAM)"
+              placeholder="Any additional notes or special requirements (optional)"
               rows={3}
-              className={errors.menu ? 'error' : ''}
               disabled={isSubmitting}
             />
-            {errors.menu && <span className="error-text">{errors.menu}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="qty">Expected Quantity *</label>
-            <input
-              type="number"
-              id="qty"
-              name="qty"
-              value={formData.qty}
-              onChange={handleInputChange}
-              placeholder="Enter expected quantity"
-              min="1"
-              className={errors.qty ? 'error' : ''}
-              disabled={isSubmitting}
-            />
-            {errors.qty && <span className="error-text">{errors.qty}</span>}
           </div>
 
           <div className="form-actions">
@@ -312,7 +308,7 @@ const MerchantRegistration: React.FC = () => {
                   Registering...
                 </>
               ) : (
-                '🏪 Register Merchant'
+                '👤 Register Now'
               )}
             </button>
           </div>
@@ -322,4 +318,4 @@ const MerchantRegistration: React.FC = () => {
   );
 };
 
-export default MerchantRegistration;
+export default PublicRegistration;

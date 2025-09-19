@@ -208,8 +208,11 @@ const Event: React.FC = () => {
 
   const handlePublicRegistration = () => {
     console.log('👤 Public Registration clicked for event:', selectedEventId);
-    // TODO: Navigate to public registration
-    // navigate(`/event/${selectedEventId}/register-public`);
+    if (selectedEventId) {
+      navigate(`/public-registration/${selectedEventId}`);
+    } else {
+      console.error('❌ No event ID selected for public registration');
+    }
   };
 
   const getFilteredData = () => {
