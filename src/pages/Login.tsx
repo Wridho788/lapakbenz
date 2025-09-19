@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdLogin, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
 import { useLogin } from '../api/hooks';
+import { useAuthStore } from '../stores/authStore';
 import type { LoginRequest } from '../api/types';
 import './Login.css';
 
@@ -12,6 +13,9 @@ const Login: React.FC = () => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string>('');
+  
+  // Use Zustand auth store
+  const { login, setLoading } = useAuthStore();
   
   // Use login mutation hook
   const loginMutation = useLogin();
@@ -47,6 +51,7 @@ const Login: React.FC = () => {
     
     // Clear previous error
     setLoginError('');
+    setLoading(true);
     
     // Prepare login data
     const loginData: LoginRequest = {
@@ -106,20 +111,16 @@ const Login: React.FC = () => {
       }
       
       if (isSuccess && token) {
-        // Save token to localStorage
-        localStorage.setItem('authToken', token);
+        // Use Zustand store to save auth data
+        const userData = response.content ? {
+          id: response.content.userid?.toString(),
+          username: emailOrPhone,
+          log: response.content.log
+        } : { username: emailOrPhone };
         
-        // Save additional user info if available from content
-        if (response.content) {
-          localStorage.setItem('userId', response.content.userid.toString());
-          localStorage.setItem('userLog', response.content.log.toString());
-          console.log('👤 User info saved:', {
-            userId: response.content.userid,
-            log: response.content.log
-          });
-        }
+        login(token, userData);
         
-        console.log('💾 Token saved to localStorage:', token.substring(0, 20) + '...');
+        console.log('💾 Auth data saved to Zustand store');
         console.log('🎉 Login successful! Redirecting to dashboard...');
         
         // Navigate to dashboard
@@ -127,6 +128,7 @@ const Login: React.FC = () => {
       } else {
         // Handle API error response
         setLoginError(message);
+        setLoading(false);
         console.error('❌ Login failed:', message);
         console.error('🔍 Full response for debugging:', response);
       }
@@ -143,6 +145,7 @@ const Login: React.FC = () => {
       }
       
       setLoginError(errorMessage);
+      setLoading(false);
       console.error('❌ Login error:', error);
     }
   };

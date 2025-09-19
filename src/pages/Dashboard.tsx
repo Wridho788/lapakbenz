@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useCart } from '../contexts/CartContext';
+import { useAuthStore } from '../stores/authStore';
 import { useSplash, useSlider, useLedger } from '../api/hooks';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
@@ -20,22 +21,29 @@ const Dashboard: React.FC = () => {
   const { cartCount } = useCart();
   const navigate = useNavigate();
   
+  // Use Zustand auth store
+  const { 
+    token: authToken, 
+    user, 
+    isAuthenticated, 
+    requireAuth: storeRequireAuth,
+    updatePoints,
+    logout
+  } = useAuthStore();
+  
   // State untuk development mode dan notification testing
   const [showDevTools, setShowDevTools] = useState(false);
   
   // Development helper function untuk testing
   const setTestToken = () => {
     const testToken = 'test-valid-token-12345';
-    localStorage.setItem('authToken', testToken);
-    setAuthToken(testToken);
+    // Use auth store instead of localStorage
+    useAuthStore.getState().login(testToken, { username: 'test-user' });
     console.log('🧪 Test token set:', testToken);
   };
   
   const clearToken = () => {
-    localStorage.removeItem('authToken');
-    setAuthToken(null);
-    setUserPoints(0);
-    setTokenStatus('missing');
+    logout();
     console.log('🗑️ Token cleared');
   };
   
@@ -46,48 +54,25 @@ const Dashboard: React.FC = () => {
     (window as any).toggleDevTools = () => setShowDevTools(prev => !prev);
   }
   
-  // Helper function untuk check authentication
+  // Helper function untuk check authentication using Zustand store
   const requireAuth = (callback: () => void, actionName: string = 'access this feature') => {
-    if (!authToken || tokenStatus === 'invalid' || tokenStatus === 'missing') {
-      console.log(`🔒 Authentication required to ${actionName}, redirecting to login`);
+    const success = storeRequireAuth(() => {
+      callback();
+    }, actionName);
+    
+    if (!success) {
       navigate('/login');
-      return false;
     }
-    if (tokenStatus === 'loading') {
-      console.log(`⏳ Token still loading, please wait...`);
-      return false;
-    }
-    callback();
-    return true;
+    
+    return success;
   };
   
-  // State untuk splash screen
+  // State untuk splash screen - keep existing functionality
   const [showSplash, setShowSplash] = useState(false);
   const [splashImage, setSplashImage] = useState<string>('');
-  const [userPoints, setUserPoints] = useState<number>(0);
-  const [tokenStatus, setTokenStatus] = useState<'loading' | 'valid' | 'invalid' | 'missing'>('loading');
   
-  // Get auth token from localStorage dengan state untuk reactivity
-  const [authToken, setAuthToken] = useState<string | null>(null);
-  
-  // Initialize auth token
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const userId = localStorage.getItem('userId');
-    setAuthToken(token);
-    
-    if (!token) {
-      setTokenStatus('missing');
-      setUserPoints(0);
-      console.log('🔑 No auth token found in localStorage');
-    } else {
-      setTokenStatus('loading');
-      console.log('🔑 Auth token found:', token.substring(0, 10) + '...');
-      if (userId) {
-        console.log('👤 User ID from login:', userId);
-      }
-    }
-  }, []);
+  // Get current user points from auth store
+  const userPoints = user?.points || 0;
   
   // Panggil useSplash hook
   const { data: splashData, isLoading: splashLoading, error: splashError } = useSplash();
@@ -95,20 +80,20 @@ const Dashboard: React.FC = () => {
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData } = useSlider();
   
-  // Panggil useLedger hook dengan auth token - hanya jika token valid
-  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger(authToken);
+  // Panggil useLedger hook - now uses Zustand auth store internally
+  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
 
   // Check if Partnership should be displayed
   const shouldShowPartnership = sliderData?.content?.result && 
                                Array.isArray(sliderData.content.result) && 
                                sliderData.content.result.length > 0;
 
-  // Log ledger response ke console
+  // Log ledger response and update points in Zustand store
   useEffect(() => {
     console.log('🔍 Auth Token Status:', { 
       authToken: authToken ? authToken.substring(0, 10) + '...' : null, 
       hasToken: !!authToken,
-      tokenStatus 
+      isAuthenticated 
     });
     
     if (ledgerData) {
@@ -116,9 +101,9 @@ const Dashboard: React.FC = () => {
       
       // Check if response indicates invalid token
       if (ledgerData.error && ledgerData.error.includes('Invalid Token')) {
-        setTokenStatus('invalid');
-        setUserPoints(0);
-        console.log('❌ Token is invalid or expired');
+        console.log('❌ Token is invalid or expired, logging out');
+        logout();
+        navigate('/login');
         return;
       }
       
@@ -126,8 +111,7 @@ const Dashboard: React.FC = () => {
       if (ledgerData.content) {
         // API returns points directly in content.point
         const points = ledgerData.content.point || 0;
-        setUserPoints(points);
-        setTokenStatus('valid');
+        updatePoints(points);
         console.log('💰 User Points from API:', points);
         console.log('📊 Additional ledger info:', {
           userId: ledgerData.content.userid,
@@ -136,25 +120,20 @@ const Dashboard: React.FC = () => {
         });
       } else {
         // Jika tidak ada content, set points ke 0
-        setUserPoints(0);
-        setTokenStatus('invalid');
+        updatePoints(0);
         console.log('⚠️ No ledger content available, points set to 0');
       }
     }
     
     if (ledgerError) {
       console.error('❌ Ledger API Error:', ledgerError);
-      setTokenStatus('invalid');
-      setUserPoints(0); // Set points ke 0 jika ada error
+      updatePoints(0); // Set points ke 0 jika ada error
     }
     
     if (ledgerLoading) {
       console.log('⏳ Ledger API Loading...');
-      if (authToken) {
-        setTokenStatus('loading');
-      }
     }
-  }, [authToken, ledgerData, ledgerError, ledgerLoading, tokenStatus]);
+  }, [authToken, ledgerData, ledgerError, ledgerLoading, isAuthenticated, updatePoints, logout, navigate]);
 
   // Log response ke console
   useEffect(() => {
@@ -208,7 +187,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleTransactionClick = () => {
-    requireAuth(() => navigate('/profile/transaction-history'), 'view transaction history');
+    requireAuth(() => navigate('/orders'), 'view transaction history');
   };
 
   const handleRedeemClick = () => {

@@ -2,53 +2,50 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdRefresh, MdShoppingCart, MdCancel, MdCheckCircle, MdPending } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
+import { useAuthStore } from '../stores/authStore';
 import { useOrders } from '../api/hooks';
 import type { OrderItem } from '../api/ordersApi';
 import './orders.css';
 
 const Orders: React.FC = () => {
   const navigate = useNavigate();
-  const [authToken, setAuthToken] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Use Zustand auth store
+  const { isAuthenticated } = useAuthStore();
 
-  // Initialize auth token
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-    setAuthToken(token);
-  }, [navigate]);
-
-  // Use orders hook with 3-second refresh interval
+  // Use orders hook - now uses Zustand auth store internally
   const {
     data: ordersData,
     isLoading,
     error,
     refetch,
     isFetching
-  } = useOrders(
-    {
-      limit: "120",
-      offset: "0",
-      confirm: "",
-      paid: "",
-      date: ""
-    },
-    authToken
-  );
+  } = useOrders({
+    limit: "120",
+    offset: "0",
+    confirm: "",
+    paid: "",
+    date: ""
+  });
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Set up auto-refresh every 3 seconds
   useEffect(() => {
-    if (!authToken) return;
+    if (!isAuthenticated) return;
 
     const interval = setInterval(() => {
       refetch();
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [authToken, refetch]);
+  }, [isAuthenticated, refetch]);
 
   const handleBackClick = () => {
     navigate('/');
@@ -118,7 +115,7 @@ const Orders: React.FC = () => {
     }).format(numAmount);
   };
 
-  if (!authToken) {
+  if (!isAuthenticated) {
     return (
       <div className="orders-page">
         <AppbarDefault

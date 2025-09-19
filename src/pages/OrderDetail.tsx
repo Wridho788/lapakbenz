@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdOpenInNew } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
+import { useAuthStore } from '../stores/authStore';
 import { useOrderDetail } from '../api/hooks';
 import './OrderDetail.css';
 
 const OrderDetail: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const { isAuthenticated } = useAuthStore();
 
-  // Initialize auth token
+  // Redirect if not authenticated
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (!token) {
+    if (!isAuthenticated) {
       navigate('/login');
-      return;
     }
-    setAuthToken(token);
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   const {
     data: orderDetail,
     isLoading,
     error,
     refetch
-  } = useOrderDetail(orderId || '', authToken);
+  } = useOrderDetail(orderId || '');
 
   const handleBackClick = () => {
     navigate('/orders');
@@ -125,21 +123,6 @@ const OrderDetail: React.FC = () => {
         return 'pending';
     }
   };
-
-  if (!authToken) {
-    return (
-      <div className="order-detail-page">
-        <AppbarDefault
-          title="Order Detail"
-          onBack={handleBackClick}
-        />
-        <div className="order-detail-error">
-          <h3>Authentication Required</h3>
-          <p>Please login to view order details</p>
-        </div>
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (

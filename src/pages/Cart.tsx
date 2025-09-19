@@ -13,6 +13,7 @@ import {
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
+import { useAuthStore } from '../stores/authStore';
 import { useCart, useRemoveFromCart, useAddToCart } from '../api/hooks';
 import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
 import Swal from 'sweetalert2';
@@ -46,6 +47,7 @@ interface OrderingStatus {
 const Cart: React.FC = () => {
   const navigate = useNavigate();
   const { cartCount, removeFromCart } = useCartContext();
+  const { isAuthenticated, token: authToken, requireAuth } = useAuthStore();
   const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null);
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
   const [orderingStatus, setOrderingStatus] = useState<OrderingStatus>({
@@ -57,18 +59,12 @@ const Cart: React.FC = () => {
     totalItems: 0,
   });
 
-  // Auth token state
-  const [authToken, setAuthToken] = useState<string | null>(null);
-
-  // Load auth token from localStorage
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
-    console.log(
-      '🔑 Auth token loaded for cart:',
-      token ? `${token.substring(0, 20)}...` : 'No token',
-    );
-  }, []);
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   // API hooks for cart
   const {
@@ -76,7 +72,7 @@ const Cart: React.FC = () => {
     isLoading: cartLoading,
     error: cartError,
     refetch: refetchCart,
-  } = useCart(authToken);
+  } = useCart();
   const removeAllFromCartMutation = useRemoveFromCart();
   const addToCartMutation = useAddToCart();
 
@@ -87,13 +83,14 @@ const Cart: React.FC = () => {
 
   // Handle quantity change for API cart items
   const handleQuantityChange = async (item: any, newQuantity: number) => {
-    if (!authToken) {
+    if (!requireAuth(() => {}, 'update cart quantity')) {
       await Swal.fire({
         icon: 'warning',
         title: 'Login Required',
         text: 'Please login to update cart',
         confirmButtonColor: '#f39c12',
       });
+      navigate('/login');
       return;
     }
 
@@ -110,7 +107,6 @@ const Cart: React.FC = () => {
           sku: item.sku,
           qty: newQuantity.toString(),
         },
-        authToken,
       });
 
       refetchCart();
@@ -178,7 +174,7 @@ const Cart: React.FC = () => {
   };
 
   const handleRemoveAllFromCart = async () => {
-    if (!authToken) {
+    if (!requireAuth(() => {}, 'clear cart')) {
       await Swal.fire({
         icon: 'warning',
         title: 'Login Required',
@@ -207,7 +203,7 @@ const Cart: React.FC = () => {
     try {
       console.log('🗑️ Removing all items from cart...');
 
-      await removeAllFromCartMutation.mutateAsync(authToken);
+      await removeAllFromCartMutation.mutateAsync(authToken!);
 
       await Swal.fire({
         icon: 'success',
@@ -254,13 +250,14 @@ const Cart: React.FC = () => {
 
   // New order flow function
   const handlePlaceOrder = async () => {
-    if (!authToken) {
+    if (!requireAuth(() => {}, 'place order')) {
       await Swal.fire({
         icon: 'warning',
         title: 'Login Required',
         text: 'Please login to place order',
         confirmButtonColor: '#f39c12',
       });
+      navigate('/login');
       return;
     }
 
@@ -315,7 +312,7 @@ const Cart: React.FC = () => {
     try {
       // Step 1: Create Order (useAddOrder)
       console.log('📝 Step 1: Creating new order...');
-      const orderResponse = await addOrderMutation.mutateAsync(authToken);
+      const orderResponse = await addOrderMutation.mutateAsync(authToken!);
       
       if (!orderResponse?.content?.id) {
         throw new Error('Failed to create order - no order ID returned');
@@ -365,7 +362,7 @@ const Cart: React.FC = () => {
           const itemResponse = await addItemToOrderMutation.mutateAsync({
             orderId,
             data: itemPayload,
-            authToken,
+            authToken: authToken!,
           });
 
           console.log(`✅ Item ${i + 1} added successfully:`, itemResponse);
@@ -393,7 +390,7 @@ const Cart: React.FC = () => {
       console.log('💳 Step 3: Processing checkout for order:', orderId);
       const checkoutResponse = await checkoutOrderMutation.mutateAsync({
         orderId,
-        authToken,
+        authToken: authToken!,
       });
 
       console.log('✅ Step 3 completed: Checkout processed successfully');
@@ -414,7 +411,7 @@ const Cart: React.FC = () => {
         console.log('📄 Invoice URL found:', checkoutResponse.content.invoice_url);
         
         // Clear cart after successful order
-        await removeAllFromCartMutation.mutateAsync(authToken);
+        await removeAllFromCartMutation.mutateAsync(authToken!);
         refetchCart();
 
         // Navigate to invoice page with the invoice_url
@@ -441,7 +438,7 @@ const Cart: React.FC = () => {
       console.log('🎊 Order process completed successfully!');
       
       // Clear cart after successful order
-      await removeAllFromCartMutation.mutateAsync(authToken);
+      await removeAllFromCartMutation.mutateAsync(authToken!);
       refetchCart();
 
       // Navigate to orders page or home
@@ -622,14 +619,14 @@ const Cart: React.FC = () => {
             </div>
 
             {/* Loading State */}
-            {cartLoading && authToken && (
+            {cartLoading && isAuthenticated && (
               <div className="cart-loading">
                 <p>Loading cart items...</p>
               </div>
             )}
 
             {/* Error State */}
-            {cartError && authToken && (
+            {cartError && isAuthenticated && (
               <div className="cart-error">
                 <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
                   Failed to load cart from server

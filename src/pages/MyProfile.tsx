@@ -4,12 +4,13 @@ import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useProfile, useUpdateProfile, useUploadImage, useCity } from '../api/hooks';
+import { useAuthStore } from '../stores/authStore';
 import './AccountPages.css';
 
 const MyProfile: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const { isAuthenticated, token: authToken } = useAuthStore();
   const [formData, setFormData] = useState({
     tname: '',
     tphone1: '',
@@ -23,14 +24,15 @@ const MyProfile: React.FC = () => {
     tdob: ''
   });
 
-  // Load auth token
+  // Redirect if not authenticated
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
-  }, []);
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   // API hooks
-  const { data: profileData, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile(authToken);
+  const { data: profileData, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile();
   const updateProfileMutation = useUpdateProfile();
   const uploadImageMutation = useUploadImage();
   const { data: cityData, isLoading: cityLoading, error: cityError } = useCity();
@@ -212,8 +214,7 @@ const MyProfile: React.FC = () => {
         console.log('📤 Update Profile Payload:', payload);
 
         await updateProfileMutation.mutateAsync({
-          data: payload,
-          authToken
+          data: payload
         });
         Swal.fire({
           icon: 'success',

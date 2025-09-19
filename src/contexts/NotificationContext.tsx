@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useNotifications as useNotificationsApi, useUnreadNotifications } from '../api/hooks';
 
@@ -47,14 +47,7 @@ const transformApiNotification = (apiNotification: any): NotificationItem => {
 };
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [authToken, setAuthToken] = useState<string | null>(null);
   const [localNotifications, setLocalNotifications] = useState<NotificationItem[]>([]);
-
-  // Initialize auth token
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
-  }, []);
 
   // Fetch all notifications
   const { 
@@ -62,14 +55,14 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     isLoading: notificationLoading, 
     error: notificationError,
     refetch: refetchNotifications
-  } = useNotificationsApi(authToken);
+  } = useNotificationsApi();
 
   // Fetch unread notifications count
   const { 
     data: unreadData, 
     isLoading: unreadLoading, 
     error: unreadError 
-  } = useUnreadNotifications(authToken);
+  } = useUnreadNotifications();
 
   // Log errors for debugging
   React.useEffect(() => {

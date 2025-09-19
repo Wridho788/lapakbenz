@@ -3,10 +3,10 @@ import { useNotifications } from '../api/hooks';
 import type { NotificationPayload } from '../api/types';
 
 interface NotificationFiltersProps {
-  authToken: string | null;
+  // No longer need authToken as prop since using Zustand
 }
 
-const NotificationFilters: React.FC<NotificationFiltersProps> = ({ authToken }) => {
+const NotificationFilters: React.FC<NotificationFiltersProps> = () => {
   const [payload, setPayload] = useState<NotificationPayload>({
     type: "",
     campaign: "",
@@ -16,7 +16,7 @@ const NotificationFilters: React.FC<NotificationFiltersProps> = ({ authToken }) 
   });
 
   // Use the notifications hook with dynamic payload
-  const { data, isLoading, error, refetch } = useNotifications(authToken, payload);
+  const { data, isLoading, error, refetch } = useNotifications(payload);
 
   const handlePayloadChange = (key: keyof NotificationPayload, value: string) => {
     setPayload(prev => ({

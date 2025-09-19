@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useCart } from '../contexts/CartContext';
-import { useProfile, useLedger, useLogout } from '../api/hooks';
+import { useProfile, useLedger } from '../api/hooks';
+import { useAuthStore } from '../stores/authStore';
 import {
   MdPerson,
   MdPayment,
@@ -23,29 +24,20 @@ const Profile: React.FC = () => {
   const { cartCount } = useCart();
   const [activeMembershipTab, setActiveMembershipTab] = useState(0);
   
-  // Auth token state
-  const [authToken, setAuthToken] = useState<string | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  // Auth state
+  const { isAuthenticated, logout: authLogout } = useAuthStore();
 
-  // Load auth token from localStorage
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
-    setIsCheckingAuth(false);
-  }, []); // Remove authToken from dependency to prevent infinite loop
-
-  // Redirect to login if no auth token
-  useEffect(() => {
-    if (!isCheckingAuth && (authToken === null || authToken === '')) {
-      console.log('🚫 No auth token found, redirecting to login');
+    if (!isAuthenticated) {
+      console.log('🚫 Not authenticated, redirecting to login');
       navigate('/login', { replace: true });
     }
-  }, [authToken, isCheckingAuth, navigate]);
+  }, [isAuthenticated, navigate]);
 
   // API hooks
-  const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile(authToken);
-  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger(authToken);
-  const logoutMutation = useLogout();
+  const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile();
+  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
 
   const membershipTabs = ['BASIC', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
 
@@ -69,7 +61,7 @@ const Profile: React.FC = () => {
     };
 
     // If no auth token, return default
-    if (!authToken) {
+    if (!isAuthenticated) {
       return {
         ...defaultData,
         name: 'Please login',
@@ -161,7 +153,7 @@ const Profile: React.FC = () => {
   // Debug information (remove in production)
   useEffect(() => {
     console.log('=== Profile Debug Info ===');
-    console.log('Auth Token:', authToken ? `${authToken.substring(0, 20)}...` : 'No token');
+    console.log('Authentication Status:', isAuthenticated ? 'Authenticated' : 'Not authenticated');
     console.log('Profile Data:', profileData);
     console.log('Ledger Data:', ledgerData);
     console.log('Profile Loading:', profileLoading);
@@ -187,7 +179,7 @@ const Profile: React.FC = () => {
     
     console.log('Processed User Data:', userData);
     console.log('========================');
-  }, [authToken, profileData, ledgerData, profileLoading, ledgerLoading, profileError, ledgerError, userData]);
+  }, [profileData, ledgerData, profileLoading, ledgerLoading, profileError, ledgerError, userData]);
 
   // Account menu items
   const accountMenuItems = [
@@ -239,11 +231,11 @@ const Profile: React.FC = () => {
           cancelButtonColor: '#3085d6',
           confirmButtonText: 'Yes, logout',
           cancelButtonText: 'Cancel'
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            if (!authToken) {
-              console.error('No auth token available for logout');
-              // Still navigate to login even without token
+            if (!isAuthenticated) {
+              console.error('Not authenticated for logout');
+              // Still navigate to login even without authentication
               navigate('/login');
               return;
             }
@@ -260,40 +252,34 @@ const Profile: React.FC = () => {
               }
             });
             
-            // Execute logout API call
-            logoutMutation.mutate(authToken, {
-              onSuccess: (response) => {
-                console.log('✅ Logout successful:', response);
-                // Close loading and show success message
-                Swal.fire({
-                  title: 'Success!',
-                  text: 'You have been logged out successfully',
-                  icon: 'success',
-                  timer: 1500,
-                  showConfirmButton: false
-                }).then(() => {
-                  // Navigate to login page after successful logout
-                  navigate('/login');
-                });
-              },
-              onError: (error) => {
-                console.error('❌ Logout failed:', error);
-                // Even if logout API fails, clear local storage and navigate
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userId');
-                localStorage.removeItem('userLog');
-                
-                Swal.fire({
-                  title: 'Logged out',
-                  text: 'Session cleared locally',
-                  icon: 'warning',
-                  timer: 1500,
-                  showConfirmButton: false
-                }).then(() => {
-                  navigate('/login');
-                });
-              }
-            });
+            // Execute logout using Zustand
+            try {
+              await authLogout();
+              console.log('✅ Logout successful');
+              // Close loading and show success message
+              Swal.fire({
+                title: 'Success!',
+                text: 'You have been logged out successfully',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                // Navigate to login page after successful logout
+                navigate('/login');
+              });
+            } catch (error) {
+              console.error('❌ Logout failed:', error);
+              // Even if logout fails, still navigate to login
+              Swal.fire({
+                title: 'Logged out',
+                text: 'Session cleared locally',
+                icon: 'warning',
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                navigate('/login');
+              });
+            }
           }
         });
         break;
@@ -307,16 +293,14 @@ const Profile: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    // Force reload auth token and refresh data
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
+    // Force refresh data - Zustand handles token management
     console.log('🔄 Profile data refreshed');
   };
 
   const isError = (profileError || ledgerError) && !profileLoading && !ledgerLoading;
 
   // Show loading screen while checking authentication
-  if (isCheckingAuth) {
+  if (profileLoading) {
     return (
       <div className="profile-page">
         <AppbarDefault

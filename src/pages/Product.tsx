@@ -4,6 +4,7 @@ import { MdSearch, MdFilterList } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
+import { useAuthStore } from '../stores/authStore';
 import { useProducts, useProductCategories, useProductSearch } from '../api/hooks';
 import './Product.css';
 
@@ -12,27 +13,23 @@ const Product: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const { cartCount } = useCart();
-  
-  // Auth token state
-  const [authToken, setAuthToken] = useState<string | null>(null);
+  const { isAuthenticated } = useAuthStore();
 
-  // Load auth token from localStorage
+  // Redirect to login if not authenticated
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
-  }, []);
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
 
   // API hooks
-  const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts(
-    {
-      limit: 3000,
-      offset: 0,
-      orderby: '',
-      order: 'asc',
-      category: selectedCategory,
-    },
-    authToken
-  );
+  const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
+    limit: 3000,
+    offset: 0,
+    orderby: '',
+    order: 'asc',
+    category: selectedCategory,
+  });
 
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useProductCategories();
   
@@ -78,6 +75,8 @@ const Product: React.FC = () => {
     if (productsData?.content?.result) {
       return productsData.content.result;
     }
+
+    console.log(productsData,'sass');
     
     return [];
   }, [productsData, productSearchMutation.data]);
@@ -99,6 +98,7 @@ const Product: React.FC = () => {
         (product.category || '').toLowerCase() === selectedCategory.toLowerCase()
       );
     }
+    console.log(products,'sass');
 
     return filtered;
   }, [products, searchQuery, selectedCategory, productSearchMutation.isPending]);

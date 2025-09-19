@@ -5,6 +5,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
 import { useProductDetail, useAddToCart } from '../api/hooks';
+import { useAuthStore } from '../stores/authStore';
 import Swal from 'sweetalert2';
 import './ProductDetail.css';
 
@@ -28,15 +29,8 @@ const ProductDetail: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { addToCart, cartCount } = useCart();
   
-  // Auth token state
-  const [authToken, setAuthToken] = useState<string | null>(null);
-
-  // Load auth token from localStorage
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    setAuthToken(token);
-    console.log('🔑 Auth token loaded for product detail:', token ? `${token.substring(0, 20)}...` : 'No token');
-  }, []);
+  // Auth state
+  const { isAuthenticated } = useAuthStore();
 
   // Log when productId changes
   useEffect(() => {
@@ -45,8 +39,7 @@ const ProductDetail: React.FC = () => {
 
   // API hook for product detail
   const { data: productDetailData, isLoading: productLoading, error: productError } = useProductDetail(
-    productId || '',
-    authToken
+    productId || ''
   );
 
   // Add to cart mutation hook
@@ -170,7 +163,7 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!authToken) {
+    if (!isAuthenticated) {
       await Swal.fire({
         icon: 'warning',
         title: 'Login Required',
@@ -192,8 +185,7 @@ const ProductDetail: React.FC = () => {
         data: {
           sku: productSku,
           qty: quantity.toString()
-        },
-        authToken
+        }
       });
 
       // Show success message with SweetAlert
@@ -315,7 +307,7 @@ const ProductDetail: React.FC = () => {
       )}
 
       {/* Product Content - show if not loading and no error, or if we have dummy data */}
-      {(!productLoading && !productError || !authToken) && (
+      {(!productLoading && !productError || !isAuthenticated) && (
         <div className="product-detail-content">
         {/* Product Images */}
         <div className="product-images-section">
