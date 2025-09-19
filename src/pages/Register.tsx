@@ -111,16 +111,13 @@ const Register: React.FC = () => {
       await Swal.fire({
         icon: 'success',
         title: 'Registration Successful!',
-        text: 'Please verify your phone number to complete registration.',
+        text: 'Your registration will be processed offline by admin.',
         confirmButtonColor: '#28a745',
         timer: 3000,
         timerProgressBar: true
       });
       
-      // Navigate to request OTP page with phone number
-      navigate('/request-otp', { 
-        state: { phone: formData.phone } 
-      });
+      
     } catch (error: any) {
       console.error('Registration failed:', error);
       

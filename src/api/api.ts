@@ -7,7 +7,9 @@ import {
   ENDPOINT_EVENT,
   ENDPOINT_ARTICLE,
   ENDPOINT_EVENT_BY_ID,
-  ENDPOINT_CITY_GET_CITY
+  ENDPOINT_CITY_GET_CITY,
+  ENDPOINT_EVENT_GET_BY_CUSTOMER,
+  ENDPOINT_EVENT_REGISTER_MERCHANT
 } from "./constants";
 
 export const getLedger = async (authToken: string) => {
@@ -57,5 +59,30 @@ export const getCity = async () => {
   const url = `${BASE_URL}${ENDPOINT_CITY_GET_CITY}`;
   
   const response = await axios.get(url);
+  return response.data;
+};
+
+export const getEventsByCustomer = async (authToken: string, data?: any) => {
+  const defaultPayload = {
+    "limit": 30,
+    "offset": 0
+  };
+  const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
+  
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_GET_BY_CUSTOMER}`, payload, {
+    headers: {
+      'X-auth-token': authToken,
+    },
+  });
+  return response.data;
+};
+
+export const registerMerchant = async (authToken: string, formData: FormData) => {
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_REGISTER_MERCHANT}`, formData, {
+    headers: {
+      'X-auth-token': authToken,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };

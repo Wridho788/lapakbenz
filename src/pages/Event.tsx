@@ -24,8 +24,9 @@ interface EventItem {
   type_desc: string;
   done: number;
   done_desc: string;
+  allow_merchant?: number;
+  allow_public?: number;
 }
-
 
 const tabs = ['Upcoming', 'Completed', 'News'];
 
@@ -79,11 +80,12 @@ const Event: React.FC = () => {
   const PULL_THRESHOLD = 60;
   const navigate = useNavigate();
   const { cartCount } = useCart();
-  
+
   // API hooks
   const eventMutation = usePostEvent();
   const articleMutation = usePostArticle();
-  const eventByIdQuery = useEventById(selectedEventId ?? '');
+  // Only call useEventById when modal is open and eventId is selected
+  const eventByIdQuery = useEventById(modalOpen && selectedEventId ? selectedEventId : '');
 
   // Pull to refresh handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -117,9 +119,10 @@ const Event: React.FC = () => {
     try {
       // Refresh current tab data
       if (activeTab === 0 || activeTab === 1) {
-        const payload = activeTab === 0 
-          ? { status: "0", limit: 100, offset: 0, chapter: "" }
-          : { status: "1", limit: 100, offset: 0, chapter: "" };
+        const payload =
+          activeTab === 0
+            ? { status: '0', limit: 100, offset: 0, chapter: '' }
+            : { status: '1', limit: 100, offset: 0, chapter: '' };
         eventMutation.mutate(payload);
       } else if (activeTab === 2) {
         articleMutation.mutate({});
@@ -133,9 +136,10 @@ const Event: React.FC = () => {
   useEffect(() => {
     if (activeTab === 0 || activeTab === 1) {
       // Fetch events for upcoming/completed
-      const payload = activeTab === 0 
-        ? { status: "0", limit: 100, offset: 0, chapter: "" } // upcoming
-        : { status: "1", limit: 100, offset: 0, chapter: "" }; // completed
+      const payload =
+        activeTab === 0
+          ? { status: '0', limit: 100, offset: 0, chapter: '' } // upcoming
+          : { status: '1', limit: 100, offset: 0, chapter: '' }; // completed
       eventMutation.mutate(payload);
     } else if (activeTab === 2) {
       // Fetch articles for news
@@ -164,10 +168,15 @@ const Event: React.FC = () => {
 
   useEffect(() => {
     if (eventByIdQuery.data) {
-      console.log('Event by ID response:', eventByIdQuery.data);
+      console.log('🎉 Event by ID response:', eventByIdQuery.data);
+      if (eventByIdQuery.data.content) {
+        console.log('📋 Event Detail Data:', eventByIdQuery.data.content);
+        console.log('🔍 Allow Merchant:', eventByIdQuery.data.content.allow_merchant);
+        console.log('🔍 Allow Public:', eventByIdQuery.data.content.allow_public);
+      }
     }
     if (eventByIdQuery.error) {
-      console.error('Event by ID error:', eventByIdQuery.error);
+      console.error('❌ Event by ID error:', eventByIdQuery.error);
     }
   }, [eventByIdQuery.data, eventByIdQuery.error]);
 
@@ -188,12 +197,27 @@ const Event: React.FC = () => {
     setModalOpen(true);
   };
 
+  const handleMerchantRegistration = () => {
+    console.log('🏪 Merchant Registration clicked for event:', selectedEventId);
+    if (selectedEventId) {
+      navigate(`/merchant-registration/${selectedEventId}`);
+    } else {
+      console.error('❌ No event ID selected for merchant registration');
+    }
+  };
+
+  const handlePublicRegistration = () => {
+    console.log('👤 Public Registration clicked for event:', selectedEventId);
+    // TODO: Navigate to public registration
+    // navigate(`/event/${selectedEventId}/register-public`);
+  };
+
   const getFilteredData = () => {
     if (activeTab === 2) {
       // News data from article API
       return articleMutation.data?.content?.result ?? [];
     } else {
-      // Event data from event API  
+      // Event data from event API
       const events: EventItem[] = eventMutation.data?.content?.result ?? [];
       if (activeTab === 0) {
         // Upcoming: done = 0
@@ -214,28 +238,36 @@ const Event: React.FC = () => {
   };
 
   return (
-    <div 
+    <div
       className="event-page"
       ref={pullRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       style={{
-        overscrollBehavior: 'contain'
+        overscrollBehavior: 'contain',
       }}
     >
-      <AppbarDefault title="Events" onBack={handleBackClick} onCartClick={handleCartClick} cartCount={cartCount} />
+      <AppbarDefault
+        title="Events"
+        onBack={handleBackClick}
+        onCartClick={handleCartClick}
+        cartCount={cartCount}
+      />
 
-      <div style={{
-        height: pullDistance > 0 ? pullDistance : 0,
-        transition: pulling.current ? 'none' : 'height 0.2s ease',
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'center',
-        fontSize: '12px',
-        color: '#555'
-      }}>
-        {(pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') + (refreshing ? ' • refreshing...' : '')}
+      <div
+        style={{
+          height: pullDistance > 0 ? pullDistance : 0,
+          transition: pulling.current ? 'none' : 'height 0.2s ease',
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'center',
+          fontSize: '12px',
+          color: '#555',
+        }}
+      >
+        {(pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') +
+          (refreshing ? ' • refreshing...' : '')}
       </div>
 
       <div className="event-tabs">
@@ -259,8 +291,8 @@ const Event: React.FC = () => {
           ) : (
             getFilteredData().map((item: any) =>
               tabs[activeTab] === 'News' ? (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   className="custom-event-card"
                   onClick={() => item.text && window.open(item.text, '_blank')}
                   style={{ cursor: item.text ? 'pointer' : 'default' }}
@@ -268,8 +300,8 @@ const Event: React.FC = () => {
                   <div className="event-row">
                     <div className="event-img-col">
                       <img
-                        src={item.image || "/bea2x.jpg"}
-                        alt={item.title || "News"}
+                        src={item.image || '/bea2x.jpg'}
+                        alt={item.title || 'News'}
                         style={{
                           maxWidth: '70px',
                           height: '50px',
@@ -278,7 +310,7 @@ const Event: React.FC = () => {
                         }}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = "/bea2x.jpg";
+                          target.src = '/bea2x.jpg';
                         }}
                       />
                     </div>
@@ -293,8 +325,8 @@ const Event: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   className="custom-event-card"
                   onClick={() => handleEventClick(item.id)}
                   style={{ cursor: 'pointer' }}
@@ -302,8 +334,8 @@ const Event: React.FC = () => {
                   <div className="event-row">
                     <div className="event-img-col">
                       <img
-                        src={item.image || "/bea2x.jpg"}
-                        alt={item.name || "Event"}
+                        src={item.image || '/bea2x.jpg'}
+                        alt={item.name || 'Event'}
                         style={{
                           maxWidth: '70px',
                           height: '50px',
@@ -312,17 +344,21 @@ const Event: React.FC = () => {
                         }}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.src = "/bea2x.jpg";
+                          target.src = '/bea2x.jpg';
                         }}
                       />
                     </div>
                     <div className="event-info-col">
                       <div className="event-title-row">
-                        <h3 className="event-title">{item.code} - {item.name}</h3>
+                        <h3 className="event-title">
+                          {item.code} - {item.name}
+                        </h3>
                         <span className="event-chapter">{item.chapter}</span>
                       </div>
                       <div className="event-date-row">
-                        <span className="event-date">{item.dates} - {item.time}</span>
+                        <span className="event-date">
+                          {item.dates} - {item.time}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -346,11 +382,11 @@ const Event: React.FC = () => {
             <img
               src={eventByIdQuery.data.content.image}
               alt={eventByIdQuery.data.content.name}
-              style={{ width: '100%', borderRadius: 8, marginBottom: 12 }}
+              style={{ width: '100%', borderRadius: 8 }}
             />
-            <h2>
+            <h3>
               {eventByIdQuery.data.content.code} - {eventByIdQuery.data.content.name}
-            </h2>
+            </h3>
             <div style={{ display: 'flex', gap: 24 }}>
               {/* Kolom kiri */}
               <div style={{ flex: 1 }}>
@@ -394,9 +430,136 @@ const Event: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            {/* Registration Navigation */}
+            {(eventByIdQuery.data.content.allow_merchant === 1 ||
+              eventByIdQuery.data.content.allow_public === 1) && (
+              <div
+                style={{
+                  paddingTop: 24,
+                  borderTop: '2px solid #f0f0f0',
+                  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                  borderRadius: '12px',
+                  padding: '8px',
+                  boxShadow:
+                    '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 16,
+                    width: '100%',
+                    flexDirection: window.innerWidth < 400 ? 'column' : 'row',
+                  }}
+                >
+                  {/* Merchant Registration Button */}
+                  {eventByIdQuery.data.content.allow_merchant === 1 && (
+                    <button
+                      onClick={handleMerchantRegistration}
+                      style={{
+                        flex: 1,
+                        padding: '16px 20px',
+                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        fontSize: '15px',
+                        letterSpacing: '0.025em',
+                        boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(59, 130, 246, 0.5)';
+                        e.currentTarget.style.background =
+                          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(59, 130, 246, 0.39)';
+                        e.currentTarget.style.background =
+                          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+                      }}
+                      onMouseDown={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                        }}
+                      >
+                        <span style={{ fontSize: '18px' }}>🏪</span>
+                        <span>Merchant Registration</span>
+                      </div>
+                    </button>
+                  )}
+
+                  {/* Public Registration Button */}
+                  {eventByIdQuery.data.content.allow_public === 1 && (
+                    <button
+                      onClick={handlePublicRegistration}
+                      style={{
+                        flex: 1,
+                        padding: '16px 20px',
+                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        fontSize: '15px',
+                        letterSpacing: '0.025em',
+                        boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.39)',
+                        position: 'relative',
+                        overflow: 'hidden',
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(16, 185, 129, 0.5)';
+                        e.currentTarget.style.background =
+                          'linear-gradient(135deg, #059669 0%, #047857 100%)';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(16, 185, 129, 0.39)';
+                        e.currentTarget.style.background =
+                          'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                      }}
+                      onMouseDown={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                        }}
+                      >
+                        <span style={{ fontSize: '18px' }}>👤</span>
+                        <span>Public Registration</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          <div>Loading...</div>
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            {eventByIdQuery.isLoading ? 'Loading event details...' : 'No event data available'}
+          </div>
         )}
       </Modal>
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />

@@ -10,6 +10,8 @@ import {
   postArticle,
   getEventById,
   getCity,
+  getEventsByCustomer,
+  registerMerchant,
 } from './api';
 import { customerApi } from './customerApi';
 import { productAPI } from './productApi';
@@ -117,6 +119,29 @@ export function useEventById(id: string): UseQueryResult<any, Error> {
     },
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+}
+
+interface UseEventsByCustomerPayload {
+  limit?: number;
+  offset?: number;
+}
+
+export function useEventsByCustomer(payload: UseEventsByCustomerPayload = {}): UseQueryResult<any, Error> {
+  const { token, isAuthenticated } = useAuthStore();
+
+  const defaultPayload = {
+    limit: 30,
+    offset: 0,
+    ...payload,
+  };
+
+  return useQuery({
+    queryKey: ['eventsByCustomer', JSON.stringify(defaultPayload), token],
+    queryFn: () => getEventsByCustomer(token!, defaultPayload),
+    enabled: isAuthenticated,
+    staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,
   });
 }
@@ -660,5 +685,43 @@ export function useOrderDetail(orderId: string): UseQueryResult<OrderDetailRespo
       return failureCount < 2;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}
+
+// Merchant Registration Hook
+interface UseMerchantRegistrationPayload {
+  eventid: string;
+  name: string;
+  cp: string;
+  address: string;
+  phone: string;
+  email: string;
+  menu: string;
+  qty: string;
+}
+
+export function useMerchantRegistration(): UseMutationResult<any, Error, UseMerchantRegistrationPayload> {
+  const { token } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async (payload: UseMerchantRegistrationPayload) => {
+      try {
+        const formData = new FormData();
+        formData.append('eventid', payload.eventid);
+        formData.append('name', payload.name);
+        formData.append('cp', payload.cp);
+        formData.append('address', payload.address);
+        formData.append('phone', payload.phone);
+        formData.append('email', payload.email);
+        formData.append('menu', payload.menu);
+        formData.append('qty', payload.qty);
+
+        console.log('🏪 Merchant Registration Payload:', payload);
+        return await registerMerchant(token!, formData);
+      } catch (error) {
+        console.error('❌ Merchant Registration Error:', error);
+        throw error;
+      }
+    },
   });
 }

@@ -13,7 +13,7 @@
 .account-card {
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: 12px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 80px; /* Space for FAB */
 }
@@ -133,10 +133,8 @@ form {
 .event-item,
 .transaction-item,
 .redeem-item {
-  display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -365,7 +363,7 @@ form {
   }
   
   .account-card {
-    padding: 20px;
+    padding: 12px;
   }
   
   .payment-item,
