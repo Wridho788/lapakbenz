@@ -114,10 +114,10 @@ const OrderDetail: React.FC = () => {
     }
     
     switch (status.toLowerCase()) {
-      case 'success':
+      case 'SUCCESSFUL':
         return 'paid';
       case 'failed':
-      case 'cancel':
+      case 'C':
         return 'canceled';
       default:
         return 'pending';
@@ -190,7 +190,7 @@ const OrderDetail: React.FC = () => {
 
       <div className="order-detail-content">
         {/* Payment Status Banner */}
-        {(order.status === 'success') && (
+        {(order.status === 'SUCCESSFUL') && (
           <div className="payment-success-banner">
             <MdCheckCircle className="success-icon" />
             <div className="success-info">
