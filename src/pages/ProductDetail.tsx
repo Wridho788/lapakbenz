@@ -29,8 +29,8 @@ const ProductDetail: React.FC = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { addToCart, cartCount } = useCart();
   
-  // Auth state
-  const { isAuthenticated } = useAuthStore();
+  // Auth state - get all needed auth properties
+  const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
 
   // Log when productId changes
   useEffect(() => {
@@ -163,13 +163,36 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
+    // Enhanced authentication check using authStore methods
+    const isTokenValid = validateToken();
+    
+    if (!isAuthenticated || !token || !isTokenValid) {
+      console.log('🔒 Authentication required for adding to cart');
+      
       await Swal.fire({
         icon: 'warning',
         title: 'Login Required',
         text: 'Please login to add items to cart',
-        confirmButtonColor: '#f39c12'
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: 'Go to Login',
+        showCancelButton: true,
+        cancelButtonColor: '#6c757d',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login');
+        }
       });
+      return;
+    }
+
+    // Use requireAuth method from authStore for additional validation
+    const canProceed = requireAuth(() => {
+      // This callback will only execute if authentication is valid
+      console.log('✅ Authentication verified, proceeding with add to cart');
+    }, 'add items to cart');
+
+    if (!canProceed) {
       navigate('/login');
       return;
     }
@@ -213,6 +236,24 @@ const ProductDetail: React.FC = () => {
       console.error('Failed to add to cart:', error);
       
       let errorMessage = 'Failed to add item to cart. Please try again.';
+      
+      // Check if error is related to authentication
+      if (error?.response?.status === 401 || error?.message?.toLowerCase().includes('unauthorized')) {
+        errorMessage = 'Your session has expired. Please login again.';
+        
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Session Expired',
+          text: errorMessage,
+          confirmButtonColor: '#f39c12',
+          confirmButtonText: 'Go to Login'
+        }).then(() => {
+          // Logout and redirect to login
+          useAuthStore.getState().logout();
+          navigate('/login');
+        });
+        return;
+      }
       
       if (error?.message) {
         errorMessage = error.message;
@@ -307,7 +348,7 @@ const ProductDetail: React.FC = () => {
       )}
 
       {/* Product Content - show if not loading and no error, or if we have dummy data */}
-      {(!productLoading && !productError || !isAuthenticated) && (
+      {(!productLoading && !productError) && (
         <div className="product-detail-content">
         {/* Product Images */}
         <div className="product-images-section">
@@ -364,6 +405,8 @@ const ProductDetail: React.FC = () => {
             <p>{productData.description}</p>
           </div>
 
+          {/* Hidden specifications section as requested */}
+          {/* 
           <div className="product-specifications">
             <h3>Specifications</h3>
             <ul>
@@ -372,6 +415,7 @@ const ProductDetail: React.FC = () => {
               ))}
             </ul>
           </div>
+          */}
         </div>
 
         {/* Quantity and Add to Cart */}

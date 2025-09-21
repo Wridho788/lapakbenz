@@ -44,6 +44,11 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
   // Ambil hasil eventMutation.data.content.result sebagai completedEvents
   const completedEvents: EventItem[] = eventMutation.data?.content?.result ?? [];
 
+  // Jika result null atau empty, jangan render komponen
+  if (!eventMutation.data?.content?.result || completedEvents.length === 0) {
+    return null;
+  }
+
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const eventByIdQuery = useEventById(selectedEventId ?? '');

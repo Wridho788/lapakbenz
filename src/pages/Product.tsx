@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdFilterList } from 'react-icons/md';
+import { MdSearch, MdFilterList, MdClear } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
@@ -38,11 +38,15 @@ const Product: React.FC = () => {
   // Handle search
   const handleSearch = (query: string) => {
     if (query.trim()) {
+      console.log('🔍 Searching for:', query);
       productSearchMutation.mutate(
-        { filter: query },
+        { filter: query.trim() },
         {
           onSuccess: (data) => {
-            console.log('🔍 Search results:', data);
+            console.log('✅ Search results:', data);
+            if (data?.content?.result === null) {
+              console.log('🔍 No products found for query:', query);
+            }
           },
           onError: (error) => {
             console.error('❌ Search failed:', error);
@@ -66,18 +70,25 @@ const Product: React.FC = () => {
 
   // Process products from API
   const products = useMemo(() => {
-    // If we have search results, use them
-    if (productSearchMutation.data?.content?.result) {
+    // If we have search results (including null results), use them
+    if (productSearchMutation.data?.content) {
+      // Handle case where search returns null results
+      if (productSearchMutation.data.content.result === null || 
+          !Array.isArray(productSearchMutation.data.content.result)) {
+        console.log('🔍 Search returned no results (null/invalid)');
+        return []; // Return empty array for no results
+      }
+      console.log('🔍 Using search results:', productSearchMutation.data.content.result);
       return productSearchMutation.data.content.result;
     }
     
     // Otherwise use products from the main API
-    if (productsData?.content?.result) {
+    if (productsData?.content?.result && Array.isArray(productsData.content.result)) {
+      console.log('📦 Using main products data');
       return productsData.content.result;
     }
-
-    console.log(productsData,'sass');
     
+    console.log('⚠️ No products available');
     return [];
   }, [productsData, productSearchMutation.data]);
 
@@ -85,23 +96,24 @@ const Product: React.FC = () => {
   const filteredProducts = useMemo(() => {
     let filtered = products;
 
-    // Filter by search query if no search mutation is running
-    if (searchQuery && !productSearchMutation.isPending) {
+    // If we have an active search query, products are already filtered by the search API
+    // No need to filter again unless we're using the main products API
+    if (searchQuery.trim() && !productSearchMutation.data?.content) {
+      // Only apply local filtering if search API hasn't been called yet
       filtered = filtered.filter((product: any) =>
         (product.title || product.name || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Filter by category
+    // Filter by category (always apply this filter)
     if (selectedCategory && selectedCategory !== 'All') {
       filtered = filtered.filter((product: any) =>
         (product.category || '').toLowerCase() === selectedCategory.toLowerCase()
       );
     }
-    console.log(products,'sass');
 
     return filtered;
-  }, [products, searchQuery, selectedCategory, productSearchMutation.isPending]);
+  }, [products, searchQuery, selectedCategory, productSearchMutation.data]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -116,16 +128,23 @@ const Product: React.FC = () => {
     navigate('/notifications');
   };
 
-  // Handle search with debouncing
+  // Handle search with debouncing and reset search results when cleared
   useEffect(() => {
-    if (searchQuery.trim() && searchQuery.length > 2) {
+    if (searchQuery.trim()) {
+      // Call search for any non-empty query (removed length > 2 restriction)
       const debounceTimer = setTimeout(() => {
-        handleSearch(searchQuery);
+        handleSearch(searchQuery.trim());
       }, 500);
 
       return () => clearTimeout(debounceTimer);
+    } else if (searchQuery === '') {
+      // Clear search results when search is cleared to return to original product list
+      if (productSearchMutation.data) {
+        productSearchMutation.reset();
+      }
+      // Don't refetch here to prevent infinite loop - just reset search state
     }
-  }, [searchQuery]);
+  }, [searchQuery]); // Removed productSearchMutation and refetchProducts from dependency array
 
   const handleProductClick = (productId: string) => {
     console.log('🛍️ Product clicked with ID:', productId);
@@ -135,6 +154,13 @@ const Product: React.FC = () => {
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category === 'All' ? '' : category);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    if (productSearchMutation.data) {
+      productSearchMutation.reset();
+    }
   };
 
   // Loading states
@@ -162,6 +188,15 @@ const Product: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
             />
+            {searchQuery && (
+              <button
+                onClick={handleClearSearch}
+                className="clear-search-btn"
+                aria-label="Clear search"
+              >
+                <MdClear />
+              </button>
+            )}
           </div>
           
           <div className="filter-section">
@@ -237,8 +272,23 @@ const Product: React.FC = () => {
             {filteredProducts.length === 0 && !isLoading && (
               <div className="empty-state">
                 <img src="/nodata.png" alt="No Products" className="empty-icon" />
-                <h3>No Products Found</h3>
-                <p>Try adjusting your search or filter to find what you're looking for.</p>
+                <h3>
+                  {searchQuery ? `No results found for "${searchQuery}"` : 'No Products Found'}
+                </h3>
+                <p>
+                  {searchQuery 
+                    ? 'Try searching with different keywords or browse our categories.' 
+                    : 'Try adjusting your search or filter to find what you\'re looking for.'
+                  }
+                </p>
+                {searchQuery && (
+                  <button 
+                    onClick={handleClearSearch}
+                    className="clear-search-action-btn"
+                  >
+                    Clear Search
+                  </button>
+                )}
               </div>
             )}
           </div>

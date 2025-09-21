@@ -40,6 +40,11 @@ export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
   // Ambil hasil articleMutation.data.content.result sebagai upcomingNews
   const upcomingNews: NewsItem[] = articleMutation.data?.content?.result ?? [];
 
+  // Jika result null atau empty, jangan render komponen
+  if (!articleMutation.data?.content?.result || upcomingNews.length === 0) {
+    return null;
+  }
+
   const handleNewsClick = (newsId: string) => {
     const news = upcomingNews.find(item => item.id === newsId);
     if (news && news.text) {

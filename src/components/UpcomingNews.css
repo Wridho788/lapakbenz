@@ -162,3 +162,20 @@
 .news-item:focus:not(:focus-visible) {
   outline: none;
 }
+
+/* No news message */
+.no-news-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+  width: 100%;
+  text-align: center;
+}
+
+.no-news-message p {
+  margin: 0;
+  font-size: 0.9rem;
+}

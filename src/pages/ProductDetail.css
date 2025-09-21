@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 .product-detail-page {
   min-height: 100vh;
   background-color: #f5f5f5;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   padding-bottom: 80px; /* Space for bottom nav */
 }
 
@@ -90,7 +90,7 @@
 }
 
 .product-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 24px;
   color: #333;
@@ -132,7 +132,7 @@
 }
 
 .product-price {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 28px;
   color: #161129;
@@ -141,8 +141,8 @@
 
 .product-description h3,
 .product-specifications h3 {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
   font-size: 16px;
   color: #333;
   margin: 0 0 12px 0;
@@ -215,7 +215,7 @@
 }
 
 .purchase-header h3 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 18px;
   color: #161129;
@@ -257,7 +257,7 @@
 }
 
 .quantity-label span {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: #333;
@@ -349,7 +349,7 @@
 }
 
 .quantity-number {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 18px;
   color: #161129;
@@ -371,7 +371,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 .price-row:last-child {
@@ -428,7 +428,7 @@
   border: none;
   padding: 18px 24px;
   border-radius: 12px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 16px;
   cursor: pointer;

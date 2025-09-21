@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 .profile-page {
   min-height: 100vh;
   background-color: #f5f5f5;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 .profile-content {
@@ -15,7 +15,7 @@
   border-radius: 12px;
   padding: 24px;
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
@@ -41,7 +41,7 @@
 }
 
 .user-card-label {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 400;
   font-size: 12px;
   color: white;
@@ -50,7 +50,7 @@
 }
 
 .user-card-value {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 16px;
   color: white;
@@ -82,13 +82,13 @@
   border-radius: 12px;
   padding: 24px;
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 }
 
 .membership-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 16px;
   color: white;
@@ -120,7 +120,7 @@
   background: transparent;
   border: none;
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 400;
   font-size: 12px;
   padding: 8px 4px;
@@ -152,7 +152,7 @@
 
 .membership-content {
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 1.5;
@@ -188,7 +188,7 @@
 }
 
 .account-menu-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 16px;
   color: #333;
@@ -241,7 +241,7 @@
 }
 
 .account-menu-text {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 400;
   font-size: 14px;
   color: #333;

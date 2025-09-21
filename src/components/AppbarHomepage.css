@@ -33,12 +33,13 @@
 }
 
 .appbar-avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px; /* Increased from 40px */
+  height: 48px; /* Increased from 40px */
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.2);
   transition: transform 0.2s ease, border-color 0.2s ease;
+  background-color: white;
 }
 
 .appbar-avatar:hover {

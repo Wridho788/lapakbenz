@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
 
 .account-page {
   min-height: 100vh;
   background-color: #f5f5f5;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 .account-content {
@@ -19,7 +19,7 @@
 }
 
 .account-card h3 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: 18px;
   color: #333;
@@ -33,7 +33,7 @@
 
 .form-group label {
   display: block;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: #333;
@@ -47,7 +47,7 @@
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -75,7 +75,7 @@
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -113,7 +113,7 @@ form {
 }
 
 .empty-state h3 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 18px;
   color: #333;
@@ -121,7 +121,7 @@ form {
 }
 
 .empty-state p {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 14px;
   color: #666;
   margin: 0;
@@ -156,7 +156,7 @@ form {
 .event-info h4,
 .transaction-info h4,
 .redeem-info h4 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 16px;
   color: #333;
@@ -167,7 +167,7 @@ form {
 .event-info p,
 .transaction-info p,
 .redeem-info p {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 14px;
   color: #666;
   margin: 2px 0;
@@ -180,7 +180,7 @@ form {
 .redeem-status {
   padding: 6px 12px;
   border-radius: 16px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
@@ -232,7 +232,7 @@ form {
 }
 
 .password-requirements h4 {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: #333;
@@ -245,7 +245,7 @@ form {
 }
 
 .password-requirements li {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 12px;
   color: #666;
   margin-bottom: 4px;
@@ -305,12 +305,12 @@ form {
 
 .message-content p {
   margin: 0 0 4px 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 14px;
 }
 
 .timestamp {
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 11px;
   opacity: 0.7;
 }
@@ -331,7 +331,7 @@ form {
   padding: 12px 16px;
   border: 1px solid #ddd;
   border-radius: 24px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-size: 14px;
   outline: none;
 }
@@ -346,7 +346,7 @@ form {
   border: none;
   padding: 12px 24px;
   border-radius: 24px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Lato', sans-serif;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;

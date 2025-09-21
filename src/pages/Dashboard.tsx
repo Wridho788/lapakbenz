@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useCart } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useSplash, useSlider, useLedger } from '../api/hooks';
+import { useSplash, useSlider, useLedger, useDecodeToken, usePostEvent, usePostArticle } from '../api/hooks';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
 import { ButtonGrid } from '../components/ButtonGrid';
@@ -67,9 +67,13 @@ const Dashboard: React.FC = () => {
     return success;
   };
   
-  // State untuk splash screen - keep existing functionality
+  // State untuk splash screen - Tokopedia-like behavior (show once per session)
   const [showSplash, setShowSplash] = useState(false);
   const [splashImage, setSplashImage] = useState<string>('');
+  const [hasShownSplash, setHasShownSplash] = useState(() => {
+    // Check if splash has been shown in current session
+    return sessionStorage.getItem('splashShown') === 'true';
+  });
   
   // Get current user points from auth store
   const userPoints = user?.points || 0;
@@ -77,16 +81,45 @@ const Dashboard: React.FC = () => {
   // Panggil useSplash hook
   const { data: splashData, isLoading: splashLoading, error: splashError } = useSplash();
   
+  // Panggil useDecodeToken hook untuk mendapatkan nama user
+  const { data: decodeTokenData, error: decodeTokenError } = useDecodeToken();
+  
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData } = useSlider();
   
   // Panggil useLedger hook - now uses Zustand auth store internally
   const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
 
+  // Panggil usePostEvent untuk check completed events
+  const completedEventMutation = usePostEvent();
+  
+  // Panggil usePostArticle untuk check upcoming news
+  const upcomingNewsMutation = usePostArticle();
+
   // Check if Partnership should be displayed
   const shouldShowPartnership = sliderData?.content?.result && 
                                Array.isArray(sliderData.content.result) && 
                                sliderData.content.result.length > 0;
+
+  // Check if CompletedEvent should be displayed
+  const shouldShowCompletedEvent = completedEventMutation.data?.content?.result && 
+                                  Array.isArray(completedEventMutation.data.content.result) && 
+                                  completedEventMutation.data.content.result.length > 0;
+
+  // Check if UpcomingNews should be displayed
+  const shouldShowUpcomingNews = upcomingNewsMutation.data?.content?.result && 
+                               Array.isArray(upcomingNewsMutation.data.content.result) && 
+                               upcomingNewsMutation.data.content.result.length > 0;
+
+  // Trigger completed events API call
+  useEffect(() => {
+    completedEventMutation.mutate({ eventType: 'completed' });
+  }, []);
+
+  // Trigger upcoming news API call
+  useEffect(() => {
+    upcomingNewsMutation.mutate({});
+  }, []);
 
   // Log ledger response and update points in Zustand store
   useEffect(() => {
@@ -95,6 +128,14 @@ const Dashboard: React.FC = () => {
       hasToken: !!authToken,
       isAuthenticated 
     });
+    
+    // Log decode token data
+    if (decodeTokenData) {
+      console.log('✅ Decode Token API Response:', decodeTokenData);
+    }
+    if (decodeTokenError) {
+      console.error('❌ Decode Token API Error:', decodeTokenError);
+    }
     
     if (ledgerData) {
       console.log('✅ Ledger API Response:', ledgerData);
@@ -133,9 +174,9 @@ const Dashboard: React.FC = () => {
     if (ledgerLoading) {
       console.log('⏳ Ledger API Loading...');
     }
-  }, [authToken, ledgerData, ledgerError, ledgerLoading, isAuthenticated, updatePoints, logout, navigate]);
+  }, [authToken, ledgerData, ledgerError, ledgerLoading, isAuthenticated, updatePoints, logout, navigate, decodeTokenData, decodeTokenError]);
 
-  // Log response ke console
+  // Log response ke console dan handle splash screen Tokopedia-style
   useEffect(() => {
     if (splashData) {
       console.log('Splash API Response:', splashData);
@@ -143,9 +184,13 @@ const Dashboard: React.FC = () => {
       // Extract image dari response
       if (splashData.content && splashData.content.result && splashData.content.result.length > 0) {
         const firstSlide = splashData.content.result[0];
-        if (firstSlide.image) {
+        if (firstSlide.image && !hasShownSplash) {
           setSplashImage(firstSlide.image);
           setShowSplash(true);
+          
+          // Mark splash as shown in session storage
+          sessionStorage.setItem('splashShown', 'true');
+          setHasShownSplash(true);
           
           // Auto close setelah 5 detik
           const timer = setTimeout(() => {
@@ -162,7 +207,7 @@ const Dashboard: React.FC = () => {
     if (splashLoading) {
       console.log('Splash API Loading...');
     }
-  }, [splashData, splashError, splashLoading]);
+  }, [splashData, splashError, splashLoading, hasShownSplash]);
 
   // Handler untuk menutup splash screen
   const handleCloseSplash = () => {
@@ -209,8 +254,8 @@ const Dashboard: React.FC = () => {
       )}
       
       <AppbarHomepage 
-        avatar="/vite.svg" 
-        name="User" 
+        avatar="/merci.png" 
+        name={decodeTokenData?.content?.name || user?.username || "User"} 
         notificationCount={unreadCount}
         onNotificationClick={handleNotificationClick}
         cartCount={cartCount}
@@ -265,13 +310,19 @@ const Dashboard: React.FC = () => {
           </SectionWrapper>
         )}
         
-        <SectionWrapper title="Completed Event">
-          <CompletedEvent />
-        </SectionWrapper>
+        {/* Conditionally render CompletedEvent section */}
+        {shouldShowCompletedEvent && (
+          <SectionWrapper title="Completed Event">
+            <CompletedEvent />
+          </SectionWrapper>
+        )}
         
-        <SectionWrapper title="Upcoming News">
-          <UpcomingNews />
-        </SectionWrapper>
+        {/* Conditionally render UpcomingNews section */}
+        {shouldShowUpcomingNews && (
+          <SectionWrapper title="Upcoming Event">
+            <UpcomingNews />
+          </SectionWrapper>
+        )}
       </div>
       <FAB 
         onClick={handleFABClick} 
