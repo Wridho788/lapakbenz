@@ -13,6 +13,7 @@ import {
   getEventsByCustomer,
   registerMerchant,
   registerPublic,
+  registerEvent,
 } from './api';
 import { customerApi } from './customerApi';
 import { productAPI } from './productApi';
@@ -403,8 +404,6 @@ interface UseProductsPayload {
 }
 
 export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<any, Error> {
-  const { token, isAuthenticated } = useAuthStore();
-
   const defaultPayload = {
     limit: 3000,
     offset: 0,
@@ -415,9 +414,8 @@ export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<an
   };
 
   return useQuery({
-    queryKey: ['products', JSON.stringify(defaultPayload), token],
-    queryFn: () => productAPI.getProducts(defaultPayload, token!),
-    enabled: isAuthenticated,
+    queryKey: ['products', JSON.stringify(defaultPayload)],
+    queryFn: () => productAPI.getProducts(defaultPayload ),
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,
   });
@@ -455,12 +453,11 @@ export function useProductSearch(): UseMutationResult<any, Error, UseProductSear
 }
 
 export function useProductDetail(productId: string): UseQueryResult<any, Error> {
-  const { token, isAuthenticated } = useAuthStore();
 
   return useQuery({
-    queryKey: ['productDetail', productId, token],
-    queryFn: () => productAPI.getProductDetail(productId, token!),
-    enabled: isAuthenticated && !!productId,
+    queryKey: ['productDetail', productId],
+    queryFn: () => productAPI.getProductDetail(productId),
+    enabled: !!productId,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,
   });
@@ -757,6 +754,27 @@ export function usePublicRegistration(): UseMutationResult<any, Error, UsePublic
         return await registerPublic(token!, formData);
       } catch (error) {
         console.error('❌ Public Registration Error:', error);
+        throw error;
+      }
+    },
+  });
+}
+
+// Event Registration Hook
+interface UseEventRegisterPayload {
+  eventId: string;
+}
+
+export function useEventRegister(): UseMutationResult<any, Error, UseEventRegisterPayload> {
+  const { token } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async (payload: UseEventRegisterPayload) => {
+      try {
+        console.log('🎫 Event Registration Payload:', payload);
+        return await registerEvent(token!, payload.eventId);
+      } catch (error) {
+        console.error('❌ Event Registration Error:', error);
         throw error;
       }
     },

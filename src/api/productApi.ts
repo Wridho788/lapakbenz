@@ -19,7 +19,7 @@ const apiClient = axios.create({
 // Product API Service
 export const productAPI = {
   // GET Product List (POST method)
-  getProducts: async (payload = {}, authToken = '') => {
+  getProducts: async (payload = {}) => {
     const defaultPayload = {
       limit: 30,
       offset: 0,
@@ -32,7 +32,6 @@ export const productAPI = {
     try {
       const response = await apiClient.post(ENDPOINT_PRODUCT, defaultPayload, {
         headers: {
-          'X-auth-token': authToken,
           'Content-Type': 'application/json'
         }
       });
@@ -74,13 +73,9 @@ export const productAPI = {
   },
 
   // GET Product Detail
-  getProductDetail: async (productId: any, authToken = '') => {
+  getProductDetail: async (productId: any) => {
     try {
-      const response = await apiClient.get(`${ENDPOINT_PRODUCT_DETAIL}${productId}`, {
-        headers: {
-          'X-auth-token': authToken
-        }
-      });
+      const response = await apiClient.get(`${ENDPOINT_PRODUCT_DETAIL}${productId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching product detail:', error);

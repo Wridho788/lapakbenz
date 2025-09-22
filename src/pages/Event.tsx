@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
-import { usePostEvent, usePostArticle, useEventById } from '../api/hooks';
+import { usePostEvent, usePostArticle, useEventById, useEventRegister } from '../api/hooks';
+import Swal from 'sweetalert2';
 import './Event.css';
 import '../components/FABPositioning.css';
 
@@ -73,6 +74,11 @@ const Event: React.FC = () => {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [registrationData, setRegistrationData] = useState<{
+    transid: number;
+    ordercode: string;
+    invoice_url: string;
+  } | null>(null);
   const pullRef = useRef<HTMLDivElement | null>(null);
   const startY = useRef<number | null>(null);
   const pulling = useRef(false);
@@ -84,6 +90,7 @@ const Event: React.FC = () => {
   // API hooks
   const eventMutation = usePostEvent();
   const articleMutation = usePostArticle();
+  const eventRegisterMutation = useEventRegister();
   // Only call useEventById when modal is open and eventId is selected
   const eventByIdQuery = useEventById(modalOpen && selectedEventId ? selectedEventId : '');
 
@@ -212,6 +219,71 @@ const Event: React.FC = () => {
       navigate(`/public-registration/${selectedEventId}`);
     } else {
       console.error('❌ No event ID selected for public registration');
+    }
+  };
+
+  // Helper function to ensure URL has https protocol (same as Invoice page)
+  const getFullUrl = (url: string): string => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
+  const handleEventRegister = async () => {
+    if (!selectedEventId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Event ID Missing',
+        text: 'Please select an event first.',
+        confirmButtonColor: '#3b82f6'
+      });
+      return;
+    }
+
+    try {
+      console.log('🎫 Starting event registration for:', selectedEventId);
+      
+      const result = await eventRegisterMutation.mutateAsync({
+        eventId: selectedEventId
+      });
+
+      console.log('🎫 Event Registration Response:', result);
+
+      if (result.status === 200 && result.content) {
+        setRegistrationData({
+          transid: result.content.transid,
+          ordercode: result.content.ordercode,
+          invoice_url: result.content.invoice_url
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: '🎉 Registration Successful!',
+          text: 'Your event registration has been completed successfully.',
+          confirmButtonColor: '#10b981',
+          confirmButtonText: 'Continue'
+        });
+      } else {
+        throw new Error('Registration failed');
+      }
+    } catch (error: any) {
+      console.error('❌ Event Registration Failed:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: error.response?.data?.error || 'Event registration failed. Please try again.',
+        confirmButtonColor: '#3b82f6',
+        footer: 'Please check your information and try again.'
+      });
+    }
+  };
+
+  const handleOpenInvoice = () => {
+    if (registrationData?.invoice_url) {
+      const fullUrl = getFullUrl(registrationData.invoice_url);
+      window.open(fullUrl, '_blank');
     }
   };
 
@@ -381,187 +453,321 @@ const Event: React.FC = () => {
       </div>
       <Modal open={modalOpen && !!eventByIdQuery.data?.content} onClose={() => setModalOpen(false)}>
         {eventByIdQuery.data?.content ? (
-          <div>
-            <img
-              src={eventByIdQuery.data.content.image}
-              alt={eventByIdQuery.data.content.name}
-              style={{ width: '100%', borderRadius: 8 }}
-            />
-            <h3>
-              {eventByIdQuery.data.content.code} - {eventByIdQuery.data.content.name}
-            </h3>
-            <div style={{ display: 'flex', gap: 24 }}>
-              {/* Kolom kiri */}
-              <div style={{ flex: 1 }}>
-                <p>
-                  <b>Event Date:</b>
-                  <br />
-                  {eventByIdQuery.data.content.dates} - {eventByIdQuery.data.content.time}
-                </p>
-                <p>
-                  <b>Chapter:</b>
-                  <br />
-                  {eventByIdQuery.data.content.chapter}
-                </p>
-                <p>
-                  <b>Type:</b>
-                  <br />
-                  {eventByIdQuery.data.content.type_desc}
-                </p>
-                <p>
-                  <b>Description:</b>
-                  <br />
-                  {eventByIdQuery.data.content.desc}
-                </p>
-              </div>
-              {/* Kolom kanan */}
-              <div style={{ flex: 1 }}>
-                <p>
-                  <b>Minimum Participation:</b>
-                  <br />
-                  {eventByIdQuery.data.content.minimum_participants}
-                </p>
-                <p>
-                  <b>Contribution Fee:</b>
-                  <br />
-                  {eventByIdQuery.data.content.fee}
-                </p>
-                <p>
-                  <b>Status:</b>
-                  <br />
-                  {eventByIdQuery.data.content.done_desc}
-                </p>
-              </div>
+          <div style={{ maxHeight: '80vh', overflowY: 'auto', scrollBehavior: 'smooth' }}>
+        <img
+          src={eventByIdQuery.data.content.image}
+          alt={eventByIdQuery.data.content.name}
+          style={{ width: '100%', borderRadius: 8 }}
+        />
+        <h3>
+          {eventByIdQuery.data.content.code} - {eventByIdQuery.data.content.name}
+        </h3>
+        <div style={{ display: 'flex', gap: 24 }}>
+          {/* Kolom kiri */}
+          <div style={{ flex: 1 }}>
+            <p>
+          <b>Event Date:</b>
+          <br />
+          {eventByIdQuery.data.content.dates} - {eventByIdQuery.data.content.time}
+            </p>
+            <p>
+          <b>Chapter:</b>
+          <br />
+          {eventByIdQuery.data.content.chapter}
+            </p>
+            <p>
+          <b>Type:</b>
+          <br />
+          {eventByIdQuery.data.content.type_desc}
+            </p>
+            <p>
+          <b>Description:</b>
+          <br />
+          {eventByIdQuery.data.content.desc}
+            </p>
+          </div>
+          {/* Kolom kanan */}
+          <div style={{ flex: 1 }}>
+            <p>
+          <b>Minimum Participation:</b>
+          <br />
+          {eventByIdQuery.data.content.minimum_participants}
+            </p>
+            <p>
+          <b>Contribution Fee:</b>
+          <br />
+          {eventByIdQuery.data.content.fee}
+            </p>
+            <p>
+          <b>Status:</b>
+          <br />
+          {eventByIdQuery.data.content.done_desc}
+            </p>
+          </div>
+        </div>
+
+        {/* Event Registration Button */}
+        <div
+          style={{
+            marginTop: 24,
+            padding: '16px',
+            background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+            borderRadius: '12px',
+            border: '1px solid #d1d5db'
+          }}
+        >
+          <button
+            onClick={handleEventRegister}
+            disabled={eventRegisterMutation.isPending}
+            style={{
+          width: '100%',
+          padding: '14px 20px',
+          background: eventRegisterMutation.isPending 
+            ? 'linear-gradient(135deg, #9ca3af 0%, #6b7280 100%)'
+            : 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '10px',
+          fontWeight: '600',
+          cursor: eventRegisterMutation.isPending ? 'not-allowed' : 'pointer',
+          transition: 'all 0.3s ease',
+          fontSize: '15px',
+          letterSpacing: '0.025em',
+          boxShadow: '0 4px 14px 0 rgba(139, 92, 246, 0.39)',
+            }}
+            onMouseOver={(e) => {
+          if (!eventRegisterMutation.isPending) {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(139, 92, 246, 0.5)';
+          }
+            }}
+            onMouseOut={(e) => {
+          if (!eventRegisterMutation.isPending) {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(139, 92, 246, 0.39)';
+          }
+            }}
+          >
+            <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+          }}
+            >
+          <span style={{ fontSize: '18px' }}>
+            {eventRegisterMutation.isPending ? '⏳' : '🎫'}
+          </span>
+          <span>
+            {eventRegisterMutation.isPending ? 'Registering...' : 'Register Event Member'}
+          </span>
+            </div>
+          </button>
+        </div>
+
+        {/* Registration Success Section */}
+        {registrationData && (
+          <div
+            style={{
+          marginTop: 16,
+          padding: '20px',
+          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+          borderRadius: '12px',
+          border: '2px solid #10b981',
+            }}
+          >
+            <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+            >
+          <span style={{ fontSize: '24px', marginRight: '8px' }}>✅</span>
+          <h4 style={{ margin: 0, color: '#065f46', fontSize: '18px', fontWeight: '600' }}>
+            Registration Completed
+          </h4>
             </div>
 
-            {/* Registration Navigation */}
-            {(eventByIdQuery.data.content.allow_merchant === 1 ||
-              eventByIdQuery.data.content.allow_public === 1) && (
-              <div
-                style={{
-                  paddingTop: 24,
-                  borderTop: '2px solid #f0f0f0',
-                  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                  borderRadius: '12px',
-                  padding: '8px',
-                  boxShadow:
-                    '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: 16,
-                    width: '100%',
-                    flexDirection: window.innerWidth < 400 ? 'column' : 'row',
-                  }}
-                >
-                  {/* Merchant Registration Button */}
-                  {eventByIdQuery.data.content.allow_merchant === 1 && (
-                    <button
-                      onClick={handleMerchantRegistration}
-                      style={{
-                        flex: 1,
-                        padding: '16px 20px',
-                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '12px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        fontSize: '15px',
-                        letterSpacing: '0.025em',
-                        boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(59, 130, 246, 0.5)';
-                        e.currentTarget.style.background =
-                          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(59, 130, 246, 0.39)';
-                        e.currentTarget.style.background =
-                          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
-                      }}
-                      onMouseDown={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                        }}
-                      >
-                        <span style={{ fontSize: '18px' }}>🏪</span>
-                        <span>Merchant Registration</span>
-                      </div>
-                    </button>
-                  )}
+            <div style={{ marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <span style={{ fontWeight: '600', color: '#374151' }}>Transaction ID:</span>
+            <span style={{ color: '#065f46', fontWeight: '500' }}>{registrationData.transid}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <span style={{ fontWeight: '600', color: '#374151' }}>Order Code:</span>
+            <span style={{ color: '#065f46', fontWeight: '500' }}>{registrationData.ordercode}</span>
+          </div>
+            </div>
 
-                  {/* Public Registration Button */}
-                  {eventByIdQuery.data.content.allow_public === 1 && (
-                    <button
-                      onClick={handlePublicRegistration}
-                      style={{
-                        flex: 1,
-                        padding: '16px 20px',
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '12px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        fontSize: '15px',
-                        letterSpacing: '0.025em',
-                        boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.39)',
-                        position: 'relative',
-                        overflow: 'hidden',
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(16, 185, 129, 0.5)';
-                        e.currentTarget.style.background =
-                          'linear-gradient(135deg, #059669 0%, #047857 100%)';
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(16, 185, 129, 0.39)';
-                        e.currentTarget.style.background =
-                          'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-                      }}
-                      onMouseDown={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                        }}
-                      >
-                        <span style={{ fontSize: '18px' }}>👤</span>
-                        <span>Public Registration</span>
-                      </div>
-                    </button>
-                  )}
-                </div>
+            <button
+          onClick={handleOpenInvoice}
+          style={{
+            width: '100%',
+            padding: '12px 16px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            fontSize: '14px',
+            boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.39)',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.boxShadow = '0 6px 20px 0 rgba(16, 185, 129, 0.5)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(16, 185, 129, 0.39)';
+          }}
+            >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            <span style={{ fontSize: '16px' }}>💳</span>
+            <span>Open Payment Invoice</span>
+          </div>
+            </button>
+          </div>
+        )}
+
+        {/* Registration Navigation */}
+        {(eventByIdQuery.data.content.allow_merchant === 1 ||
+          eventByIdQuery.data.content.allow_public === 1) && (
+          <div
+            style={{
+          paddingTop: 24,
+          borderTop: '2px solid #f0f0f0',
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+          borderRadius: '12px',
+          padding: '8px',
+          boxShadow:
+            '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            width: '100%',
+            flexDirection: window.innerWidth < 400 ? 'column' : 'row',
+          }}
+            >
+          {/* Merchant Registration Button */}
+          {eventByIdQuery.data.content.allow_merchant === 1 && (
+            <button
+              onClick={handleMerchantRegistration}
+              style={{
+            flex: 1,
+            padding: '16px 20px',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            fontSize: '15px',
+            letterSpacing: '0.025em',
+            boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)',
+            position: 'relative',
+            overflow: 'hidden',
+              }}
+              onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(59, 130, 246, 0.5)';
+            e.currentTarget.style.background =
+              'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)';
+              }}
+              onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(59, 130, 246, 0.39)';
+            e.currentTarget.style.background =
+              'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+              }}
+              onMouseDown={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+              >
+            <span style={{ fontSize: '18px' }}>🏪</span>
+            <span>Merchant Registration</span>
               </div>
-            )}
+            </button>
+          )}
+
+          {/* Public Registration Button */}
+          {eventByIdQuery.data.content.allow_public === 1 && (
+            <button
+              onClick={handlePublicRegistration}
+              style={{
+            flex: 1,
+            padding: '16px 20px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            fontSize: '15px',
+            letterSpacing: '0.025em',
+            boxShadow: '0 4px 14px 0 rgba(16, 185, 129, 0.39)',
+            position: 'relative',
+            overflow: 'hidden',
+              }}
+              onMouseOver={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 8px 25px 0 rgba(16, 185, 129, 0.5)';
+            e.currentTarget.style.background =
+              'linear-gradient(135deg, #059669 0%, #047857 100%)';
+              }}
+              onMouseOut={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 14px 0 rgba(16, 185, 129, 0.39)';
+            e.currentTarget.style.background =
+              'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+              }}
+              onMouseDown={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+              >
+            <span style={{ fontSize: '18px' }}>👤</span>
+            <span>Public Registration</span>
+              </div>
+            </button>
+          )}
+            </div>
+          </div>
+        )}
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            {eventByIdQuery.isLoading ? 'Loading event details...' : 'No event data available'}
+        {eventByIdQuery.isLoading ? 'Loading event details...' : 'No event data available'}
           </div>
         )}
       </Modal>

@@ -10,7 +10,8 @@ import {
   ENDPOINT_CITY_GET_CITY,
   ENDPOINT_EVENT_GET_BY_CUSTOMER,
   ENDPOINT_EVENT_REGISTER_MERCHANT,
-  ENDPOINT_EVENT_REGISTER_PUBLIC
+  ENDPOINT_EVENT_REGISTER_PUBLIC,
+  ENDPOINT_EVENT_REGISTER
 } from "./constants";
 
 export const getLedger = async (authToken: string) => {
@@ -95,6 +96,35 @@ export const registerMerchant = async (authToken: string, formData: FormData) =>
 
 export const registerPublic = async (authToken: string, formData: FormData) => {
   const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_REGISTER_PUBLIC}`, formData, {
+    headers: {
+      'X-auth-token': authToken,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  
+  // Return both data and status code
+  return {
+    ...response.data,
+    status: response.status
+  };
+};
+
+
+export const getEventRegister = async (authToken: string, eventId: string) => {
+  const response = await axios.get(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}/${eventId}`, {
+    headers: {
+      'X-auth-token': authToken,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
+};
+
+export const registerEvent = async (authToken: string, eventId: string) => {
+  const formData = new FormData();
+  formData.append('eventid', eventId);
+  
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}`, formData, {
     headers: {
       'X-auth-token': authToken,
       'Content-Type': 'multipart/form-data',
