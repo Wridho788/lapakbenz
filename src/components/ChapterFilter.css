@@ -1,0 +1,232 @@
+/* Event Page Styles */
+.event-page {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 10px rgba(22, 17, 41, 0.05);
+}
+
+/* Chapter Filter Styles */
+.chapter-filter {
+  background: #fff;
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  position: relative;
+  z-index: 20;
+}
+
+.chapter-filter-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chapter-filter-trigger:hover:not(.disabled) {
+  border-color: #161129;
+  background: #fff;
+}
+
+.chapter-filter-trigger.active {
+  border-color: #161129;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(22, 17, 41, 0.1);
+}
+
+.chapter-filter-trigger.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background: #f1f3f4;
+}
+
+.chapter-filter-text {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapter-filter-icon {
+  margin-left: 0.5rem;
+  color: #6c757d;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chapter-filter-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.chapter-filter-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 2px solid #161129;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 12px rgba(22, 17, 41, 0.15);
+  max-height: 300px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chapter-filter-header {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.chapter-filter-search {
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+
+.chapter-filter-search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.chapter-filter-search-input:focus {
+  outline: none;
+  border-color: #161129;
+  box-shadow: 0 0 0 2px rgba(22, 17, 41, 0.1);
+}
+
+.chapter-filter-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.chapter-filter-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chapter-filter-action-btn {
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chapter-filter-action-btn:hover:not(:disabled) {
+  background: #161129;
+  color: #fff;
+  border-color: #161129;
+}
+
+.chapter-filter-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chapter-filter-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.chapter-filter-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chapter-filter-item:hover {
+  background: #f8f9fa;
+}
+
+.chapter-filter-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.chapter-filter-checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #dee2e6;
+  border-radius: 3px;
+  margin-right: 0.75rem;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chapter-filter-checkbox:checked + .chapter-filter-checkmark {
+  background: #161129;
+  border-color: #161129;
+}
+
+.chapter-filter-checkbox:checked + .chapter-filter-checkmark::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.chapter-filter-label {
+  flex: 1;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.chapter-filter-code {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.chapter-filter-loading,
+.chapter-filter-empty {
+  padding: 1rem;
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.chapter-filter-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.chapter-filter-count {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-align: center;
+  display: block;
+}

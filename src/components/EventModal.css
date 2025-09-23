@@ -1,0 +1,138 @@
+.event-modal-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.event-modal-title {
+  font-family: 'Lato', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.event-modal-details {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.event-modal-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-detail-item {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.event-detail-item b {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.event-modal-loading {
+  font-family: 'Lato', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.registration-navigation {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.registration-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.registration-nav-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 12px 20px;
+  transition: all 0.3s ease;
+  min-width: 160px;
+}
+
+.registration-nav-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.registration-nav-button.merchant {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.registration-nav-button.merchant:hover {
+  box-shadow: 0 8px 25px rgba(240, 147, 251, 0.3);
+}
+
+.registration-nav-button.public {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.registration-nav-button.public:hover {
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+}
+
+.nav-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav-button-icon {
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .event-modal-details {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .event-modal-column {
+    gap: 12px;
+  }
+  
+  .registration-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .registration-nav-button {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .event-modal-title {
+    font-size: 1.3rem;
+  }
+  
+  .event-detail-item {
+    font-size: 0.85rem;
+  }
+}

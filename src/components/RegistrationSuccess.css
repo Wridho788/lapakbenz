@@ -1,0 +1,79 @@
+.registration-success {
+  margin-top: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-radius: 12px;
+  border: 2px solid #10b981;
+}
+
+.registration-success-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.success-icon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.success-title {
+  margin: 0;
+  color: #065f46;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.registration-details {
+  margin-bottom: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.detail-row:last-child {
+  margin-bottom: 16px;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.detail-value {
+  color: #065f46;
+  font-weight: 500;
+}
+
+.invoice-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+}
+
+.invoice-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px 0 rgba(16, 185, 129, 0.5);
+}
+
+.invoice-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.invoice-icon {
+  font-size: 16px;
+}

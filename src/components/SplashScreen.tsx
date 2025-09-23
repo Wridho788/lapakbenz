@@ -8,15 +8,8 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ imageUrl, onClose }) => {
   return (
-    <div className="splash-screen-overlay">
-      <div className="splash-screen-container">
-        <button 
-          className="splash-close-button" 
-          onClick={onClose}
-          aria-label="Close splash screen"
-        >
-          ×
-        </button>
+    <div className="splash-screen-overlay" onClick={onClose}>
+      <div className="splash-screen-container" onClick={(e) => e.stopPropagation()}>
         <div className="splash-image-container">
           <img 
             src={imageUrl} 
@@ -27,6 +20,21 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ imageUrl, onClose }) => {
               onClose(); // Close splash if image fails to load
             }}
           />
+        </div>
+        <div 
+          className="splash-close-button"
+          onClick={onClose}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onClose();
+            }
+          }}
+          aria-label="Close splash screen"
+        >
+          <div className="close-button-icon"></div>
+          <span className="close-button-label">Tutup</span>
         </div>
       </div>
     </div>

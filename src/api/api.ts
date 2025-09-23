@@ -36,7 +36,7 @@ export const getSplash = async () => {
 export const postEvent = async (data?: any) => {
   const defaultPayload = {
     status: "1",
-    limit: 100,
+    limit: 300,
     offset: 0,
     chapter: ""
   };

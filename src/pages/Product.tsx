@@ -4,7 +4,6 @@ import { MdSearch, MdFilterList, MdClear } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
-import { useAuthStore } from '../stores/authStore';
 import { useProducts, useProductCategories, useProductSearch } from '../api/hooks';
 import './Product.css';
 
@@ -13,15 +12,6 @@ const Product: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const { cartCount } = useCart();
-  const { isAuthenticated } = useAuthStore();
-
-  // Redirect to login if not authenticated
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     navigate('/login');
-  //   }
-  // }, [isAuthenticated, navigate]);
-
   // API hooks
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
     limit: 3000,
