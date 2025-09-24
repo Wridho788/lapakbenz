@@ -7,6 +7,13 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  /* Force light mode */
+  color-scheme: light;
+}
+
+/* Force light mode for all child elements */
+.event-card * {
+  color-scheme: light !important;
 }
 
 .event-card:hover {
@@ -34,6 +41,7 @@
 
 .event-card-content {
   padding: 0.75rem;
+  background-color: #ffffff;
 }
 
 .event-card-title {
@@ -68,6 +76,41 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Override dark mode styles - Force light mode */
+@media (prefers-color-scheme: dark) {
+  .event-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  .event-card-content {
+    background-color: #ffffff !important;
+  }
+  
+  .event-card-title {
+    color: #161129 !important;
+  }
+  
+  .event-card-date {
+    color: #6B7280 !important;
+  }
+  
+  .event-card-chapter {
+    color: #9CA3AF !important;
+  }
+  
+  .event-card-type {
+    color: #161129 !important;
+  }
+  
+  /* Force light mode for all child elements in dark mode */
+  .event-card *,
+  .event-card-content * {
+    background-color: inherit;
+    color: inherit !important;
+  }
 }
 
 /* Responsive Design */

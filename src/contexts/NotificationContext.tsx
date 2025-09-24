@@ -6,7 +6,7 @@ export interface NotificationItem {
   id: string;
   title: string;
   message: string;
-  isRead: boolean;
+  reading: string; // "0" for unread, "1" for read
   timestamp: Date;
 }
 
@@ -30,7 +30,7 @@ const transformApiNotification = (apiNotification: any): NotificationItem => {
       id: apiNotification.id || `api-${Date.now()}-${Math.random()}`,
       title: apiNotification.subject || 'Notification',
       message: apiNotification.content || '',
-      isRead: apiNotification.reading === "1" || apiNotification.reading === 1,
+      reading: apiNotification.reading || "0",
       timestamp: apiNotification.created ? new Date(apiNotification.created) : new Date(),
     };
   } catch (error) {
@@ -40,7 +40,7 @@ const transformApiNotification = (apiNotification: any): NotificationItem => {
       id: `error-${Date.now()}`,
       title: 'Error Loading Notification',
       message: 'There was an error loading this notification.',
-      isRead: true,
+      reading: "0",
       timestamp: new Date(),
     };
   }
@@ -105,7 +105,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   }, [unreadData]);
 
   // Total unread count (API + local)
-  const totalUnreadCount = apiUnreadCount + localNotifications.filter(n => !n.isRead).length;
+  const totalUnreadCount = apiUnreadCount + localNotifications.filter(n => !n.reading).length;
 
   const isLoading = notificationLoading || unreadLoading;
   const error = notificationError || unreadError;
@@ -114,7 +114,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     setLocalNotifications(prev => 
       prev.map(notification => 
         notification.id === id 
-          ? { ...notification, isRead: true }
+          ? { ...notification, reading: "1" }
           : notification
       )
     );

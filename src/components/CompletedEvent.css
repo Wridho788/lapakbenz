@@ -1,7 +1,16 @@
 /* Completed Event Component Styles */
 .completed-event {
   width: 100%;
-  margin: 0.1rem 0;
+  margin: -1.5rem 0;
+  /* Force light mode - override system dark mode */
+  color-scheme: light;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Force light mode for all child elements */
+.completed-event * {
+  color-scheme: light !important;
 }
 
 .event-scroll-container {
@@ -12,10 +21,31 @@
   scroll-snap-type: x mandatory;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
+  /* Ensure light background for scroll container */
+  background-color: #ffffff;
 }
 
 .event-scroll-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+}
+
+/* Override any dark mode styles that might be applied */
+@media (prefers-color-scheme: dark) {
+  .completed-event {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  .event-scroll-container {
+    background-color: #ffffff !important;
+  }
+  
+  /* Force light mode for all child elements in dark mode */
+  .completed-event *,
+  .event-scroll-container * {
+    background-color: inherit;
+    color: #000000 !important;
+  }
 }
 
 /* Responsive Design */

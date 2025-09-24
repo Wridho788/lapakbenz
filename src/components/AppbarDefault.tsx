@@ -8,13 +8,15 @@ export type AppbarDefaultProps = {
   onBack?: () => void;
   onCartClick?: () => void;
   cartCount?: number;
+  showCart?: boolean; // New optional prop to control cart visibility
 };
 
 export const AppbarDefault: React.FC<AppbarDefaultProps> = ({ 
   title, 
   onBack, 
   onCartClick, 
-  cartCount = 0 
+  cartCount = 0,
+  showCart = true // Default to true to maintain backward compatibility
 }) => {
   const navigate = useNavigate();
 
@@ -39,19 +41,21 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
         </button>
       )}
       <span className="appbar-title">{title}</span>
-      <button
-        className={`appbar-cart-btn ${cartCount > 0 ? 'has-items' : ''}`}
-        onClick={handleCartClick}
-        aria-label={`Shopping Cart (${cartCount})`}
-        title={`You have ${cartCount} item${cartCount !== 1 ? 's' : ''} in cart`}
-      >
-        <MdShoppingCart />
-        {cartCount > 0 && (
-          <span className="cart-badge">
-            {cartCount > 99 ? '99+' : cartCount}
-          </span>
-        )}
-      </button>
+      {showCart && (
+        <button
+          className={`appbar-cart-btn ${cartCount > 0 ? 'has-items' : ''}`}
+          onClick={handleCartClick}
+          aria-label={`Shopping Cart (${cartCount})`}
+          title={`You have ${cartCount} item${cartCount !== 1 ? 's' : ''} in cart`}
+        >
+          <MdShoppingCart />
+          {cartCount > 0 && (
+            <span className="cart-badge">
+              {cartCount > 99 ? '99+' : cartCount}
+            </span>
+          )}
+        </button>
+      )}
     </header>
   );
 };

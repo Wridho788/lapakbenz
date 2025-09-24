@@ -50,19 +50,6 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
       </div>
       <div className="appbar-actions">
         <button
-          className={`appbar-notif-btn ${notificationCount > 0 ? 'has-notification' : ''}`}
-          onClick={handleNotificationClick}
-          aria-label={`Notifications (${notificationCount})`}
-          title={`You have ${notificationCount} notification${notificationCount !== 1 ? 's' : ''}`}
-        >
-          <MdNotifications />
-          {notificationCount > 0 && (
-            <span className="notification-badge">
-              {notificationCount > 99 ? '99+' : notificationCount}
-            </span>
-          )}
-        </button>
-        <button
           className={`appbar-cart-btn ${displayCartCount > 0 ? 'has-items' : ''}`}
           onClick={handleCartClick}
           aria-label={`Shopping Cart (${displayCartCount})`}
@@ -72,6 +59,19 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
           {displayCartCount > 0 && (
             <span className="cart-badge">
               {displayCartCount > 99 ? '99+' : displayCartCount}
+            </span>
+          )}
+        </button>
+        <button
+          className={`appbar-notif-btn ${notificationCount > 0 ? 'has-notification' : ''}`}
+          onClick={handleNotificationClick}
+          aria-label={`Notifications (${notificationCount})`}
+          title={`You have ${notificationCount} notification${notificationCount !== 1 ? 's' : ''}`}
+        >
+          <MdNotifications />
+          {notificationCount > 0 && (
+            <span className="notification-badge">
+              {notificationCount > 99 ? '99+' : notificationCount}
             </span>
           )}
         </button>

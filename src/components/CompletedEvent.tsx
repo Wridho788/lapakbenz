@@ -27,42 +27,34 @@ interface CompletedEventProps {
 }
 
 export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => {
+  // Move ALL hooks to the top, before any conditional logic
   const eventMutation = usePostEvent();
-  // Trigger API event POST on mount
-  useEffect(() => {
-    eventMutation.mutate({ eventType: 'completed' }); // sesuaikan payload jika perlu
-  }, []);
-  // Logging response/error
-  useEffect(() => {
-    if (eventMutation.data) {
-      console.log('Event API response:', eventMutation.data);
-    }
-    if (eventMutation.error) {
-      console.error('Event API error:', eventMutation.error);
-    }
-  }, [eventMutation.data, eventMutation.error]);
-  // Ambil hasil eventMutation.data.content.result sebagai completedEvents
-  const completedEvents: EventItem[] = eventMutation.data?.content?.result ?? [];
-
-  // Jika result null atau empty, jangan render komponen
-  if (!eventMutation.data?.content?.result || completedEvents.length === 0) {
-    return null;
-  }
-
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const eventByIdQuery = useEventById(selectedEventId ?? '');
 
-  const handleEventClick = (eventId: string) => {
-    setSelectedEventId(eventId);
-    setModalOpen(true);
-  };
+  useEffect(() => {
+    eventMutation.mutate({  status: '0', limit: 100, offset: 0, chapter: '' }); // Fetch completed events (status "0")
+  }, []);
 
   useEffect(() => {
     if (eventByIdQuery.error) {
       console.error('Event by ID error:', eventByIdQuery.error);
     }
   }, [eventByIdQuery.error]);
+
+  // Ambil hasil eventMutation.data.content.result sebagai completedEvents
+  const completedEvents: EventItem[] = eventMutation.data?.content?.result ?? [];
+
+  const handleEventClick = (eventId: string) => {
+    setSelectedEventId(eventId);
+    setModalOpen(true);
+  };
+
+  // Now do conditional rendering AFTER all hooks have been called
+  if (!eventMutation.data?.content?.result || completedEvents.length === 0) {
+    return null;
+  }
 
   return (
     <div className={`completed-event ${className || ''}`}>

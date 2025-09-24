@@ -1,26 +1,72 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import Swal from 'sweetalert2';
-import { useNotificationContext } from '../contexts/NotificationContext';
-import { useCart } from '../contexts/CartContext';
-// import BottomNav from '../components/BottomNav';
 import { AppbarDefault } from '../components/AppbarDefault';
+import { useNotifications, useNotificationDetail } from '../api/hooks';
+import { useAuthStore } from '../stores/authStore';
 import type { NotificationItem } from '../contexts/NotificationContext';
 import './Notifications.css';
 
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
-  const { notifications, unreadCount, markAsRead, isLoading, error, refetch } = useNotificationContext();
+  const { token, isAuthenticated } = useAuthStore();
+  
+  // Use the notifications hook instead of context
+  const { 
+    data: notificationsData, 
+    isLoading, 
+    error, 
+    refetch 
+  } = useNotifications();
+  
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
   const pullRef = useRef<HTMLDivElement | null>(null);
   const startY = useRef<number | null>(null);
   const pulling = useRef(false);
   const [pullDistance, setPullDistance] = useState(0);
   const PULL_THRESHOLD = 60;
 
+  // Force light mode
+  useEffect(() => {
+    const body = document.body;
+    body.classList.add('force-light-mode');
+    
+    return () => {
+      body.classList.remove('force-light-mode');
+    };
+  }, []);
+
+  // Get notification detail when needed
+  const { 
+    data: notificationDetail, 
+    isLoading: isDetailLoading 
+  } = useNotificationDetail(
+    selectedNotificationId || '', 
+    undefined
+  );
+
+  // Process notifications data
+  const notifications: NotificationItem[] = React.useMemo(() => {
+    if (!notificationsData?.content) return [];
+    
+    return notificationsData.content.map((item: any) => ({
+      id: item.id?.toString() || '',
+      title: item.subject || 'No Subject',
+      message: item.content || 'No Content',
+      timestamp: new Date(item.created_at || Date.now()),
+      reading: item.reading === '1' ? "1" : "0",
+      type: item.type || 'general'
+    }));
+  }, [notificationsData]);
+
+  const unreadCount = React.useMemo(() => {
+    return notifications.filter(n => n.reading === "0").length;
+  }, [notifications]);
+
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (window.scrollY === 0) {
+    if (window.scrollY === 0 && !isLoading && !refreshing) {
       startY.current = e.touches[0].clientY;
       pulling.current = true;
     }
@@ -45,19 +91,15 @@ const Notifications: React.FC = () => {
   };
 
   const triggerRefresh = useCallback(async () => {
-    if (refreshing) return;
+    if (refreshing || isLoading) return;
     setRefreshing(true);
     try {
       await refetch();
     } finally {
       setTimeout(() => setRefreshing(false), 300);
     }
-  }, [refetch, refreshing]);
-  const { cartCount } = useCart();
+  }, [refetch, refreshing, isLoading]);
 
-  const handleCartClick = () => {
-    navigate('/cart');
-  };
 
   const formatDateTime = (date: Date): string => {
     const day = date.getDate().toString().padStart(2, '0');
@@ -70,58 +112,128 @@ const Notifications: React.FC = () => {
     return `${day}/${month}/${year} - ${hours}:${minutes}:${seconds}`;
   };
 
+  const markAsRead = useCallback(async () => {
+    // This would typically call an API to mark as read
+    // For now, we'll trigger a refetch to update the data
+    await refetch();
+  }, [refetch]);
+
   const handleNotificationClick = async (notification: NotificationItem) => {
-    // Don't mark as read immediately, wait for user to close alert
-    // Fetch detail via API on demand using raw fetch to utilize new body (keep lightweight here)
+    if (!isAuthenticated || !token) {
+      Swal.fire({
+        title: 'Authentication Required',
+        text: 'Please log in to view notification details',
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#161129',
+      });
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        const detailPayload = { type: '', campaign: '', read: '0', limit: '2', offset: '0' };
-        const res = await fetch(`${import.meta.env.VITE_API_BASE || 'https://mbapi.dswip.com/'}${'customer/notif_detail/'}${notification.id}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-auth-token': token },
-          body: JSON.stringify(detailPayload)
-        });
-        const json = await res.json();
-        const detail = json?.content || {};
-        const result = await Swal.fire({
-          title: detail.subject || notification.title,
-            text: detail.content || notification.message,
-          icon: 'info',
-          confirmButtonText: 'Close',
-          confirmButtonColor: '#161129',
-          customClass: {
-            popup: 'notification-alert',
-            title: 'notification-alert-title',
-            htmlContainer: 'notification-alert-content'
-          }
-        });
+      // Set the selected notification to trigger detail fetch
+      setSelectedNotificationId(notification.id);
+
+      // // Show loading state
+      // const loadingSwal = Swal.fire({
+      //   title: 'Loading...',
+      //   text: 'Fetching notification details',
+      //   allowOutsideClick: false,
+      //   showConfirmButton: false,
+      //   didOpen: () => {
+      //     Swal.showLoading();
+      //   },
+      // });
+
+      // Wait for detail to be fetched
+      let attempts = 0;
+      const maxAttempts = 50; // 5 seconds max wait
+      const checkInterval = setInterval(async () => {
+        attempts++;
         
-        // Mark as read when user closes the alert
-        if (result.isConfirmed && !notification.isRead) {
-          markAsRead(notification.id);
+        if (notificationDetail?.content || attempts >= maxAttempts || !isDetailLoading) {
+          clearInterval(checkInterval);
+          Swal.close();
+          
+          // Extract detail data
+          const detailContent = notificationDetail?.content;
+          const displayTitle = detailContent?.subject || notification.title;
+          const displayContent = detailContent?.content || notification.message;
+          
+          // If content is HTML, we'll strip HTML tags for display
+          const stripHtml = (html: string) => {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+          };
+          
+          const cleanContent = displayContent.includes('<') ? stripHtml(displayContent) : displayContent;
+
+          const result = await Swal.fire({
+            title: displayTitle,
+            html: `<div style="text-align: left; max-height: 400px; overflow-y: auto; line-height: 1.6;">
+                     ${cleanContent.length > 500 ? 
+                       `<p>${cleanContent.substring(0, 500)}...</p>
+                        <p><em>Content truncated for display</em></p>` : 
+                       `<p>${cleanContent}</p>`
+                     }
+                   </div>`,
+            icon: 'info',
+            confirmButtonText: 'Close',
+            confirmButtonColor: '#161129',
+            width: '90%',
+            customClass: {
+              popup: 'notification-alert',
+              title: 'notification-alert-title',
+              htmlContainer: 'notification-alert-content',
+            },
+          });
+
+          // Mark as read when user closes the alert
+          if (result.isConfirmed && notification.reading === "0") {
+            await markAsRead();
+          }
+
+          // Clear selected notification
+          setSelectedNotificationId(null);
         }
-      }
+      }, 100);
+
     } catch (err) {
-      console.error('Detail fetch error', err);
+      console.error('Notification detail error:', err);
+      Swal.close();
+
+      // Fallback to basic notification data
       const result = await Swal.fire({
         title: notification.title,
         text: notification.message,
         icon: 'info',
         confirmButtonText: 'Close',
-        confirmButtonColor: '#161129'
+        confirmButtonColor: '#161129',
       });
-      
-      // Mark as read when user closes the alert (fallback case)
-      if (result.isConfirmed && !notification.isRead) {
-        markAsRead(notification.id);
+
+      if (result.isConfirmed && notification.reading === "0") {
+        await markAsRead();
       }
+
+      setSelectedNotificationId(null);
     }
   };
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (!isAuthenticated) {
+    return null; // or a loading spinner
+  }
+
   return (
     <div 
-      className="notifications-page" 
+      className="notifications-page force-light-theme"
       ref={pullRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -130,11 +242,10 @@ const Notifications: React.FC = () => {
         overscrollBehavior: 'contain'
       }}
     >
-      <AppbarDefault 
+       <AppbarDefault 
         title={`Notifications (${unreadCount})`} 
-        onBack={() => navigate(-1)} 
-        onCartClick={handleCartClick}
-        cartCount={cartCount}
+        onBack={() => navigate(-1)}
+        showCart={false}
       />
 
       <div style={{
@@ -146,12 +257,15 @@ const Notifications: React.FC = () => {
         fontSize: '12px',
         color: '#555'
       }}>
-        {(pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') + (refreshing ? ' • refreshing...' : '')}
+        {pullDistance > 0 && (
+          (pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') + 
+          (refreshing ? ' • refreshing...' : '')
+        )}
       </div>
 
-    {(isLoading || refreshing) && (
+      {(isLoading || refreshing) && (
         <div className="loading-state">
-      <p>{refreshing ? 'Refreshing...' : 'Loading notifications...'}</p>
+          <p>{refreshing ? 'Refreshing...' : 'Loading notifications...'}</p>
         </div>
       )}
 
@@ -166,7 +280,7 @@ const Notifications: React.FC = () => {
           {notifications.map((notification: NotificationItem) => (
             <div
               key={notification.id}
-              className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
+              className={`notification-item ${notification.reading === "1" ? 'read' : 'unread'}`}
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="notification-icon">

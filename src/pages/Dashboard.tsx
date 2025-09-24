@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useCart } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useSplash, useSlider, useLedger, useDecodeToken, usePostEvent, usePostArticle } from '../api/hooks';
+import { useSplash, useSlider, useLedger, useDecodeToken, usePostArticle } from '../api/hooks';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
 import { ButtonGrid } from '../components/ButtonGrid';
@@ -90,31 +90,23 @@ const Dashboard: React.FC = () => {
   // Panggil useLedger hook - now uses Zustand auth store internally
   const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
 
-  // Panggil usePostEvent untuk check completed events
-  const completedEventMutation = usePostEvent();
-  
   // Panggil usePostArticle untuk check upcoming news
   const upcomingNewsMutation = usePostArticle();
+
+ 
 
   // Check if Partnership should be displayed
   const shouldShowPartnership = sliderData?.content?.result && 
                                Array.isArray(sliderData.content.result) && 
                                sliderData.content.result.length > 0;
 
-  // Check if CompletedEvent should be displayed
-  const shouldShowCompletedEvent = completedEventMutation.data?.content?.result && 
-                                  Array.isArray(completedEventMutation.data.content.result) && 
-                                  completedEventMutation.data.content.result.length > 0;
-
+ 
   // Check if UpcomingNews should be displayed
   const shouldShowUpcomingNews = upcomingNewsMutation.data?.content?.result && 
                                Array.isArray(upcomingNewsMutation.data.content.result) && 
                                upcomingNewsMutation.data.content.result.length > 0;
 
-  // Trigger completed events API call
-  useEffect(() => {
-    completedEventMutation.mutate({ eventType: 'completed' });
-  }, []);
+ 
 
   // Trigger upcoming news API call
   useEffect(() => {
@@ -311,15 +303,13 @@ const Dashboard: React.FC = () => {
         )}
         
         {/* Conditionally render CompletedEvent section */}
-        {shouldShowCompletedEvent && (
-          <SectionWrapper title="Completed Event">
+          <SectionWrapper title="Upcoming Event">
             <CompletedEvent />
           </SectionWrapper>
-        )}
         
         {/* Conditionally render UpcomingNews section */}
         {shouldShowUpcomingNews && (
-          <SectionWrapper title="Upcoming Event">
+          <SectionWrapper title="Upcoming News">
             <UpcomingNews />
           </SectionWrapper>
         )}

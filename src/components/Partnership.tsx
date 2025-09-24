@@ -36,6 +36,7 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
     id: number | string;
     name: string;
     image: string;
+    url?: string;
     alt?: string;
   };
   const sponsors: Sponsor[] =
@@ -56,6 +57,13 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
     setCurrentSlide(index);
   };
 
+    const handleSlideClick = (sponsor: Sponsor) => {
+    if (sponsor.url) {
+      window.open(sponsor.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+
   return (
     <div className={`partnership ${className || ''}`}>
       <div className="partnership-slider">
@@ -66,7 +74,21 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
           }}
         >
           {sponsors.map((sponsor: Sponsor) => (
-            <div key={sponsor.id} className="partnership-slide">
+            <div 
+              key={sponsor.id} 
+              className="partnership-slide"
+              onClick={() => handleSlideClick(sponsor)}
+              style={{ cursor: sponsor.url ? 'pointer' : 'default' }}
+              role={sponsor.url ? "button" : undefined}
+              tabIndex={sponsor.url ? 0 : undefined}
+              onKeyDown={sponsor.url ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSlideClick(sponsor);
+                }
+              } : undefined}
+              aria-label={sponsor.url ? `Visit ${sponsor.name} website` : undefined}
+            >
               <img
                 src={sponsor.image}
                 alt={sponsor.alt}
