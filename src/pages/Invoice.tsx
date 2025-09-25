@@ -42,6 +42,30 @@ const Invoice: React.FC = () => {
     return () => clearTimeout(autoOpenTimer);
   }, [invoiceData?.invoiceUrl, navigate]);
 
+  useEffect(() => {
+    // Memastikan class dark mode diterapkan dengan benar
+    // Jika ada sistem dark mode di aplikasi Anda, pastikan class 'dark-mode' 
+    // ditambahkan ke body element ketika dark mode aktif
+
+    // Contoh: jika Anda memiliki context atau state untuk dark mode
+    // const isDarkMode = /* ambil dari context/state dark mode Anda */;
+    // if (isDarkMode) {
+    //   document.body.classList.add('dark-mode');
+    //   document.body.classList.remove('light-mode');
+    // } else {
+    //   document.body.classList.add('light-mode');
+    //   document.body.classList.remove('dark-mode');
+    // }
+
+    // Untuk testing, Anda bisa uncomment baris berikut untuk memaksa dark mode:
+    // document.body.classList.add('dark-mode');
+    
+    return () => {
+      // Cleanup jika diperlukan
+      // document.body.classList.remove('dark-mode', 'light-mode');
+    };
+  }, []);
+
   const handleBackClick = () => {
     navigate('/cart');
   };

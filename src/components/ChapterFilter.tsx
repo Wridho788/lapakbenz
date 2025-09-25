@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useChapters } from '../api/hooks';
 import './ChapterFilter.css';
+
 interface Chapter {
   id: string;
   name: string;
@@ -56,42 +57,47 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
     }
   }, [isOpen]);
 
+  // CHANGED: Handle single selection toggle
   const handleChapterToggle = (chapterId: string) => {
-    if (selectedChapters.includes(chapterId)) {
-      onSelectionChange(selectedChapters.filter(id => id !== chapterId));
+    if (disabled) return;
+
+    console.log('🔍 Chapter toggle clicked:', chapterId);
+    console.log('📋 Current selection:', selectedChapters);
+    
+    const isCurrentlySelected = selectedChapters.includes(chapterId);
+    
+    if (isCurrentlySelected) {
+      // If already selected, deselect it (empty array for single selection)
+      onSelectionChange([]);
+      console.log('🔄 Deselected chapter:', chapterId);
     } else {
-      onSelectionChange([...selectedChapters, chapterId]);
+      // Select this chapter only (single selection - replace any existing)
+      onSelectionChange([chapterId]);
+      console.log('✅ Selected single chapter:', chapterId);
     }
   };
 
-  const handleSelectAll = () => {
-    if (selectedChapters.length === filteredChapters.length) {
-      // Deselect all filtered chapters
-      const filteredIds = filteredChapters.map(chapter => chapter.id);
-      onSelectionChange(selectedChapters.filter(id => !filteredIds.includes(id)));
-    } else {
-      // Select all filtered chapters
-      const filteredIds = filteredChapters.map(chapter => chapter.id);
-      const newSelection = [...new Set([...selectedChapters, ...filteredIds])];
-      onSelectionChange(newSelection);
-    }
-  };
-
-  const handleClearAll = () => {
+  // CHANGED: Remove Select All functionality for single selection
+  const handleClearSelection = () => {
+    if (disabled) return;
     onSelectionChange([]);
+    console.log('🧹 Cleared chapter selection');
   };
 
+  // CHANGED: Updated display text for single selection
   const getSelectedChapterNames = () => {
     if (selectedChapters.length === 0) return 'All Chapters';
-    if (selectedChapters.length === 1) {
-      const chapter = chapters.find(c => c.id === selectedChapters[0]);
-      return chapter ? chapter.name : 'Unknown Chapter';
+    
+    const selectedChapter = chapters.find(c => c.id === selectedChapters[0]);
+    if (selectedChapter) {
+      return selectedChapter.code ? 
+        `${selectedChapter.name} (${selectedChapter.code})` : 
+        selectedChapter.name;
     }
-    return `${selectedChapters.length} chapters selected`;
+    
+    return 'Unknown Chapter';
   };
 
-  const allFilteredSelected = filteredChapters.length > 0 && 
-    filteredChapters.every(chapter => selectedChapters.includes(chapter.id));
 
   if (error) {
     console.error('Chapter filter error:', error);
@@ -154,23 +160,18 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
               </svg>
             </div>
             
+            {/* CHANGED: Single selection actions */}
             <div className="chapter-filter-actions">
-              <button
-                type="button"
-                onClick={handleSelectAll}
-                className="chapter-filter-action-btn"
-                disabled={filteredChapters.length === 0}
-              >
-                {allFilteredSelected ? 'Deselect All' : 'Select All'}
-              </button>
-              <button
-                type="button"
-                onClick={handleClearAll}
-                className="chapter-filter-action-btn"
-                disabled={selectedChapters.length === 0}
-              >
-                Clear All
-              </button>
+              <span className="chapter-filter-info">Select one chapter</span>
+              {selectedChapters.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleClearSelection}
+                  className="chapter-filter-action-btn clear-btn"
+                >
+                  Clear Selection
+                </button>
+              )}
             </div>
           </div>
 
@@ -187,32 +188,47 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
               </div>
             )}
 
-            {!isLoading && filteredChapters.map((chapter) => (
-              <label key={chapter.id} className="chapter-filter-item">
-                <input
-                  type="checkbox"
-                  checked={selectedChapters.includes(chapter.id)}
-                  onChange={() => handleChapterToggle(chapter.id)}
-                  className="chapter-filter-checkbox"
-                />
-                <span className="chapter-filter-checkmark"></span>
-                <span className="chapter-filter-label">
-                  {chapter.name}
-                  {chapter.code && (
-                    <span className="chapter-filter-code"> ({chapter.code})</span>
-                  )}
-                </span>
-              </label>
-            ))}
+            {!isLoading && filteredChapters.map((chapter) => {
+              const isSelected = selectedChapters.includes(chapter.id);
+              
+              return (
+                <label 
+                  key={chapter.id} 
+                  className={`chapter-filter-item ${isSelected ? 'selected' : ''}`}
+                >
+                  {/* CHANGED: Using radio button behavior for single selection */}
+                  <input
+                    type="radio"
+                    name="chapter-selection"
+                    checked={isSelected}
+                    onChange={() => handleChapterToggle(chapter.id)}
+                    className="chapter-filter-radio"
+                    disabled={disabled}
+                  />
+                  <span className="chapter-filter-radio-mark"></span>
+                  <span className="chapter-filter-label">
+                    {chapter.name}
+                    {chapter.code && (
+                      <span className="chapter-filter-code"> ({chapter.code})</span>
+                    )}
+                  </span>
+                </label>
+              );
+            })}
           </div>
 
-          {selectedChapters.length > 0 && (
-            <div className="chapter-filter-footer">
-              <span className="chapter-filter-count">
-                {selectedChapters.length} of {chapters.length} chapters selected
+          {/* CHANGED: Updated footer for single selection */}
+          <div className="chapter-filter-footer">
+            {selectedChapters.length > 0 ? (
+              <span className="chapter-filter-count selected">
+                ✓ {getSelectedChapterNames()} selected
               </span>
-            </div>
-          )}
+            ) : (
+              <span className="chapter-filter-count">
+                Choose from {chapters.length} available chapters
+              </span>
+            )}
+          </div>
         </div>
       )}
     </div>

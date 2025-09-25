@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdPerson, MdRedeem } from 'react-icons/md';
+import { MdPerson } from 'react-icons/md';
 import { MdOutlineHistory, MdOutlineAccountBalanceWallet } from 'react-icons/md';
 import './ButtonGrid.css';
 
@@ -14,7 +14,6 @@ export const ButtonGrid: React.FC<ButtonGridProps> = ({
   onProfileClick,
   onEventHistoryClick,
   onTransactionClick,
-  onRedeemClick
 }) => {
   return (
     <div className="button-grid">
@@ -37,13 +36,6 @@ export const ButtonGrid: React.FC<ButtonGridProps> = ({
           <MdOutlineAccountBalanceWallet />
         </div>
         <span className="button-label">Transaction</span>
-      </button>
-
-      <button className="grid-button" onClick={onRedeemClick}>
-        <div className="button-icon">
-          <MdRedeem />
-        </div>
-        <span className="button-label">Redeem</span>
       </button>
     </div>
   );

@@ -127,6 +127,9 @@ const Dashboard: React.FC = () => {
     }
     if (decodeTokenError) {
       console.error('❌ Decode Token API Error:', decodeTokenError);
+             localStorage.removeItem('authToken');
+
+      return;
     }
     
     if (ledgerData) {
@@ -227,9 +230,9 @@ const Dashboard: React.FC = () => {
     requireAuth(() => navigate('/orders'), 'view transaction history');
   };
 
-  const handleRedeemClick = () => {
-    requireAuth(() => navigate('/profile/redeem-history'), 'view redeem history');
-  };
+  // const handleRedeemClick = () => {
+  //   requireAuth(() => navigate('/profile/redeem-history'), 'view redeem history');
+  // };
 
   const handleCartClick = () => {
     navigate('/cart');
@@ -247,7 +250,7 @@ const Dashboard: React.FC = () => {
       
       <AppbarHomepage 
         avatar="/merci.png" 
-        name={decodeTokenData?.content?.name || user?.username || "User"} 
+        name={decodeTokenError ? "User" : (decodeTokenData?.content?.name || "User")} 
         notificationCount={unreadCount}
         onNotificationClick={handleNotificationClick}
         cartCount={cartCount}
@@ -293,7 +296,7 @@ const Dashboard: React.FC = () => {
           onProfileClick={handleProfileClick}
           onEventHistoryClick={handleEventHistoryClick}
           onTransactionClick={handleTransactionClick}
-          onRedeemClick={handleRedeemClick}
+          // onRedeemClick={handleRedeemClick}
         />
         {/* Conditionally render Partnership section */}
         {shouldShowPartnership && (

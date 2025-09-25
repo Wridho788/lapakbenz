@@ -52,10 +52,21 @@ export const cartApi = {
       return response.data;
     } catch (error) {
       console.error('❌ Cart API error:', error);
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || error.message || 'Failed to get cart');
-      }
-      throw error;
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 401) {
+            // Set isAuthenticated to false and navigate to login
+            try {
+              const { useAuthStore } = await import('../stores/authStore');
+              useAuthStore.getState().logout();
+            } catch (e) {
+              console.error('Failed to logout on 401:', e);
+            }
+            // Optionally, you can throw a custom error to be handled in the component
+            throw new Error('401 Unauthorized: Please login again');
+          }
+          throw new Error(error.response?.data?.message || error.message || 'Failed to get cart');
+        }
+        throw error;
     }
   },
 

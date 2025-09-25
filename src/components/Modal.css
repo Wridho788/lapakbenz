@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 0px;
 }
 
 .modal-content {
@@ -59,7 +59,7 @@
 
 @media (max-width: 480px) {
   .modal-overlay {
-    padding: 10px;
+    padding: 0px;
   }
   
   .modal-content {

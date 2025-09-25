@@ -50,8 +50,7 @@
 }
 
 .registration-navigation {
-  margin-top: 24px;
-  padding-top: 20px;
+  margin: 8px 10px;
   border-top: 1px solid #e9ecef;
 }
 
@@ -62,7 +61,7 @@
 }
 
 .registration-nav-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #23203a;
   border: none;
   border-radius: 12px;
   color: white;
@@ -81,7 +80,7 @@
 }
 
 .registration-nav-button.merchant {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: #23203a;
 }
 
 .registration-nav-button.merchant:hover {
@@ -89,7 +88,7 @@
 }
 
 .registration-nav-button.public {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: #23203a;
 }
 
 .registration-nav-button.public:hover {
@@ -110,7 +109,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .event-modal-details {
-    flex-direction: column;
+    flex-direction: row;
     gap: 16px;
   }
   
@@ -119,7 +118,7 @@
   }
   
   .registration-buttons {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
   }
   

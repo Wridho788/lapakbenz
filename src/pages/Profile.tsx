@@ -7,10 +7,10 @@ import { useProfile, useLedger } from '../api/hooks';
 import { useAuthStore } from '../stores/authStore';
 import {
   MdPerson,
-  MdPayment,
+  // MdPayment,
   MdHistory,
   MdSwapHoriz,
-  MdCardGiftcard,
+  // MdCardGiftcard,
   MdLock,
   MdChat,
   MdLogout,
@@ -184,10 +184,10 @@ const Profile: React.FC = () => {
   // Account menu items
   const accountMenuItems = [
     { id: 'profile', title: 'My Profile', icon: MdPerson },
-    { id: 'payment', title: 'Payment Confirmation', icon: MdPayment },
+    // { id: 'payment', title: 'Payment Confirmation', icon: MdPayment },
     { id: 'event-history', title: 'My Event History', icon: MdHistory },
     { id: 'transaction', title: 'My Transaction History', icon: MdSwapHoriz },
-    { id: 'redeem', title: 'My Redeem History', icon: MdCardGiftcard },
+    // { id: 'redeem', title: 'My Redeem History', icon: MdCardGiftcard },
     { id: 'password', title: 'Change Password', icon: MdLock },
     { id: 'chat', title: 'Live Chat', icon: MdChat },
     { id: 'logout', title: 'Logout', icon: MdLogout },
@@ -200,9 +200,9 @@ const Profile: React.FC = () => {
       case 'profile':
         navigate('/profile/my-profile');
         break;
-      case 'payment':
-        navigate('/profile/payment-confirmation');
-        break;
+      // case 'payment':
+      //   navigate('/profile/payment-confirmation');
+      //   break;
       case 'event-history':
         navigate('/profile/event-history');
         break;

@@ -1,15 +1,11 @@
 .event-registration {
-  margin-top: 24px;
-  padding: 16px;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-  border-radius: 12px;
-  border: 1px solid #d1d5db;
+  margin-top: 14px;
 }
 
 .registration-button {
   width: 100%;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: #23203a;
   color: white;
   border: none;
   border-radius: 10px;

@@ -134,17 +134,6 @@ const Notifications: React.FC = () => {
       // Set the selected notification to trigger detail fetch
       setSelectedNotificationId(notification.id);
 
-      // // Show loading state
-      // const loadingSwal = Swal.fire({
-      //   title: 'Loading...',
-      //   text: 'Fetching notification details',
-      //   allowOutsideClick: false,
-      //   showConfirmButton: false,
-      //   didOpen: () => {
-      //     Swal.showLoading();
-      //   },
-      // });
-
       // Wait for detail to be fetched
       let attempts = 0;
       const maxAttempts = 50; // 5 seconds max wait
@@ -158,26 +147,13 @@ const Notifications: React.FC = () => {
           // Extract detail data
           const detailContent = notificationDetail?.content;
           const displayTitle = detailContent?.subject || notification.title;
-          const displayContent = detailContent?.content || notification.message;
           
-          // If content is HTML, we'll strip HTML tags for display
-          const stripHtml = (html: string) => {
-            const tmp = document.createElement('div');
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || '';
-          };
-          
-          const cleanContent = displayContent.includes('<') ? stripHtml(displayContent) : displayContent;
-
+          // For now, do not show displayContent
           const result = await Swal.fire({
             title: displayTitle,
             html: `<div style="text-align: left; max-height: 400px; overflow-y: auto; line-height: 1.6;">
-                     ${cleanContent.length > 500 ? 
-                       `<p>${cleanContent.substring(0, 500)}...</p>
-                        <p><em>Content truncated for display</em></p>` : 
-                       `<p>${cleanContent}</p>`
-                     }
-                   </div>`,
+              <em>Content hidden for now</em>
+            </div>`,
             icon: 'info',
             confirmButtonText: 'Close',
             confirmButtonColor: '#161129',
@@ -269,11 +245,17 @@ const Notifications: React.FC = () => {
         </div>
       )}
 
-      {error && (
-        <div className="error-state">
-          <p>Error loading notifications: {error.message}</p>
-        </div>
-      )}
+      {error && (() => {
+        // If error message appears, navigate to /login
+        setTimeout(() => {
+          navigate('/login');
+        }, 0);
+        return (
+          <div className="error-state">
+            <p>Error loading notifications: {error.message}</p>
+          </div>
+        );
+      })()}
 
       {!isLoading && !error && (
         <div className="notifications-list">

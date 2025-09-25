@@ -1,6 +1,6 @@
 .invoice-page {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
 }
@@ -11,6 +11,7 @@
   flex-direction: column;
   padding: 1rem;
   gap: 1rem;
+  background-color: white;
 }
 
 /* Invoice Header */
@@ -254,43 +255,106 @@
   }
 }
 
-/* Dark mode support */
+/* Class-based dark mode - akan aktif ketika body memiliki class 'dark-mode' */
+body.dark-mode .invoice-page {
+  background-color: white;
+}
+
+body.dark-mode .invoice-header,
+body.dark-mode .invoice-loading,
+body.dark-mode .invoice-error,
+body.dark-mode .invoice-footer,
+body.dark-mode .payment-instructions {
+  background: white;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .invoice-info h3,
+body.dark-mode .payment-instructions h4 {
+  color: #161129;
+}
+
+body.dark-mode .invoice-info p,
+body.dark-mode .invoice-loading p,
+body.dark-mode .invoice-error p,
+body.dark-mode .invoice-instruction,
+body.dark-mode .payment-instructions ol,
+body.dark-mode .payment-instructions li {
+  color: #cccccc;
+}
+
+body.dark-mode .invoice-action-btn {
+  background: #3d3d3d;
+  border-color: #555;
+  color: #ffffff;
+}
+
+body.dark-mode .invoice-action-btn:hover {
+  background: #4d4d4d;
+  border-color: #777;
+}
+
+body.dark-mode .invoice-action-btn.primary {
+  background: #161129;
+  color: white;
+  border-color: #161129;
+}
+
+body.dark-mode .invoice-action-btn.primary:hover {
+  background: #2c5aa0;
+  border-color: #2c5aa0;
+}
+
+body.dark-mode .loading-spinner {
+  border: 4px solid #555;
+  border-top: 4px solid #ffffff;
+}
+
+/* Untuk fallback jika menggunakan sistem prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
-  .invoice-page {
+  /* Hanya aktif jika body tidak memiliki class dark-mode atau light-mode */
+  body:not(.dark-mode):not(.light-mode) .invoice-page {
     background-color: #1a1a1a;
   }
 
-  .invoice-header,
-  .invoice-loading,
-  .invoice-error,
-  .invoice-footer,
-  .payment-instructions {
-    background: #2d2d2d;
-    color: #ffffff;
+  body:not(.dark-mode):not(.light-mode) .invoice-header,
+  body:not(.dark-mode):not(.light-mode) .invoice-loading,
+  body:not(.dark-mode):not(.light-mode) .invoice-error,
+  body:not(.dark-mode):not(.light-mode) .invoice-footer,
+  body:not(.dark-mode):not(.light-mode) .payment-instructions {
+    background: white;
+    color: #161129;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
-  .invoice-info h3,
-  .payment-instructions h4 {
-    color: #ffffff;
+  body:not(.dark-mode):not(.light-mode) .invoice-info h3,
+  body:not(.dark-mode):not(.light-mode) .payment-instructions h4 {
+    color: #161129;
   }
 
-  .invoice-info p,
-  .invoice-loading p,
-  .invoice-error p,
-  .invoice-instruction,
-  .payment-instructions ol,
-  .payment-instructions li {
-    color: #cccccc;
+  body:not(.dark-mode):not(.light-mode) .invoice-info p,
+  body:not(.dark-mode):not(.light-mode) .invoice-loading p,
+  body:not(.dark-mode):not(.light-mode) .invoice-error p,
+  body:not(.dark-mode):not(.light-mode) .invoice-instruction,
+  body:not(.dark-mode):not(.light-mode) .payment-instructions ol,
+  body:not(.dark-mode):not(.light-mode) .payment-instructions li {
+    color: #161129;
   }
 
-  .invoice-action-btn {
+  body:not(.dark-mode):not(.light-mode) .invoice-action-btn {
     background: #3d3d3d;
     border-color: #555;
     color: #ffffff;
   }
 
-  .invoice-action-btn:hover {
+  body:not(.dark-mode):not(.light-mode) .invoice-action-btn:hover {
     background: #4d4d4d;
     border-color: #777;
+  }
+
+  body:not(.dark-mode):not(.light-mode) .loading-spinner {
+    border: 4px solid #555;
+    border-top: 4px solid #ffffff;
   }
 }

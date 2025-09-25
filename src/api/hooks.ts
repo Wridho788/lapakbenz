@@ -345,7 +345,7 @@ export function useDecodeToken(): UseQueryResult<DecodeTokenResponse, Error> {
     queryKey: ['decodeToken', token],
     queryFn: () => customerApi.decodeToken(token!),
     enabled: isAuthenticated,
-    staleTime: 1000 * 60 * 15, // 15 minutes (token info doesn't change often)
+    staleTime: 1000 * 60 * 10, // 10 minutes (token info doesn't change often)
     retry: 2,
   });
 }

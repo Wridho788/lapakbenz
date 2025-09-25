@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MdDelete,
-  MdLocationOn,
+  // MdLocationOn,
   MdPayment,
   MdHome,
   MdClear,
@@ -19,20 +19,20 @@ import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersA
 import Swal from 'sweetalert2';
 import './Cart.css';
 
-interface ShippingAddress {
-  name: string;
-  phone: string;
-  address: string;
-  city: string;
-  zipCode: string;
-}
+// interface ShippingAddress {
+//   name: string;
+//   phone: string;
+//   address: string;
+//   city: string;
+//   zipCode: string;
+// }
 
-interface PaymentMethod {
-  id: string;
-  name: string;
-  type: 'bank' | 'ewallet' | 'cod';
-  fee: number;
-}
+// interface PaymentMethod {
+//   id: string;
+//   name: string;
+//   type: 'bank' | 'ewallet' | 'cod';
+//   fee: number;
+// }
 
 interface OrderingStatus {
   isOrdering: boolean;
@@ -48,8 +48,8 @@ const Cart: React.FC = () => {
   const navigate = useNavigate();
   const { cartCount, removeFromCart } = useCartContext();
   const { isAuthenticated, token: authToken, requireAuth } = useAuthStore();
-  const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
+  // const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null);
+  // const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
   const [orderingStatus, setOrderingStatus] = useState<OrderingStatus>({
     isOrdering: false,
     currentStep: '',
@@ -151,24 +151,6 @@ const Cart: React.FC = () => {
     navigate('/notifications');
   };
 
-  const shippingAddresses: ShippingAddress[] = [
-    {
-      name: 'John Doe',
-      phone: '+62 812-3456-7890',
-      address: 'Jl. Sudirman No. 123, Menteng',
-      city: 'Jakarta Pusat',
-      zipCode: '10310',
-    },
-  ];
-
-  const paymentMethods: PaymentMethod[] = [
-    { id: 'bca', name: 'Bank BCA', type: 'bank', fee: 0 },
-    { id: 'mandiri', name: 'Bank Mandiri', type: 'bank', fee: 0 },
-    { id: 'gopay', name: 'GoPay', type: 'ewallet', fee: 0 },
-    { id: 'ovo', name: 'OVO', type: 'ewallet', fee: 0 },
-    { id: 'cod', name: 'Cash on Delivery', type: 'cod', fee: 5000 },
-  ];
-
   const handleRemoveItem = (itemId: string) => {
     removeFromCart(itemId);
   };
@@ -245,7 +227,7 @@ const Cart: React.FC = () => {
   const subtotal = getApiCartTotal();
   const apiCartCount = getApiCartCount();
   const shippingFee = 15000;
-  const paymentFee = selectedPayment?.fee || 0;
+  const paymentFee =  0;
   const totalPayment = subtotal + shippingFee + paymentFee;
 
   // New order flow function
@@ -261,25 +243,25 @@ const Cart: React.FC = () => {
       return;
     }
 
-    if (!selectedAddress) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Address Required',
-        text: 'Please select a shipping address',
-        confirmButtonColor: '#f39c12',
-      });
-      return;
-    }
+    // if (!selectedAddress) {
+    //   await Swal.fire({
+    //     icon: 'warning',
+    //     title: 'Address Required',
+    //     text: 'Please select a shipping address',
+    //     confirmButtonColor: '#f39c12',
+    //   });
+    //   return;
+    // }
 
-    if (!selectedPayment) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Payment Method Required',
-        text: 'Please select a payment method',
-        confirmButtonColor: '#f39c12',
-      });
-      return;
-    }
+    // if (!selectedPayment) {
+    //   await Swal.fire({
+    //     icon: 'warning',
+    //     title: 'Payment Method Required',
+    //     text: 'Please select a payment method',
+    //     confirmButtonColor: '#f39c12',
+    //   });
+    //   return;
+    // }
 
     if (!hasApiCartItems) {
       await Swal.fire({
@@ -305,8 +287,6 @@ const Cart: React.FC = () => {
 
     console.log('🚀 Starting order process...');
     console.log('📦 Cart items to process:', cartItems);
-    console.log('📍 Shipping address:', selectedAddress);
-    console.log('💳 Payment method:', selectedPayment);
     console.log('💰 Total payment:', totalPayment);
 
     try {
@@ -464,7 +444,7 @@ const Cart: React.FC = () => {
 
   const hasApiCartItems = apiCartData?.content?.result && apiCartData.content.result.length > 0;
 
-  if (!hasApiCartItems && !cartLoading) {
+  if ((!hasApiCartItems && !cartLoading) || apiCartData?.content?.result == null) {
     return (
       <div className="cart-page">
         <AppbarDefault
@@ -483,7 +463,7 @@ const Cart: React.FC = () => {
               <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
                 Continue Shopping
               </button>
-              <button className="home-btn" onClick={() => navigate('/')}>
+              <button className="home-btn" onClick={() => navigate('/')}> 
                 <MdHome /> Go to Home
               </button>
             </div>
@@ -706,55 +686,6 @@ const Cart: React.FC = () => {
                 </div>
               </div>
             )) || []}
-          </div>
-
-          {/* Shipping Address */}
-          <div className="shipping-section">
-            <h3>
-              <MdLocationOn /> Shipping Address
-            </h3>
-            <div className="address-options">
-              {shippingAddresses.map((address, index) => (
-                <div
-                  key={index}
-                  className={`address-card ${selectedAddress === address ? 'selected' : ''}`}
-                  onClick={() => setSelectedAddress(address)}
-                >
-                  <div className="address-info">
-                    <h4>{address.name}</h4>
-                    <p>{address.phone}</p>
-                    <p>{address.address}</p>
-                    <p>
-                      {address.city} {address.zipCode}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Payment Method */}
-          <div className="payment-section">
-            <h3>
-              <MdPayment /> Payment Method
-            </h3>
-            <div className="payment-dropdown">
-              <select
-                value={selectedPayment?.id || ''}
-                onChange={(e) => {
-                  const selected = paymentMethods.find((method) => method.id === e.target.value);
-                  setSelectedPayment(selected || null);
-                }}
-                className="payment-select"
-              >
-                <option value="">Select Payment Method</option>
-                {paymentMethods.map((method) => (
-                  <option key={method.id} value={method.id}>
-                    {method.name} {method.fee > 0 && `(+Rp ${method.fee.toLocaleString('id-ID')})`}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* Order Summary */}
