@@ -1,3 +1,15 @@
+/* Force light mode styles regardless of user's dark mode setting */
+html, body, .order-detail-page {
+  background: #f8f9ff !important;
+  color: #161129 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  html, body, .order-detail-page {
+    background: #f8f9ff !important;
+    color: #161129 !important;
+  }
+}
 .order-detail-page {
   min-height: 100vh;
   background-color: #f8f9fa;

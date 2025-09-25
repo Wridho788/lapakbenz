@@ -343,24 +343,18 @@ const OrderDetail: React.FC = () => {
               <span className="total-label">Bag Total:</span>
               <span className="total-value">{formatCurrency(order.amount)}</span>
             </div>
-            {order.discount > 0 && (
               <div className="total-row savings">
                 <span className="total-label">Bag Savings:</span>
                 <span className="total-value">-{formatCurrency(order.discount)}</span>
               </div>
-            )}
-            {order.tax > 0 && (
               <div className="total-row">
                 <span className="total-label">Tax:</span>
                 <span className="total-value">{formatCurrency(order.tax)}</span>
               </div>
-            )}
-            {order.costs > 0 && (
               <div className="total-row">
                 <span className="total-label">Additional Costs:</span>
                 <span className="total-value">{formatCurrency(order.costs)}</span>
               </div>
-            )}
             <div className="total-row final-total">
               <span className="total-label">Total Amount:</span>
               <span className="total-value">{formatCurrency(order.tot_amt || order.total)}</span>

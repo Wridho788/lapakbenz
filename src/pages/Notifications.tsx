@@ -151,9 +151,6 @@ const Notifications: React.FC = () => {
           // For now, do not show displayContent
           const result = await Swal.fire({
             title: displayTitle,
-            html: `<div style="text-align: left; max-height: 400px; overflow-y: auto; line-height: 1.6;">
-              <em>Content hidden for now</em>
-            </div>`,
             icon: 'info',
             confirmButtonText: 'Close',
             confirmButtonColor: '#161129',

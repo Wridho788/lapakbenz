@@ -1,8 +1,9 @@
 .orders-page {
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: #f8f9fa !important;
   display: flex;
   flex-direction: column;
+  color-scheme: light; /* Force light mode for form controls */
 }
 
 .orders-content {
@@ -11,6 +12,73 @@
   flex-direction: column;
   padding: 1rem;
   gap: 1rem;
+}
+
+/* Force light mode - override any dark mode preferences */
+@media (prefers-color-scheme: dark) {
+  .orders-page {
+    background-color: #f8f9fa !important;
+  }
+
+  .orders-header,
+  .orders-loading,
+  .orders-error,
+  .orders-empty,
+  .order-card {
+    background: white !important;
+    color: #161129 !important;
+  }
+
+  .orders-info h3,
+  .orders-empty h3,
+  .order-code h4,
+  .detail-value,
+  .amount-value {
+    color: #161129 !important;
+  }
+
+  .orders-info p,
+  .orders-loading p,
+  .orders-error p,
+  .orders-empty p,
+  .detail-label,
+  .amount-label,
+  .date-label,
+  .date-value {
+    color: #666 !important;
+  }
+
+  .orders-action-btn {
+    background: #f8f9ff !important;
+    border-color: #e9ecef !important;
+    color: #161129 !important;
+  }
+
+  .orders-action-btn:hover:not(:disabled) {
+    background: #e9ecff !important;
+    border-color: #161129 !important;
+  }
+
+  .order-header {
+    border-bottom-color: #f0f0f0 !important;
+  }
+
+  .order-footer {
+    border-top-color: #f0f0f0 !important;
+  }
+
+  .empty-icon {
+    color: #ddd !important;
+  }
+
+  .refresh-indicator {
+    background: rgba(22, 17, 41, 0.9) !important;
+    color: white !important;
+  }
+
+  .orders-error h3 {
+    color: #e74c3c !important;
+  }
 }
 
 /* Orders Header */
@@ -455,67 +523,5 @@
     bottom: 1rem;
     right: 1rem;
     padding: 0.375rem 0.75rem;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .orders-page {
-    background-color: #1a1a1a;
-  }
-
-  .orders-header,
-  .orders-loading,
-  .orders-error,
-  .orders-empty,
-  .order-card {
-    background: #2d2d2d;
-    color: #ffffff;
-  }
-
-  .orders-info h3,
-  .orders-empty h3,
-  .order-code h4,
-  .detail-value,
-  .amount-value {
-    color: #ffffff;
-  }
-
-  .orders-info p,
-  .orders-loading p,
-  .orders-error p,
-  .orders-empty p,
-  .detail-label,
-  .amount-label,
-  .date-label,
-  .date-value {
-    color: #cccccc;
-  }
-
-  .orders-action-btn {
-    background: #3d3d3d;
-    border-color: #555;
-    color: #ffffff;
-  }
-
-  .orders-action-btn:hover:not(:disabled) {
-    background: #4d4d4d;
-    border-color: #777;
-  }
-
-  .order-header {
-    border-bottom-color: #404040;
-  }
-
-  .order-footer {
-    border-top-color: #404040;
-  }
-
-  .empty-icon {
-    color: #555;
-  }
-
-  .refresh-indicator {
-    background: rgba(45, 45, 45, 0.95);
   }
 }
