@@ -1,7 +1,7 @@
 {
-  "name": "Merciku App",
-  "short_name": "Merciku",
-  "description": "A modern PWA for events and news.",
+  "name": "lapakBenz",
+  "short_name": "lapakBenz",
+  "description": "Aplikasi komunitas Mercedes-Benz W202 Indonesia untuk event, berita, dan marketplace.",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#161129",

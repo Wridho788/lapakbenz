@@ -1,4 +1,5 @@
 import React from 'react';
+import { MdClose } from 'react-icons/md';
 import './Modal.css';
 
 interface ModalProps {
@@ -30,9 +31,9 @@ const Modal: React.FC<ModalProps> = ({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close-btn" onClick={onClose}>
-          ✕
-        </button>
+        <div className="modal-close-btn" onClick={onClose}>
+          <MdClose color="#fff" />
+        </div>
         {children}
       </div>
     </div>

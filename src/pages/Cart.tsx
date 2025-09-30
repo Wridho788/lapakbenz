@@ -86,8 +86,8 @@ const Cart: React.FC = () => {
     if (!requireAuth(() => {}, 'update cart quantity')) {
       await Swal.fire({
         icon: 'warning',
-        title: 'Login Required',
-        text: 'Please login to update cart',
+        title: 'Login Diperlukan',
+        text: 'Silakan login untuk mengubah keranjang',
         confirmButtonColor: '#f39c12',
       });
       navigate('/login');
@@ -115,8 +115,8 @@ const Cart: React.FC = () => {
 
       await Swal.fire({
         icon: 'error',
-        title: 'Update Failed',
-        text: 'Failed to update item quantity. Please try again.',
+        title: 'Gagal Memperbarui',
+        text: 'Gagal memperbarui jumlah item. Silakan coba lagi.',
         confirmButtonColor: '#d33',
       });
     }
@@ -159,8 +159,8 @@ const Cart: React.FC = () => {
     if (!requireAuth(() => {}, 'clear cart')) {
       await Swal.fire({
         icon: 'warning',
-        title: 'Login Required',
-        text: 'Please login to manage your cart',
+        title: 'Login Diperlukan',
+        text: 'Silakan login untuk mengelola keranjang Anda',
         confirmButtonColor: '#f39c12',
       });
       navigate('/login');
@@ -169,13 +169,13 @@ const Cart: React.FC = () => {
 
     const result = await Swal.fire({
       icon: 'warning',
-      title: 'Remove All Items?',
-      text: 'Are you sure you want to remove all items from your cart? This action cannot be undone.',
+      title: 'Hapus Semua Item?',
+      text: 'Apakah Anda yakin ingin menghapus semua item dari keranjang? Tindakan ini tidak dapat dibatalkan.',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, remove all',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: 'Ya, hapus semua',
+      cancelButtonText: 'Batal',
     });
 
     if (!result.isConfirmed) {
@@ -189,8 +189,8 @@ const Cart: React.FC = () => {
 
       await Swal.fire({
         icon: 'success',
-        title: 'Cart Cleared!',
-        text: 'All items have been removed from your cart',
+        title: 'Keranjang Kosong!',
+        text: 'Semua item telah dihapus dari keranjang Anda',
         confirmButtonColor: '#28a745',
         timer: 2000,
         timerProgressBar: true,
@@ -200,7 +200,7 @@ const Cart: React.FC = () => {
     } catch (error: any) {
       console.error('❌ Failed to clear cart:', error);
 
-      let errorMessage = 'Failed to clear cart. Please try again.';
+  let errorMessage = 'Gagal mengosongkan keranjang. Silakan coba lagi.';
 
       if (error?.message) {
         errorMessage = error.message;
@@ -208,7 +208,7 @@ const Cart: React.FC = () => {
 
       await Swal.fire({
         icon: 'error',
-        title: 'Clear Cart Failed',
+        title: 'Gagal Mengosongkan Keranjang',
         text: errorMessage,
         confirmButtonColor: '#d33',
       });
@@ -235,8 +235,8 @@ const Cart: React.FC = () => {
     if (!requireAuth(() => {}, 'place order')) {
       await Swal.fire({
         icon: 'warning',
-        title: 'Login Required',
-        text: 'Please login to place order',
+        title: 'Login Diperlukan',
+        text: 'Silakan login untuk melakukan pemesanan',
         confirmButtonColor: '#f39c12',
       });
       navigate('/login');
@@ -266,8 +266,8 @@ const Cart: React.FC = () => {
     if (!hasApiCartItems) {
       await Swal.fire({
         icon: 'warning',
-        title: 'Empty Cart',
-        text: 'Your cart is empty',
+        title: 'Keranjang Kosong',
+        text: 'Keranjang Anda kosong',
         confirmButtonColor: '#f39c12',
       });
       return;
@@ -408,8 +408,8 @@ const Cart: React.FC = () => {
       // Show success message if no invoice_url (fallback)
       await Swal.fire({
         icon: 'success',
-        title: 'Order Placed Successfully!',
-        text: `Your order #${orderId} has been created and is being processed.`,
+        title: 'Pesanan Berhasil!',
+        text: `Pesanan #${orderId} telah dibuat dan sedang diproses.`,
         confirmButtonColor: '#28a745',
         timer: 3000,
         timerProgressBar: true,
@@ -435,8 +435,8 @@ const Cart: React.FC = () => {
 
       await Swal.fire({
         icon: 'error',
-        title: 'Order Failed',
-        text: error.message || 'Failed to place order. Please try again.',
+        title: 'Pesanan Gagal',
+        text: error.message || 'Gagal melakukan pemesanan. Silakan coba lagi.',
         confirmButtonColor: '#d33',
       });
     }
@@ -448,23 +448,24 @@ const Cart: React.FC = () => {
     return (
       <div className="cart-page">
         <AppbarDefault
-          title="Shopping Cart"
+          title="Keranjang Belanja"
           onBack={handleBackClick}
           onCartClick={handleCartClick}
           cartCount={cartCount}
+          defaultBack="/dashboard" 
         />
 
         <div className="cart-content">
           <div className="empty-cart">
             <img src="/nodata.png" alt="Empty Cart" className="empty-icon" />
-            <h3>Your Cart is Empty</h3>
-            <p>Add some products to your cart to get started!</p>
+            <h3>Keranjang Anda Kosong</h3>
+            <p>Tambahkan produk ke keranjang untuk mulai belanja!</p>
             <div className="empty-cart-actions">
               <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
-                Continue Shopping
+                Lanjut Belanja
               </button>
               <button className="home-btn" onClick={() => navigate('/')}> 
-                <MdHome /> Go to Home
+                <MdHome /> Ke Beranda
               </button>
             </div>
           </div>
@@ -584,7 +585,7 @@ const Cart: React.FC = () => {
           {/* Cart Items */}
           <div className="cart-items-section">
             <div className="cart-header">
-              <h3>Cart Items</h3>
+              <h3>Daftar Belanja</h3>
               {hasApiCartItems && (
                 <button
                   className="remove-all-btn"
@@ -593,7 +594,7 @@ const Cart: React.FC = () => {
                   title="Remove all items from cart"
                 >
                   <MdClear />
-                  <span>{removeAllFromCartMutation.isPending ? 'Clearing...' : 'Clear All'}</span>
+                  <span>{removeAllFromCartMutation.isPending ? 'Menghapus...' : 'Hapus Semua'}</span>
                 </button>
               )}
             </div>
@@ -601,7 +602,7 @@ const Cart: React.FC = () => {
             {/* Loading State */}
             {cartLoading && isAuthenticated && (
               <div className="cart-loading">
-                <p>Loading cart items...</p>
+                <p>Memuat daftar belanja...</p>
               </div>
             )}
 
@@ -609,7 +610,7 @@ const Cart: React.FC = () => {
             {cartError && isAuthenticated && (
               <div className="cart-error">
                 <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
-                  Failed to load cart from server
+                  Gagal memuat keranjang dari server
                 </p>
                 <button
                   onClick={() => refetchCart()}
@@ -622,7 +623,7 @@ const Cart: React.FC = () => {
                     cursor: 'pointer',
                   }}
                 >
-                  Retry
+                  Coba Lagi
                 </button>
               </div>
             )}
@@ -690,25 +691,25 @@ const Cart: React.FC = () => {
 
           {/* Order Summary */}
           <div className="order-summary">
-            <h3>Order Summary</h3>
+            <h3>Ringkasan Pesanan</h3>
             <div className="summary-details">
               <div className="summary-row">
-                <span>Subtotal ({apiCartCount} items)</span>
+                <span>Subtotal ({apiCartCount} item)</span>
                 <span>Rp {subtotal.toLocaleString('id-ID')}</span>
               </div>
               <div className="summary-row">
-                <span>Shipping Fee</span>
+                <span>Ongkir</span>
                 <span>Rp {shippingFee.toLocaleString('id-ID')}</span>
               </div>
               {paymentFee > 0 && (
                 <div className="summary-row">
-                  <span>Payment Fee</span>
+                  <span>Biaya Pembayaran</span>
                   <span>Rp {paymentFee.toLocaleString('id-ID')}</span>
                 </div>
               )}
               <div className="summary-divider"></div>
               <div className="summary-row total">
-                <span>Total Payment</span>
+                <span>Total Bayar</span>
                 <span>Rp {totalPayment.toLocaleString('id-ID')}</span>
               </div>
             </div>

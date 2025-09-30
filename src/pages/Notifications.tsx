@@ -121,8 +121,8 @@ const Notifications: React.FC = () => {
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!isAuthenticated || !token) {
       Swal.fire({
-        title: 'Authentication Required',
-        text: 'Please log in to view notification details',
+        title: 'Diperlukan Autentikasi',
+        text: 'Silakan masuk untuk melihat detail notifikasi',
         icon: 'warning',
         confirmButtonText: 'OK',
         confirmButtonColor: '#161129',
@@ -219,6 +219,7 @@ const Notifications: React.FC = () => {
         title={`Notifications (${unreadCount})`} 
         onBack={() => navigate(-1)}
         showCart={false}
+        defaultBack="/dashboard" 
       />
 
       <div style={{
@@ -284,8 +285,8 @@ const Notifications: React.FC = () => {
       {!isLoading && !error && notifications.length === 0 && (
         <div className="empty-state">
           <MdMessage className="empty-icon" />
-          <h3>No Notifications</h3>
-          <p>You don't have any notifications yet.</p>
+          <h3>Tidak Ada Notifikasi</h3>
+          <p>Anda belum memiliki notifikasi apapun.</p>
         </div>
       )}
     </div>

@@ -18,6 +18,7 @@ export const ENDPOINT_TICKET_LIST = 'customer/ticket_list/';
 export const ENDPOINT_GET_TICKET = 'customer/get_ticket/';
 export const ENDPOINT_UPLOAD_IMAGE = 'customer/upload_image';
 export const ENDPOINT_DECODE_TOKEN = 'customer/decode_token';
+export const ENDPOINT_VERIFY = 'customer/verify/';
 // product
 export const ENDPOINT_PRODUCT = 'product';
 export const ENDPOINT_PRODUCT_SEARCH = 'product/search';

@@ -24,13 +24,13 @@ const PublicRegistration: React.FC = () => {
   const publicRegistration = usePublicRegistration();
 
   const vehicleTypes = [
-    { value: '', label: 'Select Vehicle Type' },
-    { value: 'car', label: '🚗 Car' },
-    { value: 'motorcycle', label: '🏍️ Motorcycle' },
-    { value: 'truck', label: '🚛 Truck' },
+    { value: '', label: 'Pilih Jenis Kendaraan' },
+    { value: 'car', label: '🚗 Mobil' },
+    { value: 'motorcycle', label: '🏍️ Motor' },
+    { value: 'truck', label: '🚛 Truk' },
     { value: 'van', label: '🚐 Van' },
     { value: 'bus', label: '🚌 Bus' },
-    { value: 'other', label: '🚙 Other' }
+    { value: 'other', label: '🚙 Lainnya' }
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -66,28 +66,28 @@ const PublicRegistration: React.FC = () => {
     const newErrors: {[key: string]: string} = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Full name is required';
+      newErrors.name = 'Nama lengkap wajib diisi';
     }
     if (!formData.type.trim()) {
-      newErrors.type = 'Vehicle type is required';
+      newErrors.type = 'Jenis kendaraan wajib dipilih';
     }
     if (!formData.policeno.trim()) {
-      newErrors.policeno = 'Police number is required';
+      newErrors.policeno = 'Nomor polisi wajib diisi';
     }
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = 'Nomor telepon wajib diisi';
     }
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email wajib diisi';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Masukkan email yang valid';
     }
 
     // Validation: Phone number and police number cannot be the same
     if (formData.phone.trim() && formData.policeno.trim() && 
         formData.phone.trim() === formData.policeno.trim()) {
-      newErrors.phone = 'Phone number cannot be the same as police number';
-      newErrors.policeno = 'Police number cannot be the same as phone number';
+      newErrors.phone = 'Nomor telepon tidak boleh sama dengan nomor polisi';
+      newErrors.policeno = 'Nomor polisi tidak boleh sama dengan nomor telepon';
     }
 
     // Notes is optional, so no validation needed
@@ -106,8 +106,8 @@ const PublicRegistration: React.FC = () => {
     if (!eventId) {
       Swal.fire({
         icon: 'error',
-        title: 'Event ID Missing',
-        text: 'Event ID is missing. Please try again from the event page.',
+        title: 'ID Event Tidak Ada',
+        text: 'ID event tidak ditemukan. Silakan coba lagi dari halaman event.',
         confirmButtonColor: '#3b82f6'
       });
       return;
@@ -129,38 +129,64 @@ const PublicRegistration: React.FC = () => {
       if (result.status === 200 && result.content) {
         const hasInvoice = result.content.invoice_url;
         const invoiceUrl = result.content.invoice_url;
-        
-        Swal.fire({
-          icon: 'success',
-          title: '🎉 Registration Successful!',
-          html: `
-            <p>Your public registration has been submitted successfully.</p>
-            <br>
-            <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
-              <p><strong>📋 Registration Details:</strong></p>
-              <p><strong>Order Code:</strong> ${result.content.ordercode || 'N/A'}</p>
-              <p><strong>Transaction ID:</strong> ${result.content.transid || 'N/A'}</p>
-              ${hasInvoice ? `<p><strong>Payment URL:</strong> Available</p>` : ''}
-            </div>
-          `,
-          confirmButtonColor: '#10b981',
-          confirmButtonText: 'Continue',
-          showDenyButton: hasInvoice,
-          denyButtonText: hasInvoice ? '💳 View Invoice' : undefined,
-          denyButtonColor: '#3b82f6'
-        }).then((swalResult) => {
-          if (swalResult.isDenied && invoiceUrl) {
-            // Open invoice in new tab using Invoice page pattern
-            const fullUrl = getFullUrl(invoiceUrl);
-            window.open(fullUrl, '_blank');
-          }
-          navigate('/event');
-        });
+        if (!hasInvoice) {
+          await Swal.fire({
+            icon: 'success',
+            title: '🎉 Pendaftaran Berhasil!',
+            html: `
+              <p>Pendaftaran Anda berhasil dikirim.</p>
+              <br>
+              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
+                <p><strong>📋 Detail Pendaftaran:</strong></p>
+                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
+                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+                <p style="color: #10b981; margin-top: 10px;"><strong>Biaya pendaftaran: GRATIS</strong></p>
+              </div>
+            `,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Lanjut',
+            willClose: () => {
+              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
+                navigate('/event');
+              }
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: '🎉 Pendaftaran Berhasil!',
+            html: `
+              <p>Pendaftaran Anda berhasil dikirim.</p>
+              <br>
+              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
+                <p><strong>📋 Detail Pendaftaran:</strong></p>
+                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
+                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+              </div>
+            `,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Lanjut',
+            showDenyButton: hasInvoice,
+            denyButtonText: hasInvoice ? '💳 Lihat Invoice' : undefined,
+            denyButtonColor: '#3b82f6',
+            willClose: () => {
+              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
+                navigate('/event');
+              }
+            }
+          }).then((swalResult) => {
+            if (swalResult.isDenied && invoiceUrl) {
+              // Open invoice in new tab using Invoice page pattern
+              const fullUrl = getFullUrl(invoiceUrl);
+              window.open(fullUrl, '_blank');
+            }
+          });
+        }
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Registration Failed',
-          text: result.message || 'Registration failed. Please try again.',
+          title: 'Pendaftaran Gagal',
+          text: result.message || 'Pendaftaran gagal. Silakan coba lagi.',
           confirmButtonColor: '#3b82f6'
         });
       }
@@ -168,10 +194,10 @@ const PublicRegistration: React.FC = () => {
       console.error('❌ Registration failed:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Registration Failed',
-        text: error.response?.data?.error || 'Registration failed. Please try again.',
+        title: 'Pendaftaran Gagal',
+        text: error.response?.data?.error || 'Pendaftaran gagal. Silakan coba lagi.',
         confirmButtonColor: '#3b82f6',
-        footer: 'Please check your information and try again.'
+        footer: 'Silakan periksa data Anda dan coba lagi.'
       });
     } finally {
       setIsSubmitting(false);
@@ -185,26 +211,26 @@ const PublicRegistration: React.FC = () => {
   return (
     <div className="public-registration-page">
       <AppbarDefault 
-        title="Public Registration" 
+        title="Pendaftaran Umum" 
         onBack={handleBackClick} 
       />
       
       <div className="public-registration-content">
         <div className="registration-header">
-          <h2>👤 Public Registration</h2>
-          <p>Fill in the details below to register for this event</p>
+          <h2>👤 Pendaftaran Umum</h2>
+          <p>Isi data berikut untuk mendaftar pada event ini</p>
         </div>
 
         <form onSubmit={handleSubmit} className="registration-form">
           <div className="form-group">
-            <label htmlFor="name">Full Name *</label>
+            <label htmlFor="name">Nama Lengkap *</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Enter your full name"
+              placeholder="Masukkan nama lengkap Anda"
               className={errors.name ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -212,7 +238,7 @@ const PublicRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="type">Vehicle Type *</label>
+            <label htmlFor="type">Jenis Kendaraan *</label>
             <select
               id="type"
               name="type"
@@ -231,14 +257,14 @@ const PublicRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="policeno">Police Number *</label>
+            <label htmlFor="policeno">Nomor Polisi *</label>
             <input
               type="text"
               id="policeno"
               name="policeno"
               value={formData.policeno}
               onChange={handleInputChange}
-              placeholder="Enter your vehicle police number"
+              placeholder="Masukkan nomor polisi kendaraan"
               className={errors.policeno ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -246,14 +272,14 @@ const PublicRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="phone">Phone Number *</label>
+            <label htmlFor="phone">No. Telepon *</label>
             <input
               type="tel"
               id="phone"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="Enter your phone number"
+              placeholder="Masukkan nomor telepon"
               className={errors.phone ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -261,14 +287,14 @@ const PublicRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email Address *</label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Enter your email address"
+              placeholder="Masukkan alamat email"
               className={errors.email ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -276,13 +302,13 @@ const PublicRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="notes">Additional Notes</label>
+            <label htmlFor="notes">Catatan Tambahan</label>
             <textarea
               id="notes"
               name="notes"
               value={formData.notes}
               onChange={handleInputChange}
-              placeholder="Any additional notes or special requirements (optional)"
+              placeholder="Catatan tambahan atau kebutuhan khusus (opsional)"
               rows={3}
               disabled={isSubmitting}
             />
@@ -295,7 +321,7 @@ const PublicRegistration: React.FC = () => {
               className="btn-secondary"
               disabled={isSubmitting}
             >
-              Cancel
+              Batal
             </button>
             <button
               type="submit"
@@ -305,10 +331,10 @@ const PublicRegistration: React.FC = () => {
               {isSubmitting ? (
                 <>
                   <span className="loading-spinner"></span>
-                  Registering...
+                  Mendaftarkan...
                 </>
               ) : (
-                '👤 Register Now'
+                '👤 Daftar Sekarang'
               )}
             </button>
           </div>

@@ -261,7 +261,86 @@ export function useChangePassword(): UseMutationResult<
   });
 }
 
+
+interface UseSimpleRequestOTPOptions {
+  enabled?: boolean;
+  onSuccess?: (data: RequestOTPResponse) => void;
+  onError?: (error: Error) => void;
+}
+
+/**
+ * Simple hook for requesting OTP with username validation
+ * Only allows mutation when username is provided and not empty
+ */
+export function useSimpleRequestOTP(
+  username: string,
+  options?: UseSimpleRequestOTPOptions
+): UseMutationResult<RequestOTPResponse, Error, RequestOTPRequest> & {
+  canRequest: boolean;
+  requestOTP: () => void;
+} {
+  // Validate username - must exist and not be empty/whitespace
+  const canRequest = Boolean(username && username.trim().length > 0);
+
+  const mutation = useMutation({
+    mutationFn: async (payload: RequestOTPRequest): Promise<RequestOTPResponse> => {
+      if (!payload.username || !payload.username.trim()) {
+        throw new Error('Username is required to request OTP');
+      }
+      try {
+        return await customerApi.requestOTP(payload);
+      } catch (error) {
+        console.error('Request OTP Error:', error);
+        throw error;
+      }
+    },
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
+  });
+
+  // Simple wrapper function for easier usage
+  const requestOTP = () => {
+    if (canRequest) {
+      mutation.mutate({ username: username.trim() });
+    } else {
+      console.warn('Cannot request OTP: Username is required');
+    }
+  };
+
+  return {
+    ...mutation,
+    canRequest,
+    requestOTP,
+  };
+}
+
 // GET API Hooks
+
+// Add this interface near the top with other interfaces
+interface UseVerifyOTPPayload {
+  id_customer: string;
+  otp: string;
+}
+
+// Add this hook with other customer API hooks
+export function useVerifyOTP(): UseMutationResult<any, Error, UseVerifyOTPPayload> {
+  return useMutation({
+    mutationFn: async (payload: UseVerifyOTPPayload) => {
+      if (!payload.id_customer || payload.id_customer.trim() === '') {
+        throw new Error('Customer ID is required');
+      }
+      if (!payload.otp || payload.otp.trim() === '') {
+        throw new Error('OTP code is required');
+      }
+      try {
+        return await customerApi.verifyOTP(payload.id_customer, payload.otp);
+      } catch (error) {
+        console.error('Verify OTP Hook Error:', error);
+        throw error;
+      }
+    },
+  });
+}
 export function useProfile(): UseQueryResult<GetProfileResponse, Error> {
   const { token, isAuthenticated } = useAuthStore();
 
@@ -405,7 +484,7 @@ interface UseProductsPayload {
 
 export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<any, Error> {
   const defaultPayload = {
-    limit: 3000,
+    limit: 10,
     offset: 0,
     orderby: '',
     order: 'asc' as const,
@@ -778,5 +857,26 @@ export function useEventRegister(): UseMutationResult<any, Error, UseEventRegist
         throw error;
       }
     },
+  });
+}
+// Simplified hook for paginated events
+export function useInfiniteEvents(): UseMutationResult<any, Error, {
+  status: '0' | '1';
+  limit: number;
+  offset: number;
+  chapter?: string;
+}> {
+  return useMutation({
+    mutationFn: (data) => postEvent(data),
+  });
+}
+
+// Simplified hook for paginated articles
+export function useInfiniteArticles(): UseMutationResult<any, Error, {
+  limit: number;
+  offset: number;
+}> {
+  return useMutation({
+    mutationFn: (data) => postArticle(data),
   });
 }

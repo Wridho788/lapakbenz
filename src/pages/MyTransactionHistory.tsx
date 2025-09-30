@@ -126,18 +126,18 @@ const MyTransactionHistory: React.FC = () => {
     return (
       <div className="account-page">
         <AppbarDefault
-          title="My Transaction History"
+          title="Riwayat Transaksi Saya"
           onBack={handleBackClick}
           onCartClick={handleCartClick}
           cartCount={0}
         />
         <div className="account-content">
           <div className="orders-error">
-            <h3>Failed to Load Transaction History</h3>
-            <p>Unable to fetch your transactions. Please try again.</p>
+            <h3>Gagal Memuat Riwayat Transaksi</h3>
+            <p>Tidak dapat mengambil data transaksi Anda. Silakan coba lagi.</p>
             <button onClick={handleRefresh} className="retry-btn">
               <MdRefresh />
-              Try Again
+              Coba Lagi
             </button>
           </div>
         </div>
@@ -151,7 +151,7 @@ const MyTransactionHistory: React.FC = () => {
   return (
     <div className="account-page">
       <AppbarDefault
-        title="My Transaction History"
+        title="Riwayat Transaksi Saya"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
         cartCount={0}
@@ -161,8 +161,8 @@ const MyTransactionHistory: React.FC = () => {
         {/* Transaction Header */}
         <div className="orders-header">
           <div className="orders-info">
-            <h3>Transaction History</h3>
-            <p>{totalRecords} transactions found</p>
+            <h3>Riwayat Transaksi</h3>
+            <p>{totalRecords} transaksi ditemukan</p>
           </div>
           
           <div className="orders-actions">
@@ -181,7 +181,7 @@ const MyTransactionHistory: React.FC = () => {
         {isLoading && (
           <div className="orders-loading">
             <div className="loading-spinner"></div>
-            <p>Loading your transactions...</p>
+            <p>Memuat transaksi Anda...</p>
           </div>
         )}
 
@@ -189,10 +189,10 @@ const MyTransactionHistory: React.FC = () => {
         {!isLoading && orders.length === 0 && (
           <div className="orders-empty">
             <MdShoppingCart className="empty-icon" />
-            <h3>No Transaction History</h3>
-            <p>You don't have any transaction history yet. Start participating in events or redeeming points to see your transactions here!</p>
+            <h3>Tidak Ada Riwayat Transaksi</h3>
+            <p>Anda belum memiliki riwayat transaksi. Mulai bertransaksi atau ikuti event untuk melihat riwayat di sini!</p>
             <button onClick={() => navigate('/products')} className="shop-now-btn">
-              Start Shopping
+              Belanja Sekarang
             </button>
           </div>
         )}
@@ -212,46 +212,46 @@ const MyTransactionHistory: React.FC = () => {
                   </div>
                   <div className={`order-status ${getStatusClass(order.paid_status, order.canceled)}`}>
                     {getStatusIcon(order.paid_status, order.canceled)}
-                    <span>{getStatusText(order.paid_status, order.canceled)}</span>
+                    <span>{getStatusText(order.paid_status, order.canceled) === 'Paid' ? 'Lunas' : getStatusText(order.paid_status, order.canceled) === 'Pending' ? 'Menunggu' : getStatusText(order.paid_status, order.canceled) === 'Canceled' ? 'Dibatalkan' : getStatusText(order.paid_status, order.canceled)}</span>
                   </div>
                 </div>
 
                 <div className="order-details">
                   <div className="order-detail-row">
-                    <span className="detail-label">Date:</span>
+                    <span className="detail-label">Tanggal:</span>
                     <span className="detail-value">{order.dates}</span>
                   </div>
                   <div className="order-detail-row">
-                    <span className="detail-label">Customer:</span>
+                    <span className="detail-label">Pelanggan:</span>
                     <span className="detail-value">{order.customer}</span>
                   </div>
                   <div className="order-detail-row">
-                    <span className="detail-label">Items:</span>
-                    <span className="detail-value">{order.items_count} item(s)</span>
+                    <span className="detail-label">Item:</span>
+                    <span className="detail-value">{order.items_count} item</span>
                   </div>
                   <div className="order-detail-row">
-                    <span className="detail-label">Payment:</span>
+                    <span className="detail-label">Pembayaran:</span>
                     <span className="detail-value">{order.payment_type}</span>
                   </div>
                   <div className="order-detail-row">
-                    <span className="detail-label">Transaction:</span>
+                    <span className="detail-label">Transaksi:</span>
                     <span className="detail-value">{order.transno}</span>
                   </div>
                 </div>
 
                 <div className="order-footer">
                   <div className="order-amount">
-                    <span className="amount-label">Total Amount:</span>
+                    <span className="amount-label">Total:</span>
                     <span className="amount-value">{formatCurrency(order.total)}</span>
                   </div>
                   <div className="order-dates">
                     <div className="date-info">
-                      <span className="date-label">Created:</span>
+                      <span className="date-label">Dibuat:</span>
                       <span className="date-value">{order.created}</span>
                     </div>
                     {order.paid_status === 'S' && order.paid_date !== ' - ' && (
                       <div className="date-info">
-                        <span className="date-label">Paid:</span>
+                        <span className="date-label">Lunas:</span>
                         <span className="date-value">{order.paid_date}</span>
                       </div>
                     )}
@@ -260,7 +260,7 @@ const MyTransactionHistory: React.FC = () => {
 
                 {order.canceled && (
                   <div className="order-canceled">
-                    <p>Order was canceled on {order.canceled}</p>
+                    <p>Pemesanan dibatalkan pada {order.canceled}</p>
                   </div>
                 )}
               </div>
@@ -272,7 +272,7 @@ const MyTransactionHistory: React.FC = () => {
         {isFetching && !isLoading && (
           <div className="refresh-indicator">
             <div className="refresh-dot"></div>
-            <span>Auto-refreshing...</span>
+            <span>Menyegarkan otomatis...</span>
           </div>
         )}
       </div>

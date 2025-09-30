@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdPersonAdd } from 'react-icons/md';
+import { MdCalendarToday } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
 import { useRegister, useChapters, useCity } from '../api/hooks';
 import Swal from 'sweetalert2';
@@ -113,11 +114,12 @@ const Register: React.FC = () => {
         title: 'Registration Successful!',
         text: 'Your registration will be processed offline by admin.',
         confirmButtonColor: '#28a745',
-        timer: 3000,
+        timer: 2000,
         timerProgressBar: true
       });
-      
-      
+      navigate('/verify', { state: { username: registerData.tphone1,
+            id_customer: result.content?.id // dari response register/request OTP
+        } });
     } catch (error: any) {
       console.error('Registration failed:', error);
       
@@ -160,9 +162,9 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-page">
-      <AppbarAuth title="Register" onBack={handleBackClick} />
+      <AppbarAuth title="Daftar" onBack={handleBackClick} />
       <div className="register-card">
-        <h1 className="register-title">Register Now!</h1>
+        <h1 className="register-title">Daftar Sekarang!</h1>
 
         {/* The correct form starts below */}
         <form>
@@ -181,7 +183,7 @@ const Register: React.FC = () => {
               disabled={chaptersLoading}
             >
               <option value="">
-                {chaptersLoading ? 'Loading chapters...' : 'Select Chapter'}
+                {chaptersLoading ? 'Memuat chapter...' : 'Pilih Chapter'}
               </option>
               {chaptersData?.content?.result?.map((chapter: any) => (
                 <option key={chapter.id} value={chapter.id}>
@@ -204,7 +206,7 @@ const Register: React.FC = () => {
           {/* Name */}
           <div className="form-group">
             <label htmlFor="fullName" className="form-label">
-              Full Name
+              Nama Lengkap
             </label>
             <input
               type="text"
@@ -213,14 +215,14 @@ const Register: React.FC = () => {
               value={formData.fullName}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your full name"
+              placeholder="Masukkan nama lengkap Anda"
               required
             />
           </div>
           {/* Phone */}
           <div className="form-group">
             <label htmlFor="phone" className="form-label">
-              Phone Number
+              Nomor HP
             </label>
             <input
               type="tel"
@@ -229,7 +231,7 @@ const Register: React.FC = () => {
               value={formData.phone}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your phone number"
+              placeholder="Masukkan nomor HP Anda"
               pattern="[0-9]+"
               required
             />
@@ -246,14 +248,14 @@ const Register: React.FC = () => {
               value={formData.email}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your email"
+              placeholder="Masukkan email Anda"
               required
             />
           </div>
           {/* Address */}
           <div className="form-group">
             <label htmlFor="address" className="form-label">
-              Address
+              Alamat
             </label>
             <textarea
               id="address"
@@ -261,7 +263,7 @@ const Register: React.FC = () => {
               value={formData.address}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your address"
+              placeholder="Masukkan alamat Anda"
               required
               rows={2}
             />
@@ -269,7 +271,7 @@ const Register: React.FC = () => {
           {/* Zip Code */}
           <div className="form-group">
             <label htmlFor="zip" className="form-label">
-              Zip Code
+              Kode Pos
             </label>
             <input
               type="text"
@@ -278,7 +280,7 @@ const Register: React.FC = () => {
               value={formData.zip}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your zip code"
+              placeholder="Masukkan kode pos Anda"
               pattern="[0-9]+"
               required
             />
@@ -286,7 +288,7 @@ const Register: React.FC = () => {
           {/* City Dropdown */}
           <div className="form-group">
             <label htmlFor="city" className="form-label">
-              City
+              Kota
             </label>
             <select
               id="city"
@@ -298,7 +300,7 @@ const Register: React.FC = () => {
               disabled={citiesLoading}
             >
               <option value="">
-                {citiesLoading ? 'Loading cities...' : 'Select City'}
+                {citiesLoading ? 'Memuat kota...' : 'Pilih Kota'}
               </option>
               {citiesData?.content?.result?.map((city: any) => (
                 <option key={city.value} value={city.value}>
@@ -323,9 +325,9 @@ const Register: React.FC = () => {
           {/* DOB Date Picker */}
           <div className="form-group">
             <label htmlFor="dob" className="form-label">
-              Date of Birth
+              Tanggal Lahir
             </label>
-            <div className="dob-picker-container">
+            <div className="dob-picker-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <input
                 type="date"
                 id="dob"
@@ -334,8 +336,9 @@ const Register: React.FC = () => {
                 onChange={handleInputChange}
                 className="form-input dob-input"
                 required
+                style={{ paddingRight: 36 }}
               />
-             
+              <MdCalendarToday style={{ position: 'absolute', right: 12, color: '#888', pointerEvents: 'none', fontSize: 22 }} />
             </div>
           </div>
           {/* NIK */}
@@ -350,7 +353,7 @@ const Register: React.FC = () => {
               value={formData.nik}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your NIK"
+              placeholder="Masukkan NIK Anda"
               pattern="[0-9]+"
               required
             />
@@ -358,7 +361,7 @@ const Register: React.FC = () => {
           {/* Vehicle Type */}
           <div className="form-group">
             <label htmlFor="vehicleType" className="form-label">
-              Vehicle Type
+              Jenis Kendaraan
             </label>
             <input
               type="text"
@@ -367,14 +370,14 @@ const Register: React.FC = () => {
               value={formData.vehicleType}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your vehicle type"
+              placeholder="W202 - W124 - W190"
               required
             />
           </div>
           {/* Police No */}
           <div className="form-group">
             <label htmlFor="policeNo" className="form-label">
-              Police No
+              Nomor Polisi
             </label>
             <input
               type="text"
@@ -383,14 +386,14 @@ const Register: React.FC = () => {
               value={formData.policeNo}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="Enter your police number"
+              placeholder="Masukkan nomor polisi Anda"
               required
             />
           </div>
           {/* Password */}
           <div className="form-group">
             <label htmlFor="password" className="form-label">
-              Password
+              Kata Sandi
             </label>
             <input
               type="text"
@@ -399,14 +402,14 @@ const Register: React.FC = () => {
               value={formData.password}
               onChange={handleInputChange}
               className="form-input password-input"
-              placeholder="Enter your password"
+              placeholder="Masukkan kata sandi Anda"
               required
             />
           </div>
           {/* Password Again */}
           <div className="form-group">
             <label htmlFor="confirmPassword" className="form-label">
-              Password Again
+              Ulangi Kata Sandi
             </label>
             <input
               type="text"
@@ -415,7 +418,7 @@ const Register: React.FC = () => {
               value={formData.confirmPassword}
               onChange={handleInputChange}
               className="form-input password-input"
-              placeholder="Confirm your password"
+              placeholder="Ulangi kata sandi Anda"
               required
             />
           </div>
@@ -437,7 +440,7 @@ const Register: React.FC = () => {
                   <span className="radio-dot"></span>
                 </span>
                 <span className="terms-text">
-                  I agree to the <span className="terms-link">terms and conditions</span>
+                  Saya setuju dengan <span className="terms-link">syarat dan ketentuan</span>
                 </span>
               </label>
             </div>
@@ -450,7 +453,7 @@ const Register: React.FC = () => {
             disabled={isSubmitting || chaptersLoading || citiesLoading}
             >
             <span style={{ color: '#fff' }}>
-              {isSubmitting ? 'Registering...' : 'Register'}
+              {isSubmitting ? 'Sedang mendaftar...' : 'Daftar'}
             </span>
             <MdPersonAdd className="register-icon" />
             </button>

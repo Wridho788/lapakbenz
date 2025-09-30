@@ -72,7 +72,7 @@ const MyEventHistory: React.FC = () => {
   return (
     <div className="account-page">
       <AppbarDefault
-        title="My Event History"
+        title="Riwayat Event Saya"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
         cartCount={0}
@@ -80,7 +80,7 @@ const MyEventHistory: React.FC = () => {
 
       <div className="account-content">
         <div className="account-card">
-          <h3>Event Participation History</h3>
+          <h3>Riwayat Partisipasi Event</h3>
 
           {/* Show loading state */}
           {eventsLoading && (
@@ -91,7 +91,7 @@ const MyEventHistory: React.FC = () => {
                 color: '#666',
               }}
             >
-              Loading event history...
+              Memuat riwayat event...
             </div>
           )}
 
@@ -104,7 +104,7 @@ const MyEventHistory: React.FC = () => {
                 color: '#ff6b6b',
               }}
             >
-              Error loading events. Please try again.
+              Gagal memuat event. Silakan coba lagi.
             </div>
           )}
 
@@ -170,7 +170,7 @@ const MyEventHistory: React.FC = () => {
                         color: '#666',
                         marginBottom: '4px'
                       }}>
-                        NAME
+                        NAMA EVENT
                       </div>
                       <div style={{ 
                         fontSize: '16px', 
@@ -203,7 +203,7 @@ const MyEventHistory: React.FC = () => {
                           color: '#666',
                           marginBottom: '4px'
                         }}>
-                          EVENT CODE
+                          KODE EVENT
                         </div>
                         <div>{event.code}</div>
                       </div>
@@ -218,7 +218,7 @@ const MyEventHistory: React.FC = () => {
                           color: '#666',
                           marginBottom: '4px'
                         }}>
-                          MIN PARTICIPANTS
+                          MIN. PESERTA
                         </div>
                         <div>{event.minimum_participants}</div>
                       </div>
@@ -235,7 +235,7 @@ const MyEventHistory: React.FC = () => {
                         color: '#666',
                         marginBottom: '4px'
                       }}>
-                        DATE
+                        TANGGAL
                       </div>
                       <div>{event.dates || event.date}</div>
                     </div>
@@ -249,7 +249,7 @@ const MyEventHistory: React.FC = () => {
                           color: '#666',
                           marginBottom: '4px'
                         }}>
-                          TIME
+                          WAKTU
                         </div>
                         <div>{event.time}</div>
                       </div>
@@ -264,7 +264,7 @@ const MyEventHistory: React.FC = () => {
                           color: '#666',
                           marginBottom: '4px'
                         }}>
-                          FEE
+                          BIAYA
                         </div>
                         <div style={{ 
                           fontWeight: '600',
@@ -284,7 +284,7 @@ const MyEventHistory: React.FC = () => {
                           color: '#666',
                           marginBottom: '4px'
                         }}>
-                          DESCRIPTION
+                          DESKRIPSI
                         </div>
                         <div style={{ 
                           fontSize: '14px', 
@@ -303,10 +303,9 @@ const MyEventHistory: React.FC = () => {
           ) : !eventsLoading && !eventsError ? (
             <div className="empty-state">
               <img src="/nodata.png" alt="No Data" className="empty-icon" />
-              <h3>No Event History</h3>
+              <h3>Tidak Ada Riwayat Event</h3>
               <p>
-                You haven't participated in any events yet. Start exploring events to build your
-                history!
+                Anda belum pernah mengikuti event apapun. Mulai jelajahi event untuk membangun riwayat Anda!
               </p>
             </div>
           ) : null}

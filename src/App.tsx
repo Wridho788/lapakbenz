@@ -25,6 +25,7 @@ import ChangePassword from './pages/ChangePassword';
 import LiveChat from './pages/LiveChat';
 import MerchantRegistration from './pages/MerchantRegistration';
 import PublicRegistration from './pages/PublicRegistration';
+import VerifyOtp from './pages/VerifyOtp';
 import './App.css';
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             <Route path="/profile/live-chat" element={<LiveChat />} />
             <Route path="/merchant-registration/:eventId" element={<MerchantRegistration />} />
             <Route path="/public-registration/:eventId" element={<PublicRegistration />} />
+            <Route path="/verify" element={<VerifyOtp />} />
             </Routes>
           </MainLayout>
         </Router>

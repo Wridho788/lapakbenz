@@ -183,14 +183,14 @@ const Profile: React.FC = () => {
 
   // Account menu items
   const accountMenuItems = [
-    { id: 'profile', title: 'My Profile', icon: MdPerson },
-    // { id: 'payment', title: 'Payment Confirmation', icon: MdPayment },
-    { id: 'event-history', title: 'My Event History', icon: MdHistory },
-    { id: 'transaction', title: 'My Transaction History', icon: MdSwapHoriz },
-    // { id: 'redeem', title: 'My Redeem History', icon: MdCardGiftcard },
-    { id: 'password', title: 'Change Password', icon: MdLock },
+    { id: 'profile', title: 'Profil Saya', icon: MdPerson },
+    // { id: 'payment', title: 'Konfirmasi Pembayaran', icon: MdPayment },
+    { id: 'event-history', title: 'Riwayat Event Saya', icon: MdHistory },
+    { id: 'transaction', title: 'Riwayat Transaksi Saya', icon: MdSwapHoriz },
+    // { id: 'redeem', title: 'Riwayat Penukaran Saya', icon: MdCardGiftcard },
+    { id: 'password', title: 'Ubah Password', icon: MdLock },
     { id: 'chat', title: 'Live Chat', icon: MdChat },
-    { id: 'logout', title: 'Logout', icon: MdLogout },
+    { id: 'logout', title: 'Keluar', icon: MdLogout },
   ];
 
   const handleMenuClick = (menuId: string) => {
@@ -216,21 +216,21 @@ const Profile: React.FC = () => {
         navigate('/profile/change-password');
         break;
       case 'chat':
-        navigate('/profile/live-chat');
+        window.open('https://wa.me/62813742424', '_blank');
         break;
       case 'logout':
         // Handle logout logic here
         console.log('Logout clicked');
         
         Swal.fire({
-          title: 'Logout Confirmation',
-          text: 'Are you sure you want to logout?',
+          title: 'Konfirmasi Keluar',
+          text: 'Apakah Anda yakin ingin keluar?',
           icon: 'question',
           showCancelButton: true,
           confirmButtonColor: '#d33',
           cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Yes, logout',
-          cancelButtonText: 'Cancel'
+          confirmButtonText: 'Ya, keluar',
+          cancelButtonText: 'Batal'
         }).then(async (result) => {
           if (result.isConfirmed) {
             if (!isAuthenticated) {
@@ -242,8 +242,8 @@ const Profile: React.FC = () => {
             
             // Show loading during logout
             Swal.fire({
-              title: 'Logging out...',
-              text: 'Please wait',
+              title: 'Keluar...',
+              text: 'Mohon tunggu',
               icon: 'info',
               allowOutsideClick: false,
               showConfirmButton: false,
@@ -258,8 +258,8 @@ const Profile: React.FC = () => {
               console.log('✅ Logout successful');
               // Close loading and show success message
               Swal.fire({
-                title: 'Success!',
-                text: 'You have been logged out successfully',
+                title: 'Berhasil!',
+                text: 'Anda berhasil keluar',
                 icon: 'success',
                 timer: 1500,
                 showConfirmButton: false
@@ -271,8 +271,8 @@ const Profile: React.FC = () => {
               console.error('❌ Logout failed:', error);
               // Even if logout fails, still navigate to login
               Swal.fire({
-                title: 'Logged out',
-                text: 'Session cleared locally',
+                title: 'Keluar',
+                text: 'Sesi telah dihapus secara lokal',
                 icon: 'warning',
                 timer: 1500,
                 showConfirmButton: false
@@ -308,6 +308,7 @@ const Profile: React.FC = () => {
           onBack={handleBackClick}
           onCartClick={handleCartClick}
           cartCount={cartCount}
+          defaultBack="/dashboard" 
         />
         <div className="profile-content">
           <div style={{ 
@@ -343,13 +344,13 @@ const Profile: React.FC = () => {
         >
           <div className="user-card-row">
             <div className="user-card-item">
-              <div className="user-card-label">POINTS</div>
+              <div className="user-card-label">Poin</div>
               <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
                 {(profileLoading || ledgerLoading) ? '...' : userData.points}
               </div>
             </div>
             <div className="user-card-item">
-              <div className="user-card-label">MEMBERSHIP</div>
+              <div className="user-card-label">Keanggotaan</div>
               <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
                 {(profileLoading || ledgerLoading) ? '...' : userData.membership}
               </div>
@@ -358,13 +359,13 @@ const Profile: React.FC = () => {
 
           <div className="user-card-row">
             <div className="user-card-item">
-              <div className="user-card-label">NAME</div>
+              <div className="user-card-label">Nama</div>
               <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
-                {(profileLoading || ledgerLoading) ? 'Loading...' : userData.name}
+                {(profileLoading || ledgerLoading) ? 'Memuat...' : userData.name}
               </div>
             </div>
             <div className="user-card-item">
-              <div className="user-card-label">EXPIRY</div>
+              <div className="user-card-label">Berlaku Sampai</div>
               <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
                 {(profileLoading || ledgerLoading) ? '...' : userData.expiry}
               </div>
@@ -374,15 +375,24 @@ const Profile: React.FC = () => {
 
         {/* Membership Benefits Section */}
         <div className="membership-benefits-card">
-          <h3 className="membership-title">MEMBERSHIP BENEFITS</h3>
+          <h3 className="membership-title">KEUNTUNGAN KEANGGOTAAN</h3>
           <div className="membership-tabs">
             {membershipTabs.map((tab, index) => (
               <button
-                key={tab}
-                className={`membership-tab ${activeMembershipTab === index ? 'active' : ''}`}
-                onClick={() => setActiveMembershipTab(index)}
+          key={tab}
+          className={`membership-tab ${activeMembershipTab === index ? 'active' : ''}`}
+          onClick={() => setActiveMembershipTab(index)}
               >
-                {tab}
+          {(() => {
+            switch (tab) {
+              case 'BASIC': return 'BASIC';
+              case 'BRONZE': return 'BRONZE';
+              case 'SILVER': return 'SILVER';
+              case 'GOLD': return 'GOLD';
+              case 'PLATINUM': return 'PLATINUM';
+              default: return tab;
+            }
+          })()}
               </button>
             ))}
           </div>

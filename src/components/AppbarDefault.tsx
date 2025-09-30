@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MdArrowBack, MdShoppingCart } from 'react-icons/md';
 import './AppbarDefault.css';
 
@@ -9,6 +9,8 @@ export type AppbarDefaultProps = {
   onCartClick?: () => void;
   cartCount?: number;
   showCart?: boolean; // New optional prop to control cart visibility
+   backTo?: string; // NEW: Explicit back destination
+  defaultBack?: string; // NEW: Default fallback route
 };
 
 export const AppbarDefault: React.FC<AppbarDefaultProps> = ({ 
@@ -16,10 +18,12 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
   onBack, 
   onCartClick, 
   cartCount = 0,
-  showCart = true // Default to true to maintain backward compatibility
+  showCart = true, // Default to true to maintain backward compatibility
+  backTo, // NEW
+  defaultBack = '/dashboard' // NEW: Default fallback
 }) => {
   const navigate = useNavigate();
-
+  const location = useLocation();
   const handleCartClick = () => {
     if (onCartClick) {
       onCartClick();
@@ -28,12 +32,32 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
     }
   };
 
+  
+  const handleBackClick = () => {
+    if (onBack) {
+      onBack();
+    } else if (backTo) {
+      // Use explicit backTo destination
+      navigate(backTo);
+    } else {
+      // Smart back logic
+      const state = location.state as { from?: string } | null;
+      if (state?.from) {
+        navigate(state.from);
+      } else if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate(defaultBack);
+      }
+    }
+  };
+
   return (
     <header className="appbar-default">
       {onBack && (
         <button
           className="appbar-back-btn"
-          onClick={onBack}
+          onClick={handleBackClick}
           aria-label="Back"
           title="Go back"
         >

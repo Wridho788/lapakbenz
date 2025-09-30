@@ -3,14 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import './AccountPages.css';
+import { useChangePassword } from '../api/hooks';
+import Swal from 'sweetalert2';
 
 const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
+  const { mutate: changePassword, isPending } = useChangePassword();
 
   const handleBackClick = () => {
     navigate(-1);
@@ -27,80 +30,99 @@ const ChangePassword: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      alert('New password and confirm password do not match');
+      alert('Password baru dan konfirmasi password tidak sama');
       return;
     }
-    console.log('Password change submitted:', formData);
-    alert('Password changed successfully!');
+    changePassword(
+      {
+        data: {
+          old_pass: formData.currentPassword,
+          new_pass: formData.newPassword,
+        },
+        authToken: '', // token diambil dari useAuthStore di hooks
+      },
+      {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Password berhasil diubah!',
+            confirmButtonText: 'OK',
+          });
+          setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        },
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: 'Gagal mengubah password. Silakan coba lagi.',
+            confirmButtonText: 'Tutup',
+          });
+        },
+      }
+    );
   };
 
   return (
     <div className="account-page">
       <AppbarDefault
-        title="Change Password"
+        title="Ubah Password"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
         cartCount={0}
       />
-      
+
       <div className="account-content">
         <div className="account-card">
-          <h3>Change Your Password</h3>
+          <h3>Ubah Password Anda</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Current Password</label>
+              <label>Password Lama</label>
               <input
                 type="password"
                 name="currentPassword"
                 value={formData.currentPassword}
                 onChange={handleInputChange}
                 required
+                placeholder="Masukkan password lama"
               />
             </div>
             <div className="form-group">
-              <label>New Password</label>
+              <label>Password Baru</label>
               <input
                 type="password"
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleInputChange}
                 required
-                minLength={6}
+                placeholder="Masukkan password baru"
               />
             </div>
             <div className="form-group">
-              <label>Confirm New Password</label>
+              <label>Konfirmasi Password Baru</label>
               <input
                 type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
-                minLength={6}
+                placeholder="Ulangi password baru"
               />
             </div>
-            <button type="submit" className="save-btn">Change Password</button>
+            <button type="submit" className="save-btn" disabled={isPending}>
+              {isPending ? 'Menyimpan...' : 'Ubah Password'}
+            </button>
           </form>
-          
-          <div className="password-requirements">
-            <h4>Password Requirements:</h4>
-            <ul>
-              <li>At least 6 characters long</li>
-              <li>Include uppercase and lowercase letters</li>
-              <li>Include at least one number</li>
-              <li>Include at least one special character</li>
-            </ul>
-          </div>
         </div>
       </div>
-      
+
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>
   );

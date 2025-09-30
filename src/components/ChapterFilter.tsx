@@ -207,9 +207,9 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
                   />
                   <span className="chapter-filter-radio-mark"></span>
                   <span className="chapter-filter-label">
-                    {chapter.name}
+                    
                     {chapter.code && (
-                      <span className="chapter-filter-code"> ({chapter.code})</span>
+                      <span className="chapter-filter-code"> {chapter.code}</span>
                     )}
                   </span>
                 </label>

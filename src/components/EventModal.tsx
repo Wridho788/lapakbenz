@@ -94,7 +94,7 @@ const EventModal: React.FC<EventModalProps> = ({
           <div className="event-modal-details">
             <div className="event-modal-column">
               <div className="event-detail-item">
-                <b>Event Date:</b>
+                <b>Tanggal Event:</b>
                 <br />
                 {eventContent.dates} - {eventContent.time}
               </div>
@@ -104,12 +104,12 @@ const EventModal: React.FC<EventModalProps> = ({
                 {eventContent.chapter}
               </div>
               <div className="event-detail-item">
-                <b>Type:</b>
+                <b>Tipe:</b>
                 <br />
                 {eventContent.type_desc}
               </div>
               <div className="event-detail-item">
-                <b>Description:</b>
+                <b>Deskripsi:</b>
                 <br />
                 {eventContent.desc}
               </div>
@@ -117,12 +117,12 @@ const EventModal: React.FC<EventModalProps> = ({
             
             <div className="event-modal-column">
               <div className="event-detail-item">
-                <b>Minimum Participation:</b>
+                <b>Minimal Peserta:</b>
                 <br />
                 {eventContent.minimum_participants}
               </div>
               <div className="event-detail-item">
-                <b>Contribution Fee:</b>
+                <b>Biaya Kontribusi:</b>
                 <br />
                 {eventContent.fee}
               </div>
@@ -157,7 +157,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   >
                     <div className="nav-button-content">
                       <span className="nav-button-icon">🏪</span>
-                      <span>Merchant Registration</span>
+                      <span>Registrasi Merchant</span>
                     </div>
                   </button>
                 )}
@@ -169,7 +169,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   >
                     <div className="nav-button-content">
                       <span className="nav-button-icon">👤</span>
-                      <span>Public Registration</span>
+                      <span>Registrasi Umum</span>
                     </div>
                   </button>
                 )}
@@ -179,7 +179,7 @@ const EventModal: React.FC<EventModalProps> = ({
         </div>
       ) : (
         <div className="event-modal-loading">
-          {isLoading ? 'Loading event details...' : 'No event data available'}
+          {isLoading ? 'Memuat detail event...' : 'Data event tidak tersedia'}
         </div>
       )}
     </Modal>

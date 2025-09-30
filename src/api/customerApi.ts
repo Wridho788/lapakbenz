@@ -13,7 +13,8 @@ import {
   ENDPOINT_NOTIF,
   ENDPOINT_NOTIF_DETAIL,
   ENDPOINT_DECODE_TOKEN,
-  ENDPOINT_UPLOAD_IMAGE
+  ENDPOINT_UPLOAD_IMAGE,
+  ENDPOINT_VERIFY
 } from './constants';
 import type {
   LoginRequest,
@@ -95,10 +96,10 @@ export const customerApi = {
     try {
       const response = await apiClient.post(
         ENDPOINT_FORGOT,
-        createFormData(payload),
+        JSON.stringify(payload),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -108,6 +109,7 @@ export const customerApi = {
       throw error;
     }
   },
+  
 
   /**
    * Request OTP
@@ -116,10 +118,10 @@ export const customerApi = {
     try {
       const response = await apiClient.post(
         ENDPOINT_REQ_OTP,
-        createFormData(payload),
+        JSON.stringify(payload),
         {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -210,7 +212,7 @@ export const customerApi = {
         url: `${BASE_URL}${ENDPOINT_GET_PROFILE}`,
         headers: { 'X-auth-token': authToken }
       });
-      
+
       const response = await apiClient.get(
         ENDPOINT_GET_PROFILE,
         {
@@ -219,7 +221,7 @@ export const customerApi = {
           },
         }
       );
-      
+
       console.log('📥 Get Profile API Response:', response.data);
       return response.data;
     } catch (error) {
@@ -227,6 +229,14 @@ export const customerApi = {
       if (axios.isAxiosError(error)) {
         console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
+        if (error.response?.status === 401) {
+          try {
+            const { useAuthStore } = await import('../stores/authStore');
+            useAuthStore.getState().logout();
+          } catch (e) {
+            console.error('Failed to logout on 401:', e);
+          }
+        }
       }
       throw error;
     }
@@ -394,6 +404,36 @@ export const customerApi = {
       throw error;
     }
   },
+
+  
+/**
+ * Verify OTP
+ * @param id_customer string - Customer ID
+ * @param otp string - OTP code
+ */
+verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
+  try {
+    const url = `${ENDPOINT_VERIFY}${id_customer}/${otp}`;
+    
+    console.log('📤 Verify OTP API Request:', {
+      url: `${BASE_URL}${url}`,
+      id_customer,
+      otp: '***' // Hide OTP in logs for security
+    });
+    
+    const response = await apiClient.get(url);
+    
+    console.log('📥 Verify OTP API Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ Verify OTP API Error:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('📥 Error Response:', error.response?.data);
+      console.error('📊 Error Status:', error.response?.status);
+    }
+    throw error;
+  }
+},
 
   /**
    * Upload image

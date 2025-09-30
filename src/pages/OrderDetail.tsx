@@ -93,18 +93,18 @@ const OrderDetail: React.FC = () => {
 
   const getPaymentStatusText = (status: string | null) => {
     if (status === null) {
-      return 'Pending Payment';
+      return 'Menunggu Pembayaran';
     }
     
     switch (status.toLowerCase()) {
       case 'success':
-        return 'Payment Successful';
+        return 'Pembayaran Berhasil';
       case 'failed':
-        return 'Payment Failed';
+        return 'Pembayaran Gagal';
       case 'cancel':
-        return 'Payment Cancelled';
+        return 'Pembayaran Dibatalkan';
       default:
-        return 'Unknown Status';
+        return 'Status Tidak Diketahui';
     }
   };
 
@@ -128,13 +128,13 @@ const OrderDetail: React.FC = () => {
     return (
       <div className="order-detail-page">
         <AppbarDefault
-          title="Order Detail"
+          title="Detail Pesanan"
           onBack={handleBackClick}
         />
         <div className="order-detail-content">
           <div className="order-detail-loading">
             <div className="loading-spinner"></div>
-            <p>Loading order details...</p>
+            <p>Memuat detail pesanan...</p>
           </div>
         </div>
       </div>
@@ -145,15 +145,15 @@ const OrderDetail: React.FC = () => {
     return (
       <div className="order-detail-page">
         <AppbarDefault
-          title="Order Detail"
+          title="Detail Pesanan"
           onBack={handleBackClick}
         />
         <div className="order-detail-content">
           <div className="order-detail-error">
-            <h3>Failed to Load Order</h3>
-            <p>Unable to fetch order details. Please try again.</p>
+            <h3>Gagal Memuat Pesanan</h3>
+            <p>Tidak dapat mengambil detail pesanan. Silakan coba lagi.</p>
             <button onClick={() => refetch()} className="retry-btn">
-              Try Again
+              Coba Lagi
             </button>
           </div>
         </div>
@@ -165,13 +165,13 @@ const OrderDetail: React.FC = () => {
     return (
       <div className="order-detail-page">
         <AppbarDefault
-          title="Order Detail"
+          title="Detail Pesanan"
           onBack={handleBackClick}
         />
         <div className="order-detail-content">
           <div className="order-detail-error">
-            <h3>Order Not Found</h3>
-            <p>The requested order could not be found.</p>
+            <h3>Pesanan Tidak Ditemukan</h3>
+            <p>Pesanan yang diminta tidak ditemukan.</p>
           </div>
         </div>
       </div>
@@ -194,8 +194,8 @@ const OrderDetail: React.FC = () => {
           <div className="payment-success-banner">
             <MdCheckCircle className="success-icon" />
             <div className="success-info">
-              <h3>Payment Successfully Processed</h3>
-              <p>Your order is on the way!</p>
+              <h3>Pembayaran Berhasil Diproses</h3>
+              <p>Pesanan Anda sedang diproses!</p>
             </div>
           </div>
         )}
@@ -204,8 +204,8 @@ const OrderDetail: React.FC = () => {
           <div className="payment-failed-banner">
             <MdCancel className="failed-icon" />
             <div className="failed-info">
-              <h3>Payment Failed</h3>
-              <p>Please try again or contact support</p>
+              <h3>Pembayaran Gagal</h3>
+              <p>Silakan coba lagi atau hubungi dukungan</p>
             </div>
           </div>
         )}
@@ -214,15 +214,15 @@ const OrderDetail: React.FC = () => {
           <div className="payment-pending-banner">
             <MdPending className="pending-icon" />
             <div className="pending-info">
-              <h3>Payment Pending</h3>
-              <p>Please complete your payment to process this order</p>
+              <h3>Pembayaran Tertunda</h3>
+              <p>Silakan selesaikan pembayaran Anda untuk memproses pesanan ini</p>
               {order.link_url && (
                 <button 
                   onClick={handleOpenPaymentLink}
                   className="payment-link-btn-banner"
                 >
                   <MdOpenInNew />
-                  Complete Payment
+                  Selesaikan Pembayaran
                 </button>
               )}
             </div>
@@ -233,15 +233,15 @@ const OrderDetail: React.FC = () => {
         <div className="order-detail-section">
           <h3>
             <MdReceipt className="card-icon" />
-            Order Detail
+            Detail Pesanan
           </h3>
           <div className="info-table">
             <div className="info-row">
-              <span className="info-label">Order ID</span>
+              <span className="info-label">ID Pesanan</span>
               <span className="info-data">{order.code}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">Payment Method</span>
+              <span className="info-label">Metode Pembayaran</span>
               <span className="info-data">{order.payment_type}</span>
             </div>
           </div>
@@ -251,31 +251,31 @@ const OrderDetail: React.FC = () => {
         <div className="order-info-section">
           <h3>
             <MdReceipt className="card-icon" />
-            Order Information
+            Informasi Pesanan
           </h3>
           <div className="info-table">
             <div className="info-row">
-              <span className="info-label">Customer</span>
+              <span className="info-label">Pelanggan</span>
               <span className="info-data">{order.customer}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">Order Date</span>
+              <span className="info-label">Tanggal Pesanan</span>
               <span className="info-data">{formatDate(order.dates)}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">Transaction Code</span>
+              <span className="info-label">Kode Transaksi</span>
               <span className="info-data">{order.transcode}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">Transaction No</span>
+              <span className="info-label">No. Transaksi</span>
               <span className="info-data">{order.transno}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">Transaction ID</span>
+              <span className="info-label">ID Transaksi</span>
               <span className="info-data">{order.transid}</span>
             </div>
             <div className="info-row">
-              <span className="info-label">Payment Status</span>
+              <span className="info-label">Status Pembayaran</span>
               <div className={`payment-status ${getPaymentStatusClass(order.status)}`}>
                 {getPaymentStatusIcon(order.status)}
                 <span>{getPaymentStatusText(order.status)}</span>
@@ -283,29 +283,29 @@ const OrderDetail: React.FC = () => {
                   <button 
                     onClick={handleOpenPaymentLink}
                     className="payment-link-btn"
-                    title="Open payment page"
+                    title="Buka halaman pembayaran"
                   >
                     <MdOpenInNew />
-                    Pay Now
+                    Bayar Sekarang
                   </button>
                 )}
               </div>
             </div>
             {order.link_expired && order.status === null && (
               <div className="info-row">
-                <span className="info-label">Payment Link Expires</span>
+                <span className="info-label">Link Pembayaran Berakhir</span>
                 <span className="info-data expires">{order.link_expired}</span>
               </div>
             )}
             {order.paid_date && (
               <div className="info-row">
-                <span className="info-label">Paid Date</span>
+                <span className="info-label">Tanggal Pembayaran</span>
                 <span className="info-data">{formatDate(order.paid_date)}</span>
               </div>
             )}
             {order.canceled && (
               <div className="info-row">
-                <span className="info-label">Canceled Date</span>
+                <span className="info-label">Tanggal Dibatalkan</span>
                 <span className="info-data">{formatDate(order.canceled)}</span>
               </div>
             )}
@@ -315,18 +315,17 @@ const OrderDetail: React.FC = () => {
 
         {/* Order Summary Section */}
         <div className="order-summary-section">
-          <h3>Order Summary</h3>
-          
+          <h3>Ringkasan Pesanan</h3>
           {/* Order Items */}
           <div className="summary-items">
-            <h4>Order Items ({orderItems?.length || 0})</h4>
+            <h4>Item Pesanan ({orderItems?.length || 0})</h4>
             <div className="summary-items-list">
               {orderItems?.map((item: any) => (
                 <div key={item.id} className="summary-item-row">
                   <div className="summary-item-info">
                     <h5>{item.product}</h5>
                     <p>SKU: {item.sku}</p>
-                    <span className="summary-item-qty">Qty: {item.qty}</span>
+                    <span className="summary-item-qty">Jumlah: {item.qty}</span>
                   </div>
                   <div className="summary-item-price">
                     <div className="unit-price">{formatCurrency(item.price)}</div>
@@ -340,23 +339,23 @@ const OrderDetail: React.FC = () => {
           {/* Summary Totals */}
           <div className="summary-totals">
             <div className="total-row">
-              <span className="total-label">Bag Total:</span>
+              <span className="total-label">Total Belanja:</span>
               <span className="total-value">{formatCurrency(order.amount)}</span>
             </div>
               <div className="total-row savings">
-                <span className="total-label">Bag Savings:</span>
+                <span className="total-label">Hemat Belanja:</span>
                 <span className="total-value">-{formatCurrency(order.discount)}</span>
               </div>
               <div className="total-row">
-                <span className="total-label">Tax:</span>
+                <span className="total-label">Pajak:</span>
                 <span className="total-value">{formatCurrency(order.tax)}</span>
               </div>
               <div className="total-row">
-                <span className="total-label">Additional Costs:</span>
+                <span className="total-label">Biaya Tambahan:</span>
                 <span className="total-value">{formatCurrency(order.costs)}</span>
               </div>
             <div className="total-row final-total">
-              <span className="total-label">Total Amount:</span>
+              <span className="total-label">Total Bayar:</span>
               <span className="total-value">{formatCurrency(order.tot_amt || order.total)}</span>
             </div>
           </div>
@@ -368,10 +367,10 @@ const OrderDetail: React.FC = () => {
           <div className="cancellation-card">
             <MdCancel className="cancel-icon" />
             <div className="cancel-info">
-              <h4>Order Canceled</h4>
-              <p>This order was canceled on {formatDate(order.canceled)}</p>
+              <h4>Pesanan Dibatalkan</h4>
+              <p>Pesanan ini dibatalkan pada {formatDate(order.canceled)}</p>
               {order.canceled_desc && (
-                <p className="cancel-reason">Reason: {order.canceled_desc}</p>
+                <p className="cancel-reason">Alasan: {order.canceled_desc}</p>
               )}
             </div>
           </div>

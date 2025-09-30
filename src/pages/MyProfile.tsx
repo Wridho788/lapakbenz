@@ -250,7 +250,7 @@ const MyProfile: React.FC = () => {
   return (
     <div className="account-page">
       <AppbarDefault
-        title="My Profile"
+        title="Profil Saya"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
         cartCount={0}
@@ -339,38 +339,38 @@ const MyProfile: React.FC = () => {
               style={{ display: 'none' }}
             />
           </div>
-          <h3>My Profile Information</h3>
+          <h3>Informasi Profil Saya</h3>
           
           {profileLoading && (
             <div style={{ textAlign: 'center', padding: '1rem' }}>
-              <p>Loading profile data...</p>
+              <p>Memuat data profil...</p>
             </div>
           )}
           
           {profileError && (
             <div style={{ textAlign: 'center', padding: '1rem', color: '#dc3545' }}>
-              <p>Error loading profile: {profileError.message}</p>
+              <p>Gagal memuat profil: {profileError.message}</p>
             </div>
           )}
           
           {!profileLoading && !profileError && (
             <>
               <div className="form-group">
-                <label>Full Name</label>
+                <label>Nama Lengkap</label>
                 <input 
                   type="text" 
                   value={formData.tname}
                   onChange={(e) => handleInputChange('tname', e.target.value)}
-                  placeholder="Enter your full name" 
+                  placeholder="Masukkan nama lengkap Anda" 
                 />
               </div>
               <div className="form-group">
-                <label>Phone Number</label>
+                <label>No. HP</label>
                 <input 
                   type="tel" 
                   value={formData.tphone1}
                   onChange={(e) => handleInputChange('tphone1', e.target.value)}
-                  placeholder="+62 xxx-xxxx-xxxx" 
+                  placeholder="Contoh: +62 xxx-xxxx-xxxx" 
                 />
               </div>
               <div className="form-group">
@@ -379,40 +379,40 @@ const MyProfile: React.FC = () => {
                   type="email" 
                   value={formData.temail}
                   onChange={(e) => handleEmailChange(e.target.value)}
-                  placeholder="your.email@example.com" 
+                  placeholder="email.anda@email.com" 
                 />
               </div>
               <div className="form-group">
-                <label>Address</label>
+                <label>Alamat</label>
                 <textarea 
                   value={formData.taddress}
                   onChange={(e) => handleInputChange('taddress', e.target.value)}
-                  placeholder="Enter your complete address" 
+                  placeholder="Masukkan alamat lengkap Anda" 
                   rows={3}
                 />
               </div>
               <div className="form-group">
-                <label>Zip Code</label>
+                <label>Kode Pos</label>
                 <input 
                   type="text" 
                   value={formData.tzip}
                   onChange={(e) => handleInputChange('tzip', e.target.value)}
-                  placeholder="Enter zip code" 
+                  placeholder="Masukkan kode pos" 
                 />
               </div>
               <div className="form-group">
-                <label>City</label>
+                <label>Kota</label>
                 <select 
                   value={formData.ccity}
                   onChange={(e) => handleInputChange('ccity', e.target.value)}
                   disabled={cityLoading}
                 >
                   <option value="">
-                    {cityLoading ? 'Loading cities...' : 'Select City'}
+                    {cityLoading ? 'Memuat daftar kota...' : 'Pilih Kota'}
                   </option>
                   {cityError && (
                     <option value="" disabled>
-                      Error loading cities
+                      Gagal memuat kota
                     </option>
                   )}
                   {cityData && (() => {
@@ -434,7 +434,7 @@ const MyProfile: React.FC = () => {
                     if (cities.length === 0) {
                       return (
                         <option value="" disabled>
-                          No cities available
+                          Tidak ada kota tersedia
                         </option>
                       );
                     }
@@ -442,7 +442,7 @@ const MyProfile: React.FC = () => {
                     return cities.map((city: any, index: number) => {
                       // Handle different city object structures
                       const cityId = city.id || city.city_id || city.value || index;
-                      const cityName = city.name || city.city_name || city.label || city.text || `City ${index + 1}`;
+                      const cityName = city.name || city.city_name || city.label || city.text || `Kota ${index + 1}`;
                       
                       return (
                         <option key={cityId} value={cityId}>
@@ -454,21 +454,21 @@ const MyProfile: React.FC = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label>Profession</label>
+                <label>Profesi</label>
                 <input 
                   type="text" 
                   value={formData.tprofession}
                   onChange={(e) => handleInputChange('tprofession', e.target.value)}
-                  placeholder="Enter your profession" 
+                  placeholder="Masukkan profesi Anda" 
                 />
               </div>
               <div className="form-group">
-                <label>Organization</label>
+                <label>Organisasi</label>
                 <input 
                   type="text" 
                   value={formData.torganization}
                   onChange={(e) => handleInputChange('torganization', e.target.value)}
-                  placeholder="Enter your organization/company" 
+                  placeholder="Masukkan organisasi/perusahaan Anda" 
                 />
               </div>
               <div className="form-group">
@@ -481,7 +481,7 @@ const MyProfile: React.FC = () => {
                 />
               </div>
               <div className="form-group">
-                <label>Date of Birth</label>
+                <label>Tanggal Lahir</label>
                 <input 
                   type="date" 
                   value={formData.tdob}
@@ -492,7 +492,7 @@ const MyProfile: React.FC = () => {
                 className="save-btn"
                 onClick={handleUpdateProfile}
               >
-                {updateProfileMutation.isPending ? 'Updating...' : 'Update Profile'}
+                {updateProfileMutation.isPending ? 'Menyimpan...' : 'Simpan Profil'}
               </button>
             </>
           )}

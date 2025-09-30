@@ -105,14 +105,14 @@ const Invoice: React.FC = () => {
     return (
       <div className="invoice-page">
         <AppbarDefault
-          title="Invoice"
+          title="Faktur"
           onBack={handleBackClick}
         />
         <div className="invoice-error">
-          <h3>Invoice Not Found</h3>
-          <p>Unable to load invoice. Please try again.</p>
+          <h3>Faktur Tidak Ditemukan</h3>
+          <p>Tidak dapat memuat faktur. Silakan coba lagi.</p>
           <button onClick={() => navigate('/cart')} className="back-to-cart-btn">
-            Back to Cart
+            Kembali ke Keranjang
           </button>
         </div>
       </div>
@@ -122,7 +122,7 @@ const Invoice: React.FC = () => {
   return (
     <div className="invoice-page">
       <AppbarDefault
-        title={`Invoice - ${invoiceData.orderId}`}
+        title={`Faktur - ${invoiceData.orderId}`}
         onBack={handleBackClick}
       />
 
@@ -130,23 +130,23 @@ const Invoice: React.FC = () => {
         {/* Invoice Header */}
         <div className="invoice-header">
           <div className="invoice-info">
-            <h3>Payment Invoice</h3>
-            <p>Order ID: {invoiceData.orderId}</p>
-            {invoiceData.transId && <p>Transaction ID: {invoiceData.transId}</p>}
+            <h3>Tagihan Pembayaran</h3>
+            <p>ID Pesanan: {invoiceData.orderId}</p>
+            {invoiceData.transId && <p>ID Transaksi: {invoiceData.transId}</p>}
           </div>
           
           <div className="invoice-actions">
             <button 
               onClick={handleRefresh} 
               className="invoice-action-btn"
-              title="Refresh"
+              title="Muat Ulang"
             >
               <MdRefresh />
             </button>
             <button 
               onClick={handleOpenInNewTab} 
               className="invoice-action-btn primary"
-              title="Open in browser"
+              title="Buka di browser"
             >
               <MdOpenInNew />
             </button>
@@ -157,7 +157,7 @@ const Invoice: React.FC = () => {
         {isLoading && (
           <div className="invoice-loading">
             <div className="loading-spinner"></div>
-            <p>Preparing payment page...</p>
+            <p>Menyiapkan halaman pembayaran...</p>
           </div>
         )}
 
@@ -168,7 +168,7 @@ const Invoice: React.FC = () => {
             <div className="error-actions">
               <button onClick={handleOpenInNewTab} className="open-external-btn primary">
                 <MdOpenInNew />
-                Open Payment Page
+                Buka Halaman Pembayaran
               </button>
             </div>
           </div>
@@ -176,22 +176,22 @@ const Invoice: React.FC = () => {
 
         {/* Payment Instructions */}
         <div className="payment-instructions">
-          <h4>Payment Instructions:</h4>
+          <h4>Panduan Pembayaran:</h4>
           <ol>
-            <li>The payment page will open automatically in a new tab</li>
-            <li>Complete your payment on the payment page</li>
-            <li>Return to this app after payment completion</li>
-            <li>Check your order status in "My Orders"</li>
+            <li>Halaman pembayaran akan terbuka otomatis di tab baru</li>
+            <li>Selesaikan pembayaran Anda di halaman pembayaran</li>
+            <li>Kembali ke aplikasi ini setelah pembayaran selesai</li>
+            <li>Cek status pesanan Anda di "Pesanan Saya"</li>
           </ol>
         </div>
 
         {/* Footer Instructions */}
         <div className="invoice-footer">
           <p className="invoice-instruction">
-            Complete your payment through this invoice to finalize your order.
+            Selesaikan pembayaran melalui faktur ini untuk memproses pesanan Anda.
           </p>
           <button onClick={() => navigate('/orders')} className="view-orders-btn">
-            View My Orders
+            Lihat Pesanan Saya
           </button>
         </div>
       </div>

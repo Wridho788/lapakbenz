@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MdAdd, MdRemove, MdShoppingCart, MdStar } from 'react-icons/md';
+import { MdAdd, MdRemove, MdShoppingCart, MdStar, MdClose, MdZoomIn } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
@@ -27,6 +27,12 @@ const ProductDetail: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isImageZoomOpen, setIsImageZoomOpen] = useState(false);
+  const [zoomImageIndex, setZoomImageIndex] = useState(0);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const { addToCart, cartCount } = useCart();
   
   // Auth state - get all needed auth properties
@@ -82,6 +88,167 @@ const ProductDetail: React.FC = () => {
   const handleNotificationClick = () => {
     navigate('/notifications');
   };
+
+  // Image zoom handlers
+  const handleImageZoomOpen = (imageIndex: number) => {
+    setZoomImageIndex(imageIndex);
+    setIsImageZoomOpen(true);
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handleImageZoomClose = () => {
+    setIsImageZoomOpen(false);
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
+    // Restore body scroll
+    document.body.style.overflow = 'unset';
+  };
+
+  const handleZoomImageChange = (direction: 'prev' | 'next') => {
+    const productData = getProductData();
+    if (direction === 'prev') {
+      setZoomImageIndex((prev) => 
+        prev === 0 ? productData.images.length - 1 : prev - 1
+      );
+    } else {
+      setZoomImageIndex((prev) => 
+        prev === productData.images.length - 1 ? 0 : prev + 1
+      );
+    }
+    // Reset zoom when changing images
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
+  };
+
+  const handleZoomIn = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoomLevel(prev => {
+      const newZoom = Math.min(prev + 0.5, 3);
+      console.log('Zoom In - New level:', newZoom);
+      return newZoom;
+    });
+  };
+
+  const handleZoomOut = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoomLevel(prev => {
+      const newZoom = Math.max(prev - 0.5, 1);
+      console.log('Zoom Out - New level:', newZoom);
+      if (newZoom === 1) {
+        setImagePosition({ x: 0, y: 0 });
+      }
+      return newZoom;
+    });
+  };
+
+  const handleResetZoom = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log('Reset Zoom to 1x');
+    setZoomLevel(1);
+    setImagePosition({ x: 0, y: 0 });
+  };
+
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomLevel > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - imagePosition.x,
+        y: e.clientY - imagePosition.y
+      });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && zoomLevel > 1) {
+      setImagePosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+
+  // Pinch-to-zoom state for mobile
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
+  const [isPinching, setIsPinching] = useState(false);
+
+  // Helper to calculate distance between two touches
+  const getTouchDistance = (touches: React.TouchList) => {
+    if (touches.length < 2) return 0;
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  // Touch handlers for drag and pinch zoom
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && zoomLevel > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - imagePosition.x,
+        y: e.touches[0].clientY - imagePosition.y
+      });
+      setIsPinching(false);
+    } else if (e.touches.length === 2) {
+      setIsPinching(true);
+      setLastTouchDistance(getTouchDistance(e.touches));
+      setIsDragging(false);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isPinching && e.touches.length === 2) {
+      const distance = getTouchDistance(e.touches);
+      if (lastTouchDistance) {
+        const delta = distance - lastTouchDistance;
+        if (Math.abs(delta) > 2) { // threshold to avoid jitter
+          setZoomLevel(prev => {
+            let newZoom = prev + delta / 150; // adjust divisor for sensitivity
+            newZoom = Math.max(1, Math.min(3, newZoom));
+            return newZoom;
+          });
+        }
+      }
+      setLastTouchDistance(distance);
+    } else if (isDragging && e.touches.length === 1 && zoomLevel > 1) {
+      setImagePosition({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isPinching && e.touches.length < 2) {
+      setIsPinching(false);
+      setLastTouchDistance(null);
+    }
+    if (isDragging && e.touches.length === 0) {
+      setIsDragging(false);
+    }
+  };
+
+  // Close modal on escape key
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isImageZoomOpen) {
+        handleImageZoomClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isImageZoomOpen]);
 
   // Get product data from API or use dummy data as fallback
   const getProductData = (): ProductDetailType => {
@@ -152,8 +319,20 @@ const ProductDetail: React.FC = () => {
 
   // Log processed product data
   useEffect(() => {
-    console.log('🔄 Processed Product Data for UI:', productData);
+    console.log('📄 Processed Product Data for UI:', productData);
   }, [productData]);
+
+  // Log zoom level changes
+  useEffect(() => {
+    console.log('🔍 Zoom Level Changed:', zoomLevel);
+  }, [zoomLevel]);
+
+  // Log image position changes
+  useEffect(() => {
+    if (zoomLevel > 1) {
+      console.log('📍 Image Position:', imagePosition);
+    }
+  }, [imagePosition, zoomLevel]);
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
@@ -298,6 +477,154 @@ const ProductDetail: React.FC = () => {
         cartCount={cartCount}
       />
 
+      {/* Image Zoom Modal */}
+      {isImageZoomOpen && (
+        <div className="image-zoom-modal" onClick={handleImageZoomClose}>
+          {/* Header */}
+          <div className="zoom-modal-header" onClick={(e) => e.stopPropagation()}>
+            <div className="zoom-modal-title">
+              <MdZoomIn />
+              <span>Pratinjau Gambar</span>
+              <span className="zoom-image-counter">
+                {zoomImageIndex + 1} / {productData.images.length}
+              </span>
+            </div>
+            <div className="zoom-modal-actions">
+              <button 
+                className="zoom-close-btn" 
+                onClick={handleImageZoomClose}
+                aria-label="Tutup pratinjau"
+              >
+                <MdClose />
+              </button>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="zoom-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="zoom-image-wrapper">
+              <div 
+                className={`zoom-image-container ${zoomLevel > 1 ? 'zoomed' : ''} ${isDragging ? 'dragging' : ''}`}
+                style={{
+                  transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,
+                  transition: isDragging ? 'none' : 'transform 0.3s ease'
+                }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <img
+                  src={productData.images[zoomImageIndex]}
+                  alt={`${productData.title} ${zoomImageIndex + 1}`}
+                  className="zoomed-image"
+                  draggable="false"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/bea2x.jpg";
+                  }}
+                />
+              </div>
+              
+              {/* Navigation arrows */}
+              {productData.images.length > 1 && (
+                <>
+                  <button 
+                    className="zoom-nav-btn prev" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleZoomImageChange('prev');
+                    }}
+                    aria-label="Gambar sebelumnya"
+                  >
+                    ◀
+                  </button>
+                  <button 
+                    className="zoom-nav-btn next" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleZoomImageChange('next');
+                    }}
+                    aria-label="Gambar berikutnya"
+                  >
+                    ▶
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Footer with Controls */}
+          <div className="zoom-modal-footer" onClick={(e) => e.stopPropagation()}>
+            {/* Zoom Controls */}
+            <div className="zoom-controls">
+              <button 
+                className="zoom-control-btn"
+                onClick={handleZoomOut}
+                disabled={zoomLevel <= 1}
+                aria-label="Perkecil"
+                type="button"
+              >
+                −
+              </button>
+              <div className="zoom-level-display">
+                {Math.round(zoomLevel * 100)}%
+              </div>
+              <button 
+                className="zoom-control-btn"
+                onClick={handleZoomIn}
+                disabled={zoomLevel >= 3}
+                aria-label="Perbesar"
+                type="button"
+              >
+                +
+              </button>
+              {zoomLevel > 1 && (
+                <button 
+                  className="zoom-reset-btn"
+                  onClick={handleResetZoom}
+                  aria-label="Reset zoom"
+                  type="button"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+
+            {/* Image Thumbnails */}
+            {productData.images.length > 1 && (
+              <div className="zoom-thumbnails">
+                {productData.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`zoom-thumbnail ${zoomImageIndex === index ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('Thumbnail clicked:', index);
+                      setZoomImageIndex(index);
+                      setZoomLevel(1);
+                      setImagePosition({ x: 0, y: 0 });
+                    }}
+                  >
+                    <img
+                      src={image}
+                      alt={`${productData.title} thumbnail ${index + 1}`}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/bea2x.jpg";
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Loading State */}
       {productLoading && (
         <div className="product-detail-content">
@@ -352,7 +679,7 @@ const ProductDetail: React.FC = () => {
         <div className="product-detail-content">
         {/* Product Images */}
         <div className="product-images-section">
-          <div className="main-image">
+          <div className="main-image" onClick={() => handleImageZoomOpen(selectedImageIndex)}>
             <img
               src={productData.images[selectedImageIndex]}
               alt={productData.title}
@@ -361,6 +688,10 @@ const ProductDetail: React.FC = () => {
                 target.src = "/bea2x.jpg";
               }}
             />
+            <div className="zoom-indicator-overlay">
+              <MdZoomIn className="zoom-icon" />
+              <span>Klik untuk perbesar</span>
+            </div>
           </div>
           <div className="image-thumbnails">
             {productData.images.map((image: string, index: number) => (
@@ -401,43 +732,32 @@ const ProductDetail: React.FC = () => {
           </div>
 
           <div className="product-description">
-            <h3>Description</h3>
+            <h3>Deskripsi</h3>
             <p>{productData.description}</p>
           </div>
 
-          {/* Hidden specifications section as requested */}
-          {/* 
-          <div className="product-specifications">
-            <h3>Specifications</h3>
-            <ul>
-              {productData.specifications.map((spec: string, index: number) => (
-                <li key={index}>{spec}</li>
-              ))}
-            </ul>
-          </div>
-          */}
         </div>
 
         {/* Quantity and Add to Cart */}
         <div className="purchase-section">
           <div className="purchase-header">
-            <h3>Select Quantity</h3>
+            <h3>Pilih Jumlah</h3>
             <div className="stock-badge">
               <span className={`stock-indicator ${productData.stock > 0 ? 'available' : 'unavailable'}`}>
-                {productData.stock > 0 ? `${productData.stock} in stock` : 'Out of stock'}
+                {productData.stock > 0 ? `${productData.stock} tersedia` : 'Stok habis'}
               </span>
             </div>
           </div>
 
           <div className="quantity-selector">
             <div className="quantity-label">
-              <span>Quantity</span>
+              <span>Jumlah</span>
             </div>
             <div className="quantity-controls">
               <div
                 className={`quantity-btn decrease ${quantity <= 1 ? 'disabled' : ''}`}
                 onClick={() => quantity > 1 && handleQuantityChange(-1)}
-                aria-label="Decrease quantity"
+                aria-label="Kurangi jumlah"
               >
                 <MdRemove />
               </div>
@@ -447,7 +767,7 @@ const ProductDetail: React.FC = () => {
               <div
                 className={`quantity-btn increase ${quantity >= productData.stock ? 'disabled' : ''}`}
                 onClick={() => quantity < productData.stock && handleQuantityChange(1)}
-                aria-label="Increase quantity"
+                aria-label="Tambah jumlah"
               >
                 <MdAdd />
               </div>
@@ -457,16 +777,16 @@ const ProductDetail: React.FC = () => {
           <div className="price-summary">
             <div className="price-breakdown">
               <div className="price-row">
-                <span>Price per item</span>
+                <span>Harga per item</span>
                 <span>Rp {productData.price.toLocaleString('id-ID')}</span>
               </div>
               <div className="price-row">
-                <span>Quantity</span>
+                <span>Jumlah</span>
                 <span>x{quantity}</span>
               </div>
               <div className="price-divider"></div>
               <div className="price-row total">
-                <span>Total Price</span>
+                <span>Total Harga</span>
                 <span className="total-amount">Rp {(productData.price * quantity).toLocaleString('id-ID')}</span>
               </div>
             </div>
@@ -479,7 +799,7 @@ const ProductDetail: React.FC = () => {
               disabled={productData.stock === 0 || addToCartMutation.isPending}
             >
               <MdShoppingCart className="cart-icon" />
-              <span>{addToCartMutation.isPending ? 'Adding...' : 'Add to Cart'}</span>
+              <span>{addToCartMutation.isPending ? 'Menambahkan...' : 'Tambah ke Keranjang'}</span>
             </button>
           </div>
           </div>

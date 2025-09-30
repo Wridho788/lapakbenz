@@ -57,29 +57,29 @@ const MerchantRegistration: React.FC = () => {
     const newErrors: {[key: string]: string} = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Business name is required';
+      newErrors.name = 'Nama usaha wajib diisi';
     }
     if (!formData.cp.trim()) {
-      newErrors.cp = 'Contact person is required';
+      newErrors.cp = 'Kontak penanggung jawab wajib diisi';
     }
     if (!formData.address.trim()) {
-      newErrors.address = 'Address is required';
+      newErrors.address = 'Alamat wajib diisi';
     }
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = 'Nomor telepon wajib diisi';
     }
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email wajib diisi';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Masukkan email yang valid';
     }
     if (!formData.menu.trim()) {
-      newErrors.menu = 'Menu description is required';
+      newErrors.menu = 'Deskripsi menu wajib diisi';
     }
     if (!formData.qty.trim()) {
-      newErrors.qty = 'Quantity is required';
+      newErrors.qty = 'Jumlah wajib diisi';
     } else if (isNaN(Number(formData.qty)) || Number(formData.qty) <= 0) {
-      newErrors.qty = 'Please enter a valid quantity';
+      newErrors.qty = 'Masukkan jumlah yang valid';
     }
 
     setErrors(newErrors);
@@ -96,8 +96,8 @@ const MerchantRegistration: React.FC = () => {
     if (!eventId) {
       Swal.fire({
         icon: 'error',
-        title: 'Event ID Missing',
-        text: 'Event ID is missing. Please try again from the event page.',
+        title: 'ID Event Tidak Ada',
+        text: 'ID event tidak ditemukan. Silakan coba lagi dari halaman event.',
         confirmButtonColor: '#3b82f6'
       });
       return;
@@ -119,38 +119,64 @@ const MerchantRegistration: React.FC = () => {
       if (result.status === 200 && result.content) {
         const hasInvoice = result.content.invoice_url;
         const invoiceUrl = result.content.invoice_url;
-        
-        Swal.fire({
-          icon: 'success',
-          title: '🎉 Registration Successful!',
-          html: `
-            <p>Your merchant registration has been submitted successfully.</p>
-            <br>
-            <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
-              <p><strong>📋 Registration Details:</strong></p>
-              <p><strong>Order Code:</strong> ${result.content.ordercode || 'N/A'}</p>
-              <p><strong>Transaction ID:</strong> ${result.content.transid || 'N/A'}</p>
-              ${hasInvoice ? `<p><strong>Payment URL:</strong> Available</p>` : ''}
-            </div>
-          `,
-          confirmButtonColor: '#10b981',
-          confirmButtonText: 'Continue',
-          showDenyButton: hasInvoice,
-          denyButtonText: hasInvoice ? '💳 View Invoice' : undefined,
-          denyButtonColor: '#3b82f6'
-        }).then((swalResult) => {
-          if (swalResult.isDenied && invoiceUrl) {
-            // Open invoice in new tab using Invoice page pattern
-            const fullUrl = getFullUrl(invoiceUrl);
-            window.open(fullUrl, '_blank');
-          }
-          navigate('/event');
-        });
+        if (!hasInvoice) {
+          await Swal.fire({
+            icon: 'success',
+            title: '🎉 Pendaftaran Berhasil!',
+            html: `
+              <p>Pendaftaran merchant Anda berhasil dikirim.</p>
+              <br>
+              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
+                <p><strong>📋 Detail Pendaftaran:</strong></p>
+                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
+                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+                <p style="color: #10b981; margin-top: 10px;"><strong>Biaya pembuatan merchant: GRATIS</strong></p>
+              </div>
+            `,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Lanjut',
+            willClose: () => {
+              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
+                navigate('/event');
+              }
+            }
+          });
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: '🎉 Pendaftaran Berhasil!',
+            html: `
+              <p>Pendaftaran merchant Anda berhasil dikirim.</p>
+              <br>
+              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
+                <p><strong>📋 Detail Pendaftaran:</strong></p>
+                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
+                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+              </div>
+            `,
+            confirmButtonColor: '#10b981',
+            confirmButtonText: 'Lanjut',
+            showDenyButton: hasInvoice,
+            denyButtonText: hasInvoice ? '💳 Lihat Invoice' : undefined,
+            denyButtonColor: '#3b82f6',
+            willClose: () => {
+              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
+                navigate('/event');
+              }
+            }
+          }).then((swalResult) => {
+            if (swalResult.isDenied && invoiceUrl) {
+              // Open invoice in new tab using Invoice page pattern
+              const fullUrl = getFullUrl(invoiceUrl);
+              window.open(fullUrl, '_blank');
+            }
+          });
+        }
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Registration Failed',
-          text: result.message || 'Registration failed. Please try again.',
+          title: 'Pendaftaran Gagal',
+          text: result.message || 'Pendaftaran gagal. Silakan coba lagi.',
           confirmButtonColor: '#3b82f6'
         });
       }
@@ -158,10 +184,10 @@ const MerchantRegistration: React.FC = () => {
       console.error('❌ Registration failed:', error.response.data.error);
       Swal.fire({
         icon: 'error',
-        title: 'Registration Failed',
-        text: error.response?.data?.error || 'Registration failed. Please try again.',
+        title: 'Pendaftaran Gagal',
+        text: error.response?.data?.error || 'Pendaftaran gagal. Silakan coba lagi.',
         confirmButtonColor: '#3b82f6',
-        footer: 'Please check your information and try again.'
+        footer: 'Silakan periksa data Anda dan coba lagi.'
       });
     } finally {
       setIsSubmitting(false);
@@ -175,26 +201,26 @@ const MerchantRegistration: React.FC = () => {
   return (
     <div className="merchant-registration-page">
       <AppbarDefault 
-        title="Merchant Registration" 
+        title="Pendaftaran Merchant" 
         onBack={handleBackClick} 
       />
       
       <div className="merchant-registration-content">
         <div className="registration-header">
-          <h2>🏪 Register as Merchant</h2>
-          <p>Fill in the details below to register your business for this event</p>
+          <h2>🏪 Daftar Sebagai Merchant</h2>
+          <p>Isi data berikut untuk mendaftarkan usaha Anda pada event ini</p>
         </div>
 
         <form onSubmit={handleSubmit} className="registration-form">
           <div className="form-group">
-            <label htmlFor="name">Business Name *</label>
+            <label htmlFor="name">Nama Usaha *</label>
             <input
               type="text"
               id="name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              placeholder="Enter your business name"
+              placeholder="Masukkan nama usaha Anda"
               className={errors.name ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -202,14 +228,14 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="cp">Contact Person *</label>
+            <label htmlFor="cp">Penanggung Jawab *</label>
             <input
               type="text"
               id="cp"
               name="cp"
               value={formData.cp}
               onChange={handleInputChange}
-              placeholder="Enter contact person name"
+              placeholder="Masukkan nama penanggung jawab"
               className={errors.cp ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -217,13 +243,13 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="address">Address *</label>
+            <label htmlFor="address">Alamat *</label>
             <textarea
               id="address"
               name="address"
               value={formData.address}
               onChange={handleInputChange}
-              placeholder="Enter your business address"
+              placeholder="Masukkan alamat usaha Anda"
               rows={3}
               className={errors.address ? 'error' : ''}
               disabled={isSubmitting}
@@ -232,14 +258,14 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="phone">Phone Number *</label>
+            <label htmlFor="phone">No. Telepon *</label>
             <input
               type="tel"
               id="phone"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              placeholder="Enter your phone number"
+              placeholder="Masukkan nomor telepon"
               className={errors.phone ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -247,14 +273,14 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Email Address *</label>
+            <label htmlFor="email">Email *</label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Enter your email address"
+              placeholder="Masukkan alamat email"
               className={errors.email ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -262,13 +288,13 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="menu">Menu Description *</label>
+            <label htmlFor="menu">Deskripsi Menu *</label>
             <textarea
               id="menu"
               name="menu"
               value={formData.menu}
               onChange={handleInputChange}
-              placeholder="Describe your menu items (e.g., BAKSO REBUS, BAKAR, AYAM)"
+              placeholder="Deskripsikan menu yang dijual (cth: BAKSO REBUS, BAKAR, AYAM)"
               rows={3}
               className={errors.menu ? 'error' : ''}
               disabled={isSubmitting}
@@ -277,14 +303,14 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="qty">Expected Quantity *</label>
+            <label htmlFor="qty">Jumlah yang Disiapkan *</label>
             <input
               type="number"
               id="qty"
               name="qty"
               value={formData.qty}
               onChange={handleInputChange}
-              placeholder="Enter expected quantity"
+              placeholder="Masukkan jumlah yang disiapkan"
               min="1"
               className={errors.qty ? 'error' : ''}
               disabled={isSubmitting}
@@ -299,7 +325,7 @@ const MerchantRegistration: React.FC = () => {
               className="btn-secondary"
               disabled={isSubmitting}
             >
-              Cancel
+              Batal
             </button>
             <button
               type="submit"
@@ -309,10 +335,10 @@ const MerchantRegistration: React.FC = () => {
               {isSubmitting ? (
                 <>
                   <span className="loading-spinner"></span>
-                  Registering...
+                  Mendaftarkan...
                 </>
               ) : (
-                '🏪 Register Merchant'
+                '🏪 Daftar Merchant'
               )}
             </button>
           </div>

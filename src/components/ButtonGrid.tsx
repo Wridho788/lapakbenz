@@ -21,21 +21,21 @@ export const ButtonGrid: React.FC<ButtonGridProps> = ({
         <div className="button-icon">
           <MdPerson />
         </div>
-        <span className="button-label">Profile</span>
+        <span className="button-label">Profil</span>
       </button>
 
       <button className="grid-button" onClick={onEventHistoryClick}>
         <div className="button-icon">
           <MdOutlineHistory />
         </div>
-        <span className="button-label">Event History</span>
+        <span className="button-label">Riwayat Event</span>
       </button>
 
       <button className="grid-button" onClick={onTransactionClick}>
         <div className="button-icon">
           <MdOutlineAccountBalanceWallet />
         </div>
-        <span className="button-label">Transaction</span>
+        <span className="button-label">Transaksi</span>
       </button>
     </div>
   );

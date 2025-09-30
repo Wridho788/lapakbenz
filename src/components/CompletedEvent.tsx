@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 import { EventCard } from './EventCard';
+import EventModal from './EventModal';
 import './CompletedEvent.css';
-import { usePostEvent, useEventById } from '../api/hooks';
+import { usePostEvent, useEventById, useEventRegister } from '../api/hooks';
+import Swal from 'sweetalert2';
 
 interface EventItem {
   id: string;
@@ -26,15 +28,24 @@ interface CompletedEventProps {
   className?: string;
 }
 
+interface RegistrationData {
+  transid: number;
+  ordercode: string;
+  invoice_url: string;
+}
+
 export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => {
   // Move ALL hooks to the top, before any conditional logic
   const eventMutation = usePostEvent();
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
+
   const eventByIdQuery = useEventById(selectedEventId ?? '');
+  const eventRegisterMutation = useEventRegister();
 
   useEffect(() => {
-    eventMutation.mutate({  status: '0', limit: 100, offset: 0, chapter: '' }); // Fetch completed events (status "0")
+    eventMutation.mutate({ status: '0', limit: 100, offset: 0, chapter: '' }); // Fetch completed events (status "0")
   }, []);
 
   useEffect(() => {
@@ -56,6 +67,70 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
     return null;
   }
 
+  const handleEventRegister = async () => {
+    if (!selectedEventId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Event ID Missing',
+        text: 'Please select an event first.',
+        confirmButtonColor: '#3b82f6',
+      });
+      return;
+    }
+
+    try {
+      console.log('🎫 Starting event registration for:', selectedEventId);
+
+      const result = await eventRegisterMutation.mutateAsync({
+        eventId: selectedEventId,
+      });
+
+      console.log('🎫 Event Registration Response:', result);
+
+      if (result.status === 200 && result.content) {
+        setRegistrationData({
+          transid: result.content.transid,
+          ordercode: result.content.ordercode,
+          invoice_url: result.content.invoice_url,
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: '🎉 Registration Successful!',
+          text: 'Your event registration has been completed successfully.',
+          confirmButtonColor: '#10b981',
+          confirmButtonText: 'Continue',
+        });
+      } else {
+        throw new Error('Registration failed');
+      }
+    } catch (error: any) {
+      console.error('❌ Event Registration Failed:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Registration Failed',
+        text: error.response?.data?.error || 'Event registration failed. Please try again.',
+        confirmButtonColor: '#3b82f6',
+        footer: 'Please check your information and try again.',
+      });
+    }
+  };
+
+  const getFullUrl = (url: string): string => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
+  const handleOpenInvoice = () => {
+    if (registrationData?.invoice_url) {
+      const fullUrl = getFullUrl(registrationData.invoice_url);
+      window.open(fullUrl, '_blank');
+    }
+  };
+
   return (
     <div className={`completed-event ${className || ''}`}>
       <div className="event-scroll-container">
@@ -72,104 +147,19 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
           />
         ))}
       </div>
-      <Modal open={modalOpen && !!eventByIdQuery.data?.content} onClose={() => setModalOpen(false)}>
-        {eventByIdQuery.data?.content ? (
-          <div>
-            <img
-              src={eventByIdQuery.data.content.image}
-              alt={eventByIdQuery.data.content.name}
-              style={{ width: '100%', borderRadius: 8, marginBottom: 12 }}
-            />
-            <h2>
-              {eventByIdQuery.data.content.code} - {eventByIdQuery.data.content.name}
-            </h2>
-            <p>{eventByIdQuery.data.content.desc}</p>
-            <div style={{ display: 'flex', gap: 24 }}>
-              {/* Kolom kiri */}
-              <div style={{ flex: 1 }}>
-                <p>
-                  <b>Event Date:</b>
-                  <br />
-                  {eventByIdQuery.data.content.dates} - {eventByIdQuery.data.content.time}
-                </p>
-                <p>
-                  <b>Chapter:</b>
-                  <br />
-                  {eventByIdQuery.data.content.chapter}
-                </p>
-                <p>
-                  <b>Type:</b>
-                  <br />
-                  {eventByIdQuery.data.content.type_desc}
-                </p>
-                <p>
-                  <b>Description:</b>
-                  <br />
-                  {eventByIdQuery.data.content.desc}
-                </p>
-              </div>
-              {/* Kolom kanan */}
-              <div style={{ flex: 1 }}>
-                <p>
-                  <b>Minimum Participation:</b>
-                  <br />
-                  {eventByIdQuery.data.content.minimum_participants}
-                </p>
-                <p>
-                  <b>Contribution Fee:</b>
-                  <br />
-                  {eventByIdQuery.data.content.fee}
-                </p>
-                <p>
-                  <b>Status:</b>
-                  <br />
-                  {eventByIdQuery.data.content.done_desc}
-                </p>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div>Loading...</div>
-        )}
-      </Modal>
-    </div>
-  );
-};
-
-// Simple modal component
-const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.ReactNode }> = ({
-  open,
-  onClose,
-  children,
-}) => {
-  if (!open) return null;
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        background: 'rgba(0,0,0,0.5)',
-        zIndex: 9999,
-      }}
-    >
-      <div
-        style={{
-          background: '#fff',
-          margin: '5% auto',
-          padding: 24,
-          borderRadius: 8,
-          maxWidth: 400,
-          position: 'relative',
-        }}
-      >
-        <button style={{ position: 'absolute', top: 8, right: 8 }} onClick={onClose}>
-          Tutup
-        </button>
-        {children}
-      </div>
+      {/* Use EventModal for event details */}
+      <EventModal
+        isOpen={modalOpen && !!eventByIdQuery.data?.content}
+        onClose={() => setModalOpen(false)}
+        eventContent={eventByIdQuery.data?.content || null}
+        isLoading={eventByIdQuery.isLoading}
+        isAuthenticated={true}
+        registrationPending={false}
+        registrationData={null}
+        onEventRegister={handleEventRegister}
+        onOpenInvoice={handleOpenInvoice}
+        selectedEventId={selectedEventId}
+      />
     </div>
   );
 };

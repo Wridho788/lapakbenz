@@ -10,15 +10,16 @@ import './Product.css';
 const Product: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState(''); // Changed to use category ID
   const { cartCount } = useCart();
-  // API hooks
+  
+  // API hooks - now passing category ID instead of category name
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
-    limit: 3000,
+    limit: 10,
     offset: 0,
     orderby: '',
     order: 'asc',
-    category: selectedCategory,
+    category: selectedCategoryId, // Using category ID
   });
 
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useProductCategories();
@@ -46,12 +47,15 @@ const Product: React.FC = () => {
     }
   };
 
-  // Process categories from API
+  // Process categories from API - now storing both ID and name
   const categories = useMemo(() => {
-    const baseCategories = ['All'];
+    const baseCategories = [{ id: '', name: 'Semua' }]; // Base category with empty ID
     
     if (categoriesData?.content?.result) {
-      const apiCategories = categoriesData.content.result.map((cat: any) => cat.name || cat.category_name || cat.title);
+      const apiCategories = categoriesData.content.result.map((cat: any) => ({
+        id: cat.id || cat.category_id || '',
+        name: cat.name || cat.category_name || cat.title || 'Kategori Tidak Diketahui'
+      }));
       return [...baseCategories, ...apiCategories];
     }
     
@@ -82,7 +86,7 @@ const Product: React.FC = () => {
     return [];
   }, [productsData, productSearchMutation.data]);
 
-  // Filter products based on search query and selected category
+  // Filter products based on search query and selected category ID
   const filteredProducts = useMemo(() => {
     let filtered = products;
 
@@ -95,15 +99,15 @@ const Product: React.FC = () => {
       );
     }
 
-    // Filter by category (always apply this filter)
-    if (selectedCategory && selectedCategory !== 'All') {
+    // Filter by category ID (always apply this filter)
+    if (selectedCategoryId && selectedCategoryId !== '') {
       filtered = filtered.filter((product: any) =>
-        (product.category || '').toLowerCase() === selectedCategory.toLowerCase()
+        (product.category_id || product.categoryId || '') === selectedCategoryId
       );
     }
 
     return filtered;
-  }, [products, searchQuery, selectedCategory, productSearchMutation.data]);
+  }, [products, searchQuery, selectedCategoryId, productSearchMutation.data]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -137,13 +141,14 @@ const Product: React.FC = () => {
   }, [searchQuery]); // Removed productSearchMutation and refetchProducts from dependency array
 
   const handleProductClick = (productId: string) => {
-    console.log('🛍️ Product clicked with ID:', productId);
-    console.log('🔄 Navigating to product detail page...');
+    console.log('🛒 Product clicked with ID:', productId);
+    console.log('📄 Navigating to product detail page...');
     navigate(`/product/${productId}`);
   };
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category === 'All' ? '' : category);
+  // Updated to handle category ID instead of category name
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
   };
 
   const handleClearSearch = () => {
@@ -153,6 +158,13 @@ const Product: React.FC = () => {
     }
   };
 
+  // Get current category name for display
+  const getCurrentCategoryName = () => {
+    if (!selectedCategoryId) return 'Semua Produk';
+    const category = categories.find(cat => cat.id === selectedCategoryId);
+    return category ? category.name : 'Kategori Tidak Diketahui';
+  };
+
   // Loading states
   const isLoading = productsLoading || categoriesLoading || productSearchMutation.isPending;
   const hasError = productsError || categoriesError || productSearchMutation.error;
@@ -160,7 +172,7 @@ const Product: React.FC = () => {
   return (
     <div className="product-page">
       <AppbarDefault
-        title="Product Catalog"
+        title="Katalog Produk"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
         cartCount={cartCount}
@@ -173,7 +185,7 @@ const Product: React.FC = () => {
             <MdSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Cari produk..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
@@ -182,7 +194,7 @@ const Product: React.FC = () => {
               <button
                 onClick={handleClearSearch}
                 className="clear-search-btn"
-                aria-label="Clear search"
+                aria-label="Hapus pencarian"
               >
                 <MdClear />
               </button>
@@ -194,11 +206,11 @@ const Product: React.FC = () => {
             <div className="category-filters">
               {categories.map((category) => (
                 <button
-                  key={category}
-                  onClick={() => handleCategoryChange(category)}
-                  className={`filter-btn ${(selectedCategory === '' && category === 'All') || selectedCategory === category ? 'active' : ''}`}
+                  key={category.id || 'all'}
+                  onClick={() => handleCategoryChange(category.id)}
+                  className={`filter-btn ${selectedCategoryId === category.id ? 'active' : ''}`}
                 >
-                  {category}
+                  {category.name}
                 </button>
               ))}
             </div>
@@ -208,15 +220,15 @@ const Product: React.FC = () => {
         {/* Loading State */}
         {isLoading && (
           <div className="loading-state">
-            <p>Loading products...</p>
+            <p>Memuat produk...</p>
           </div>
         )}
 
         {/* Error State */}
         {hasError && !isLoading && (
           <div className="error-state">
-            <p>Failed to load products. Please try again.</p>
-            <button onClick={() => refetchProducts()}>Retry</button>
+            <p>Gagal memuat produk. Silakan coba lagi.</p>
+            <button onClick={() => refetchProducts()}>Coba Lagi</button>
           </div>
         )}
 
@@ -224,8 +236,8 @@ const Product: React.FC = () => {
         {!isLoading && !hasError && (
           <div className="product-catalog">
             <h3 className="catalog-title">
-              {selectedCategory === '' || selectedCategory === 'All' ? 'All Products' : selectedCategory}
-              <span className="product-count">({filteredProducts.length} items)</span>
+              {getCurrentCategoryName()}
+              <span className="product-count">({filteredProducts.length} produk)</span>
             </h3>
             
             <div className="product-grid">
@@ -261,14 +273,14 @@ const Product: React.FC = () => {
 
             {filteredProducts.length === 0 && !isLoading && (
               <div className="empty-state">
-                <img src="/nodata.png" alt="No Products" className="empty-icon" />
+                <img src="/nodata.png" alt="Tidak Ada Produk" className="empty-icon" />
                 <h3>
-                  {searchQuery ? `No results found for "${searchQuery}"` : 'No Products Found'}
+                  {searchQuery ? `Tidak ditemukan hasil untuk "${searchQuery}"` : 'Produk Tidak Ditemukan'}
                 </h3>
                 <p>
                   {searchQuery 
-                    ? 'Try searching with different keywords or browse our categories.' 
-                    : 'Try adjusting your search or filter to find what you\'re looking for.'
+                    ? 'Coba cari dengan kata kunci lain atau telusuri kategori kami.' 
+                    : 'Coba atur ulang pencarian atau filter untuk menemukan produk yang Anda cari.'
                   }
                 </p>
                 {searchQuery && (
@@ -276,7 +288,7 @@ const Product: React.FC = () => {
                     onClick={handleClearSearch}
                     className="clear-search-action-btn"
                   >
-                    Clear Search
+                    Hapus Pencarian
                   </button>
                 )}
               </div>

@@ -34,13 +34,21 @@ interface EventItem {
   allow_public?: number;
 }
 
+interface ArticleItem {
+  id: string;
+  title: string;
+  text: string;
+  image: string;
+  created_at: string;
+}
+
 interface RegistrationData {
   transid: number;
   ordercode: string;
   invoice_url: string;
 }
 
-const tabs = ['Upcoming', 'Completed', 'News'];
+const tabs = ['Akan Datang', 'Selesai', 'Berita'];
 
 const Event: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -49,41 +57,174 @@ const Event: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+  
+  // State untuk akumulasi data (infinite scroll)
+  const [allEvents, setAllEvents] = useState<EventItem[]>([]);
+  const [allArticles, setAllArticles] = useState<ArticleItem[]>([]);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
   const pullRef = useRef<HTMLDivElement | null>(null);
   const startY = useRef<number | null>(null);
   const pulling = useRef(false);
   const [pullDistance, setPullDistance] = useState(0);
   const PULL_THRESHOLD = 60;
+  const PULL_DAMPING = 0.4; // Resistance effect
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const isInitialMount = useRef(true);
+  
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const { isAuthenticated } = useAuthStore();
-
+  
   // API hooks
   const eventMutation = usePostEvent();
   const articleMutation = usePostArticle();
   const eventRegisterMutation = useEventRegister();
+  
   // Only call useEventById when modal is open and eventId is selected
   const eventByIdQuery = useEventById(modalOpen && selectedEventId ? selectedEventId : '');
 
-  // Pull to refresh handlers
+  // Cleanup touch events on unmount
+  useEffect(() => {
+    return () => {
+      pulling.current = false;
+      startY.current = null;
+      setPullDistance(0);
+    };
+  }, []);
+
+  // Reset data ketika tab atau chapter berubah
+  useEffect(() => {
+    setAllEvents([]);
+    setAllArticles([]);
+    setHasMoreData(true);
+    setIsLoadingMore(false);
+  }, [activeTab, selectedChapters]);
+
+  // Akumulasi data dari API response untuk events
+  useEffect(() => {
+    if (eventMutation.data?.content?.result) {
+      const newEvents = eventMutation.data.content.result;
+      
+      if (eventMutation.variables?.offset === 0) {
+        // Initial load atau refresh
+        setAllEvents(newEvents);
+      } else {
+        // Infinite scroll - append data
+        setAllEvents(prev => {
+          // Prevent duplicates
+          const existingIds = new Set(prev.map(e => e.id));
+          const uniqueNewEvents = newEvents.filter((e: EventItem) => !existingIds.has(e.id));
+          return [...prev, ...uniqueNewEvents];
+        });
+      }
+      
+      // Check if there's more data
+      if (newEvents.length < 10) {
+        setHasMoreData(false);
+      }
+      setIsLoadingMore(false);
+    }
+  }, [eventMutation.data]);
+
+  // Akumulasi data dari API response untuk articles
+  useEffect(() => {
+    if (articleMutation.data?.content?.result) {
+      const newArticles = articleMutation.data.content.result;
+      
+      if (articleMutation.variables?.offset === 0 || !articleMutation.variables?.offset) {
+        // Initial load atau refresh
+        setAllArticles(newArticles);
+      } else {
+        // Infinite scroll - append data
+        setAllArticles(prev => {
+          // Prevent duplicates
+          const existingIds = new Set(prev.map(a => a.id));
+          const uniqueNewArticles = newArticles.filter((a: ArticleItem) => !existingIds.has(a.id));
+          return [...prev, ...uniqueNewArticles];
+        });
+      }
+      
+      // Check if there's more data
+      if (newArticles.length < 10) {
+        setHasMoreData(false);
+      }
+      setIsLoadingMore(false);
+    }
+  }, [articleMutation.data]);
+
+  // IntersectionObserver untuk deteksi scroll sampai akhir event list
+  useEffect(() => {
+    const currentObserverTarget = observerRef.current;
+    if (!currentObserverTarget) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreData && !isLoadingMore && !refreshing) {
+          console.log('📽 User has scrolled to the end of the list!');
+          setIsLoadingMore(true);
+          
+          if (activeTab === 0 || activeTab === 1) {
+            // Infinite scroll event
+            const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
+            const offset = allEvents.length;
+            const payload = activeTab === 0
+              ? { status: '0', limit: 10, offset, chapter: chapterParam }
+              : { status: '1', limit: 10, offset, chapter: chapterParam };
+            eventMutation.mutate(payload);
+          } else if (activeTab === 2) {
+            // Infinite scroll article
+            const offset = allArticles.length;
+            articleMutation.mutate({ limit: 10, offset });
+          }
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '50px',
+      }
+    );
+
+    observer.observe(currentObserverTarget);
+
+    return () => {
+      if (currentObserverTarget) {
+        observer.unobserve(currentObserverTarget);
+      }
+    };
+  }, [
+    activeTab, 
+    selectedChapters, 
+    allEvents.length, 
+    allArticles.length, 
+    hasMoreData, 
+    isLoadingMore,
+    refreshing
+  ]);
+
+  // Pull to refresh handlers dengan damping effect
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (window.scrollY === 0) {
+    if (window.scrollY === 0 && !refreshing) {
       startY.current = e.touches[0].clientY;
       pulling.current = true;
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!pulling.current || startY.current === null) return;
+    if (!pulling.current || startY.current === null || refreshing) return;
+    
     const diff = e.touches[0].clientY - startY.current;
     if (diff > 0) {
       e.preventDefault();
-      setPullDistance(Math.min(diff, 120));
+      // Apply damping for natural feel
+      const dampedDistance = diff * PULL_DAMPING;
+      setPullDistance(Math.min(dampedDistance, 80));
     }
   };
 
   const handleTouchEnd = () => {
-    if (pullDistance > PULL_THRESHOLD) {
+    if (pullDistance > PULL_THRESHOLD * PULL_DAMPING) {
       triggerRefresh();
     }
     pulling.current = false;
@@ -93,44 +234,51 @@ const Event: React.FC = () => {
 
   const triggerRefresh = useCallback(async () => {
     if (refreshing) return;
+    
     setRefreshing(true);
+    setHasMoreData(true);
+    
     try {
-      // Refresh current tab data
       if (activeTab === 0 || activeTab === 1) {
         const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
         const payload =
           activeTab === 0
-            ? { status: '0', limit: 100, offset: 0, chapter: chapterParam }
-            : { status: '1', limit: 100, offset: 0, chapter: chapterParam };
-        eventMutation.mutate(payload);
+            ? { status: '0', limit: 10, offset: 0, chapter: chapterParam }
+            : { status: '1', limit: 10, offset: 0, chapter: chapterParam };
+        await eventMutation.mutateAsync(payload);
       } else if (activeTab === 2) {
-        articleMutation.mutate({});
+        await articleMutation.mutateAsync({ limit: 10, offset: 0 });
       }
+    } catch (error) {
+      console.error('Refresh failed:', error);
     } finally {
-      setTimeout(() => setRefreshing(false), 300);
+      setRefreshing(false);
     }
-  }, [activeTab, eventMutation, articleMutation, refreshing, selectedChapters]);
+  }, [activeTab, eventMutation, articleMutation, selectedChapters, refreshing]);
 
   // Fetch data on mount and tab change or chapter selection change
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    }
+    
     if (activeTab === 0 || activeTab === 1) {
       // Fetch events for upcoming/completed
       const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
       const payload =
         activeTab === 0
-          ? { status: '0', limit: 100, offset: 0, chapter: chapterParam } // upcoming
-          : { status: '1', limit: 100, offset: 0, chapter: chapterParam }; // completed
+          ? { status: '0', limit: 10, offset: 0, chapter: chapterParam }
+          : { status: '1', limit: 10, offset: 0, chapter: chapterParam };
       eventMutation.mutate(payload);
     } else if (activeTab === 2) {
       // Fetch articles for news
-      articleMutation.mutate({});
+      articleMutation.mutate({ limit: 10, offset: 0 });
     }
   }, [activeTab, selectedChapters]);
 
   // Handle chapter selection change
   const handleChapterSelectionChange = (newSelectedChapters: string[]) => {
     setSelectedChapters(newSelectedChapters);
-    // The useEffect above will automatically trigger the API call
   };
 
   // Logging API responses
@@ -181,10 +329,10 @@ const Event: React.FC = () => {
   const handleEventClick = (eventId: string) => {
     setSelectedEventId(eventId);
     setModalOpen(true);
-    setRegistrationData(null); // Reset registration data when opening new event
+    setRegistrationData(null);
   };
 
-  // Helper function to ensure URL has https protocol (same as Invoice page)
+  // Helper function to ensure URL has https protocol
   const getFullUrl = (url: string): string => {
     if (!url) return '';
     if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -228,14 +376,22 @@ const Event: React.FC = () => {
           confirmButtonText: 'Continue',
         });
       } else {
-        throw new Error('Registration failed');
+        const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
+        throw new Error(errorMsg);
       }
     } catch (error: any) {
       console.error('❌ Event Registration Failed:', error);
+      
+      const errorMessage = 
+        error.response?.data?.error || 
+        error.response?.data?.message ||
+        error.message || 
+        'Event registration failed. Please try again.';
+      
       Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
-        text: error.response?.data?.error || 'Event registration failed. Please try again.',
+        text: errorMessage,
         confirmButtonColor: '#3b82f6',
         footer: 'Please check your information and try again.',
       });
@@ -251,28 +407,29 @@ const Event: React.FC = () => {
 
   const getFilteredData = () => {
     if (activeTab === 2) {
-      // News data from article API
-      return articleMutation.data?.content?.result ?? [];
+      // News data from accumulated articles
+      return allArticles;
     } else {
-      // Event data from event API
-      const events: EventItem[] = eventMutation.data?.content?.result ?? [];
+      // Event data from accumulated events
       if (activeTab === 0) {
         // Upcoming: done = 0
-        return events.filter((event) => event.done === 0);
+        return allEvents.filter((event) => event.done === 0);
       } else {
         // Completed: done = 1
-        return events.filter((event) => event.done === 1);
+        return allEvents.filter((event) => event.done === 1);
       }
     }
   };
 
   const isLoading = () => {
     if (activeTab === 2) {
-      return articleMutation.isPending || refreshing;
+      return (articleMutation.isPending && allArticles.length === 0) || refreshing;
     } else {
-      return eventMutation.isPending || refreshing;
+      return (eventMutation.isPending && allEvents.length === 0) || refreshing;
     }
   };
+
+  const pullThresholdAdjusted = PULL_THRESHOLD * PULL_DAMPING;
 
   return (
     <div
@@ -290,6 +447,7 @@ const Event: React.FC = () => {
         onBack={handleBackClick}
         onCartClick={handleCartClick}
         cartCount={cartCount}
+        defaultBack="/dashboard" 
       />
 
       <div
@@ -303,8 +461,8 @@ const Event: React.FC = () => {
           color: '#555',
         }}
       >
-        {(pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh') +
-          (refreshing ? ' • refreshing...' : '')}
+        {(pullDistance > pullThresholdAdjusted ? 'Lepaskan untuk menyegarkan' : 'Tarik untuk menyegarkan') +
+          (refreshing ? ' • menyegarkan...' : '')}
       </div>
 
       {/* Chapter Filter - Only show for Upcoming and Completed tabs */}
@@ -322,6 +480,7 @@ const Event: React.FC = () => {
             key={tab}
             onClick={() => setActiveTab(idx)}
             className={activeTab === idx ? 'active' : ''}
+            disabled={refreshing}
           >
             {tab}
           </button>
@@ -332,35 +491,48 @@ const Event: React.FC = () => {
         <div className="event-list">
           {isLoading() ? (
             <div className="loading-state">
-              <p>{refreshing ? 'Refreshing...' : 'Loading...'}</p>
+              <p>{refreshing ? 'Menyegarkan...' : 'Memuat...'}</p>
             </div>
           ) : (
-            getFilteredData().map((item: any) =>
-              tabs[activeTab] === 'News' ? (
-                <NewsCard
-                  key={item.id}
-                  news={item}
-                  onClick={() => item.text && window.open(item.text, '_blank')}
-                />
-              ) : (
-                <EventListCard
-                  key={item.id}
-                  event={item}
-                  onClick={() => handleEventClick(item.id)}
-                />
-              ),
-            )
+            <>
+              {getFilteredData().map((item: any) =>
+                tabs[activeTab] === 'News' ? (
+                  <NewsCard
+                    key={item.id}
+                    news={item}
+                    onClick={() => item.text && window.open(item.text, '_blank')}
+                  />
+                ) : (
+                  <EventListCard
+                    key={item.id}
+                    event={item}
+                    onClick={() => handleEventClick(item.id)}
+                  />
+                ),
+              )}
+              
+              {/* Loading indicator untuk infinite scroll */}
+              {isLoadingMore && (
+                <div className="loading-more" style={{ padding: '20px', textAlign: 'center' }}>
+                  <p>Memuat lagi...</p>
+                </div>
+              )}
+            </>
           )}
+
+          {/* Infinite scroll trigger */}
+          {hasMoreData && !isLoading() && <div ref={observerRef} style={{ height: 1 }} />}
 
           {!isLoading() && getFilteredData().length === 0 && (
             <div className="empty-state">
-              <img src="/nodata.png" alt="No Data" className="empty-icon" />
-              <h3>No {tabs[activeTab]}</h3>
-              <p>There are no {tabs[activeTab].toLowerCase()} at the moment. Check back later!</p>
+              <img src="/nodata.png" alt="Tidak Ada Data" className="empty-icon" />
+              <h3>Tidak Ada {tabs[activeTab]}</h3>
+              <p>Tidak ada {tabs[activeTab].toLowerCase()} saat ini. Silakan cek kembali nanti!</p>
             </div>
           )}
         </div>
       </div>
+      
       <EventModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -373,6 +545,7 @@ const Event: React.FC = () => {
         onOpenInvoice={handleOpenInvoice}
         selectedEventId={selectedEventId}
       />
+      
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>
   );

@@ -75,7 +75,12 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   success: boolean;
   message: string;
-  data?: any;
+  content?: {
+    id: string;
+    clubid: string;
+    first_name: string;
+    last_name: string | null;
+  };
 }
 
 export interface ChangePasswordRequest {

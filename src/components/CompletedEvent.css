@@ -2,7 +2,6 @@
 .completed-event {
   width: 100%;
   margin: -1.5rem 0;
-  /* Force light mode - override system dark mode */
   color-scheme: light;
   background-color: #ffffff;
   color: #000000;
@@ -41,7 +40,6 @@
   }
   
   /* Force light mode for all child elements in dark mode */
-  .completed-event *,
   .event-scroll-container * {
     background-color: inherit;
     color: #000000 !important;

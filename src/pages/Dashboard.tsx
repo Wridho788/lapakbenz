@@ -300,19 +300,19 @@ const Dashboard: React.FC = () => {
         />
         {/* Conditionally render Partnership section */}
         {shouldShowPartnership && (
-          <SectionWrapper title="Partnership">
+          <SectionWrapper title="Kemitraan">
             <Partnership />
           </SectionWrapper>
         )}
-        
+
         {/* Conditionally render CompletedEvent section */}
-          <SectionWrapper title="Upcoming Event">
-            <CompletedEvent />
-          </SectionWrapper>
-        
+        <SectionWrapper title="Event Mendatang">
+          <CompletedEvent />
+        </SectionWrapper>
+
         {/* Conditionally render UpcomingNews section */}
         {shouldShowUpcomingNews && (
-          <SectionWrapper title="Upcoming News">
+          <SectionWrapper title="Berita Mendatang">
             <UpcomingNews />
           </SectionWrapper>
         )}

@@ -1,0 +1,118 @@
+.verify-otp-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f8fa;
+}
+
+.verify-otp-container {
+  background: #fff;
+  padding: 32px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  max-width: 350px;
+  width: 100%;
+  text-align: center;
+}
+
+.verify-otp-container h2 {
+  margin-bottom: 12px;
+  color: #222;
+}
+
+.verify-otp-container p {
+  color: #666;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.verify-otp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.otp-input {
+  font-size: 20px;
+  letter-spacing: 6px;
+  text-align: center;
+  padding: 12px 0;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  background: #fff !important;
+  transition: border 0.2s;
+  color: #111 !important;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #111;
+}
+/* Force light style for OTP input in dark mode */
+@media (prefers-color-scheme: dark) {
+  .otp-input {
+    background: #fff !important;
+    color: #111 !important;
+    -webkit-text-fill-color: #111 !important;
+    caret-color: #111;
+    border: 1.5px solid #d1d5db;
+  }
+}
+.otp-input:focus {
+  border-color: #3b82f6;
+  background: #fff;
+}
+.otp-input.otp-error {
+  border-color: #ef4444;
+  background: #fff0f0;
+}
+.otp-error-text {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+.btn-link.resend-otp-btn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-weight: 500;
+}
+.btn-link.resend-otp-btn:disabled {
+  color: #bbb;
+  cursor: not-allowed;
+}
+.otp-input {
+  width: 140px;
+  max-width: 100%;
+  font-size: 2.1rem;
+  letter-spacing: 0.5em;
+  text-align: center;
+  padding: 12px 0 12px 0;
+  border: 2.5px solid #d1d5db;
+  border-radius: 12px;
+  outline: none;
+  background: #fff !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #111 !important;
+  font-weight: 700;
+  box-shadow: 0 2px 12px 0 rgba(59,130,246,0.06);
+  margin: 0 auto 8px auto;
+  display: block;
+  -webkit-text-fill-color: #111 !important;
+  caret-color: #3b82f6;
+}
+.otp-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px #3b82f633;
+  background: #f0f7ff;
+}
+.btn-primary:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}

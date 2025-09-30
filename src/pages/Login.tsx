@@ -13,20 +13,20 @@ const Login: React.FC = () => {
   const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string>('');
-  
+
   // Use Zustand auth store
   const { login, setLoading } = useAuthStore();
-  
+
   // Use login mutation hook
   const loginMutation = useLogin();
-  
+
   // Development helper untuk auto-fill credentials
   const fillTestCredentials = () => {
     setEmailOrPhone('08211239608');
     setPassword('123456');
     console.log('🧪 Test credentials filled (from API example)');
   };
-  
+
   // Add to window for debugging (development only)
   if (typeof window !== 'undefined' && import.meta.env.DEV) {
     (window as any).fillTestCredentials = fillTestCredentials;
@@ -48,42 +48,42 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Clear previous error
     setLoginError('');
     setLoading(true);
-    
+
     // Prepare login data
     const loginData: LoginRequest = {
       username: emailOrPhone,
       password: password,
-      device: '' // Default device type for web
+      device: '', // Default device type for web
     };
 
-    console.log('🔐 Attempting login with:', { 
+    console.log('🔐 Attempting login with:', {
       username: emailOrPhone,
       passwordLength: password.length,
-      device: ''
+      device: '',
     });
     console.log('📤 Exact JSON payload:', JSON.stringify(loginData, null, 2));
 
     try {
       const response = await loginMutation.mutateAsync(loginData);
-      
+
       console.log('✅ Login response:', response);
       console.log('🔍 Response structure analysis:', {
         hasSuccess: 'success' in response,
         hasToken: 'token' in response,
         hasContent: 'content' in response,
         hasContentToken: response.content?.token ? true : false,
-        contentStatus: response.content?.status
+        contentStatus: response.content?.status,
       });
-      
+
       // Check if login was successful - handle different response formats
       let isSuccess = false;
       let token = '';
       let message = '';
-      
+
       // Handle different response structures
       if (response.success === true) {
         // Standard success format
@@ -109,20 +109,22 @@ const Login: React.FC = () => {
         message = response.message || 'Login failed';
         console.log('📋 No valid token found in response');
       }
-      
+
       if (isSuccess && token) {
         // Use Zustand store to save auth data
-        const userData = response.content ? {
-          id: response.content.userid?.toString(),
-          username: emailOrPhone,
-          log: response.content.log
-        } : { username: emailOrPhone };
-        
+        const userData = response.content
+          ? {
+              id: response.content.userid?.toString(),
+              username: emailOrPhone,
+              log: response.content.log,
+            }
+          : { username: emailOrPhone };
+
         login(token, userData);
-        
+
         console.log('💾 Auth data saved to Zustand store');
         console.log('🎉 Login successful! Redirecting to dashboard...');
-        
+
         // Navigate to dashboard
         navigate('/dashboard');
       } else {
@@ -135,7 +137,7 @@ const Login: React.FC = () => {
     } catch (error: any) {
       // Handle network or other errors
       let errorMessage = 'Network error occurred';
-      
+
       if (error?.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error?.response?.data?.error) {
@@ -143,7 +145,7 @@ const Login: React.FC = () => {
       } else if (error?.message) {
         errorMessage = error.message;
       }
-      
+
       setLoginError(errorMessage);
       setLoading(false);
       console.error('❌ Login error:', error);
@@ -164,69 +166,73 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
-        <AppbarAuth 
-          title="Login" 
-          onBack={handleBackClick} 
-        />
+      <AppbarAuth title="Login" onBack={handleBackClick} />
       <div className="login-card">
         {/* Debug panel - development only */}
         {import.meta.env.DEV && (
-          <div style={{
-            padding: '10px',
-            marginBottom: '15px',
-            backgroundColor: '#f8f9fa',
-            border: '1px solid #dee2e6',
-            borderRadius: '5px',
-            fontSize: '12px'
-          }}>
-            <strong>🔧 Dev Tools:</strong><br/>
-            <button 
+          <div
+            style={{
+              padding: '10px',
+              marginBottom: '15px',
+              backgroundColor: '#f8f9fa',
+              border: '1px solid #dee2e6',
+              borderRadius: '5px',
+              fontSize: '12px',
+            }}
+          >
+            <strong>🔧 Dev Tools:</strong>
+            <br />
+            <button
               onClick={fillTestCredentials}
-              style={{fontSize: '10px', marginTop: '5px'}}
+              style={{ fontSize: '10px', marginTop: '5px' }}
               type="button"
             >
               Fill Test Credentials
             </button>
           </div>
         )}
-        
-        <h1 className="login-title">Welcome Back!</h1>
-        
+
+        <h1 className="login-title">Selamat Datang Kembali!</h1>
+
         <form onSubmit={handleLogin} className="login-form">
           {/* Error message display */}
           {loginError && (
-            <div style={{
-              padding: '10px',
-              marginBottom: '15px',
-              backgroundColor: '#f8d7da',
-              border: '1px solid #f5c6cb',
-              borderRadius: '5px',
-              color: '#721c24',
-              fontSize: '14px'
-            }}>
+            <div
+              style={{
+                padding: '10px',
+                marginBottom: '15px',
+                backgroundColor: '#f8d7da',
+                border: '1px solid #f5c6cb',
+                borderRadius: '5px',
+                color: '#721c24',
+                fontSize: '14px',
+              }}
+            >
               ❌ {loginError}
             </div>
           )}
-          
+
           {/* Loading indicator */}
           {loginMutation.isPending && (
-            <div style={{
-              padding: '10px',
-              marginBottom: '15px',
-              backgroundColor: '#cce5f0',
-              border: '1px solid #bee5eb',
-              borderRadius: '5px',
-              color: '#0c5460',
-              fontSize: '14px',
-              textAlign: 'center'
-            }}>
+            <div
+              style={{
+                padding: '10px',
+                marginBottom: '15px',
+                backgroundColor: '#cce5f0',
+                border: '1px solid #bee5eb',
+                borderRadius: '5px',
+                color: '#0c5460',
+                fontSize: '14px',
+                textAlign: 'center',
+              }}
+            >
               ⏳ Logging in...
             </div>
           )}
-          
+
           <div className="form-group">
             <label htmlFor="emailOrPhone" className="form-label">
-              Email / Phone Number
+              Email / Nomor HP
             </label>
             <input
               type="text"
@@ -234,14 +240,14 @@ const Login: React.FC = () => {
               value={emailOrPhone}
               onChange={(e) => setEmailOrPhone(e.target.value)}
               className="form-input"
-              placeholder="Enter your email or phone number"
+              placeholder="Masukkan email atau nomor HP Anda"
               required
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="password" className="form-label">
-              Password
+              Kata Sandi
             </label>
             <div className="password-input-container">
               <input
@@ -250,14 +256,14 @@ const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="form-input password-input"
-                placeholder="Enter your password"
+                placeholder="Masukkan kata sandi Anda"
                 required
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
                 className="password-toggle-btn"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
               >
                 {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
               </button>
@@ -270,7 +276,7 @@ const Login: React.FC = () => {
               onClick={handleRegisterClick}
               className="link-button register-link"
             >
-              Register Now
+              Daftar Sekarang
             </button>
             <span className="link-separator">|</span>
             <button
@@ -278,17 +284,17 @@ const Login: React.FC = () => {
               onClick={handleForgotPasswordClick}
               className="link-button forgot-link"
             >
-              Forgot Password
+              Lupa Kata Sandi
             </button>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="login-button"
             disabled={loginMutation.isPending || !emailOrPhone || !password}
           >
             <MdLogin className="login-icon" />
-            {loginMutation.isPending ? 'Logging in...' : 'Login'}
+            {loginMutation.isPending ? 'Sedang masuk...' : 'Masuk'}
           </button>
         </form>
       </div>
