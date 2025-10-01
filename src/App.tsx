@@ -27,6 +27,7 @@ import MerchantRegistration from './pages/MerchantRegistration';
 import PublicRegistration from './pages/PublicRegistration';
 import VerifyOtp from './pages/VerifyOtp';
 import './App.css';
+import EventDetail from './pages/EventDetail';
 
 function App() {
   return (
@@ -35,35 +36,37 @@ function App() {
         <Router>
           <MainLayout>
             <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/event" element={<Event />} />
-            <Route path="/product" element={<Product />} />
-            <Route path="/product/:productId" element={<ProductDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/invoice" element={<Invoice />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/orders/:orderId" element={<OrderDetail />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/profile/my-profile" element={<MyProfile />} />
-            <Route path="/profile/payment-confirmation" element={<PaymentConfirmation />} />
-            <Route path="/profile/event-history" element={<MyEventHistory />} />
-            <Route path="/profile/transaction-history" element={<MyTransactionHistory />} />
-            <Route path="/profile/redeem-history" element={<MyRedeemHistory />} />
-            <Route path="/profile/change-password" element={<ChangePassword />} />
-            <Route path="/profile/live-chat" element={<LiveChat />} />
-            <Route path="/merchant-registration/:eventId" element={<MerchantRegistration />} />
-            <Route path="/public-registration/:eventId" element={<PublicRegistration />} />
-            <Route path="/verify" element={<VerifyOtp />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/event" element={<Event />} />
+              <Route path="/event/:eventId" element={<EventDetail />} />
+              <Route path="/product" element={<Product />} />
+              <Route path="/product/:productId" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/invoice" element={<Invoice />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/orders/:orderId" element={<OrderDetail />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/profile/my-profile" element={<MyProfile />} />
+              <Route path="/profile/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/profile/event-history" element={<MyEventHistory />} />
+              <Route path="/profile/transaction-history" element={<MyTransactionHistory />} />
+              <Route path="/profile/redeem-history" element={<MyRedeemHistory />} />
+              <Route path="/profile/change-password" element={<ChangePassword />} />
+              <Route path="/profile/live-chat" element={<LiveChat />} />
+              <Route path="/merchant-registration/:eventId" element={<MerchantRegistration />} />
+              <Route path="/public-registration/:eventId" element={<PublicRegistration />} />
+              <Route path="/verify" element={<VerifyOtp />} />
             </Routes>
           </MainLayout>
         </Router>
       </CartProvider>
     </NotificationProvider>
   );
-}export default App;
+}
+export default App;

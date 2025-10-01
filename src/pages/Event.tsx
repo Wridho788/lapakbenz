@@ -4,12 +4,9 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import EventListCard from '../components/EventListCard';
 import NewsCard from '../components/NewsCard';
-import EventModal from '../components/EventModal';
 import ChapterFilter from '../components/ChapterFilter';
-import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
-import { usePostEvent, usePostArticle, useEventById, useEventRegister } from '../api/hooks';
-import Swal from 'sweetalert2';
+import { usePostEvent, usePostArticle } from '../api/hooks';
 import './Event.css';
 import '../components/FABPositioning.css';
 
@@ -42,20 +39,11 @@ interface ArticleItem {
   created_at: string;
 }
 
-interface RegistrationData {
-  transid: number;
-  ordercode: string;
-  invoice_url: string;
-}
-
 const tabs = ['Akan Datang', 'Selesai', 'Berita'];
 
 const Event: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
   
   // State untuk akumulasi data (infinite scroll)
@@ -75,15 +63,10 @@ const Event: React.FC = () => {
   
   const navigate = useNavigate();
   const { cartCount } = useCart();
-  const { isAuthenticated } = useAuthStore();
   
   // API hooks
   const eventMutation = usePostEvent();
   const articleMutation = usePostArticle();
-  const eventRegisterMutation = useEventRegister();
-  
-  // Only call useEventById when modal is open and eventId is selected
-  const eventByIdQuery = useEventById(modalOpen && selectedEventId ? selectedEventId : '');
 
   // Cleanup touch events on unmount
   useEffect(() => {
@@ -281,41 +264,8 @@ const Event: React.FC = () => {
     setSelectedChapters(newSelectedChapters);
   };
 
-  // Logging API responses
-  useEffect(() => {
-    if (eventMutation.data) {
-      console.log('Event API response:', eventMutation.data);
-    }
-    if (eventMutation.error) {
-      console.error('Event API error:', eventMutation.error);
-    }
-  }, [eventMutation.data, eventMutation.error]);
-
-  useEffect(() => {
-    if (articleMutation.data) {
-      console.log('Article API response:', articleMutation.data);
-    }
-    if (articleMutation.error) {
-      console.error('Article API error:', articleMutation.error);
-    }
-  }, [articleMutation.data, articleMutation.error]);
-
-  useEffect(() => {
-    if (eventByIdQuery.data) {
-      console.log('🎉 Event by ID response:', eventByIdQuery.data);
-      if (eventByIdQuery.data.content) {
-        console.log('📋 Event Detail Data:', eventByIdQuery.data.content);
-        console.log('🔍 Allow Merchant:', eventByIdQuery.data.content.allow_merchant);
-        console.log('🔍 Allow Public:', eventByIdQuery.data.content.allow_public);
-      }
-    }
-    if (eventByIdQuery.error) {
-      console.error('❌ Event by ID error:', eventByIdQuery.error);
-    }
-  }, [eventByIdQuery.data, eventByIdQuery.error]);
-
   const handleBackClick = () => {
-    navigate(-1);
+    navigate('/dashboard');
   };
 
   const handleCartClick = () => {
@@ -327,82 +277,7 @@ const Event: React.FC = () => {
   };
 
   const handleEventClick = (eventId: string) => {
-    setSelectedEventId(eventId);
-    setModalOpen(true);
-    setRegistrationData(null);
-  };
-
-  // Helper function to ensure URL has https protocol
-  const getFullUrl = (url: string): string => {
-    if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    return `https://${url}`;
-  };
-
-  const handleEventRegister = async () => {
-    if (!selectedEventId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Event ID Missing',
-        text: 'Please select an event first.',
-        confirmButtonColor: '#3b82f6',
-      });
-      return;
-    }
-
-    try {
-      console.log('🎫 Starting event registration for:', selectedEventId);
-
-      const result = await eventRegisterMutation.mutateAsync({
-        eventId: selectedEventId,
-      });
-
-      console.log('🎫 Event Registration Response:', result);
-
-      if (result.status === 200 && result.content) {
-        setRegistrationData({
-          transid: result.content.transid,
-          ordercode: result.content.ordercode,
-          invoice_url: result.content.invoice_url,
-        });
-
-        Swal.fire({
-          icon: 'success',
-          title: '🎉 Registration Successful!',
-          text: 'Your event registration has been completed successfully.',
-          confirmButtonColor: '#10b981',
-          confirmButtonText: 'Continue',
-        });
-      } else {
-        const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        throw new Error(errorMsg);
-      }
-    } catch (error: any) {
-      console.error('❌ Event Registration Failed:', error);
-      
-      const errorMessage = 
-        error.response?.data?.error || 
-        error.response?.data?.message ||
-        error.message || 
-        'Event registration failed. Please try again.';
-      
-      Swal.fire({
-        icon: 'error',
-        title: 'Registration Failed',
-        text: errorMessage,
-        confirmButtonColor: '#3b82f6',
-        footer: 'Please check your information and try again.',
-      });
-    }
-  };
-
-  const handleOpenInvoice = () => {
-    if (registrationData?.invoice_url) {
-      const fullUrl = getFullUrl(registrationData.invoice_url);
-      window.open(fullUrl, '_blank');
-    }
+    navigate(`/event/${eventId}`);
   };
 
   const getFilteredData = () => {
@@ -496,7 +371,7 @@ const Event: React.FC = () => {
           ) : (
             <>
               {getFilteredData().map((item: any) =>
-                tabs[activeTab] === 'News' ? (
+                tabs[activeTab] === 'Berita' ? (
                   <NewsCard
                     key={item.id}
                     news={item}
@@ -532,19 +407,6 @@ const Event: React.FC = () => {
           )}
         </div>
       </div>
-      
-      <EventModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        eventContent={eventByIdQuery.data?.content || null}
-        isLoading={eventByIdQuery.isLoading}
-        isAuthenticated={isAuthenticated}
-        registrationPending={eventRegisterMutation.isPending}
-        registrationData={registrationData}
-        onEventRegister={handleEventRegister}
-        onOpenInvoice={handleOpenInvoice}
-        selectedEventId={selectedEventId}
-      />
       
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>

@@ -16,7 +16,7 @@ const MerchantRegistration: React.FC = () => {
     phone: '',
     email: '',
     menu: '',
-    qty: ''
+    qty: '1'
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -24,7 +24,7 @@ const MerchantRegistration: React.FC = () => {
 
   const merchantRegistration = useMerchantRegistration();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -60,7 +60,7 @@ const MerchantRegistration: React.FC = () => {
       newErrors.name = 'Nama usaha wajib diisi';
     }
     if (!formData.cp.trim()) {
-      newErrors.cp = 'Kontak penanggung jawab wajib diisi';
+      newErrors.cp = 'Contact Person wajib diisi';
     }
     if (!formData.address.trim()) {
       newErrors.address = 'Alamat wajib diisi';
@@ -76,10 +76,8 @@ const MerchantRegistration: React.FC = () => {
     if (!formData.menu.trim()) {
       newErrors.menu = 'Deskripsi menu wajib diisi';
     }
-    if (!formData.qty.trim()) {
-      newErrors.qty = 'Jumlah wajib diisi';
-    } else if (isNaN(Number(formData.qty)) || Number(formData.qty) <= 0) {
-      newErrors.qty = 'Masukkan jumlah yang valid';
+    if (!formData.qty) {
+      newErrors.qty = 'Jumlah tenant wajib dipilih';
     }
 
     setErrors(newErrors);
@@ -135,14 +133,11 @@ const MerchantRegistration: React.FC = () => {
             `,
             confirmButtonColor: '#10b981',
             confirmButtonText: 'Lanjut',
-            willClose: () => {
-              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
-                navigate('/event');
-              }
-            }
           });
+          // Navigate back to event detail after closing the success modal
+          navigate(`/event/${eventId}`);
         } else {
-          Swal.fire({
+          const swalResult = await Swal.fire({
             icon: 'success',
             title: '🎉 Pendaftaran Berhasil!',
             html: `
@@ -159,18 +154,16 @@ const MerchantRegistration: React.FC = () => {
             showDenyButton: hasInvoice,
             denyButtonText: hasInvoice ? '💳 Lihat Invoice' : undefined,
             denyButtonColor: '#3b82f6',
-            willClose: () => {
-              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
-                navigate('/event');
-              }
-            }
-          }).then((swalResult) => {
-            if (swalResult.isDenied && invoiceUrl) {
-              // Open invoice in new tab using Invoice page pattern
-              const fullUrl = getFullUrl(invoiceUrl);
-              window.open(fullUrl, '_blank');
-            }
           });
+          
+          // Handle button clicks
+          if (swalResult.isDenied && invoiceUrl) {
+            // Open invoice in new tab using Invoice page pattern
+            const fullUrl = getFullUrl(invoiceUrl);
+            window.open(fullUrl, '_blank');
+          }
+          // Navigate back to event detail after modal is closed
+          navigate(`/event/${eventId}`);
         }
       } else {
         Swal.fire({
@@ -181,7 +174,7 @@ const MerchantRegistration: React.FC = () => {
         });
       }
     } catch (error: any) {
-      console.error('❌ Registration failed:', error.response.data.error);
+      console.error('❌ Registration failed:', error.response?.data?.error);
       Swal.fire({
         icon: 'error',
         title: 'Pendaftaran Gagal',
@@ -195,7 +188,8 @@ const MerchantRegistration: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Navigate back to event detail
+    navigate(`/event/${eventId}`);
   };
 
   return (
@@ -228,14 +222,14 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="cp">Penanggung Jawab *</label>
+            <label htmlFor="cp">Contact Person *</label>
             <input
               type="text"
               id="cp"
               name="cp"
               value={formData.cp}
               onChange={handleInputChange}
-              placeholder="Masukkan nama penanggung jawab"
+              placeholder="Masukkan nama Contact Person"
               className={errors.cp ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -303,18 +297,18 @@ const MerchantRegistration: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="qty">Jumlah yang Disiapkan *</label>
-            <input
-              type="number"
+            <label htmlFor="qty">Jumlah Tenant *</label>
+            <select
               id="qty"
               name="qty"
               value={formData.qty}
               onChange={handleInputChange}
-              placeholder="Masukkan jumlah yang disiapkan"
-              min="1"
               className={errors.qty ? 'error' : ''}
               disabled={isSubmitting}
-            />
+            >
+              <option value="1">1 Tenant</option>
+              <option value="2">2 Tenant</option>
+            </select>
             {errors.qty && <span className="error-text">{errors.qty}</span>}
           </div>
 

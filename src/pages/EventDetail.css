@@ -1,0 +1,239 @@
+/* Event Detail Page Styles - FORCED LIGHT MODE */
+.event-detail-page {
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f8f9fa !important;
+  display: flex;
+  flex-direction: column;
+  color-scheme: light;
+}
+
+.event-detail-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #fff !important;
+}
+
+.event-detail-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.event-detail-body {
+  padding: 1.5rem;
+}
+
+.event-detail-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #161129 !important;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.4;
+}
+
+.event-detail-info {
+  display: flex;
+  gap: 10%;
+  margin-bottom: 2rem;
+}
+
+.event-detail-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.event-info-item {
+  font-size: 0.95rem;
+  color: #2c3e50 !important;
+  line-height: 1.6;
+}
+
+.event-info-item b {
+  color: #161129 !important;
+  font-weight: 600;
+}
+
+.event-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 2rem;
+  text-align: center;
+  color: #7f8c8d !important;
+  background: #fff !important;
+}
+
+.event-detail-loading p {
+  font-size: 1rem;
+  color: #7f8c8d !important;
+}
+
+/* Registration Navigation Styles */
+.registration-navigation {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.registration-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.registration-nav-button {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.registration-nav-button.merchant {
+  border-color: #161129;
+  color: #161129 !important;
+}
+
+.registration-nav-button.merchant:hover {
+  background: #f8f9fa !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 17, 41, 0.15);
+}
+
+.registration-nav-button.public {
+  border-color: #3b82f6;
+  color: #3b82f6 !important;
+}
+
+.registration-nav-button.public:hover {
+  background: #f0f7ff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.nav-button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.nav-button-icon {
+  font-size: 1.25rem;
+}
+
+/* Responsive - Mobile */
+@media (max-width: 430px) {
+  .event-detail-page {
+    max-width: 100vw;
+  }
+  
+  .event-detail-body {
+    padding: 1rem;
+  }
+  
+  .event-detail-title {
+    font-size: 1.1rem;
+  }
+  
+  .event-info-item {
+    font-size: 0.9rem;
+  }
+  
+  .registration-nav-button {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Tablet and larger screens */
+@media (min-width: 768px) {
+  .event-detail-info {
+    flex-direction: row;
+    gap: 2rem;
+  }
+  
+  .event-detail-column {
+    flex: 1;
+  }
+  
+  .registration-buttons {
+    flex-direction: row;
+  }
+  
+  .registration-nav-button {
+    flex: 1;
+  }
+}
+
+/* OVERRIDE DARK MODE - FORCE LIGHT MODE */
+@media (prefers-color-scheme: dark) {
+  .event-detail-page {
+    background: #f8f9fa !important;
+    color: #2c3e50 !important;
+  }
+  
+  .event-detail-content {
+    background: #fff !important;
+  }
+  
+  .event-detail-title {
+    color: #161129 !important;
+  }
+  
+  .event-info-item {
+    color: #2c3e50 !important;
+  }
+  
+  .event-info-item b {
+    color: #161129 !important;
+  }
+  
+  .event-detail-loading {
+    background: #fff !important;
+    color: #7f8c8d !important;
+  }
+  
+  .event-detail-loading p {
+    color: #7f8c8d !important;
+  }
+  
+  .registration-nav-button {
+    background: #fff !important;
+  }
+  
+  .registration-nav-button.merchant {
+    color: #161129 !important;
+  }
+  
+  .registration-nav-button.public {
+    color: #3b82f6 !important;
+  }
+  
+  .registration-nav-button.merchant:hover {
+    background: #f8f9fa !important;
+  }
+  
+  .registration-nav-button.public:hover {
+    background: #f0f7ff !important;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .registration-nav-button {
+    transition: none;
+  }
+  
+  .registration-nav-button:hover {
+    transform: none;
+  }
+}

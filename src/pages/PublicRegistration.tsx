@@ -15,7 +15,8 @@ const PublicRegistration: React.FC = () => {
     policeno: '',
     phone: '',
     email: '',
-    notes: ''
+    notes: '',
+    tenantCount: '' // New field for tenant count
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -23,14 +24,18 @@ const PublicRegistration: React.FC = () => {
 
   const publicRegistration = usePublicRegistration();
 
+  // Updated vehicle types - only motorcycle and car
   const vehicleTypes = [
     { value: '', label: 'Pilih Jenis Kendaraan' },
-    { value: 'car', label: '🚗 Mobil' },
     { value: 'motorcycle', label: '🏍️ Motor' },
-    { value: 'truck', label: '🚛 Truk' },
-    { value: 'van', label: '🚐 Van' },
-    { value: 'bus', label: '🚌 Bus' },
-    { value: 'other', label: '🚙 Lainnya' }
+    { value: 'car', label: '🚗 Mobil' }
+  ];
+
+  // Tenant count options (max 2)
+  const tenantCountOptions = [
+    { value: '', label: 'Pilih Jumlah Tenant' },
+    { value: '1', label: '1 Tenant' },
+    { value: '2', label: '2 Tenant' }
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -49,16 +54,14 @@ const PublicRegistration: React.FC = () => {
     }
   };
 
-  // Helper function to ensure URL has https protocol (like Invoice page)
+  // Helper function to ensure URL has https protocol
   const getFullUrl = (url: string): string => {
     if (!url) return '';
     
-    // If URL already has protocol, return as is
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
     
-    // If URL doesn't have protocol, add https://
     return `https://${url}`;
   };
 
@@ -82,6 +85,9 @@ const PublicRegistration: React.FC = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Masukkan email yang valid';
     }
+    if (!formData.tenantCount.trim()) {
+      newErrors.tenantCount = 'Jumlah tenant wajib dipilih';
+    }
 
     // Validation: Phone number and police number cannot be the same
     if (formData.phone.trim() && formData.policeno.trim() && 
@@ -89,8 +95,6 @@ const PublicRegistration: React.FC = () => {
       newErrors.phone = 'Nomor telepon tidak boleh sama dengan nomor polisi';
       newErrors.policeno = 'Nomor polisi tidak boleh sama dengan nomor telepon';
     }
-
-    // Notes is optional, so no validation needed
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -118,18 +122,26 @@ const PublicRegistration: React.FC = () => {
     try {
       const payload = {
         eventid: eventId,
-        ...formData
+        name: formData.name,
+        type: formData.type,
+        policeno: formData.policeno,
+        phone: formData.phone,
+        email: formData.email,
+        notes: formData.notes,
+        tenantCount: formData.tenantCount
       };
 
       const result = await publicRegistration.mutateAsync(payload);
       
       console.log('✅ Public Registration Success:', result);
       
-      // Check if registration was successful based on status code and content presence
+      // Check if registration was successful
       if (result.status === 200 && result.content) {
         const hasInvoice = result.content.invoice_url;
         const invoiceUrl = result.content.invoice_url;
+        
         if (!hasInvoice) {
+          // Free registration - redirect to event detail
           await Swal.fire({
             icon: 'success',
             title: '🎉 Pendaftaran Berhasil!',
@@ -140,19 +152,21 @@ const PublicRegistration: React.FC = () => {
                 <p><strong>📋 Detail Pendaftaran:</strong></p>
                 <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
                 <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+                <p><strong>Jumlah Tenant:</strong> ${formData.tenantCount} Tenant</p>
                 <p style="color: #10b981; margin-top: 10px;"><strong>Biaya pendaftaran: GRATIS</strong></p>
               </div>
             `,
             confirmButtonColor: '#10b981',
-            confirmButtonText: 'Lanjut',
-            willClose: () => {
-              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
-                navigate('/event');
-              }
-            }
+            confirmButtonText: 'Kembali ke Detail Event',
+            allowOutsideClick: false
           });
+          
+          // Redirect to event detail
+          navigate(`/event/${eventId}`);
+          
         } else {
-          Swal.fire({
+          // Paid registration - show invoice option
+          const swalResult = await Swal.fire({
             icon: 'success',
             title: '🎉 Pendaftaran Berhasil!',
             html: `
@@ -162,25 +176,25 @@ const PublicRegistration: React.FC = () => {
                 <p><strong>📋 Detail Pendaftaran:</strong></p>
                 <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
                 <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+                <p><strong>Jumlah Tenant:</strong> ${formData.tenantCount} Tenant</p>
               </div>
             `,
             confirmButtonColor: '#10b981',
             confirmButtonText: 'Lanjut',
-            showDenyButton: hasInvoice,
-            denyButtonText: hasInvoice ? '💳 Lihat Invoice' : undefined,
+            showDenyButton: true,
+            denyButtonText: '💳 Lihat Invoice',
             denyButtonColor: '#3b82f6',
-            willClose: () => {
-              if (Swal.getConfirmButton()?.contains(document.activeElement)) {
-                navigate('/event');
-              }
-            }
-          }).then((swalResult) => {
-            if (swalResult.isDenied && invoiceUrl) {
-              // Open invoice in new tab using Invoice page pattern
-              const fullUrl = getFullUrl(invoiceUrl);
-              window.open(fullUrl, '_blank');
-            }
+            allowOutsideClick: false
           });
+          
+          if (swalResult.isDenied && invoiceUrl) {
+            // Open invoice in new tab
+            const fullUrl = getFullUrl(invoiceUrl);
+            window.open(fullUrl, '_blank');
+          }
+          
+          // Redirect to event detail after modal closes
+          navigate(`/event/${eventId}`);
         }
       } else {
         Swal.fire({
@@ -205,7 +219,8 @@ const PublicRegistration: React.FC = () => {
   };
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Back to event detail
+    navigate(`/event/${eventId}`);
   };
 
   return (
@@ -254,6 +269,25 @@ const PublicRegistration: React.FC = () => {
               ))}
             </select>
             {errors.type && <span className="error-text">{errors.type}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tenantCount">Jumlah Tenant *</label>
+            <select
+              id="tenantCount"
+              name="tenantCount"
+              value={formData.tenantCount}
+              onChange={handleInputChange}
+              className={errors.tenantCount ? 'error' : ''}
+              disabled={isSubmitting}
+            >
+              {tenantCountOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {errors.tenantCount && <span className="error-text">{errors.tenantCount}</span>}
           </div>
 
           <div className="form-group">
