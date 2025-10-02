@@ -7,6 +7,7 @@ import NewsCard from '../components/NewsCard';
 import ChapterFilter from '../components/ChapterFilter';
 import { useCart } from '../contexts/CartContext';
 import { usePostEvent, usePostArticle } from '../api/hooks';
+import { createEventUrl } from '../api/codeMapping';
 import './Event.css';
 import '../components/FABPositioning.css';
 
@@ -276,8 +277,10 @@ const Event: React.FC = () => {
     navigate('/notifications');
   };
 
-  const handleEventClick = (eventId: string) => {
-    navigate(`/event/${eventId}`);
+  const handleEventClick = (event: EventItem) => {
+    // Create SEO-friendly URL with ID and code slug
+    const eventUrl = createEventUrl(event.id, event.code);
+    navigate(eventUrl);
   };
 
   const getFilteredData = () => {
@@ -381,7 +384,7 @@ const Event: React.FC = () => {
                   <EventListCard
                     key={item.id}
                     event={item}
-                    onClick={() => handleEventClick(item.id)}
+                    onClick={() => handleEventClick(item)}
                   />
                 ),
               )}

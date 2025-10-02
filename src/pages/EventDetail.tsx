@@ -6,6 +6,7 @@ import RegistrationSuccess from '../components/RegistrationSuccess';
 import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
 import { useEventById, useEventRegister } from '../api/hooks';
+import { extractIdFromParam } from '../api/codeMapping';
 import Swal from 'sweetalert2';
 import './EventDetail.css';
 
@@ -16,12 +17,15 @@ interface RegistrationData {
 }
 
 const EventDetail: React.FC = () => {
-  const { eventId } = useParams<{ eventId: string }>();
+  const { eventId: eventParam } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
   const { cartCount } = useCart();
   
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
+  
+  // Extract actual event ID from URL parameter (handles both old ID format and new SEO format)
+  const eventId = eventParam ? extractIdFromParam(eventParam) : null;
   
   const eventByIdQuery = useEventById(eventId || '');
   const eventRegisterMutation = useEventRegister();
@@ -49,8 +53,8 @@ const EventDetail: React.FC = () => {
     if (!eventId) {
       Swal.fire({
         icon: 'error',
-        title: 'Event ID Missing',
-        text: 'Please select an event first.',
+        title: 'Event Not Found',
+        text: 'Event not found or invalid event code.',
         confirmButtonColor: '#3b82f6',
       });
       return;
@@ -114,7 +118,7 @@ const EventDetail: React.FC = () => {
     if (eventId) {
       navigate(`/merchant-registration/${eventId}`);
     } else {
-      console.error('❌ No event ID selected for merchant registration');
+      console.error('❌ No event ID available for merchant registration');
     }
   };
 
@@ -123,7 +127,7 @@ const EventDetail: React.FC = () => {
     if (eventId) {
       navigate(`/public-registration/${eventId}`);
     } else {
-      console.error('❌ No event ID selected for public registration');
+      console.error('❌ No event ID available for public registration');
     }
   };
 

@@ -1,6 +1,24 @@
 import React from 'react';
 import './EventCard.css';
 
+interface EventItem {
+  id: string;
+  chapter_id: string;
+  chapter: string;
+  code: string;
+  name: string;
+  dates: string;
+  time: string;
+  desc: string;
+  image: string;
+  fee: number;
+  minimum_participants: string;
+  type: number;
+  type_desc: string;
+  done: number;
+  done_desc: string;
+}
+
 interface EventCardProps {
   id: string;
   image: string;
@@ -8,23 +26,24 @@ interface EventCardProps {
   date: string; // dates
   chapter: string;
   type: string; // type_desc
-  onClick?: (id: string) => void;
+  event?: EventItem; // Full event object for onClick
+  onClick?: (event: EventItem) => void;
   className?: string;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
-  id,
   image,
   title,
   date,
   chapter,
   type,
+  event,
   onClick,
   className
 }) => {
   const handleClick = () => {
-    if (onClick) {
-      onClick(id);
+    if (onClick && event) {
+      onClick(event);
     }
   };
 

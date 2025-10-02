@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { EventCard } from './EventCard';
 import './CompletedEvent.css';
 import { usePostEvent } from '../api/hooks';
+import { createEventUrl } from '../api/codeMapping';
 
 interface EventItem {
   id: string;
@@ -41,8 +42,10 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
   // Ambil hasil eventMutation.data.content.result sebagai completedEvents
   const completedEvents: EventItem[] = eventMutation.data?.content?.result ?? [];
 
- const handleEventClick = (eventId: string) => {
-    navigate(`/event/${eventId}`);
+ const handleEventClick = (event: EventItem) => {
+    // Create SEO-friendly URL with ID and code slug
+    const eventUrl = createEventUrl(event.id, event.code);
+    navigate(eventUrl);
   };
 
 
@@ -65,6 +68,7 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
             date={event.dates}
             chapter={event.chapter}
             type={event.type_desc}
+            event={event}
             onClick={handleEventClick}
           />
         ))}

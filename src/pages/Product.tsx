@@ -5,6 +5,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
 import { useProducts, useProductCategories, useProductSearch } from '../api/hooks';
+import { createProductUrl } from '../api/codeMapping';
 import './Product.css';
 
 const Product: React.FC = () => {
@@ -140,10 +141,11 @@ const Product: React.FC = () => {
     }
   }, [searchQuery]); // Removed productSearchMutation and refetchProducts from dependency array
 
-  const handleProductClick = (productId: string) => {
-    console.log('🛒 Product clicked with ID:', productId);
-    console.log('📄 Navigating to product detail page...');
-    navigate(`/product/${productId}`);
+  const handleProductClick = (product: any) => {
+    const productName = product.title || product.name || product.sku || product.id;
+    const productUrl = createProductUrl(product.id, productName);
+    console.log('� Product clicked, navigating to:', productUrl);
+    navigate(productUrl);
   };
 
   // Updated to handle category ID instead of category name
@@ -245,7 +247,7 @@ const Product: React.FC = () => {
                 <div
                   key={product.id}
                   className="product-card"
-                  onClick={() => handleProductClick(product.id)}
+                  onClick={() => handleProductClick(product)}
                 >
                   <div className="product-image">
                     <img

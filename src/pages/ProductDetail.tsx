@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MdAdd, MdRemove, MdShoppingCart, MdStar, MdClose, MdZoomIn } from 'react-icons/md';
+import { 
+  MdArrowBack, 
+  MdShoppingCart, 
+  MdStar, 
+  MdAdd, 
+  MdRemove, 
+  MdZoomIn, 
+  MdClose,
+  MdArrowBackIos,
+  MdArrowForwardIos,
+  MdRestore
+} from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
 import { useProductDetail, useAddToCart } from '../api/hooks';
 import { useAuthStore } from '../stores/authStore';
+import { extractIdFromParam } from '../api/codeMapping';
 import Swal from 'sweetalert2';
 import './ProductDetail.css';
 
@@ -24,7 +36,7 @@ interface ProductDetailType {
 
 const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
-  const { productId } = useParams<{ productId: string }>();
+  const { productId: productParam } = useParams<{ productId: string }>();
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isImageZoomOpen, setIsImageZoomOpen] = useState(false);
@@ -35,13 +47,17 @@ const ProductDetail: React.FC = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const { addToCart, cartCount } = useCart();
   
+  // Extract actual product ID from URL parameter (handles both old ID format and new SEO format)
+  const productId = productParam ? extractIdFromParam(productParam) : null;
+  
   // Auth state - get all needed auth properties
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
 
-  // Log when productId changes
+  // Log when productParam changes
   useEffect(() => {
-    console.log('📦 ProductDetail page loaded with productId:', productId);
-  }, [productId]);
+    console.log('📦 ProductDetail page loaded with productParam:', productParam);
+    console.log('📦 Extracted productId:', productId);
+  }, [productParam, productId]);
 
   // API hook for product detail
   const { data: productDetailData, isLoading: productLoading, error: productError } = useProductDetail(
@@ -179,6 +195,8 @@ const ProductDetail: React.FC = () => {
   // Pinch-to-zoom state for mobile
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
   const [isPinching, setIsPinching] = useState(false);
+  const [lastTapTime, setLastTapTime] = useState<number>(0);
+  const [tapCount, setTapCount] = useState<number>(0);
 
   // Helper to calculate distance between two touches
   const getTouchDistance = (touches: React.TouchList) => {
@@ -188,51 +206,117 @@ const ProductDetail: React.FC = () => {
     return Math.sqrt(dx * dx + dy * dy);
   };
 
-  // Touch handlers for drag and pinch zoom
+  // Enhanced touch handlers for smooth pinch zoom and drag
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1 && zoomLevel > 1) {
-      setIsDragging(true);
-      setDragStart({
-        x: e.touches[0].clientX - imagePosition.x,
-        y: e.touches[0].clientY - imagePosition.y
-      });
+    e.preventDefault();
+    
+    if (e.touches.length === 1) {
+      // Single touch - check for double tap or drag
+      const now = Date.now();
+      const touch = e.touches[0];
+      
+      // Double tap detection
+      if (now - lastTapTime < 300) {
+        setTapCount(prev => prev + 1);
+        if (tapCount === 1) {
+          // Double tap detected - toggle zoom
+          if (zoomLevel === 1) {
+            setZoomLevel(2);
+          } else {
+            setZoomLevel(1);
+            setImagePosition({ x: 0, y: 0 });
+          }
+          setTapCount(0);
+          return;
+        }
+      } else {
+        setTapCount(1);
+      }
+      setLastTapTime(now);
+      
+      if (zoomLevel > 1) {
+        // Start dragging if zoomed in
+        setIsDragging(true);
+        setDragStart({
+          x: touch.clientX - imagePosition.x,
+          y: touch.clientY - imagePosition.y
+        });
+      }
+      
       setIsPinching(false);
     } else if (e.touches.length === 2) {
+      // Two fingers - start pinch zoom
       setIsPinching(true);
-      setLastTouchDistance(getTouchDistance(e.touches));
       setIsDragging(false);
+      
+      const distance = getTouchDistance(e.touches);
+      setLastTouchDistance(distance);
+      
+      // Calculate center point of pinch
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      
+      // Store initial pinch center for smooth zooming
+      setDragStart({ x: centerX, y: centerY });
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    
     if (isPinching && e.touches.length === 2) {
       const distance = getTouchDistance(e.touches);
-      if (lastTouchDistance) {
-        const delta = distance - lastTouchDistance;
-        if (Math.abs(delta) > 2) { // threshold to avoid jitter
-          setZoomLevel(prev => {
-            let newZoom = prev + delta / 150; // adjust divisor for sensitivity
-            newZoom = Math.max(1, Math.min(3, newZoom));
-            return newZoom;
-          });
-        }
+      
+      if (lastTouchDistance && Math.abs(distance - lastTouchDistance) > 3) {
+        const scaleFactor = distance / lastTouchDistance;
+        
+        setZoomLevel(prev => {
+          const newZoom = Math.max(1, Math.min(3, prev * scaleFactor));
+          
+          // If zooming out to minimum, reset position
+          if (newZoom === 1) {
+            setImagePosition({ x: 0, y: 0 });
+          }
+          
+          return newZoom;
+        });
+        
+        setLastTouchDistance(distance);
       }
-      setLastTouchDistance(distance);
     } else if (isDragging && e.touches.length === 1 && zoomLevel > 1) {
-      setImagePosition({
-        x: e.touches[0].clientX - dragStart.x,
-        y: e.touches[0].clientY - dragStart.y
-      });
+      // Single finger drag when zoomed
+      const touch = e.touches[0];
+      const newX = touch.clientX - dragStart.x;
+      const newY = touch.clientY - dragStart.y;
+      
+      // Apply boundaries to prevent over-panning
+      const maxPan = (zoomLevel - 1) * 100;
+      const boundedX = Math.max(-maxPan, Math.min(maxPan, newX));
+      const boundedY = Math.max(-maxPan, Math.min(maxPan, newY));
+      
+      setImagePosition({ x: boundedX, y: boundedY });
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (isPinching && e.touches.length < 2) {
+    if (e.touches.length === 0) {
+      // All fingers lifted
+      setIsDragging(false);
       setIsPinching(false);
       setLastTouchDistance(null);
-    }
-    if (isDragging && e.touches.length === 0) {
-      setIsDragging(false);
+    } else if (e.touches.length === 1 && isPinching) {
+      // Switched from pinch to single touch
+      setIsPinching(false);
+      setLastTouchDistance(null);
+      
+      // Start drag if zoomed
+      if (zoomLevel > 1) {
+        setIsDragging(true);
+        setDragStart({
+          x: e.touches[0].clientX - imagePosition.x,
+          y: e.touches[0].clientY - imagePosition.y
+        });
+      }
     }
   };
 
@@ -254,7 +338,7 @@ const ProductDetail: React.FC = () => {
   const getProductData = (): ProductDetailType => {
     // Default dummy data
     const dummyData: ProductDetailType = {
-      id: productId || '1',
+      id: productParam || '1',
       title: 'Merciku T-Shirt Premium',
       price: 149000,
       image: '/bea2x.jpg',
@@ -480,116 +564,112 @@ const ProductDetail: React.FC = () => {
       {/* Image Zoom Modal */}
       {isImageZoomOpen && (
         <div className="image-zoom-modal" onClick={handleImageZoomClose}>
-          {/* Header */}
-          <div className="zoom-modal-header" onClick={(e) => e.stopPropagation()}>
-            <div className="zoom-modal-title">
-              <MdZoomIn />
-              <span>Pratinjau Gambar</span>
-              <span className="zoom-image-counter">
-                {zoomImageIndex + 1} / {productData.images.length}
-              </span>
-            </div>
-            <div className="zoom-modal-actions">
-              <button 
-                className="zoom-close-btn" 
-                onClick={handleImageZoomClose}
-                aria-label="Tutup pratinjau"
-              >
-                <MdClose />
-              </button>
-            </div>
+          {/* Close Button */}
+          <div 
+            className="zoom-close-btn" 
+            onClick={handleImageZoomClose}
+            aria-label="Tutup pratinjau"
+          >
+            <MdClose />
           </div>
 
-          {/* Main Content */}
-          <div className="zoom-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="zoom-image-wrapper">
-              <div 
-                className={`zoom-image-container ${zoomLevel > 1 ? 'zoomed' : ''} ${isDragging ? 'dragging' : ''}`}
-                style={{
-                  transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,
-                  transition: isDragging ? 'none' : 'transform 0.3s ease'
+          {/* Image Counter */}
+          <div className="zoom-counter">
+            <span>{zoomImageIndex + 1} / {productData.images.length}</span>
+          </div>
+
+          {/* Main Image Container */}
+          <div className="zoom-main-container" onClick={(e) => e.stopPropagation()}>
+            <div 
+              className={`zoom-image-wrapper ${zoomLevel > 1 ? 'zoomed' : ''} ${isDragging || isPinching ? 'interacting' : ''}`}
+              style={{
+                transform: `scale(${zoomLevel}) translate(${imagePosition.x / zoomLevel}px, ${imagePosition.y / zoomLevel}px)`,
+                transition: (isDragging || isPinching) ? 'none' : 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              <img
+                src={productData.images[zoomImageIndex]}
+                alt={`${productData.title} ${zoomImageIndex + 1}`}
+                className="zoom-image"
+                draggable="false"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/bea2x.jpg";
                 }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
-                <img
-                  src={productData.images[zoomImageIndex]}
-                  alt={`${productData.title} ${zoomImageIndex + 1}`}
-                  className="zoomed-image"
-                  draggable="false"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "/bea2x.jpg";
-                  }}
-                />
-              </div>
-              
-              {/* Navigation arrows */}
-              {productData.images.length > 1 && (
-                <>
-                  <button 
-                    className="zoom-nav-btn prev" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleZoomImageChange('prev');
-                    }}
-                    aria-label="Gambar sebelumnya"
-                  >
-                    ◀
-                  </button>
-                  <button 
-                    className="zoom-nav-btn next" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleZoomImageChange('next');
-                    }}
-                    aria-label="Gambar berikutnya"
-                  >
-                    ▶
-                  </button>
-                </>
-              )}
+              />
             </div>
+
+            {/* Navigation Arrows */}
+            {productData.images.length > 1 && (
+              <>
+                <div 
+                  className="zoom-nav-btn prev" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleZoomImageChange('prev');
+                  }}
+                  aria-label="Gambar sebelumnya"
+                >
+                  <MdArrowBackIos />
+                </div>
+                <div 
+                  className="zoom-nav-btn next" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleZoomImageChange('next');
+                  }}
+                  aria-label="Gambar berikutnya"
+                >
+                  <MdArrowForwardIos />
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Footer with Controls */}
-          <div className="zoom-modal-footer" onClick={(e) => e.stopPropagation()}>
+          {/* Bottom Controls */}
+          <div className="zoom-bottom-controls" onClick={(e) => e.stopPropagation()}>
             {/* Zoom Controls */}
             <div className="zoom-controls">
-              <button 
-                className="zoom-control-btn"
+              <div 
+                className={`zoom-btn zoom-out ${zoomLevel <= 1 ? 'disabled' : ''}`}
                 onClick={handleZoomOut}
-                disabled={zoomLevel <= 1}
                 aria-label="Perkecil"
-                type="button"
               >
-                −
-              </button>
-              <div className="zoom-level-display">
-                {Math.round(zoomLevel * 100)}%
+                <MdRemove />
               </div>
-              <button 
-                className="zoom-control-btn"
+              
+              <div className="zoom-indicator">
+                <span className="zoom-level">{Math.round(zoomLevel * 100)}%</span>
+                <div className="zoom-bar">
+                  <div 
+                    className="zoom-progress" 
+                    style={{ width: `${((zoomLevel - 1) / 2) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div 
+                className={`zoom-btn zoom-in ${zoomLevel >= 3 ? 'disabled' : ''}`}
                 onClick={handleZoomIn}
-                disabled={zoomLevel >= 3}
                 aria-label="Perbesar"
-                type="button"
               >
-                +
-              </button>
+                <MdAdd />
+              </div>
+              
               {zoomLevel > 1 && (
                 <button 
                   className="zoom-reset-btn"
                   onClick={handleResetZoom}
                   aria-label="Reset zoom"
-                  type="button"
                 >
-                  Reset
+                  <MdRestore />
                 </button>
               )}
             </div>
@@ -598,16 +678,16 @@ const ProductDetail: React.FC = () => {
             {productData.images.length > 1 && (
               <div className="zoom-thumbnails">
                 {productData.images.map((image, index) => (
-                  <div
+                  <button
                     key={index}
                     className={`zoom-thumbnail ${zoomImageIndex === index ? 'active' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log('Thumbnail clicked:', index);
                       setZoomImageIndex(index);
                       setZoomLevel(1);
                       setImagePosition({ x: 0, y: 0 });
                     }}
+                    aria-label={`Gambar ${index + 1}`}
                   >
                     <img
                       src={image}
@@ -617,11 +697,19 @@ const ProductDetail: React.FC = () => {
                         target.src = "/bea2x.jpg";
                       }}
                     />
-                  </div>
+                    <div className="thumbnail-overlay"></div>
+                  </button>
                 ))}
               </div>
             )}
           </div>
+
+          {/* Zoom Instructions */}
+          {zoomLevel === 1 && (
+            <div className="zoom-instructions">
+              <span>Pinch to zoom • Double tap to zoom</span>
+            </div>
+          )}
         </div>
       )}
 
