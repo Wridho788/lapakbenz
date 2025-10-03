@@ -829,11 +829,6 @@ const ProductDetail: React.FC = () => {
         <div className="purchase-section">
           <div className="purchase-header">
             <h3>Pilih Jumlah</h3>
-            <div className="stock-badge">
-              <span className={`stock-indicator ${productData.stock > 0 ? 'available' : 'unavailable'}`}>
-                {productData.stock > 0 ? `${productData.stock} tersedia` : 'Stok habis'}
-              </span>
-            </div>
           </div>
 
           <div className="quantity-selector">

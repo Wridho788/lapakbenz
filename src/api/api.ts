@@ -110,35 +110,8 @@ export const registerPublic = async (authToken: string, formData: FormData) => {
 };
 
 
-export const getEventRegister = async (authToken: string, eventId: string) => {
-  const response = await axios.get(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}/${eventId}`, {
-    headers: {
-      'X-auth-token': authToken,
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.data;
-};
-
 export const registerEvent = async (authToken: string, eventId: string) => {
   try {
-    // Validate inputs
-    if (!authToken || authToken.trim() === '') {
-      throw new Error('Authentication token is required');
-    }
-    
-    if (!eventId || eventId.trim() === '') {
-      throw new Error('Event ID is required');
-    }
-
-    // Validate eventId is numeric
-    if (!eventId.match(/^\d+$/)) {
-      throw new Error('Invalid Event ID format');
-    }
-
-    console.log('🎫 Registering for event:', eventId);
-    console.log('🔐 Using token:', authToken.substring(0, 20) + '...');
-
     // Use GET method with eventId in URL path
     const response = await axios.get(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}/${eventId}`, {
       headers: {

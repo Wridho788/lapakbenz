@@ -697,10 +697,7 @@ const Cart: React.FC = () => {
                 <span>Subtotal ({apiCartCount} item)</span>
                 <span>Rp {subtotal.toLocaleString('id-ID')}</span>
               </div>
-              <div className="summary-row">
-                <span>Ongkir</span>
-                <span>Rp {shippingFee.toLocaleString('id-ID')}</span>
-              </div>
+              
               {paymentFee > 0 && (
                 <div className="summary-row">
                   <span>Biaya Pembayaran</span>
