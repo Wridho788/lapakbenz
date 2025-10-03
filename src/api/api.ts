@@ -139,13 +139,11 @@ export const registerEvent = async (authToken: string, eventId: string) => {
     console.log('🎫 Registering for event:', eventId);
     console.log('🔐 Using token:', authToken.substring(0, 20) + '...');
 
-    const formData = new FormData();
-    formData.append('eventid', eventId);
-    
-    const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}`, formData, {
+    // Use GET method with eventId in URL path
+    const response = await axios.get(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}/${eventId}`, {
       headers: {
         'X-auth-token': authToken,
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
       },
     });
     
