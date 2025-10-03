@@ -343,6 +343,13 @@ const MyProfile: React.FC = () => {
   };
 
   return (
+    <>
+     <AppbarDefault
+        title="Profil Saya"
+        onBack={handleBackClick}
+        onCartClick={handleCartClick}
+        cartCount={0}
+      />
     <div 
       className="account-page"
       ref={pullRef}
@@ -393,12 +400,7 @@ const MyProfile: React.FC = () => {
         </div>
       )}
       
-      <AppbarDefault
-        title="Profil Saya"
-        onBack={handleBackClick}
-        onCartClick={handleCartClick}
-        cartCount={0}
-      />
+     
       
       <div className="account-content">
         <div className="account-card">
@@ -645,6 +647,7 @@ const MyProfile: React.FC = () => {
       
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>
+    </>
   );
 };
 

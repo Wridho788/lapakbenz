@@ -338,6 +338,15 @@ const Dashboard: React.FC = () => {
   };
 
   return (
+    <>
+    <AppbarHomepage 
+        avatar={userImage}
+        name={decodeTokenError ? "User" : capitalizeName(decodeTokenData?.content?.name || "User")} 
+        notificationCount={unreadCount}
+        onNotificationClick={handleNotificationClick}
+        cartCount={cartCount}
+        onCartClick={handleCartClick}
+      />
     <div 
       className="dashboard-page"
       ref={pullRef}
@@ -396,14 +405,7 @@ const Dashboard: React.FC = () => {
         />
       )}
       
-      <AppbarHomepage 
-        avatar={userImage}
-        name={decodeTokenError ? "User" : capitalizeName(decodeTokenData?.content?.name || "User")} 
-        notificationCount={unreadCount}
-        onNotificationClick={handleNotificationClick}
-        cartCount={cartCount}
-        onCartClick={handleCartClick}
-      />
+      
       <div className="dashboard-content">
         {/* Development Tools - Only shown when enabled */}
         {showDevTools && (
@@ -471,6 +473,7 @@ const Dashboard: React.FC = () => {
       />
       <BottomNav />
     </div>
+    </>
   );
 };
 
