@@ -201,23 +201,22 @@ export function usePublicRegistration(): UseMutationResult<any, Error, UsePublic
   });
 }
 
-interface UseEventRegisterPayload {
-  eventId: string;
-}
+export function useEventRegister(eventId: string): UseQueryResult<any, Error> {
+  const { token, isAuthenticated } = useAuthStore();
 
-export function useEventRegister(): UseMutationResult<any, Error, UseEventRegisterPayload> {
-  const { token } = useAuthStore();
-
-  return useMutation({
-    mutationFn: async (payload: UseEventRegisterPayload) => {
+  return useQuery({
+    queryKey: ['eventRegister', eventId, token],
+    queryFn: async () => {
       try {
-        console.log('🎫 Event Registration Payload:', payload);
-        return await registerEvent(token!, payload.eventId);
+        console.log('🎫 Event Registration - Event ID:', eventId);
+        return await registerEvent(token!, eventId);
       } catch (error) {
         console.error('❌ Event Registration Error:', error);
         throw error;
       }
     },
+    enabled: isAuthenticated && !!eventId && !!token,
+    retry: 2,
   });
 }
 

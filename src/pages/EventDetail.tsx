@@ -24,14 +24,59 @@ const EventDetail: React.FC = () => {
   
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
   const [isAuthValidated, setIsAuthValidated] = useState(false);
+  const [triggerRegistration, setTriggerRegistration] = useState(false);
   
   // Extract actual event ID from URL parameter (handles both old ID format and new SEO format)
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
   
   const eventByIdQuery = useEventById(eventId || '');
-  const eventRegisterMutation = useEventRegister();
+  const eventRegisterQuery = useEventRegister(triggerRegistration && eventId ? eventId : '');
   
   const eventContent = eventByIdQuery.data?.content;
+
+  // Handle event registration results
+  useEffect(() => {
+    if (eventRegisterQuery.data && triggerRegistration) {
+      const result = eventRegisterQuery.data;
+      console.log('🎫 Event Registration Response:', result);
+
+      if (result.status === 200 && result.content) {
+        setRegistrationData({
+          transid: result.content.transid,
+          ordercode: result.content.ordercode,
+          invoice_url: result.content.invoice_url,
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: '🎉 Registration Successful!',
+          text: 'Your event registration has been completed successfully.',
+          confirmButtonColor: '#10b981',
+          confirmButtonText: 'Continue',
+        });
+      } else {
+        const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
+        Swal.fire({
+          icon: 'error',
+          title: '❌ Registration Failed',
+          text: errorMsg,
+          confirmButtonColor: '#ef4444',
+        });
+      }
+      setTriggerRegistration(false);
+    }
+
+    if (eventRegisterQuery.error && triggerRegistration) {
+      console.error('❌ Event Registration Error:', eventRegisterQuery.error);
+      Swal.fire({
+        icon: 'error',
+        title: '❌ Registration Failed',
+        text: eventRegisterQuery.error.message || 'An unexpected error occurred during registration.',
+        confirmButtonColor: '#ef4444',
+      });
+      setTriggerRegistration(false);
+    }
+  }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
 
   // Validate authentication on component mount and when auth state changes
   useEffect(() => {
@@ -111,64 +156,11 @@ const EventDetail: React.FC = () => {
       return;
     }
 
-    try {
-      console.log('🎫 Starting event registration for eventId:', eventId);
-      console.log('🔐 Using token:', token ? token.substring(0, 20) + '...' : 'No token');
-
-      const result = await eventRegisterMutation.mutateAsync({
-        eventId: eventId,
-      });
-
-      console.log('🎫 Event Registration Response:', result);
-
-      if (result.status === 200 && result.content) {
-        setRegistrationData({
-          transid: result.content.transid,
-          ordercode: result.content.ordercode,
-          invoice_url: result.content.invoice_url,
-        });
-
-        Swal.fire({
-          icon: 'success',
-          title: '🎉 Registration Successful!',
-          text: 'Your event registration has been completed successfully.',
-          confirmButtonColor: '#10b981',
-          confirmButtonText: 'Continue',
-        });
-      } else {
-        const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        throw new Error(errorMsg);
-      }
-    } catch (error: any) {
-      console.error('❌ Event Registration Failed:', error);
-      
-      let errorMessage = 'Event registration failed. Please try again.';
-      
-      // Handle specific error cases
-      if (error.response?.status === 401) {
-        errorMessage = 'Your session has expired. Please login again.';
-        // Auto logout on 401
-        useAuthStore.getState().logout();
-        navigate('/login');
-        return;
-      } else if (error.response?.status === 404) {
-        errorMessage = 'Event not found. Please check the event ID.';
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      Swal.fire({
-        icon: 'error',
-        title: 'Registration Failed',
-        text: errorMessage,
-        confirmButtonColor: '#3b82f6',
-        footer: 'Please check your information and try again.',
-      });
-    }
+    console.log('🎫 Starting event registration for eventId:', eventId);
+    console.log('🔐 Using token:', token ? token.substring(0, 20) + '...' : 'No token');
+    
+    // Trigger the registration query
+    setTriggerRegistration(true);
   };
 
   const handleOpenInvoice = () => {
@@ -297,7 +289,7 @@ const EventDetail: React.FC = () => {
 
           <EventRegistration
             isAuthenticated={isAuthenticated && isAuthValidated}
-            isPending={eventRegisterMutation.isPending}
+            isPending={eventRegisterQuery.isFetching && triggerRegistration}
             onRegister={handleEventRegister}
           />
 
