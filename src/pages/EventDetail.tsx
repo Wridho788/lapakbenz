@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import EventRegistration from '../components/EventRegistration';
@@ -19,10 +19,11 @@ interface RegistrationData {
 const EventDetail: React.FC = () => {
   const { eventId: eventParam } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
   const { cartCount } = useCart();
   
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
+  const [isAuthValidated, setIsAuthValidated] = useState(false);
   
   // Extract actual event ID from URL parameter (handles both old ID format and new SEO format)
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
@@ -31,6 +32,29 @@ const EventDetail: React.FC = () => {
   const eventRegisterMutation = useEventRegister();
   
   const eventContent = eventByIdQuery.data?.content;
+
+  // Validate authentication on component mount and when auth state changes
+  useEffect(() => {
+    const validateAuth = async () => {
+      if (isAuthenticated && token) {
+        // Validate token format and presence
+        const isValidToken = validateToken();
+        if (!isValidToken) {
+          console.log('❌ Invalid token detected, logging out');
+          // Auto logout if token is invalid
+          useAuthStore.getState().logout();
+          setIsAuthValidated(false);
+        } else {
+          setIsAuthValidated(true);
+          console.log('✅ Authentication validated for event registration');
+        }
+      } else {
+        setIsAuthValidated(false);
+      }
+    };
+
+    validateAuth();
+  }, [isAuthenticated, token, validateToken]);
 
   const handleBackClick = () => {
     navigate('/dashboard');
@@ -50,6 +74,21 @@ const EventDetail: React.FC = () => {
   };
 
   const handleEventRegister = async () => {
+    // Enhanced authentication check
+    const authSuccess = requireAuth(() => {}, 'register for event');
+    if (!authSuccess || !isAuthValidated) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Authentication Required',
+        text: 'Please login first to register for this event.',
+        confirmButtonColor: '#3b82f6',
+        confirmButtonText: 'Go to Login'
+      }).then(() => {
+        navigate('/login');
+      });
+      return;
+    }
+
     if (!eventId) {
       Swal.fire({
         icon: 'error',
@@ -60,8 +99,21 @@ const EventDetail: React.FC = () => {
       return;
     }
 
+    // Validate event ID format
+    if (!eventId.match(/^\d+$/)) {
+      console.error('❌ Invalid event ID format:', eventId);
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Event ID',
+        text: 'Event ID format is invalid.',
+        confirmButtonColor: '#3b82f6',
+      });
+      return;
+    }
+
     try {
-      console.log('🎫 Starting event registration for:', eventId);
+      console.log('🎫 Starting event registration for eventId:', eventId);
+      console.log('🔐 Using token:', token ? token.substring(0, 20) + '...' : 'No token');
 
       const result = await eventRegisterMutation.mutateAsync({
         eventId: eventId,
@@ -90,11 +142,24 @@ const EventDetail: React.FC = () => {
     } catch (error: any) {
       console.error('❌ Event Registration Failed:', error);
       
-      const errorMessage = 
-        error.response?.data?.error || 
-        error.response?.data?.message ||
-        error.message || 
-        'Event registration failed. Please try again.';
+      let errorMessage = 'Event registration failed. Please try again.';
+      
+      // Handle specific error cases
+      if (error.response?.status === 401) {
+        errorMessage = 'Your session has expired. Please login again.';
+        // Auto logout on 401
+        useAuthStore.getState().logout();
+        navigate('/login');
+        return;
+      } else if (error.response?.status === 404) {
+        errorMessage = 'Event not found. Please check the event ID.';
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
       
       Swal.fire({
         icon: 'error',
@@ -231,7 +296,7 @@ const EventDetail: React.FC = () => {
           </div>
 
           <EventRegistration
-            isAuthenticated={isAuthenticated}
+            isAuthenticated={isAuthenticated && isAuthValidated}
             isPending={eventRegisterMutation.isPending}
             onRegister={handleEventRegister}
           />

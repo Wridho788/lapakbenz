@@ -121,19 +121,75 @@ export const getEventRegister = async (authToken: string, eventId: string) => {
 };
 
 export const registerEvent = async (authToken: string, eventId: string) => {
-  const formData = new FormData();
-  formData.append('eventid', eventId);
-  
-  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}`, formData, {
-    headers: {
-      'X-auth-token': authToken,
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  
-  // Return both data and status code
-  return {
-    ...response.data,
-    status: response.status
-  };
+  try {
+    // Validate inputs
+    if (!authToken || authToken.trim() === '') {
+      throw new Error('Authentication token is required');
+    }
+    
+    if (!eventId || eventId.trim() === '') {
+      throw new Error('Event ID is required');
+    }
+
+    // Validate eventId is numeric
+    if (!eventId.match(/^\d+$/)) {
+      throw new Error('Invalid Event ID format');
+    }
+
+    console.log('🎫 Registering for event:', eventId);
+    console.log('🔐 Using token:', authToken.substring(0, 20) + '...');
+
+    const formData = new FormData();
+    formData.append('eventid', eventId);
+    
+    const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}`, formData, {
+      headers: {
+        'X-auth-token': authToken,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    console.log('✅ Event registration API response:', response.data);
+    
+    // Return both data and status code
+    return {
+      ...response.data,
+      status: response.status
+    };
+  } catch (error: any) {
+    console.error('❌ Event registration API error:', error);
+    
+    // Enhanced error handling
+    if (error.response) {
+      // Server responded with error status
+      const errorData = error.response.data;
+      const statusCode = error.response.status;
+      
+      console.error('❌ Server error:', statusCode, errorData);
+      
+      // Create more informative error message
+      let errorMessage = 'Registration failed';
+      
+      if (statusCode === 401) {
+        errorMessage = 'Authentication failed. Please login again.';
+      } else if (statusCode === 404) {
+        errorMessage = 'Event not found. Please check the event ID.';
+      } else if (statusCode === 400) {
+        errorMessage = errorData.error || errorData.message || 'Invalid request. Please check your data.';
+      } else if (errorData.error) {
+        errorMessage = errorData.error;
+      } else if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+      
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      // Network error
+      console.error('❌ Network error:', error.request);
+      throw new Error('Network error. Please check your connection.');
+    } else {
+      // Other error
+      throw error;
+    }
+  }
 };

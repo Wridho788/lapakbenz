@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuthStore } from '../stores/authStore';
 import './EventRegistration.css';
 
 interface EventRegistrationProps {
@@ -12,7 +13,14 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
   isPending,
   onRegister,
 }) => {
-  if (!isAuthenticated) return null;
+  const { token, validateToken } = useAuthStore();
+
+  // Double-check authentication with token validation
+  const isValidAuthentication = isAuthenticated && token && validateToken();
+
+  if (!isValidAuthentication) {
+    return null;
+  }
 
   return (
     <div className="event-registration">
@@ -26,7 +34,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
             {isPending ? '⏳' : '🎫'}
           </span>
           <span className="registration-text">
-            {isPending ? 'Registering...' : 'Register Event Member'}
+            {isPending ? 'Registering...' : 'Join Event'}
           </span>
         </div>
       </button>
