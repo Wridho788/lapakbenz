@@ -84,6 +84,18 @@ const Dashboard: React.FC = () => {
   // Panggil useDecodeToken hook untuk mendapatkan nama user
   const { data: decodeTokenData, error: decodeTokenError } = useDecodeToken();
   
+  // Helper function to capitalize name
+  const capitalizeName = (name: string) => {
+    if (!name) return 'User';
+    return name
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  };
+  
+  // Get user image from decodeToken or fallback to default
+  const userImage = decodeTokenData?.content?.image || '/merci.png';
+  
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData } = useSlider();
   
@@ -93,20 +105,15 @@ const Dashboard: React.FC = () => {
   // Panggil usePostArticle untuk check upcoming news
   const upcomingNewsMutation = usePostArticle();
 
- 
-
   // Check if Partnership should be displayed
   const shouldShowPartnership = sliderData?.content?.result && 
                                Array.isArray(sliderData.content.result) && 
                                sliderData.content.result.length > 0;
 
- 
   // Check if UpcomingNews should be displayed
   const shouldShowUpcomingNews = upcomingNewsMutation.data?.content?.result && 
                                Array.isArray(upcomingNewsMutation.data.content.result) && 
                                upcomingNewsMutation.data.content.result.length > 0;
-
- 
 
   // Trigger upcoming news API call
   useEffect(() => {
@@ -127,8 +134,7 @@ const Dashboard: React.FC = () => {
     }
     if (decodeTokenError) {
       console.error('❌ Decode Token API Error:', decodeTokenError);
-             localStorage.removeItem('authToken');
-
+      localStorage.removeItem('authToken');
       return;
     }
     
@@ -230,10 +236,6 @@ const Dashboard: React.FC = () => {
     requireAuth(() => navigate('/orders'), 'view transaction history');
   };
 
-  // const handleRedeemClick = () => {
-  //   requireAuth(() => navigate('/profile/redeem-history'), 'view redeem history');
-  // };
-
   const handleCartClick = () => {
     navigate('/cart');
   };
@@ -249,8 +251,8 @@ const Dashboard: React.FC = () => {
       )}
       
       <AppbarHomepage 
-        avatar="/merci.png" 
-        name={decodeTokenError ? "User" : (decodeTokenData?.content?.name || "User")} 
+        avatar={userImage}
+        name={decodeTokenError ? "User" : capitalizeName(decodeTokenData?.content?.name || "User")} 
         notificationCount={unreadCount}
         onNotificationClick={handleNotificationClick}
         cartCount={cartCount}
@@ -296,8 +298,8 @@ const Dashboard: React.FC = () => {
           onProfileClick={handleProfileClick}
           onEventHistoryClick={handleEventHistoryClick}
           onTransactionClick={handleTransactionClick}
-          // onRedeemClick={handleRedeemClick}
         />
+        
         {/* Conditionally render Partnership section */}
         {shouldShowPartnership && (
           <SectionWrapper title="Kemitraan">
