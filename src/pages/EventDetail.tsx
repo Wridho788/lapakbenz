@@ -5,7 +5,7 @@ import EventRegistration from '../components/EventRegistration';
 import RegistrationSuccess from '../components/RegistrationSuccess';
 import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
-import { useEventById, useEventRegister } from '../api/hooks';
+import { useEventById, useEventRegister } from '../api/hooks/index';
 import { extractIdFromParam } from '../api/codeMapping';
 import Swal from 'sweetalert2';
 import './EventDetail.css';

@@ -14,7 +14,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useCart, useRemoveFromCart, useAddToCart } from '../api/hooks';
+import { useCart, useRemoveFromCart, useAddToCart } from '../api/hooks/index';
 import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
 import Swal from 'sweetalert2';
 import './Cart.css';

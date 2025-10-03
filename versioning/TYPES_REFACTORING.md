@@ -102,7 +102,7 @@ import type { LoginRequest } from '../api/types';
 ### Central Import (Recommended)
 ```typescript
 import type { LoginRequest } from '../api';
-import { useLogin } from '../api/hooks';
+import { useLogin } from '../api/hooks/index';
 ```
 
 ## Backward Compatibility

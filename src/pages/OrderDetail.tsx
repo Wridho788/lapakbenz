@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdOpenInNew } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useAuthStore } from '../stores/authStore';
-import { useOrderDetail } from '../api/hooks';
+import { useOrderDetail } from '../api/hooks/index';
 import './OrderDetail.css';
 
 const OrderDetail: React.FC = () => {

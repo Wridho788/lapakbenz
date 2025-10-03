@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSlider } from '../api/hooks';
+import { useSlider } from '../api/hooks/index';
 import './Partnership.css';
 
 interface PartnershipProps {

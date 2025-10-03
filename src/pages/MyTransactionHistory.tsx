@@ -4,7 +4,7 @@ import { MdRefresh, MdShoppingCart, MdCancel, MdCheckCircle, MdPending } from 'r
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useAuthStore } from '../stores/authStore';
-import { useOrders } from '../api/hooks';
+import { useOrders } from '../api/hooks/index';
 import type { OrderItem } from '../api/ordersApi';
 import './AccountPages.css';
 

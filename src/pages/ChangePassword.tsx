@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import './AccountPages.css';
-import { useChangePassword } from '../api/hooks';
+import { useChangePassword } from '../api/hooks/index';
 import Swal from 'sweetalert2';
 
 const ChangePassword: React.FC = () => {

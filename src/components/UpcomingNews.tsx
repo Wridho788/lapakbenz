@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { usePostArticle } from '../api/hooks';
+import { usePostArticle } from '../api/hooks/index';
 import { MdDateRange, MdAccessTime } from 'react-icons/md';
 import './UpcomingNews.css';
 

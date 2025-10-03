@@ -25,10 +25,10 @@ import {
   useProfile, 
   useProducts, 
   useCart 
-} from '../api/hooks';
+} from '../api/hooks/index';
 
 // ❌ Avoid - Direct imports from individual files
-import { useLogin } from '../api/hooks/authHooks';
+import { useLogin } from '../api/hooks/index/authHooks';
 ```
 
 ## Hook Categories

@@ -13,6 +13,12 @@
   gap: 1rem;
 }
 
+/* Pull to refresh animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Responsive */
 @media (max-width: 430px) {
   .dashboard-content {

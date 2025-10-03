@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useNotifications as useNotificationsApi, useUnreadNotifications } from '../api/hooks';
+import { useNotifications as useNotificationsApi, useUnreadNotifications } from '../api/hooks/index';
 
 export interface NotificationItem {
   id: string;

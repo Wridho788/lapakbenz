@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdPersonAdd } from 'react-icons/md';
 import { MdCalendarToday } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
-import { useRegister, useChapters, useCity } from '../api/hooks';
+import { useRegister, useChapters, useCity } from '../api/hooks/index';
 import Swal from 'sweetalert2';
 import './Register.css';
 

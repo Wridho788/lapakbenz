@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
 import './VerifyOtp.css';
-import { useSimpleRequestOTP, useVerifyOTP } from '../api/hooks'; // Tambahkan import ini
+import { useSimpleRequestOTP, useVerifyOTP } from '../api/hooks/index'; // Tambahkan import ini
 
 const OTP_LENGTH = 4;
 const OTP_EXPIRE_SECONDS = 120;

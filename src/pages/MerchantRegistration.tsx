@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
-import { useMerchantRegistration } from '../api/hooks';
+import { useMerchantRegistration } from '../api/hooks/index';
 import './MerchantRegistration.css';
 
 const MerchantRegistration: React.FC = () => {

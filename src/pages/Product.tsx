@@ -4,7 +4,7 @@ import { MdSearch, MdFilterList, MdClear } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
-import { useProducts, useProductCategories, useProductSearch } from '../api/hooks';
+import { useProducts, useProductCategories, useProductSearch } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
 import './Product.css';
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useCart } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useSplash, useSlider, useLedger, useDecodeToken, usePostArticle } from '../api/hooks';
+import { useSplash, useSlider, useLedger, useDecodeToken, usePostArticle, useProfile } from '../api/hooks/index';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
 import { ButtonGrid } from '../components/ButtonGrid';
@@ -33,6 +33,15 @@ const Dashboard: React.FC = () => {
   
   // State untuk development mode dan notification testing
   const [showDevTools, setShowDevTools] = useState(false);
+  
+  // Pull to refresh state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const pullRef = useRef<HTMLDivElement | null>(null);
+  const startY = useRef<number | null>(null);
+  const pulling = useRef(false);
+  const PULL_THRESHOLD = 80;
+  const MAX_PULL_DISTANCE = 120;
   
   // Development helper function untuk testing
   const setTestToken = () => {
@@ -66,7 +75,7 @@ const Dashboard: React.FC = () => {
     
     return success;
   };
-  
+
   // State untuk splash screen - Tokopedia-like behavior (show once per session)
   const [showSplash, setShowSplash] = useState(false);
   const [splashImage, setSplashImage] = useState<string>('');
@@ -79,10 +88,11 @@ const Dashboard: React.FC = () => {
   const userPoints = user?.points || 0;
   
   // Panggil useSplash hook
-  const { data: splashData, isLoading: splashLoading, error: splashError } = useSplash();
+  const { data: splashData, isLoading: splashLoading, error: splashError, refetch: splashRefetch } = useSplash();
   
   // Panggil useDecodeToken hook untuk mendapatkan nama user
   const { data: decodeTokenData, error: decodeTokenError } = useDecodeToken();
+  const { data: profileData, error: profileError, refetch: profileRefetch } = useProfile();
   
   // Helper function to capitalize name
   const capitalizeName = (name: string) => {
@@ -93,14 +103,14 @@ const Dashboard: React.FC = () => {
       .join(' ');
   };
   
-  // Get user image from decodeToken or fallback to default
-  const userImage = decodeTokenData?.content?.image || '/merci.png';
+  // Get user image with priority: profile image_url > decodeToken image > default
+  const userImage = profileData?.content?.result.image_url || '/merci.png';
   
   // Panggil useSlider hook untuk Partnership
-  const { data: sliderData } = useSlider();
+  const { data: sliderData, refetch: sliderRefetch } = useSlider();
   
   // Panggil useLedger hook - now uses Zustand auth store internally
-  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
+  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError, refetch: ledgerRefetch } = useLedger();
 
   // Panggil usePostArticle untuk check upcoming news
   const upcomingNewsMutation = usePostArticle();
@@ -114,6 +124,84 @@ const Dashboard: React.FC = () => {
   const shouldShowUpcomingNews = upcomingNewsMutation.data?.content?.result && 
                                Array.isArray(upcomingNewsMutation.data.content.result) && 
                                upcomingNewsMutation.data.content.result.length > 0;
+
+  // Pull to refresh handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (window.scrollY === 0 && !isRefreshing) {
+      startY.current = e.touches[0].clientY;
+      pulling.current = true;
+    }
+  }, [isRefreshing]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!pulling.current || startY.current === null || isRefreshing) return;
+    
+    const diff = e.touches[0].clientY - startY.current;
+    if (diff > 0 && window.scrollY === 0) {
+      e.preventDefault();
+      // Apply resistance effect for more natural feel
+      const resistance = Math.max(0.3, 1 - (diff / 300));
+      const distance = Math.min(diff * resistance, MAX_PULL_DISTANCE);
+      setPullDistance(distance);
+    }
+  }, [isRefreshing]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (pullDistance > PULL_THRESHOLD && !isRefreshing) {
+      triggerRefresh();
+    }
+    pulling.current = false;
+    startY.current = null;
+    setTimeout(() => setPullDistance(0), 200);
+  }, [pullDistance, isRefreshing]);
+
+  const triggerRefresh = useCallback(async () => {
+    if (isRefreshing) return;
+    
+    setIsRefreshing(true);
+    console.log('🔄 Pull to refresh triggered');
+
+    try {
+      // Refresh all data sources in parallel
+      const refreshPromises = [];
+      
+      // Refresh slider data
+      if (sliderRefetch) refreshPromises.push(sliderRefetch());
+      
+      // Refresh ledger data
+      if (ledgerRefetch) refreshPromises.push(ledgerRefetch());
+      
+      // Refresh profile data
+      if (profileRefetch) refreshPromises.push(profileRefetch());
+      
+      // Refresh splash data
+      if (splashRefetch) refreshPromises.push(splashRefetch());
+      
+      // Refresh upcoming news
+      refreshPromises.push(upcomingNewsMutation.mutateAsync({}));
+      
+      // Wait for all refreshes to complete
+      await Promise.allSettled(refreshPromises);
+      
+      console.log('✅ Pull to refresh completed');
+    } catch (error) {
+      console.error('❌ Pull to refresh error:', error);
+    } finally {
+      // Add a small delay to show the refresh animation
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 500);
+    }
+  }, [isRefreshing, sliderRefetch, ledgerRefetch, profileRefetch, splashRefetch, upcomingNewsMutation]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      pulling.current = false;
+      startY.current = null;
+      setPullDistance(0);
+    };
+  }, []);
 
   // Trigger upcoming news API call
   useEffect(() => {
@@ -137,6 +225,15 @@ const Dashboard: React.FC = () => {
       localStorage.removeItem('authToken');
       return;
     }
+
+     // Log profile data
+  if (profileData) {
+    console.log('✅ Profile API Response:', profileData);
+    console.log('🖼️ User Image URL:', profileData.content?.result?.image_url);
+  }
+  if (profileError) {
+    console.error('❌ Profile API Error:', profileError);
+  }
     
     if (ledgerData) {
       console.log('✅ Ledger API Response:', ledgerData);
@@ -175,7 +272,7 @@ const Dashboard: React.FC = () => {
     if (ledgerLoading) {
       console.log('⏳ Ledger API Loading...');
     }
-  }, [authToken, ledgerData, ledgerError, ledgerLoading, isAuthenticated, updatePoints, logout, navigate, decodeTokenData, decodeTokenError]);
+  }, [authToken, ledgerData, ledgerError, ledgerLoading, isAuthenticated, updatePoints, logout, navigate, decodeTokenData, decodeTokenError, profileData, profileError]);
 
   // Log response ke console dan handle splash screen Tokopedia-style
   useEffect(() => {
@@ -216,7 +313,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleNotificationClick = () => {
-    console.log('Notification clicked!');
+       navigate('/notifications');
     // Navigation is handled in AppbarHomepage component
   };
 
@@ -241,7 +338,56 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="dashboard-page">
+    <div 
+      className="dashboard-page"
+      ref={pullRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        transform: `translateY(${pullDistance}px)`,
+        transition: pulling.current ? 'none' : 'transform 0.2s ease-out'
+      }}
+    >
+      {/* Pull to Refresh Indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: pullDistance > 0 ? `${Math.max(0, pullDistance - 60)}px` : '10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            padding: '8px 16px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: '#666',
+            transition: 'all 0.2s ease-out'
+          }}
+        >
+          <div 
+            style={{
+              width: '16px',
+              height: '16px',
+              border: '2px solid #ddd',
+              borderTop: '2px solid #007bff',
+              borderRadius: '50%',
+              animation: isRefreshing ? 'spin 1s linear infinite' : 
+                       pullDistance > PULL_THRESHOLD ? 'spin 1s linear infinite' : 'none',
+              transform: !isRefreshing && pullDistance <= PULL_THRESHOLD ? 
+                        `rotate(${(pullDistance / PULL_THRESHOLD) * 360}deg)` : 'none'
+            }}
+          />
+          {isRefreshing ? 'Refreshing...' : 
+           pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh'}
+        </div>
+      )}
+      
       {/* Splash Screen */}
       {showSplash && splashImage && (
         <SplashScreen 

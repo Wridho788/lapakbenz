@@ -14,7 +14,7 @@ import {
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart } from '../contexts/CartContext';
-import { useProductDetail, useAddToCart } from '../api/hooks';
+import { useProductDetail, useAddToCart } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import { extractIdFromParam } from '../api/codeMapping';
 import Swal from 'sweetalert2';

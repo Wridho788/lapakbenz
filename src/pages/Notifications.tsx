@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
-import { useNotifications, useNotificationDetail } from '../api/hooks';
+import { useNotifications, useNotificationDetail } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import type { NotificationItem } from '../contexts/NotificationContext';
 import './Notifications.css';

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EventCard } from './EventCard';
 import './CompletedEvent.css';
-import { usePostEvent } from '../api/hooks';
+import { usePostEvent } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
 
 interface EventItem {

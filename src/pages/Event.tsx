@@ -6,7 +6,7 @@ import EventListCard from '../components/EventListCard';
 import NewsCard from '../components/NewsCard';
 import ChapterFilter from '../components/ChapterFilter';
 import { useCart } from '../contexts/CartContext';
-import { usePostEvent, usePostArticle } from '../api/hooks';
+import { usePostEvent, usePostArticle } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
 import './Event.css';
 import '../components/FABPositioning.css';

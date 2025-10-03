@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNotifications } from '../api/hooks';
+import { useNotifications } from '../api/hooks/index';
 import type { NotificationPayload } from '../api/types';
 
 interface NotificationFiltersProps {

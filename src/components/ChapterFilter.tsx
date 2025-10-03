@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useChapters } from '../api/hooks';
+import { useChapters } from '../api/hooks/index';
 import './ChapterFilter.css';
 
 interface Chapter {

@@ -134,7 +134,7 @@ interface ChangePasswordResponse {
 
 #### Basic Authentication
 ```typescript
-import { useLogin, useRegister } from '../api/hooks';
+import { useLogin, useRegister } from '../api/hooks/index';
 
 function LoginComponent() {
   const loginMutation = useLogin();
@@ -164,7 +164,7 @@ function LoginComponent() {
 
 #### Profile Management
 ```typescript
-import { useUpdateProfile, useChangePassword } from '../api/hooks';
+import { useUpdateProfile, useChangePassword } from '../api/hooks/index';
 
 function ProfileComponent() {
   const updateProfileMutation = useUpdateProfile();

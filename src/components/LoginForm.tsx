@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLogin } from '../api/hooks';
+import { useLogin } from '../api/hooks/index';
 import type { LoginRequest } from '../api/types';
 import { useNavigate } from 'react-router-dom';
 

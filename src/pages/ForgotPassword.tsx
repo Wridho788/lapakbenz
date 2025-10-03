@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-import { useRequestOTP, useForgotPassword } from '../api/hooks';
+import { useRequestOTP, useForgotPassword } from '../api/hooks/index';
 import { useNavigate } from 'react-router-dom';
 import { MdSend } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';

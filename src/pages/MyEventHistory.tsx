@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useEventsByCustomer } from '../api/hooks';
+import { useEventsByCustomer } from '../api/hooks/index';
 import './AccountPages.css';
 
 interface EventItem {

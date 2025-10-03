@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useProfile, useUpdateProfile, useUploadImage, useCity } from '../api/hooks';
+import { useProfile, useUpdateProfile, useUploadImage, useCity } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import './AccountPages.css';
 
