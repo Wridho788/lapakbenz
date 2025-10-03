@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
@@ -11,6 +11,16 @@ const MyProfile: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isAuthenticated, token: authToken } = useAuthStore();
+  
+  // Pull to refresh state
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const pullRef = useRef<HTMLDivElement | null>(null);
+  const startY = useRef<number | null>(null);
+  const pulling = useRef(false);
+  const PULL_THRESHOLD = 80;
+  const MAX_PULL_DISTANCE = 120;
+  
   const [formData, setFormData] = useState({
     tname: '',
     tphone1: '',
@@ -72,6 +82,75 @@ const MyProfile: React.FC = () => {
       [field]: value
     }));
   };
+
+  // Pull to refresh handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (window.scrollY === 0 && !isRefreshing) {
+      startY.current = e.touches[0].clientY;
+      pulling.current = true;
+    }
+  }, [isRefreshing]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!pulling.current || startY.current === null || isRefreshing) return;
+    
+    const diff = e.touches[0].clientY - startY.current;
+    if (diff > 0 && window.scrollY === 0) {
+      e.preventDefault();
+      // Apply resistance effect for more natural feel
+      const resistance = Math.max(0.3, 1 - (diff / 300));
+      const distance = Math.min(diff * resistance, MAX_PULL_DISTANCE);
+      setPullDistance(distance);
+    }
+  }, [isRefreshing]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (pullDistance > PULL_THRESHOLD && !isRefreshing) {
+      triggerRefresh();
+    }
+    pulling.current = false;
+    startY.current = null;
+    setTimeout(() => setPullDistance(0), 200);
+  }, [pullDistance, isRefreshing]);
+
+  const triggerRefresh = useCallback(async () => {
+    if (isRefreshing) return;
+    
+    setIsRefreshing(true);
+    console.log('🔄 Pull to refresh triggered on MyProfile');
+
+    try {
+      // Refresh profile and city data in parallel
+      const refreshPromises = [];
+      
+      // Refresh profile data
+      if (refetchProfile) refreshPromises.push(refetchProfile());
+      
+      // Note: City data is typically static, but we can refresh it too
+      // If useCity hook has refetch capability, we would add it here
+      
+      // Wait for all refreshes to complete
+      await Promise.allSettled(refreshPromises);
+      
+      console.log('✅ Pull to refresh completed on MyProfile');
+    } catch (error) {
+      console.error('❌ Pull to refresh error on MyProfile:', error);
+    } finally {
+      // Add a small delay to show the refresh animation
+      setTimeout(() => {
+        setIsRefreshing(false);
+      }, 500);
+    }
+  }, [isRefreshing, refetchProfile]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      pulling.current = false;
+      startY.current = null;
+      setPullDistance(0);
+    };
+  }, []);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -148,8 +227,16 @@ const MyProfile: React.FC = () => {
         text: 'Profile image updated successfully!',
         confirmButtonColor: '#007bff'
       });
-      // Refresh profile data to get updated image URL
-      refetchProfile();
+      
+      // Auto-refresh profile data to get updated image URL
+      console.log('🔄 Auto-refreshing profile after image upload...');
+      setIsRefreshing(true);
+      try {
+        await refetchProfile();
+        console.log('✅ Profile auto-refresh completed after image upload');
+      } finally {
+        setTimeout(() => setIsRefreshing(false), 300);
+      }
     } catch (error) {
       console.error('Upload image error:', error);
       Swal.fire({
@@ -222,8 +309,16 @@ const MyProfile: React.FC = () => {
           text: 'Profile updated successfully!',
           confirmButtonColor: '#007bff'
         });
-        // Refresh profile data to get updated information
-        refetchProfile();
+        
+        // Auto-refresh profile data to get updated information
+        console.log('🔄 Auto-refreshing profile after update...');
+        setIsRefreshing(true);
+        try {
+          await refetchProfile();
+          console.log('✅ Profile auto-refresh completed after update');
+        } finally {
+          setTimeout(() => setIsRefreshing(false), 300);
+        }
       } catch (error) {
         console.error('Update profile error:', error);
         Swal.fire({
@@ -248,7 +343,56 @@ const MyProfile: React.FC = () => {
   };
 
   return (
-    <div className="account-page">
+    <div 
+      className="account-page"
+      ref={pullRef}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{
+        transform: `translateY(${pullDistance}px)`,
+        transition: pulling.current ? 'none' : 'transform 0.2s ease-out'
+      }}
+    >
+      {/* Pull to Refresh Indicator */}
+      {(pullDistance > 0 || isRefreshing) && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: pullDistance > 0 ? `${Math.max(0, pullDistance - 60)}px` : '10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            backgroundColor: 'white',
+            borderRadius: '20px',
+            padding: '8px 16px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: '#666',
+            transition: 'all 0.2s ease-out'
+          }}
+        >
+          <div 
+            style={{
+              width: '16px',
+              height: '16px',
+              border: '2px solid #ddd',
+              borderTop: '2px solid #007bff',
+              borderRadius: '50%',
+              animation: isRefreshing ? 'spin 1s linear infinite' : 
+                        pullDistance > PULL_THRESHOLD ? 'spin 1s linear infinite' : 'none',
+              transform: !isRefreshing && pullDistance <= PULL_THRESHOLD ? 
+                        `rotate(${(pullDistance / PULL_THRESHOLD) * 360}deg)` : 'none'
+            }}
+          />
+          {isRefreshing ? 'Refreshing profile...' : 
+           pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh'}
+        </div>
+      )}
+      
       <AppbarDefault
         title="Profil Saya"
         onBack={handleBackClick}
