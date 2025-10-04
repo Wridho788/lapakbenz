@@ -655,7 +655,7 @@ const Cart: React.FC = () => {
                   {/* Right Column - Product Info */}
                   <div className="item-info-column">
                     <div className="product-details">
-                      <h4 className="item-title">{item.name}</h4>
+                      <h4 className="item-title" style={{ textTransform: 'uppercase' }}>{item.name}</h4>
                       <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
                     </div>
 
@@ -713,20 +713,35 @@ const Cart: React.FC = () => {
           </div>
 
           {/* Place Order Button */}
-          <div className="order-actions-bottom">
-            <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
-              <MdShoppingCart size={26} />
-            </button>
-            <button className="home-btn" onClick={() => navigate('/')}>
-              <MdHome size={26} />
-            </button>
+          <div className="checkout-section">
             <button 
-              className="place-order-btn" 
+              className="checkout-btn" 
               onClick={handlePlaceOrder}
-              disabled={orderingStatus.isOrdering}
+              disabled={orderingStatus.isOrdering || !hasApiCartItems}
             >
-              <MdPayment size={26} />
+              {orderingStatus.isOrdering ? (
+                <>
+                  <div className="spinner"></div>
+                  <span>Memproses Pesanan...</span>
+                </>
+              ) : (
+                <>
+                  <MdPayment size={24} />
+                  <span>Checkout / Proses Pembayaran</span>
+                  <span className="checkout-total">Rp {totalPayment.toLocaleString('id-ID')}</span>
+                </>
+              )}
             </button>
+            <div className="checkout-actions">
+              <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
+                <MdShoppingCart size={20} />
+                <span>Lanjut Belanja</span>
+              </button>
+              <button className="home-btn" onClick={() => navigate('/')}>
+                <MdHome size={20} />
+                <span>Ke Beranda</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

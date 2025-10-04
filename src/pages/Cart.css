@@ -4,7 +4,7 @@
   min-height: 100vh;
   background-color: #f5f5f5;
   font-family: 'Lato', sans-serif;
-  padding-bottom: 80px; /* Space for bottom nav */
+  padding-bottom: 20px; /* Reduced padding since no bottom nav */
 }
 
 .cart-content {
@@ -1034,8 +1034,113 @@
   transform: translateY(0);
 }
 
-/* Add bottom padding to cart content to account for fixed bottom nav */
+/* Checkout Section - New Design */
+.checkout-section {
+  margin-top: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.checkout-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #161129 0%, #2c5aa0 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 18px 24px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+  min-height: 60px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 20px rgba(22, 17, 41, 0.3);
+}
+
+.checkout-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(22, 17, 41, 0.4);
+}
+
+.checkout-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(22, 17, 41, 0.3);
+}
+
+.checkout-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.checkout-btn .checkout-total {
+  font-size: 18px;
+  font-weight: 800;
+  margin-left: auto;
+}
+
+.checkout-btn .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.checkout-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.checkout-actions .continue-shopping-btn,
+.checkout-actions .home-btn {
+  flex: 1;
+  background: #f8f9fa;
+  color: #161129;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.checkout-actions .continue-shopping-btn:hover,
+.checkout-actions .home-btn:hover {
+  background: #e9ecef;
+  border-color: #dee2e6;
+  transform: translateY(-1px);
+}
+
+.checkout-actions .continue-shopping-btn:active,
+.checkout-actions .home-btn:active {
+  transform: translateY(0);
+}
+
+/* Remove bottom padding since we removed the fixed bottom nav */
 .cart-content {
   padding: 20px;
-  padding-bottom: 100px;
+  padding-bottom: 20px;
 }
