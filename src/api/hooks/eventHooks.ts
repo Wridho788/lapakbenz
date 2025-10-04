@@ -46,7 +46,9 @@ interface UseEventsByCustomerPayload {
   offset?: number;
 }
 
-export function useEventsByCustomer(payload: UseEventsByCustomerPayload = {}): UseQueryResult<any, Error> {
+export function useEventsByCustomer(
+  payload: UseEventsByCustomerPayload = {},
+): UseQueryResult<any, Error> {
   const { token, isAuthenticated } = useAuthStore();
 
   const defaultPayload = {
@@ -140,7 +142,11 @@ interface UseMerchantRegistrationPayload {
   qty: string;
 }
 
-export function useMerchantRegistration(): UseMutationResult<any, Error, UseMerchantRegistrationPayload> {
+export function useMerchantRegistration(): UseMutationResult<
+  any,
+  Error,
+  UseMerchantRegistrationPayload
+> {
   const { token } = useAuthStore();
 
   return useMutation({
@@ -176,7 +182,11 @@ interface UsePublicRegistrationPayload {
   notes: string;
 }
 
-export function usePublicRegistration(): UseMutationResult<any, Error, UsePublicRegistrationPayload> {
+export function usePublicRegistration(): UseMutationResult<
+  any,
+  Error,
+  UsePublicRegistrationPayload
+> {
   const { token } = useAuthStore();
 
   return useMutation({
@@ -206,36 +216,36 @@ export function useEventRegister(eventId: string): UseQueryResult<any, Error> {
 
   return useQuery({
     queryKey: ['eventRegister', eventId, token],
-    queryFn: async () => {
-      try {
-        console.log('🎫 Event Registration - Event ID:', eventId);
-        return await registerEvent(token!, eventId);
-      } catch (error) {
-        console.error('❌ Event Registration Error:', error);
-        throw error;
-      }
-    },
+    queryFn: () => registerEvent(token!, eventId),
     enabled: isAuthenticated && !!eventId && !!token,
     retry: 2,
   });
 }
 
 // Infinite scroll helpers
-export function useInfiniteEvents(): UseMutationResult<any, Error, {
-  status: '0' | '1';
-  limit: number;
-  offset: number;
-  chapter?: string;
-}> {
+export function useInfiniteEvents(): UseMutationResult<
+  any,
+  Error,
+  {
+    status: '0' | '1';
+    limit: number;
+    offset: number;
+    chapter?: string;
+  }
+> {
   return useMutation({
     mutationFn: (data) => postEvent(data),
   });
 }
 
-export function useInfiniteArticles(): UseMutationResult<any, Error, {
-  limit: number;
-  offset: number;
-}> {
+export function useInfiniteArticles(): UseMutationResult<
+  any,
+  Error,
+  {
+    limit: number;
+    offset: number;
+  }
+> {
   return useMutation({
     mutationFn: (data) => postArticle(data),
   });

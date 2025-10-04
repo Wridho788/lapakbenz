@@ -18,7 +18,7 @@ export default defineConfig({
         theme_color: '#161129',
         icons: [
           {
-            src: 'merci.png',
+            src: 'lapakbenz.png',
             sizes: '192x192',
             type: 'image/png',
           },

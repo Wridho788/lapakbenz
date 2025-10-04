@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useProfile, useUpdateProfile, useUploadImage, useCity } from '../api/hooks/index';
+import { useProfile, useUpdateProfile, useUploadImage, useCity, useCart } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import './AccountPages.css';
 
@@ -46,6 +46,7 @@ const MyProfile: React.FC = () => {
   const updateProfileMutation = useUpdateProfile();
   const uploadImageMutation = useUploadImage();
   const { data: cityData, isLoading: cityLoading, error: cityError } = useCity();
+  const { refetch: cartRefetch } = useCart();
 
   // Debug cityData structure
   useEffect(() => {
@@ -125,6 +126,9 @@ const MyProfile: React.FC = () => {
       
       // Refresh profile data
       if (refetchProfile) refreshPromises.push(refetchProfile());
+      
+      // Refresh cart data
+      if (cartRefetch) refreshPromises.push(cartRefetch());
       
       // Note: City data is typically static, but we can refresh it too
       // If useCity hook has refetch capability, we would add it here
@@ -415,7 +419,7 @@ const MyProfile: React.FC = () => {
                   profileData?.content?.result?.image_url && 
                   profileData.content.result.image_url !== "http://mbapi.dswip.com/images/customer/"
                     ? profileData.content.result.image_url
-                    : "/merci.png"
+                    : "/lapakbenz.png"
                 }
                 alt="Profile"
                 style={{
@@ -429,7 +433,7 @@ const MyProfile: React.FC = () => {
                 }}
                 onClick={handleImageClick}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/merci.png";
+                  (e.target as HTMLImageElement).src = "/lapakbenz.png";
                 }}
                 onMouseEnter={(e) => {
                   (e.target as HTMLImageElement).style.opacity = '0.8';

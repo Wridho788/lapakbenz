@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdFilterList, MdClear } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useCart } from '../contexts/CartContext';
-import { useProducts, useProductCategories, useProductSearch } from '../api/hooks/index';
+import { useCart as useCartContext } from '../contexts/CartContext';
+import { useProducts, useProductCategories, useProductSearch, useCart } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
 import './Product.css';
 
@@ -12,7 +12,10 @@ const Product: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(''); // Changed to use category ID
-  const { cartCount } = useCart();
+  const { cartCount } = useCartContext();
+  
+  // Call useCart hook to keep cart data fresh
+  useCart();
   
   // API hooks - now passing category ID instead of category name
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({

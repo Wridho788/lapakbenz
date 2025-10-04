@@ -19,7 +19,7 @@ export const PointCard: React.FC<PointCardProps> = ({ points }) => {
           <p className="point-value">{formatPoints(points)}</p>
         </div>
         <div className="point-image">
-          <img src="/merci.png" alt="Merci Points" />
+          <img src="/lapakbenz.png" alt="Merci Points" />
         </div>
       </div>
     </div>

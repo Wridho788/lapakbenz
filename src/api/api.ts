@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 import {
   BASE_URL,
   ENDPOINT_LEDGER,
@@ -11,15 +11,19 @@ import {
   ENDPOINT_EVENT_GET_BY_CUSTOMER,
   ENDPOINT_EVENT_REGISTER_MERCHANT,
   ENDPOINT_EVENT_REGISTER_PUBLIC,
-  ENDPOINT_EVENT_REGISTER
-} from "./constants";
+  ENDPOINT_EVENT_REGISTER,
+} from './constants';
 
 export const getLedger = async (authToken: string) => {
-  const response = await axios.post(`${BASE_URL}${ENDPOINT_LEDGER}`, {}, {
-    headers: {
-      'X-auth-token': authToken,
+  const response = await axios.post(
+    `${BASE_URL}${ENDPOINT_LEDGER}`,
+    {},
+    {
+      headers: {
+        'X-auth-token': authToken,
+      },
     },
-  });
+  );
   return response.data;
 };
 
@@ -35,10 +39,10 @@ export const getSplash = async () => {
 
 export const postEvent = async (data?: any) => {
   const defaultPayload = {
-    status: "1",
+    status: '1',
     limit: 300,
     offset: 0,
-    chapter: ""
+    chapter: '',
   };
   const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
   const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT}`, payload);
@@ -51,7 +55,7 @@ export const getEventById = async (id: string) => {
 };
 
 export const postArticle = async (data?: any) => {
-  const defaultPayload = {"category":24,"limit":10,"offset":0,"orderby":"","order":"asc"};
+  const defaultPayload = { category: 24, limit: 10, offset: 0, orderby: '', order: 'asc' };
   const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
   const response = await axios.post(`${BASE_URL}${ENDPOINT_ARTICLE}`, payload);
   return response.data;
@@ -59,18 +63,18 @@ export const postArticle = async (data?: any) => {
 
 export const getCity = async () => {
   const url = `${BASE_URL}${ENDPOINT_CITY_GET_CITY}`;
-  
+
   const response = await axios.get(url);
   return response.data;
 };
 
 export const getEventsByCustomer = async (authToken: string, data?: any) => {
   const defaultPayload = {
-    "limit": 30,
-    "offset": 0
+    limit: 30,
+    offset: 0,
   };
   const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
-  
+
   const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_GET_BY_CUSTOMER}`, payload, {
     headers: {
       'X-auth-token': authToken,
@@ -86,11 +90,11 @@ export const registerMerchant = async (authToken: string, formData: FormData) =>
       'Content-Type': 'multipart/form-data',
     },
   });
-  
+
   // Return both data and status code
   return {
     ...response.data,
-    status: response.status
+    status: response.status,
   };
 };
 
@@ -101,14 +105,13 @@ export const registerPublic = async (authToken: string, formData: FormData) => {
       'Content-Type': 'multipart/form-data',
     },
   });
-  
+
   // Return both data and status code
   return {
     ...response.data,
-    status: response.status
+    status: response.status,
   };
 };
-
 
 export const registerEvent = async (authToken: string, eventId: string) => {
   try {
@@ -116,48 +119,37 @@ export const registerEvent = async (authToken: string, eventId: string) => {
     const response = await axios.get(`${BASE_URL}${ENDPOINT_EVENT_REGISTER}/${eventId}`, {
       headers: {
         'X-auth-token': authToken,
-        'Content-Type': 'application/json',
       },
     });
-    
+
     console.log('✅ Event registration API response:', response.data);
-    
+
     // Return both data and status code
     return {
       ...response.data,
-      status: response.status
+      status: response.status,
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error('❌ Event registration API error:', error);
-    
+
     // Enhanced error handling
-    if (error.response) {
+    if (axios.isAxiosError(error)) {
       // Server responded with error status
-      const errorData = error.response.data;
-      const statusCode = error.response.status;
-      
-      console.error('❌ Server error:', statusCode, errorData);
-      
-      // Create more informative error message
-      let errorMessage = 'Registration failed';
-      
-      if (statusCode === 401) {
-        errorMessage = 'Authentication failed. Please login again.';
-      } else if (statusCode === 404) {
-        errorMessage = 'Event not found. Please check the event ID.';
-      } else if (statusCode === 400) {
-        errorMessage = errorData.error || errorData.message || 'Invalid request. Please check your data.';
-      } else if (errorData.error) {
-        errorMessage = errorData.error;
-      } else if (errorData.message) {
-        errorMessage = errorData.message;
+      // const errorData = error.response.data;
+      // const statusCode = error.response.status;
+
+      // console.error('❌ Server error:', statusCode, errorData);
+
+      if (error.response?.status === 401) {
+        throw new Error('Authentication failed. Please login again.');
+      } else if (error.response?.status === 404) {
+        throw new Error('Event not found. Please check the event ID.');
+      } else if (error.response?.status === 400) {
+        throw new Error(
+          error.response?.data?.message || 'Invalid request. Please check your data.',
+        );
       }
-      
-      throw new Error(errorMessage);
-    } else if (error.request) {
-      // Network error
-      console.error('❌ Network error:', error.request);
-      throw new Error('Network error. Please check your connection.');
+      throw new Error(error.response?.data?.message || 'Registration failed');
     } else {
       // Other error
       throw error;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
-import { useCart } from '../contexts/CartContext';
+import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useSplash, useSlider, useLedger, useDecodeToken, usePostArticle, useProfile } from '../api/hooks/index';
+import { useSplash, useSlider, useLedger, useDecodeToken, usePostArticle, useProfile, useCart } from '../api/hooks/index';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { PointCard } from '../components/PointCard';
 import { ButtonGrid } from '../components/ButtonGrid';
@@ -18,7 +18,8 @@ import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const { unreadCount } = useNotificationContext();
-  const { cartCount } = useCart();
+  const { cartCount } = useCartContext();
+  const { refetch: cartRefetch } = useCart();
   const navigate = useNavigate();
   
   // Use Zustand auth store
@@ -104,7 +105,7 @@ const Dashboard: React.FC = () => {
   };
   
   // Get user image with priority: profile image_url > decodeToken image > default
-  const userImage = profileData?.content?.result.image_url || '/merci.png';
+  const userImage = profileData?.content?.result.image_url || '/lapakbenz.png';
   
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData, refetch: sliderRefetch } = useSlider();
@@ -179,6 +180,9 @@ const Dashboard: React.FC = () => {
       
       // Refresh upcoming news
       refreshPromises.push(upcomingNewsMutation.mutateAsync({}));
+      
+      // Refresh cart data
+      if (cartRefetch) refreshPromises.push(cartRefetch());
       
       // Wait for all refreshes to complete
       await Promise.allSettled(refreshPromises);
