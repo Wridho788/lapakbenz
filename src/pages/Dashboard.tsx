@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
-import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
 import { useSplash, useSlider, useLedger, useDecodeToken, usePostArticle, useProfile, useCart } from '../api/hooks/index';
 import { SectionWrapper } from '../components/SectionWrapper';
@@ -18,7 +17,6 @@ import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   const { unreadCount } = useNotificationContext();
-  const { cartCount } = useCartContext();
   const { refetch: cartRefetch } = useCart();
   const navigate = useNavigate();
   
@@ -31,6 +29,11 @@ const Dashboard: React.FC = () => {
     updatePoints,
     logout
   } = useAuthStore();
+
+  // API hooks for cart
+    const {
+      data: apiCartData,
+    } = useCart();
   
   // State untuk development mode dan notification testing
   const [showDevTools, setShowDevTools] = useState(false);
@@ -311,6 +314,21 @@ const Dashboard: React.FC = () => {
     }
   }, [splashData, splashError, splashLoading, hasShownSplash]);
 
+  // Log cart API data
+    useEffect(() => {
+      if (apiCartData) {
+        console.log('🛒 Cart API Response:', apiCartData);
+        console.log('🛒 Cart Items:', apiCartData?.content?.result);
+        console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
+        console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
+      }
+    }, [apiCartData]);
+
+    const getApiCartCount = () => {
+    return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
+  };
+    const apiCartCount = getApiCartCount();
+
   // Handler untuk menutup splash screen
   const handleCloseSplash = () => {
     setShowSplash(false);
@@ -348,7 +366,7 @@ const Dashboard: React.FC = () => {
         name={decodeTokenError ? "User" : capitalizeName(decodeTokenData?.content?.name || "User")} 
         notificationCount={unreadCount}
         onNotificationClick={handleNotificationClick}
-        cartCount={cartCount}
+        cartCount={apiCartCount}
         onCartClick={handleCartClick}
       />
     <div 

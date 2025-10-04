@@ -11,7 +11,7 @@ const MyProfile: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isAuthenticated, token: authToken } = useAuthStore();
-  
+
   // Pull to refresh state
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
@@ -20,7 +20,7 @@ const MyProfile: React.FC = () => {
   const pulling = useRef(false);
   const PULL_THRESHOLD = 80;
   const MAX_PULL_DISTANCE = 120;
-  
+
   const [formData, setFormData] = useState({
     tname: '',
     tphone1: '',
@@ -31,7 +31,7 @@ const MyProfile: React.FC = () => {
     tprofession: '',
     torganization: '',
     tinstagram: '',
-    tdob: ''
+    tdob: '',
   });
 
   // Redirect if not authenticated
@@ -42,12 +42,20 @@ const MyProfile: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   // API hooks
-  const { data: profileData, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useProfile();
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useProfile();
   const updateProfileMutation = useUpdateProfile();
   const uploadImageMutation = useUploadImage();
   const { data: cityData, isLoading: cityLoading, error: cityError } = useCity();
-  const { refetch: cartRefetch } = useCart();
-
+  // API hooks for cart
+  const {
+    data: apiCartData,
+    refetch: cartRefetch,
+  } = useCart();
   // Debug cityData structure
   useEffect(() => {
     if (cityData) {
@@ -72,38 +80,59 @@ const MyProfile: React.FC = () => {
         tprofession: profile.profession || '',
         torganization: profile.organization || '',
         tinstagram: profile.instagram || '',
-        tdob: profile.dob || ''
+        tdob: profile.dob || '',
       });
     }
   }, [profileData]);
 
+  useEffect(() => {
+    if (apiCartData) {
+      console.log('🛒 Cart API Response:', apiCartData);
+      console.log('🛒 Cart Items:', apiCartData?.content?.result);
+      console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
+      console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
+    }
+  }, [apiCartData]);
+
+   const getApiCartCount = () => {
+    return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
+  };
+
+    const apiCartCount = getApiCartCount();
+
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   // Pull to refresh handlers
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (window.scrollY === 0 && !isRefreshing) {
-      startY.current = e.touches[0].clientY;
-      pulling.current = true;
-    }
-  }, [isRefreshing]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (window.scrollY === 0 && !isRefreshing) {
+        startY.current = e.touches[0].clientY;
+        pulling.current = true;
+      }
+    },
+    [isRefreshing],
+  );
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!pulling.current || startY.current === null || isRefreshing) return;
-    
-    const diff = e.touches[0].clientY - startY.current;
-    if (diff > 0 && window.scrollY === 0) {
-      e.preventDefault();
-      // Apply resistance effect for more natural feel
-      const resistance = Math.max(0.3, 1 - (diff / 300));
-      const distance = Math.min(diff * resistance, MAX_PULL_DISTANCE);
-      setPullDistance(distance);
-    }
-  }, [isRefreshing]);
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!pulling.current || startY.current === null || isRefreshing) return;
+
+      const diff = e.touches[0].clientY - startY.current;
+      if (diff > 0 && window.scrollY === 0) {
+        e.preventDefault();
+        // Apply resistance effect for more natural feel
+        const resistance = Math.max(0.3, 1 - diff / 300);
+        const distance = Math.min(diff * resistance, MAX_PULL_DISTANCE);
+        setPullDistance(distance);
+      }
+    },
+    [isRefreshing],
+  );
 
   const handleTouchEnd = useCallback(() => {
     if (pullDistance > PULL_THRESHOLD && !isRefreshing) {
@@ -116,26 +145,26 @@ const MyProfile: React.FC = () => {
 
   const triggerRefresh = useCallback(async () => {
     if (isRefreshing) return;
-    
+
     setIsRefreshing(true);
     console.log('🔄 Pull to refresh triggered on MyProfile');
 
     try {
       // Refresh profile and city data in parallel
       const refreshPromises = [];
-      
+
       // Refresh profile data
       if (refetchProfile) refreshPromises.push(refetchProfile());
-      
+
       // Refresh cart data
       if (cartRefetch) refreshPromises.push(cartRefetch());
-      
+
       // Note: City data is typically static, but we can refresh it too
       // If useCity hook has refetch capability, we would add it here
-      
+
       // Wait for all refreshes to complete
       await Promise.allSettled(refreshPromises);
-      
+
       console.log('✅ Pull to refresh completed on MyProfile');
     } catch (error) {
       console.error('❌ Pull to refresh error on MyProfile:', error);
@@ -162,9 +191,9 @@ const MyProfile: React.FC = () => {
   };
 
   const handleEmailChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      temail: value
+      temail: value,
     }));
 
     // Validate email format if field is not empty
@@ -175,7 +204,7 @@ const MyProfile: React.FC = () => {
         text: 'Please enter a valid email address (e.g., user@example.com)',
         confirmButtonColor: '#007bff',
         timer: 3000,
-        timerProgressBar: true
+        timerProgressBar: true,
       });
     }
   };
@@ -192,7 +221,7 @@ const MyProfile: React.FC = () => {
           icon: 'warning',
           title: 'Authentication Required',
           text: 'Please login first',
-          confirmButtonColor: '#007bff'
+          confirmButtonColor: '#007bff',
         });
       }
       return;
@@ -205,7 +234,7 @@ const MyProfile: React.FC = () => {
         icon: 'error',
         title: 'Invalid File Type',
         text: 'Please select a valid image file (JPEG, PNG, GIF)',
-        confirmButtonColor: '#007bff'
+        confirmButtonColor: '#007bff',
       });
       return;
     }
@@ -217,7 +246,7 @@ const MyProfile: React.FC = () => {
         icon: 'error',
         title: 'File Too Large',
         text: 'File size must be less than 5MB',
-        confirmButtonColor: '#007bff'
+        confirmButtonColor: '#007bff',
       });
       return;
     }
@@ -229,9 +258,9 @@ const MyProfile: React.FC = () => {
         icon: 'success',
         title: 'Success!',
         text: 'Profile image updated successfully!',
-        confirmButtonColor: '#007bff'
+        confirmButtonColor: '#007bff',
       });
-      
+
       // Auto-refresh profile data to get updated image URL
       console.log('🔄 Auto-refreshing profile after image upload...');
       setIsRefreshing(true);
@@ -247,7 +276,7 @@ const MyProfile: React.FC = () => {
         icon: 'error',
         title: 'Upload Failed',
         text: 'Failed to upload image',
-        confirmButtonColor: '#007bff'
+        confirmButtonColor: '#007bff',
       });
     }
   };
@@ -258,80 +287,82 @@ const MyProfile: React.FC = () => {
         icon: 'warning',
         title: 'Authentication Required',
         text: 'Please login first',
-        confirmButtonColor: '#007bff'
+        confirmButtonColor: '#007bff',
       });
       return;
     }
 
-      // Validasi required fields
-      if (!formData.tprofession.trim() ||
-          !formData.torganization.trim() ||
-          !formData.tinstagram.trim() ||
-          !formData.taddress.trim() ||
-          !formData.tdob.trim()) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Required Fields Missing',
-          text: 'Field Profession, Organization, Instagram, Address, dan Date of Birth wajib diisi!',
-          confirmButtonColor: '#007bff'
-        });
-        return;
-      }
+    // Validasi required fields
+    if (
+      !formData.tprofession.trim() ||
+      !formData.torganization.trim() ||
+      !formData.tinstagram.trim() ||
+      !formData.taddress.trim() ||
+      !formData.tdob.trim()
+    ) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Required Fields Missing',
+        text: 'Field Profession, Organization, Instagram, Address, dan Date of Birth wajib diisi!',
+        confirmButtonColor: '#007bff',
+      });
+      return;
+    }
 
-      // Validasi email format jika email diisi
-      if (formData.temail.trim() !== '' && !validateEmail(formData.temail)) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Invalid Email Format',
-          text: 'Please enter a valid email address (e.g., user@example.com)',
-          confirmButtonColor: '#007bff'
-        });
-        return;
-      }
+    // Validasi email format jika email diisi
+    if (formData.temail.trim() !== '' && !validateEmail(formData.temail)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email Format',
+        text: 'Please enter a valid email address (e.g., user@example.com)',
+        confirmButtonColor: '#007bff',
+      });
+      return;
+    }
 
+    try {
+      // Prepare payload with current form data (allow empty values)
+      const payload = {
+        tprofession: formData.tprofession,
+        torganization: formData.torganization,
+        tinstagram: formData.tinstagram,
+        taddress: formData.taddress,
+        tzip: formData.tzip,
+        temail: formData.temail,
+        tdob: formData.tdob,
+        ccity: formData.ccity,
+      };
+
+      console.log('📤 Update Profile Payload:', payload);
+
+      await updateProfileMutation.mutateAsync({
+        data: payload,
+      });
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Profile updated successfully!',
+        confirmButtonColor: '#007bff',
+      });
+
+      // Auto-refresh profile data to get updated information
+      console.log('🔄 Auto-refreshing profile after update...');
+      setIsRefreshing(true);
       try {
-        // Prepare payload with current form data (allow empty values)
-        const payload = {
-          tprofession: formData.tprofession,
-          torganization: formData.torganization,
-          tinstagram: formData.tinstagram,
-          taddress: formData.taddress,
-          tzip: formData.tzip,
-          temail: formData.temail,
-          tdob: formData.tdob,
-          ccity: formData.ccity
-        };
-
-        console.log('📤 Update Profile Payload:', payload);
-
-        await updateProfileMutation.mutateAsync({
-          data: payload
-        });
-        Swal.fire({
-          icon: 'success',
-          title: 'Success!',
-          text: 'Profile updated successfully!',
-          confirmButtonColor: '#007bff'
-        });
-        
-        // Auto-refresh profile data to get updated information
-        console.log('🔄 Auto-refreshing profile after update...');
-        setIsRefreshing(true);
-        try {
-          await refetchProfile();
-          console.log('✅ Profile auto-refresh completed after update');
-        } finally {
-          setTimeout(() => setIsRefreshing(false), 300);
-        }
-      } catch (error) {
-        console.error('Update profile error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Update Failed',
-          text: 'Failed to update profile',
-          confirmButtonColor: '#007bff'
-        });
+        await refetchProfile();
+        console.log('✅ Profile auto-refresh completed after update');
+      } finally {
+        setTimeout(() => setIsRefreshing(false), 300);
       }
+    } catch (error) {
+      console.error('Update profile error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Failed to update profile',
+        confirmButtonColor: '#007bff',
+      });
+    }
   };
 
   const handleBackClick = () => {
@@ -348,309 +379,325 @@ const MyProfile: React.FC = () => {
 
   return (
     <>
-     <AppbarDefault
+      <AppbarDefault
         title="Profil Saya"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
-        cartCount={0}
+        cartCount={apiCartCount}
       />
-    <div 
-      className="account-page"
-      ref={pullRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={{
-        transform: `translateY(${pullDistance}px)`,
-        transition: pulling.current ? 'none' : 'transform 0.2s ease-out'
-      }}
-    >
-      {/* Pull to Refresh Indicator */}
-      {(pullDistance > 0 || isRefreshing) && (
-        <div 
-          style={{
-            position: 'fixed',
-            top: pullDistance > 0 ? `${Math.max(0, pullDistance - 60)}px` : '10px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            backgroundColor: 'white',
-            borderRadius: '20px',
-            padding: '8px 16px',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            color: '#666',
-            transition: 'all 0.2s ease-out'
-          }}
-        >
-          <div 
+      <div
+        className="account-page"
+        ref={pullRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          transform: `translateY(${pullDistance}px)`,
+          transition: pulling.current ? 'none' : 'transform 0.2s ease-out',
+        }}
+      >
+        {/* Pull to Refresh Indicator */}
+        {(pullDistance > 0 || isRefreshing) && (
+          <div
             style={{
-              width: '16px',
-              height: '16px',
-              border: '2px solid #ddd',
-              borderTop: '2px solid #007bff',
-              borderRadius: '50%',
-              animation: isRefreshing ? 'spin 1s linear infinite' : 
-                        pullDistance > PULL_THRESHOLD ? 'spin 1s linear infinite' : 'none',
-              transform: !isRefreshing && pullDistance <= PULL_THRESHOLD ? 
-                        `rotate(${(pullDistance / PULL_THRESHOLD) * 360}deg)` : 'none'
+              position: 'fixed',
+              top: pullDistance > 0 ? `${Math.max(0, pullDistance - 60)}px` : '10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              backgroundColor: 'white',
+              borderRadius: '20px',
+              padding: '8px 16px',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '14px',
+              color: '#666',
+              transition: 'all 0.2s ease-out',
             }}
-          />
-          {isRefreshing ? 'Refreshing profile...' : 
-           pullDistance > PULL_THRESHOLD ? 'Release to refresh' : 'Pull to refresh'}
-        </div>
-      )}
-      
-     
-      
-      <div className="account-content">
-        <div className="account-card">
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            marginBottom: '1rem' 
-          }}>
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-              <img 
-                src={
-                  profileData?.content?.result?.image_url && 
-                  profileData.content.result.image_url !== "http://mbapi.dswip.com/images/customer/"
-                    ? profileData.content.result.image_url
-                    : "/lapakbenz.png"
-                }
-                alt="Profile"
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                  border: '2px solid #ddd',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}
-                onClick={handleImageClick}
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/lapakbenz.png";
-                }}
-                onMouseEnter={(e) => {
-                  (e.target as HTMLImageElement).style.opacity = '0.8';
-                  (e.target as HTMLImageElement).style.transform = 'scale(1.05)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.target as HTMLImageElement).style.opacity = '1';
-                  (e.target as HTMLImageElement).style.transform = 'scale(1)';
-                }}
-              />
-              {uploadImageMutation.isPending && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  background: 'rgba(0,0,0,0.7)',
-                  color: 'white',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  fontSize: '12px'
-                }}>
-                  Uploading...
-                </div>
-              )}
-              <div style={{
-                position: 'absolute',
-                bottom: '-5px',
-                right: '-5px',
-                background: '#007bff',
-                color: 'white',
+          >
+            <div
+              style={{
+                width: '16px',
+                height: '16px',
+                border: '2px solid #ddd',
+                borderTop: '2px solid #007bff',
                 borderRadius: '50%',
-                width: '24px',
-                height: '24px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                animation: isRefreshing
+                  ? 'spin 1s linear infinite'
+                  : pullDistance > PULL_THRESHOLD
+                    ? 'spin 1s linear infinite'
+                    : 'none',
+                transform:
+                  !isRefreshing && pullDistance <= PULL_THRESHOLD
+                    ? `rotate(${(pullDistance / PULL_THRESHOLD) * 360}deg)`
+                    : 'none',
               }}
-              onClick={handleImageClick}
-              title="Change profile picture"
-              >
-                📷
-              </div>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: 'none' }}
             />
+            {isRefreshing
+              ? 'Refreshing profile...'
+              : pullDistance > PULL_THRESHOLD
+                ? 'Release to refresh'
+                : 'Pull to refresh'}
           </div>
-          <h3>Informasi Profil Saya</h3>
-          
-          {profileLoading && (
-            <div style={{ textAlign: 'center', padding: '1rem' }}>
-              <p>Memuat data profil...</p>
-            </div>
-          )}
-          
-          {profileError && (
-            <div style={{ textAlign: 'center', padding: '1rem', color: '#dc3545' }}>
-              <p>Gagal memuat profil: {profileError.message}</p>
-            </div>
-          )}
-          
-          {!profileLoading && !profileError && (
-            <>
-              <div className="form-group">
-                <label>Nama Lengkap</label>
-                <input 
-                  type="text" 
-                  value={formData.tname}
-                  onChange={(e) => handleInputChange('tname', e.target.value)}
-                  placeholder="Masukkan nama lengkap Anda" 
+        )}
+
+        <div className="account-content">
+          <div className="account-card">
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '1rem',
+              }}
+            >
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <img
+                  src={
+                    profileData?.content?.result?.image_url &&
+                    profileData.content.result.image_url !==
+                      'http://mbapi.dswip.com/images/customer/'
+                      ? profileData.content.result.image_url
+                      : '/lapakbenz.png'
+                  }
+                  alt="Profile"
+                  style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '2px solid #ddd',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                  }}
+                  onClick={handleImageClick}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/lapakbenz.png';
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.target as HTMLImageElement).style.opacity = '0.8';
+                    (e.target as HTMLImageElement).style.transform = 'scale(1.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.target as HTMLImageElement).style.opacity = '1';
+                    (e.target as HTMLImageElement).style.transform = 'scale(1)';
+                  }}
                 />
-              </div>
-              <div className="form-group">
-                <label>No. HP</label>
-                <input 
-                  type="tel" 
-                  value={formData.tphone1}
-                  onChange={(e) => handleInputChange('tphone1', e.target.value)}
-                  placeholder="Contoh: +62 xxx-xxxx-xxxx" 
-                />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input 
-                  type="email" 
-                  value={formData.temail}
-                  onChange={(e) => handleEmailChange(e.target.value)}
-                  placeholder="email.anda@email.com" 
-                />
-              </div>
-              <div className="form-group">
-                <label>Alamat</label>
-                <textarea 
-                  value={formData.taddress}
-                  onChange={(e) => handleInputChange('taddress', e.target.value)}
-                  placeholder="Masukkan alamat lengkap Anda" 
-                  rows={3}
-                />
-              </div>
-              <div className="form-group">
-                <label>Kode Pos</label>
-                <input 
-                  type="text" 
-                  value={formData.tzip}
-                  onChange={(e) => handleInputChange('tzip', e.target.value)}
-                  placeholder="Masukkan kode pos" 
-                />
-              </div>
-              <div className="form-group">
-                <label>Kota</label>
-                <select 
-                  value={formData.ccity}
-                  onChange={(e) => handleInputChange('ccity', e.target.value)}
-                  disabled={cityLoading}
+                {uploadImageMutation.isPending && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      background: 'rgba(0,0,0,0.7)',
+                      color: 'white',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                    }}
+                  >
+                    Uploading...
+                  </div>
+                )}
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: '-5px',
+                    right: '-5px',
+                    background: '#007bff',
+                    color: 'white',
+                    borderRadius: '50%',
+                    width: '24px',
+                    height: '24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }}
+                  onClick={handleImageClick}
+                  title="Change profile picture"
                 >
-                  <option value="">
-                    {cityLoading ? 'Memuat daftar kota...' : 'Pilih Kota'}
-                  </option>
-                  {cityError && (
-                    <option value="" disabled>
-                      Gagal memuat kota
-                    </option>
-                  )}
-                  {cityData && (() => {
-                    // Handle different possible data structures
-                    let cities = [];
-                    
-                    if (Array.isArray(cityData)) {
-                      cities = cityData;
-                    } else if (cityData.content?.result && Array.isArray(cityData.content.result)) {
-                      cities = cityData.content.result;
-                    } else if (Array.isArray(cityData.content)) {
-                      cities = cityData.content;
-                    } else if (cityData.data && Array.isArray(cityData.data)) {
-                      cities = cityData.data;
-                    } else if (cityData.result && Array.isArray(cityData.result)) {
-                      cities = cityData.result;
-                    }
+                  📷
+                </div>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: 'none' }}
+              />
+            </div>
+            <h3>Informasi Profil Saya</h3>
 
-                    if (cities.length === 0) {
-                      return (
-                        <option value="" disabled>
-                          Tidak ada kota tersedia
-                        </option>
-                      );
-                    }
+            {profileLoading && (
+              <div style={{ textAlign: 'center', padding: '1rem' }}>
+                <p>Memuat data profil...</p>
+              </div>
+            )}
 
-                    return cities.map((city: any, index: number) => {
-                      // Handle different city object structures
-                      const cityId = city.id || city.city_id || city.value || index;
-                      const cityName = city.name || city.city_name || city.label || city.text || `Kota ${index + 1}`;
-                      
-                      return (
-                        <option key={cityId} value={cityId}>
-                          {cityName}
-                        </option>
-                      );
-                    });
-                  })()}
-                </select>
+            {profileError && (
+              <div style={{ textAlign: 'center', padding: '1rem', color: '#dc3545' }}>
+                <p>Gagal memuat profil: {profileError.message}</p>
               </div>
-              <div className="form-group">
-                <label>Profesi</label>
-                <input 
-                  type="text" 
-                  value={formData.tprofession}
-                  onChange={(e) => handleInputChange('tprofession', e.target.value)}
-                  placeholder="Masukkan profesi Anda" 
-                />
-              </div>
-              <div className="form-group">
-                <label>Organisasi</label>
-                <input 
-                  type="text" 
-                  value={formData.torganization}
-                  onChange={(e) => handleInputChange('torganization', e.target.value)}
-                  placeholder="Masukkan organisasi/perusahaan Anda" 
-                />
-              </div>
-              <div className="form-group">
-                <label>Instagram</label>
-                <input 
-                  type="text" 
-                  value={formData.tinstagram}
-                  onChange={(e) => handleInputChange('tinstagram', e.target.value)}
-                  placeholder="@username" 
-                />
-              </div>
-              <div className="form-group">
-                <label>Tanggal Lahir</label>
-                <input 
-                  type="date" 
-                  value={formData.tdob}
-                  onChange={(e) => handleInputChange('tdob', e.target.value)}
-                />
-              </div>
-              <button 
-                className="save-btn"
-                onClick={handleUpdateProfile}
-              >
-                {updateProfileMutation.isPending ? 'Menyimpan...' : 'Simpan Profil'}
-              </button>
-            </>
-          )}
+            )}
+
+            {!profileLoading && !profileError && (
+              <>
+                <div className="form-group">
+                  <label>Nama Lengkap</label>
+                  <input
+                    type="text"
+                    value={formData.tname}
+                    onChange={(e) => handleInputChange('tname', e.target.value)}
+                    placeholder="Masukkan nama lengkap Anda"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>No. HP</label>
+                  <input
+                    type="tel"
+                    value={formData.tphone1}
+                    onChange={(e) => handleInputChange('tphone1', e.target.value)}
+                    placeholder="Contoh: +62 xxx-xxxx-xxxx"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={formData.temail}
+                    onChange={(e) => handleEmailChange(e.target.value)}
+                    placeholder="email.anda@email.com"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Alamat</label>
+                  <textarea
+                    value={formData.taddress}
+                    onChange={(e) => handleInputChange('taddress', e.target.value)}
+                    placeholder="Masukkan alamat lengkap Anda"
+                    rows={3}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kode Pos</label>
+                  <input
+                    type="text"
+                    value={formData.tzip}
+                    onChange={(e) => handleInputChange('tzip', e.target.value)}
+                    placeholder="Masukkan kode pos"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kota</label>
+                  <select
+                    value={formData.ccity}
+                    onChange={(e) => handleInputChange('ccity', e.target.value)}
+                    disabled={cityLoading}
+                  >
+                    <option value="">{cityLoading ? 'Memuat daftar kota...' : 'Pilih Kota'}</option>
+                    {cityError && (
+                      <option value="" disabled>
+                        Gagal memuat kota
+                      </option>
+                    )}
+                    {cityData &&
+                      (() => {
+                        // Handle different possible data structures
+                        let cities = [];
+
+                        if (Array.isArray(cityData)) {
+                          cities = cityData;
+                        } else if (
+                          cityData.content?.result &&
+                          Array.isArray(cityData.content.result)
+                        ) {
+                          cities = cityData.content.result;
+                        } else if (Array.isArray(cityData.content)) {
+                          cities = cityData.content;
+                        } else if (cityData.data && Array.isArray(cityData.data)) {
+                          cities = cityData.data;
+                        } else if (cityData.result && Array.isArray(cityData.result)) {
+                          cities = cityData.result;
+                        }
+
+                        if (cities.length === 0) {
+                          return (
+                            <option value="" disabled>
+                              Tidak ada kota tersedia
+                            </option>
+                          );
+                        }
+
+                        return cities.map((city: any, index: number) => {
+                          // Handle different city object structures
+                          const cityId = city.id || city.city_id || city.value || index;
+                          const cityName =
+                            city.name ||
+                            city.city_name ||
+                            city.label ||
+                            city.text ||
+                            `Kota ${index + 1}`;
+
+                          return (
+                            <option key={cityId} value={cityId}>
+                              {cityName}
+                            </option>
+                          );
+                        });
+                      })()}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Profesi</label>
+                  <input
+                    type="text"
+                    value={formData.tprofession}
+                    onChange={(e) => handleInputChange('tprofession', e.target.value)}
+                    placeholder="Masukkan profesi Anda"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Organisasi</label>
+                  <input
+                    type="text"
+                    value={formData.torganization}
+                    onChange={(e) => handleInputChange('torganization', e.target.value)}
+                    placeholder="Masukkan organisasi/perusahaan Anda"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Instagram</label>
+                  <input
+                    type="text"
+                    value={formData.tinstagram}
+                    onChange={(e) => handleInputChange('tinstagram', e.target.value)}
+                    placeholder="@username"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Tanggal Lahir</label>
+                  <input
+                    type="date"
+                    value={formData.tdob}
+                    onChange={(e) => handleInputChange('tdob', e.target.value)}
+                  />
+                </div>
+                <button className="save-btn" onClick={handleUpdateProfile}>
+                  {updateProfileMutation.isPending ? 'Menyimpan...' : 'Simpan Profil'}
+                </button>
+              </>
+            )}
+          </div>
         </div>
+
+        <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
       </div>
-      
-      <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
-    </div>
     </>
   );
 };

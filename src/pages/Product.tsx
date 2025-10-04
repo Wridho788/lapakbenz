@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { MdSearch, MdFilterList, MdClear } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useCart as useCartContext } from '../contexts/CartContext';
 import { useProducts, useProductCategories, useProductSearch, useCart } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
 import './Product.css';
@@ -12,10 +11,11 @@ const Product: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(''); // Changed to use category ID
-  const { cartCount } = useCartContext();
   
-  // Call useCart hook to keep cart data fresh
-  useCart();
+  // API hooks for cart
+  const {
+    data: apiCartData,
+  } = useCart();
   
   // API hooks - now passing category ID instead of category name
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
@@ -143,6 +143,20 @@ const Product: React.FC = () => {
       // Don't refetch here to prevent infinite loop - just reset search state
     }
   }, [searchQuery]); // Removed productSearchMutation and refetchProducts from dependency array
+// Log cart API data
+  useEffect(() => {
+    if (apiCartData) {
+      console.log('🛒 Cart API Response:', apiCartData);
+      console.log('🛒 Cart Items:', apiCartData?.content?.result);
+      console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
+      console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
+    }
+  }, [apiCartData]);
+
+  const getApiCartCount = () => {
+    return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
+  };
+    const apiCartCount = getApiCartCount();
 
   const handleProductClick = (product: any) => {
     const productName = product.title || product.name || product.sku || product.id;
@@ -180,7 +194,7 @@ const Product: React.FC = () => {
         title="Katalog Produk"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
-        cartCount={cartCount}
+        cartCount={apiCartCount}
       />
 
       <div className="product-content">

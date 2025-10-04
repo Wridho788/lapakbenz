@@ -73,6 +73,7 @@ const Cart: React.FC = () => {
     error: cartError,
     refetch: refetchCart,
   } = useCart();
+  
   const removeAllFromCartMutation = useRemoveFromCart();
   const addToCartMutation = useAddToCart();
 
