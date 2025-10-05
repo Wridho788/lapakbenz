@@ -25,6 +25,7 @@ const EventDetail: React.FC = () => {
   const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
   const [isAuthValidated, setIsAuthValidated] = useState(false);
   const [triggerRegistration, setTriggerRegistration] = useState(false);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   
   // Extract actual event ID from URL parameter (handles both old ID format and new SEO format)
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
@@ -46,6 +47,7 @@ const EventDetail: React.FC = () => {
           ordercode: result.content.ordercode,
           invoice_url: result.content.invoice_url,
         });
+        setShowRegistrationModal(true);
 
         Swal.fire({
           icon: 'success',
@@ -68,10 +70,21 @@ const EventDetail: React.FC = () => {
 
     if (eventRegisterQuery.error && triggerRegistration) {
       console.error('❌ Event Registration Error:', eventRegisterQuery.error);
+      
+      // Safely extract error message from Axios error or fallback to generic message
+      let errorMessage = 'An unexpected error occurred during registration.';
+      if (eventRegisterQuery.error && typeof eventRegisterQuery.error === 'object' && 'response' in eventRegisterQuery.error) {
+        const axiosError = eventRegisterQuery.error as any;
+        errorMessage = axiosError.response?.data?.error || axiosError.message || errorMessage;
+        console.log(errorMessage)
+      } else if (eventRegisterQuery.error.message) {
+        errorMessage = eventRegisterQuery.error.message;
+      }
+      
       Swal.fire({
         icon: 'error',
         title: '❌ Registration Failed',
-        text: eventRegisterQuery.error.message || 'An unexpected error occurred during registration.',
+        text: errorMessage,
         confirmButtonColor: '#ef4444',
       });
       setTriggerRegistration(false);
@@ -168,6 +181,10 @@ const EventDetail: React.FC = () => {
       const fullUrl = getFullUrl(registrationData.invoice_url);
       window.open(fullUrl, '_blank');
     }
+  };
+
+  const handleCloseRegistrationModal = () => {
+    setShowRegistrationModal(false);
   };
 
   const handleMerchantRegistration = () => {
@@ -293,11 +310,22 @@ const EventDetail: React.FC = () => {
             onRegister={handleEventRegister}
           />
 
-          {registrationData && (
-            <RegistrationSuccess
-              registrationData={registrationData}
-              onOpenInvoice={handleOpenInvoice}
-            />
+          {showRegistrationModal && registrationData && (
+            <div className="modal-overlay" onClick={handleCloseRegistrationModal}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <button 
+                  className="modal-close-btn"
+                  onClick={handleCloseRegistrationModal}
+                  aria-label="Close modal"
+                >
+                  ×
+                </button>
+                <RegistrationSuccess
+                  registrationData={registrationData}
+                  onOpenInvoice={handleOpenInvoice}
+                />
+              </div>
+            </div>
           )}
 
           {(eventContent.allow_merchant === 1 || eventContent.allow_public === 1) && (

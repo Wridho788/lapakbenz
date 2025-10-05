@@ -134,11 +134,6 @@ export const registerEvent = async (authToken: string, eventId: string) => {
 
     // Enhanced error handling
     if (axios.isAxiosError(error)) {
-      // Server responded with error status
-      // const errorData = error.response.data;
-      // const statusCode = error.response.status;
-
-      // console.error('❌ Server error:', statusCode, errorData);
 
       if (error.response?.status === 401) {
         throw new Error('Authentication failed. Please login again.');
@@ -149,7 +144,8 @@ export const registerEvent = async (authToken: string, eventId: string) => {
           error.response?.data?.message || 'Invalid request. Please check your data.',
         );
       }
-      throw new Error(error.response?.data?.message || 'Registration failed');
+      console.error('❌ Unexpected error response:', error.response?.data);
+      throw new Error(error.response?.data?.error || 'Registration failed');
     } else {
       // Other error
       throw error;
