@@ -13,7 +13,6 @@ interface CheckoutData {
   redeemPoints: number;
   total: number;
   subtotal: number;
-  shippingFee: number;
   paymentFee: number;
   pointsDiscount: number;
 }

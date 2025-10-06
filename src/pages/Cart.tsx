@@ -16,7 +16,7 @@ import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
 import { useCart, useRemoveFromCart, useAddToCart } from '../api/hooks/index';
 import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import './Cart.css';
 
 // interface ShippingAddress {
@@ -227,9 +227,8 @@ const Cart: React.FC = () => {
 
   const subtotal = getApiCartTotal();
   const apiCartCount = getApiCartCount();
-  const shippingFee = 15000;
   const paymentFee =  0;
-  const totalPayment = subtotal + shippingFee + paymentFee;
+  const totalPayment = subtotal  + paymentFee;
 
   // New order flow function
   const handlePlaceOrder = async () => {

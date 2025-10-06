@@ -35,7 +35,7 @@
   justify-content: center;
   flex: 1;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: #161129;
   font-weight: 500;
   font-size: 1em;
   padding: 0.5rem 0;
@@ -115,7 +115,6 @@
 
 @media (min-width: 430px) and (max-width: 690px) {
   .bottom-nav {
-    max-width: 430px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 1rem 1rem 0 0;
@@ -142,7 +141,7 @@
 /* Dark mode enhancement */
 @media (prefers-color-scheme: dark) {
   .bottom-nav {
-    background: linear-gradient(90deg, #0f0f17 80%, #1a1829 100%);
+    background: #ff8800;
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
   }
 }

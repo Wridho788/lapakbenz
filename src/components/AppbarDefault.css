@@ -26,7 +26,7 @@
 .appbar-back-btn {
   background: rgba(255, 255, 255, 0);
   border: none;
-  color: #fff;
+  color: #161129;
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -61,7 +61,7 @@
 .appbar-cart-btn {
   background: rgba(255, 255, 255, 0);
   border: none;
-  color: #fff;
+  color: #161129;
   font-size: 1.2rem;
   cursor: pointer;
   padding: 0.5rem;
@@ -250,7 +250,7 @@
 /* Dark mode enhancement */
 @media (prefers-color-scheme: dark) {
   .appbar-default {
-    background: linear-gradient(135deg, #0f0f17 0%, #1a1829 100%);
+    background: #ff8800;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   }
 }

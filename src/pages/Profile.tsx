@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useCart } from '../contexts/CartContext';
 import { useProfile, useLedger } from '../api/hooks/index';

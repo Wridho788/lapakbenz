@@ -7,7 +7,7 @@ export type SectionWrapperProps = {
 
 export const SectionWrapper: React.FC<SectionWrapperProps> = ({ title, children }) => (
   <div>
-    <h2>{title}</h2>
+    <h3>{title}</h3>
     <div>{children}</div>
   </div>
 );

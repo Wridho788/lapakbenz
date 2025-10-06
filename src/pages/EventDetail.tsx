@@ -7,7 +7,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
 import { useEventById, useEventRegister } from '../api/hooks/index';
 import { extractIdFromParam } from '../api/codeMapping';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import './EventDetail.css';
 
 interface RegistrationData {
@@ -49,21 +49,10 @@ const EventDetail: React.FC = () => {
         });
         setShowRegistrationModal(true);
 
-        Swal.fire({
-          icon: 'success',
-          title: '🎉 Registration Successful!',
-          text: 'Your event registration has been completed successfully.',
-          confirmButtonColor: '#10b981',
-          confirmButtonText: 'Continue',
-        });
+        toast.success('🎉 Registration Successful! Your event registration has been completed successfully.');
       } else {
         const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        Swal.fire({
-          icon: 'error',
-          title: '❌ Registration Failed',
-          text: errorMsg,
-          confirmButtonColor: '#ef4444',
-        });
+        toast.error(`❌ Registration Failed: ${errorMsg}`);
       }
       setTriggerRegistration(false);
     }
@@ -81,12 +70,7 @@ const EventDetail: React.FC = () => {
         errorMessage = eventRegisterQuery.error.message;
       }
       
-      Swal.fire({
-        icon: 'error',
-        title: '❌ Registration Failed',
-        text: errorMessage,
-        confirmButtonColor: '#ef4444',
-      });
+      toast.error(`❌ Registration Failed: ${errorMessage}`);
       setTriggerRegistration(false);
     }
   }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
@@ -135,37 +119,20 @@ const EventDetail: React.FC = () => {
     // Enhanced authentication check
     const authSuccess = requireAuth(() => {}, 'register for event');
     if (!authSuccess || !isAuthValidated) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Authentication Required',
-        text: 'Please login first to register for this event.',
-        confirmButtonColor: '#3b82f6',
-        confirmButtonText: 'Go to Login'
-      }).then(() => {
-        navigate('/login');
-      });
+      toast.warning('Please login first to register for this event.');
+      navigate('/login');
       return;
     }
 
     if (!eventId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Event Not Found',
-        text: 'Event not found or invalid event code.',
-        confirmButtonColor: '#3b82f6',
-      });
+      toast.error('Event not found or invalid event code.');
       return;
     }
 
     // Validate event ID format
     if (!eventId.match(/^\d+$/)) {
       console.error('❌ Invalid event ID format:', eventId);
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Event ID',
-        text: 'Event ID format is invalid.',
-        confirmButtonColor: '#3b82f6',
-      });
+      toast.error('Event ID format is invalid.');
       return;
     }
 

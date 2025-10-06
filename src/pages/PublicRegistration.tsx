@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { usePublicRegistration } from '../api/hooks/index';
 import './PublicRegistration.css';

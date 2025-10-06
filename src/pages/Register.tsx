@@ -4,7 +4,7 @@ import { MdPersonAdd } from 'react-icons/md';
 import { MdCalendarToday } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
 import { useRegister, useChapters, useCity } from '../api/hooks/index';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import './Register.css';
 
 const Register: React.FC = () => {
@@ -65,22 +65,12 @@ const Register: React.FC = () => {
     
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'Password Mismatch',
-        text: 'Passwords do not match',
-        confirmButtonColor: '#d33'
-      });
+      toast.error('Passwords do not match');
       return;
     }
     
     if (formData.agree !== 'true') {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Terms and Conditions',
-        text: 'Please agree to the terms and conditions',
-        confirmButtonColor: '#f39c12'
-      });
+      toast.warning('Please agree to the terms and conditions');
       return;
     }
 
@@ -108,15 +98,8 @@ const Register: React.FC = () => {
       const result = await registerMutation.mutateAsync(registerData);
       console.log('Registration successful:', result);
       
-      // Show success message with SweetAlert
-      await Swal.fire({
-        icon: 'success',
-        title: 'Registration Successful!',
-        text: 'Your registration will be processed offline by admin.',
-        confirmButtonColor: '#28a745',
-        timer: 2000,
-        timerProgressBar: true
-      });
+      // Show success message with toast
+      toast.success('Registration Successful! Your registration will be processed offline by admin.');
       navigate('/verify', { state: { username: registerData.tphone1,
             id_customer: result.content?.id // dari response register/request OTP
         } });
@@ -125,7 +108,6 @@ const Register: React.FC = () => {
       
       // Handle different types of errors
       let errorMessage = 'Registration failed. Please try again.';
-      let errorTitle = 'Registration Failed';
       
       // Check if it's an Axios error with response
       if (error?.response?.data) {
@@ -134,7 +116,6 @@ const Register: React.FC = () => {
         // Check for specific error format
         if (errorData.error) {
           errorMessage = errorData.error;
-          errorTitle = 'Validation Error';
         } else if (errorData.message) {
           errorMessage = errorData.message;
         }
@@ -142,13 +123,8 @@ const Register: React.FC = () => {
         errorMessage = error.message;
       }
       
-      // Show error message with SweetAlert
-      await Swal.fire({
-        icon: 'error',
-        title: errorTitle,
-        text: errorMessage,
-        confirmButtonColor: '#d33'
-      });
+      // Show error message with toast
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

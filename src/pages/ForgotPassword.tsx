@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { useRequestOTP, useForgotPassword } from '../api/hooks/index';
 import { useNavigate } from 'react-router-dom';
 import { MdSend } from 'react-icons/md';
@@ -15,7 +15,7 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailOrPhone.trim()) {
-      Swal.fire({ icon: 'warning', title: 'Input diperlukan', text: 'Masukkan email atau nomor HP Anda', confirmButtonColor: '#3b82f6' });
+      toast.warning('Masukkan email atau nomor HP Anda');
       return;
     }
     requestOTP(
@@ -23,14 +23,14 @@ const ForgotPassword: React.FC = () => {
       {
         onSuccess: () => {
           setIsSubmitted(true);
-          Swal.fire({ icon: 'success', title: 'OTP dikirim', text: 'Kode OTP telah dikirim ke email/nomor HP Anda.', timer: 1500, showConfirmButton: false });
+          toast.success('Kode OTP telah dikirim ke email/nomor HP Anda.');
         },
         onError: (err: any) => {
           let msg = 'Gagal mengirim OTP.';
           if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
             msg = err.message;
           }
-          Swal.fire({ icon: 'error', title: 'Gagal', text: msg, confirmButtonColor: '#d33' });
+          toast.error(msg);
         },
       }
     );
@@ -48,7 +48,7 @@ const ForgotPassword: React.FC = () => {
   const handleSetPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (!otp.trim() || !newPassword.trim()) {
-      Swal.fire({ icon: 'warning', title: 'Input diperlukan', text: 'OTP dan password baru wajib diisi', confirmButtonColor: '#3b82f6' });
+      toast.warning('OTP dan password baru wajib diisi');
       return;
     }
     setForgotPassword(
@@ -59,15 +59,15 @@ const ForgotPassword: React.FC = () => {
       },
       {
         onSuccess: () => {
-          Swal.fire({ icon: 'success', title: 'Password berhasil diubah', text: 'Silakan login dengan password baru Anda.', confirmButtonColor: '#10b981' })
-            .then(() => navigate('/login'));
+          toast.success('Password berhasil diubah! Silakan login dengan password baru Anda.');
+          setTimeout(() => navigate('/login'), 2000);
         },
         onError: (err: any) => {
           let msg = 'Gagal mengubah password.';
           if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
             msg = err.message;
           }
-          Swal.fire({ icon: 'error', title: 'Gagal', text: msg, confirmButtonColor: '#d33' });
+          toast.error(msg);
         },
       }
     );

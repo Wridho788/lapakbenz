@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
 import './VerifyOtp.css';
 import { useSimpleRequestOTP, useVerifyOTP } from '../api/hooks/index'; // Tambahkan import ini
@@ -36,19 +36,14 @@ const VerifyOtp: React.FC = () => {
 
   const { requestOTP, canRequest } = useSimpleRequestOTP(username, {
     onSuccess: () => {
-      Swal.fire({ icon: 'success', title: 'OTP dikirim', timer: 1200, showConfirmButton: false });
+      toast.success('OTP dikirim');
     },
     onError: (err) => {
       let msg = 'Terjadi kesalahan saat mengirim OTP. Silakan coba lagi.';
       if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
         msg = err.message;
       }
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal mengirim OTP',
-        text: msg,
-        confirmButtonColor: '#d33',
-      });
+      toast.error(msg);
     },
   });
 
@@ -86,12 +81,7 @@ const VerifyOtp: React.FC = () => {
     if (canRequest) {
       requestOTP();
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal mengirim OTP',
-        text: 'Username tidak valid, tidak dapat mengirim OTP.',
-        confirmButtonColor: '#d33',
-      });
+      toast.error('Username tidak valid, tidak dapat mengirim OTP.');
     }
     setTimeout(() => setResendDisabled(false), 10000); // 10 detik cooldown
   };
@@ -126,16 +116,11 @@ const VerifyOtp: React.FC = () => {
       console.log('✅ OTP Verification Success:', result);
 
       // Tampilkan success message
-      Swal.fire({
-        icon: 'success',
-        title: 'Verifikasi Berhasil',
-        text: 'Kode OTP Anda telah diverifikasi!',
-        confirmButtonColor: '#10b981',
-        timer: 2000,
-      }).then(() => {
+      toast.success('Kode OTP Anda telah diverifikasi!');
+      setTimeout(() => {
         // Navigate ke halaman login atau halaman berikutnya
         navigate('/login', { replace: true });
-      });
+      }, 2000);
     } catch (err: any) {
       console.error('❌ OTP Verification Error:', err);
 
@@ -150,13 +135,7 @@ const VerifyOtp: React.FC = () => {
 
       // Tampilkan error
       setError(errorMessage);
-
-      Swal.fire({
-        icon: 'error',
-        title: 'Verifikasi Gagal',
-        text: errorMessage,
-        confirmButtonColor: '#d33',
-      });
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

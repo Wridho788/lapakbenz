@@ -120,13 +120,7 @@ const Notifications: React.FC = () => {
 
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!isAuthenticated || !token) {
-      Swal.fire({
-        title: 'Diperlukan Autentikasi',
-        text: 'Silakan masuk untuk melihat detail notifikasi',
-        icon: 'warning',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#161129',
-      });
+      toast.warning('Silakan masuk untuk melihat detail notifikasi');
       return;
     }
 
@@ -174,18 +168,11 @@ const Notifications: React.FC = () => {
 
     } catch (err) {
       console.error('Notification detail error:', err);
-      Swal.close();
 
       // Fallback to basic notification data
-      const result = await Swal.fire({
-        title: notification.title,
-        text: notification.message,
-        icon: 'info',
-        confirmButtonText: 'Close',
-        confirmButtonColor: '#161129',
-      });
-
-      if (result.isConfirmed && notification.reading === "0") {
+      toast.info(`${notification.title}: ${notification.message}`);
+      
+      if (notification.reading === "0") {
         await markAsRead();
       }
 
