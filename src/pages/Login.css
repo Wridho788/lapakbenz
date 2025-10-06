@@ -2,6 +2,8 @@
 .login-page {
   display: flex;
   flex-direction: column;
+  background-color: #ededed;
+  height: 100%;
 }
 
 .login-card {

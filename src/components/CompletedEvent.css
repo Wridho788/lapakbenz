@@ -3,7 +3,7 @@
   width: 100%;
   margin: -1.5rem 0;
   color-scheme: light;
-  background-color: #ffffff;
+  background: #ededed;
   color: #000000;
 }
 
@@ -21,7 +21,7 @@
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   /* Ensure light background for scroll container */
-  background-color: #ffffff;
+background: #ededed;
 }
 
 .event-scroll-container::-webkit-scrollbar {
@@ -31,12 +31,12 @@
 /* Override any dark mode styles that might be applied */
 @media (prefers-color-scheme: dark) {
   .completed-event {
-    background-color: #ffffff !important;
+    background-color: #ededed !important;
     color: #000000 !important;
   }
   
   .event-scroll-container {
-    background-color: #ffffff !important;
+    background-color: #ededed !important;
   }
   
   /* Force light mode for all child elements in dark mode */

@@ -4,7 +4,7 @@
   flex-direction: column;
   border-bottom: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: 0px 8px;
+  padding: 5px 8px;
   background: #fff;
 }
 
@@ -107,13 +107,13 @@
   padding: 1rem;
   flex: 1;
   overflow-y: auto;
-  background-color: white !important;
+  background-color: #ededed !important;
 }
 
 .event-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .event-card {
@@ -322,7 +322,7 @@
   padding: 4rem 2rem;
   text-align: center;
   color: #7f8c8d !important;
-  background: #fff !important;
+  background: #ededed !important;
 }
 
 .empty-icon {
@@ -414,7 +414,7 @@
 /* OVERRIDE DARK MODE - FORCE LIGHT MODE */
 @media (prefers-color-scheme: dark) {
   .event-page {
-    background: #f8f9fa !important;
+    background: #ededed !important;
     color: #2c3e50 !important;
   }
   
@@ -463,11 +463,11 @@
   }
   
   .event-content {
-    background-color: white !important;
+    background-color:#ededed !important;
   }
   
   .empty-state {
-    background: #fff !important;
+    background: #ededed !important;
     color: #7f8c8d !important;
   }
   

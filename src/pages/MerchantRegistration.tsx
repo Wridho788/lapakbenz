@@ -92,11 +92,9 @@ const MerchantRegistration: React.FC = () => {
     }
 
     if (!eventId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ID Event Tidak Ada',
-        text: 'ID event tidak ditemukan. Silakan coba lagi dari halaman event.',
-        confirmButtonColor: '#3b82f6'
+      toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.', {
+        position: 'top-center',
+        autoClose: 4000,
       });
       return;
     }
@@ -117,71 +115,75 @@ const MerchantRegistration: React.FC = () => {
       if (result.status === 200 && result.content) {
         const hasInvoice = result.content.invoice_url;
         const invoiceUrl = result.content.invoice_url;
+        
         if (!hasInvoice) {
-          await Swal.fire({
-            icon: 'success',
-            title: '🎉 Pendaftaran Berhasil!',
-            html: `
-              <p>Pendaftaran merchant Anda berhasil dikirim.</p>
-              <br>
-              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
-                <p><strong>📋 Detail Pendaftaran:</strong></p>
-                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
-                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
-                <p style="color: #10b981; margin-top: 10px;"><strong>Biaya pembuatan merchant: GRATIS</strong></p>
+          toast.success(
+            <div>
+              <strong>🎉 Pendaftaran Berhasil!</strong>
+              <div style={{ marginTop: '8px', fontSize: '14px' }}>
+                <p><strong>Kode Order:</strong> {result.content.ordercode || 'N/A'}</p>
+                <p><strong>ID Transaksi:</strong> {result.content.transid || 'N/A'}</p>
+                <p style={{ color: '#10b981', marginTop: '8px' }}>
+                  <strong>Biaya pembuatan merchant: GRATIS</strong>
+                </p>
               </div>
-            `,
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'Lanjut',
-          });
-          // Navigate back to event detail after closing the success modal
-          navigate(`/event/${eventId}`);
+            </div>,
+            {
+              position: 'top-center',
+              autoClose: 5000,
+              onClose: () => navigate(`/event/${eventId}`)
+            }
+          );
         } else {
-          const swalResult = await Swal.fire({
-            icon: 'success',
-            title: '🎉 Pendaftaran Berhasil!',
-            html: `
-              <p>Pendaftaran merchant Anda berhasil dikirim.</p>
-              <br>
-              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
-                <p><strong>📋 Detail Pendaftaran:</strong></p>
-                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
-                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
+          toast.success(
+            <div>
+              <strong>🎉 Pendaftaran Berhasil!</strong>
+              <div style={{ marginTop: '8px', fontSize: '14px' }}>
+                <p><strong>Kode Order:</strong> {result.content.ordercode || 'N/A'}</p>
+                <p><strong>ID Transaksi:</strong> {result.content.transid || 'N/A'}</p>
+                <button
+                  onClick={() => {
+                    const fullUrl = getFullUrl(invoiceUrl);
+                    window.open(fullUrl, '_blank');
+                  }}
+                  style={{
+                    marginTop: '12px',
+                    padding: '8px 16px',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
+                >
+                  💳 Lihat Invoice
+                </button>
               </div>
-            `,
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'Lanjut',
-            showDenyButton: hasInvoice,
-            denyButtonText: hasInvoice ? '💳 Lihat Invoice' : undefined,
-            denyButtonColor: '#3b82f6',
-          });
-          
-          // Handle button clicks
-          if (swalResult.isDenied && invoiceUrl) {
-            // Open invoice in new tab using Invoice page pattern
-            const fullUrl = getFullUrl(invoiceUrl);
-            window.open(fullUrl, '_blank');
-          }
-          // Navigate back to event detail after modal is closed
-          navigate(`/event/${eventId}`);
+            </div>,
+            {
+              position: 'top-center',
+              autoClose: 6000,
+              onClose: () => navigate(`/event/${eventId}`)
+            }
+          );
         }
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Pendaftaran Gagal',
-          text: result.message || 'Pendaftaran gagal. Silakan coba lagi.',
-          confirmButtonColor: '#3b82f6'
+        toast.error(result.message || 'Pendaftaran gagal. Silakan coba lagi.', {
+          position: 'top-center',
+          autoClose: 4000,
         });
       }
     } catch (error: any) {
       console.error('❌ Registration failed:', error.response?.data?.error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Pendaftaran Gagal',
-        text: error.response?.data?.error || 'Pendaftaran gagal. Silakan coba lagi.',
-        confirmButtonColor: '#3b82f6',
-        footer: 'Silakan periksa data Anda dan coba lagi.'
-      });
+      toast.error(
+        error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.',
+        {
+          position: 'top-center',
+          autoClose: 5000,
+        }
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -201,7 +203,7 @@ const MerchantRegistration: React.FC = () => {
       
       <div className="merchant-registration-content">
         <div className="registration-header">
-          <h2>🏪 Daftar Sebagai Merchant</h2>
+          <h2>🪧 Daftar Sebagai Merchant</h2>
           <p>Isi data berikut untuk mendaftarkan usaha Anda pada event ini</p>
         </div>
 
@@ -332,7 +334,7 @@ const MerchantRegistration: React.FC = () => {
                   Mendaftarkan...
                 </>
               ) : (
-                '🏪 Daftar Merchant'
+                '🪧 Daftar Merchant'
               )}
             </button>
           </div>

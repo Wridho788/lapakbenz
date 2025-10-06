@@ -198,13 +198,9 @@ const MyProfile: React.FC = () => {
 
     // Validate email format if field is not empty
     if (value.trim() !== '' && !validateEmail(value)) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Invalid Email Format',
-        text: 'Please enter a valid email address (e.g., user@example.com)',
-        confirmButtonColor: '#007bff',
-        timer: 3000,
-        timerProgressBar: true,
+      toast.warning('Please enter a valid email address (e.g., user@example.com)', {
+        position: 'top-center',
+        autoClose: 3000,
       });
     }
   };
@@ -217,11 +213,9 @@ const MyProfile: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file || !authToken) {
       if (!authToken) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Authentication Required',
-          text: 'Please login first',
-          confirmButtonColor: '#007bff',
+        toast.warning('Please login first', {
+          position: 'top-center',
+          autoClose: 3000,
         });
       }
       return;
@@ -230,11 +224,9 @@ const MyProfile: React.FC = () => {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid File Type',
-        text: 'Please select a valid image file (JPEG, PNG, GIF)',
-        confirmButtonColor: '#007bff',
+      toast.error('Please select a valid image file (JPEG, PNG, GIF)', {
+        position: 'top-center',
+        autoClose: 3000,
       });
       return;
     }
@@ -242,11 +234,9 @@ const MyProfile: React.FC = () => {
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      Swal.fire({
-        icon: 'error',
-        title: 'File Too Large',
-        text: 'File size must be less than 5MB',
-        confirmButtonColor: '#007bff',
+      toast.error('File size must be less than 5MB', {
+        position: 'top-center',
+        autoClose: 3000,
       });
       return;
     }
@@ -254,11 +244,9 @@ const MyProfile: React.FC = () => {
     try {
       console.log('🖼️ Uploading image:', file.name);
       await uploadImageMutation.mutateAsync({ file, authToken });
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Profile image updated successfully!',
-        confirmButtonColor: '#007bff',
+      toast.success('Profile image updated successfully!', {
+        position: 'top-center',
+        autoClose: 3000,
       });
 
       // Auto-refresh profile data to get updated image URL
@@ -272,22 +260,18 @@ const MyProfile: React.FC = () => {
       }
     } catch (error) {
       console.error('Upload image error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Upload Failed',
-        text: 'Failed to upload image',
-        confirmButtonColor: '#007bff',
+      toast.error('Failed to upload image', {
+        position: 'top-center',
+        autoClose: 3000,
       });
     }
   };
 
   const handleUpdateProfile = async () => {
     if (!authToken) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Authentication Required',
-        text: 'Please login first',
-        confirmButtonColor: '#007bff',
+      toast.warning('Please login first', {
+        position: 'top-center',
+        autoClose: 3000,
       });
       return;
     }
@@ -300,22 +284,18 @@ const MyProfile: React.FC = () => {
       !formData.taddress.trim() ||
       !formData.tdob.trim()
     ) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Required Fields Missing',
-        text: 'Field Profession, Organization, Instagram, Address, dan Date of Birth wajib diisi!',
-        confirmButtonColor: '#007bff',
+      toast.warning('Field Profession, Organization, Instagram, Address, dan Date of Birth wajib diisi!', {
+        position: 'top-center',
+        autoClose: 4000,
       });
       return;
     }
 
     // Validasi email format jika email diisi
     if (formData.temail.trim() !== '' && !validateEmail(formData.temail)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Email Format',
-        text: 'Please enter a valid email address (e.g., user@example.com)',
-        confirmButtonColor: '#007bff',
+      toast.error('Please enter a valid email address (e.g., user@example.com)', {
+        position: 'top-center',
+        autoClose: 3000,
       });
       return;
     }
@@ -338,11 +318,9 @@ const MyProfile: React.FC = () => {
       await updateProfileMutation.mutateAsync({
         data: payload,
       });
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Profile updated successfully!',
-        confirmButtonColor: '#007bff',
+      toast.success('Profile updated successfully!', {
+        position: 'top-center',
+        autoClose: 3000,
       });
 
       // Auto-refresh profile data to get updated information
@@ -356,11 +334,9 @@ const MyProfile: React.FC = () => {
       }
     } catch (error) {
       console.error('Update profile error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: 'Failed to update profile',
-        confirmButtonColor: '#007bff',
+      toast.error('Failed to update profile', {
+        position: 'top-center',
+        autoClose: 3000,
       });
     }
   };

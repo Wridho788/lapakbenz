@@ -157,128 +157,128 @@ const Orders: React.FC = () => {
   return (
     <div className="orders-page">
       <AppbarDefault
-        title="My Orders"
-        onBack={handleBackClick}
+      title="Pesanan Saya"
+      onBack={handleBackClick}
       />
 
       <div className="orders-content">
-        {/* Orders Header */}
-        <div className="orders-header">
-          <div className="orders-info">
-            <h3>Order History</h3>
-            <p>{totalRecords} orders found</p>
-          </div>
-          
-          <div className="orders-actions">
-            <button 
-              onClick={handleRefresh} 
-              className={`orders-action-btn ${isRefreshing || isFetching ? 'loading' : ''}`}
-              title="Refresh orders"
-              disabled={isRefreshing}
-            >
-              <MdRefresh />
-            </button>
-          </div>
+      {/* Orders Header */}
+      <div className="orders-header">
+        <div className="orders-info">
+        <h3>Riwayat Pesanan</h3>
+        <p>{totalRecords} pesanan ditemukan</p>
         </div>
+        
+        <div className="orders-actions">
+        <button 
+          onClick={handleRefresh} 
+          className={`orders-action-btn ${isRefreshing || isFetching ? 'loading' : ''}`}
+          title="Segarkan pesanan"
+          disabled={isRefreshing}
+        >
+          <MdRefresh />
+        </button>
+        </div>
+      </div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="orders-loading">
-            <div className="loading-spinner"></div>
-            <p>Loading your orders...</p>
+      {/* Loading State */}
+      {isLoading && (
+        <div className="orders-loading">
+        <div className="loading-spinner"></div>
+        <p>Memuat pesanan Anda...</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && orders.length === 0 && (
+        <div className="orders-empty">
+        <MdShoppingCart className="empty-icon" />
+        <h3>Tidak Ada Pesanan</h3>
+        <p>Anda belum pernah melakukan pesanan.</p>
+        <button onClick={() => navigate('/products')} className="shop-now-btn">
+          Mulai Belanja
+        </button>
+        </div>
+      )}
+
+      {/* Orders List */}
+      {!isLoading && orders.length > 0 && (
+        <div className="orders-list">
+        {orders.map((order: OrderItem) => (
+          <div 
+          key={order.id} 
+          className="order-card"
+          onClick={() => handleOrderClick(order.id)}
+          >
+          <div className="order-header">
+            <div className="order-code">
+            <h4>#{order.code}</h4>
+            </div>
+            <div className={`order-status ${getStatusClass(order.paid_status, order.canceled)}`}>
+            {getStatusIcon(order.paid_status, order.canceled)}
+            <span>{getStatusText(order.paid_status, order.canceled)}</span>
+            </div>
           </div>
-        )}
 
-        {/* Empty State */}
-        {!isLoading && orders.length === 0 && (
-          <div className="orders-empty">
-            <MdShoppingCart className="empty-icon" />
-            <h3>No Orders Found</h3>
-            <p>You haven't placed any orders yet.</p>
-            <button onClick={() => navigate('/products')} className="shop-now-btn">
-              Start Shopping
-            </button>
+          <div className="order-details">
+            <div className="order-detail-row">
+            <span className="detail-label">Tanggal:</span>
+            <span className="detail-value">{order.dates}</span>
+            </div>
+            <div className="order-detail-row">
+            <span className="detail-label">Pelanggan:</span>
+            <span className="detail-value">{order.customer}</span>
+            </div>
+            <div className="order-detail-row">
+            <span className="detail-label">Item:</span>
+            <span className="detail-value">{order.items_count} item</span>
+            </div>
+            <div className="order-detail-row">
+            <span className="detail-label">Pembayaran:</span>
+            <span className="detail-value">{order.payment_type}</span>
+            </div>
+            <div className="order-detail-row">
+            <span className="detail-label">Transaksi:</span>
+            <span className="detail-value">{order.transno}</span>
+            </div>
           </div>
-        )}
 
-        {/* Orders List */}
-        {!isLoading && orders.length > 0 && (
-          <div className="orders-list">
-            {orders.map((order: OrderItem) => (
-              <div 
-                key={order.id} 
-                className="order-card"
-                onClick={() => handleOrderClick(order.id)}
-              >
-                <div className="order-header">
-                  <div className="order-code">
-                    <h4>#{order.code}</h4>
-                  </div>
-                  <div className={`order-status ${getStatusClass(order.paid_status, order.canceled)}`}>
-                    {getStatusIcon(order.paid_status, order.canceled)}
-                    <span>{getStatusText(order.paid_status, order.canceled)}</span>
-                  </div>
-                </div>
-
-                <div className="order-details">
-                  <div className="order-detail-row">
-                    <span className="detail-label">Date:</span>
-                    <span className="detail-value">{order.dates}</span>
-                  </div>
-                  <div className="order-detail-row">
-                    <span className="detail-label">Customer:</span>
-                    <span className="detail-value">{order.customer}</span>
-                  </div>
-                  <div className="order-detail-row">
-                    <span className="detail-label">Items:</span>
-                    <span className="detail-value">{order.items_count} item(s)</span>
-                  </div>
-                  <div className="order-detail-row">
-                    <span className="detail-label">Payment:</span>
-                    <span className="detail-value">{order.payment_type}</span>
-                  </div>
-                  <div className="order-detail-row">
-                    <span className="detail-label">Transaction:</span>
-                    <span className="detail-value">{order.transno}</span>
-                  </div>
-                </div>
-
-                <div className="order-footer">
-                  <div className="order-amount">
-                    <span className="amount-label">Total Amount:</span>
-                    <span className="amount-value">{formatCurrency(order.total)}</span>
-                  </div>
-                  <div className="order-dates">
-                    <div className="date-info">
-                      <span className="date-label">Created:</span>
-                      <span className="date-value">{order.created}</span>
-                    </div>
-                    {order.paid_status === 'S' && order.paid_date !== ' - ' && (
-                      <div className="date-info">
-                        <span className="date-label">Paid:</span>
-                        <span className="date-value">{order.paid_date}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {order.canceled && (
-                  <div className="order-canceled">
-                    <p>Order was canceled on {order.canceled}</p>
-                  </div>
-                )}
+          <div className="order-footer">
+            <div className="order-amount">
+            <span className="amount-label">Total:</span>
+            <span className="amount-value">{formatCurrency(order.total)}</span>
+            </div>
+            <div className="order-dates">
+            <div className="date-info">
+              <span className="date-label">Dibuat:</span>
+              <span className="date-value">{order.created}</span>
+            </div>
+            {order.paid_status === 'S' && order.paid_date !== ' - ' && (
+              <div className="date-info">
+              <span className="date-label">Dibayar:</span>
+              <span className="date-value">{order.paid_date}</span>
               </div>
-            ))}
+            )}
+            </div>
           </div>
-        )}
 
-        {/* Auto-refresh indicator */}
-        {isFetching && !isLoading && (
-          <div className="refresh-indicator">
-            <div className="refresh-dot"></div>
-            <span>Auto-refreshing...</span>
+          {order.canceled && (
+            <div className="order-canceled">
+            <p>Pesanan dibatalkan pada {order.canceled}</p>
+            </div>
+          )}
           </div>
-        )}
+        ))}
+        </div>
+      )}
+
+      {/* Auto-refresh indicator */}
+      {isFetching && !isLoading && (
+        <div className="refresh-indicator">
+        <div className="refresh-dot"></div>
+        <span>Memperbarui otomatis...</span>
+        </div>
+      )}
       </div>
     </div>
   );

@@ -14,7 +14,7 @@ const Invoice: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   // Get invoice data from navigation state
   const invoiceData = location.state as InvoiceState;
@@ -71,14 +71,9 @@ const Invoice: React.FC = () => {
   };
 
   const handleRefresh = () => {
-    setIsLoading(true);
-    setError(null);
-    // Re-trigger auto-open
-    setTimeout(() => {
-      setIsLoading(false);
-      const fullUrl = getFullUrl(invoiceData.invoiceUrl);
-      window.open(fullUrl, '_blank');
-    }, 1000);
+    console.log('🔄 Refresh clicked - Opening payment page');
+    const fullUrl = getFullUrl(invoiceData.invoiceUrl);
+    window.open(fullUrl, '_blank');
   };
 
   const handleOpenInNewTab = () => {
@@ -139,7 +134,7 @@ const Invoice: React.FC = () => {
             <button 
               onClick={handleRefresh} 
               className="invoice-action-btn"
-              title="Muat Ulang"
+              title="Buka Halaman Pembayaran"
             >
               <MdRefresh />
             </button>

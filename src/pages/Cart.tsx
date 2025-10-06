@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   MdDelete,
   // MdLocationOn,
@@ -46,6 +46,7 @@ interface OrderingStatus {
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { cartCount, removeFromCart } = useCartContext();
   const { isAuthenticated, token: authToken, requireAuth } = useAuthStore();
   // const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null);
@@ -82,15 +83,49 @@ const Cart: React.FC = () => {
   const addItemToOrderMutation = useAddItemToOrder();
   const checkoutOrderMutation = useCheckoutOrder();
 
+  // Refetch cart data when component mounts to ensure fresh data
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🔄 Cart component mounted - refetching cart data');
+      refetchCart();
+    }
+  }, [isAuthenticated, refetchCart]);
+
+  // Refetch cart data when window regains focus (user switches back to tab)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (isAuthenticated && document.visibilityState === 'visible') {
+        console.log('🔄 Window focused - refetching cart data');
+        refetchCart();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
+  }, [isAuthenticated, refetchCart]);
+
+  // Refetch cart data when location changes (navigating to cart)
+  useEffect(() => {
+    if (isAuthenticated && location.pathname === '/cart') {
+      console.log('🔄 Navigated to cart - refetching cart data');
+      // Small delay to ensure any pending operations complete
+      const timer = setTimeout(() => {
+        refetchCart();
+      }, 200);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, isAuthenticated, refetchCart]);
+
   // Handle quantity change for API cart items
   const handleQuantityChange = async (item: any, newQuantity: number) => {
     if (!requireAuth(() => {}, 'update cart quantity')) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Login Diperlukan',
-        text: 'Silakan login untuk mengubah keranjang',
-        confirmButtonColor: '#f39c12',
-      });
+      toast.warning('Silakan login untuk mengubah keranjang');
       navigate('/login');
       return;
     }
@@ -113,13 +148,7 @@ const Cart: React.FC = () => {
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to update quantity:', error);
-
-      await Swal.fire({
-        icon: 'error',
-        title: 'Gagal Memperbarui',
-        text: 'Gagal memperbarui jumlah item. Silakan coba lagi.',
-        confirmButtonColor: '#d33',
-      });
+      toast.error('Gagal memperbarui jumlah item. Silakan coba lagi.');
     }
   };
 
@@ -158,61 +187,83 @@ const Cart: React.FC = () => {
 
   const handleRemoveAllFromCart = async () => {
     if (!requireAuth(() => {}, 'clear cart')) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Login Diperlukan',
-        text: 'Silakan login untuk mengelola keranjang Anda',
-        confirmButtonColor: '#f39c12',
-      });
+      toast.warning('Silakan login untuk mengelola keranjang Anda');
       navigate('/login');
       return;
     }
 
-    const result = await Swal.fire({
-      icon: 'warning',
-      title: 'Hapus Semua Item?',
-      text: 'Apakah Anda yakin ingin menghapus semua item dari keranjang? Tindakan ini tidak dapat dibatalkan.',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Ya, hapus semua',
-      cancelButtonText: 'Batal',
-    });
+    // Show confirmation toast with buttons
+    toast(
+      ({ closeToast }) => (
+        <div style={{ padding: '8px 0' }}>
+          <div style={{ marginBottom: '12px', fontWeight: '500' }}>
+            Yakin ingin menghapus semua item dari keranjang?
+          </div>
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => {
+                closeToast();
+              }}
+              style={{
+                background: '#6c757d',
+                color: 'white',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              Batal
+            </button>
+            <button
+              onClick={async () => {
+                closeToast();
+                await performRemoveAll();
+              }}
+              style={{
+                background: '#dc3545',
+                color: 'white',
+                border: 'none',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              Hapus Semua
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        position: 'top-center',
+        autoClose: false,
+        hideProgressBar: true,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      }
+    );
+  };
 
-    if (!result.isConfirmed) {
-      return;
-    }
-
+  const performRemoveAll = async () => {
     try {
       console.log('🗑️ Removing all items from cart...');
 
       await removeAllFromCartMutation.mutateAsync(authToken!);
-
-      await Swal.fire({
-        icon: 'success',
-        title: 'Keranjang Kosong!',
-        text: 'Semua item telah dihapus dari keranjang Anda',
-        confirmButtonColor: '#28a745',
-        timer: 2000,
-        timerProgressBar: true,
-      });
-
+      toast.success('Semua item telah dihapus dari keranjang Anda');
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to clear cart:', error);
 
-  let errorMessage = 'Gagal mengosongkan keranjang. Silakan coba lagi.';
+      let errorMessage = 'Gagal mengosongkan keranjang. Silakan coba lagi.';
 
       if (error?.message) {
         errorMessage = error.message;
       }
 
-      await Swal.fire({
-        icon: 'error',
-        title: 'Gagal Mengosongkan Keranjang',
-        text: errorMessage,
-        confirmButtonColor: '#d33',
-      });
+      toast.error(errorMessage);
     }
   };
 
@@ -233,12 +284,7 @@ const Cart: React.FC = () => {
   // New order flow function
   const handlePlaceOrder = async () => {
     if (!requireAuth(() => {}, 'place order')) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Login Diperlukan',
-        text: 'Silakan login untuk melakukan pemesanan',
-        confirmButtonColor: '#f39c12',
-      });
+      toast.warning('Silakan login untuk melakukan pemesanan');
       navigate('/login');
       return;
     }
@@ -264,12 +310,7 @@ const Cart: React.FC = () => {
     // }
 
     if (!hasApiCartItems) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Keranjang Kosong',
-        text: 'Keranjang Anda kosong',
-        confirmButtonColor: '#f39c12',
-      });
+      toast.warning('Keranjang Anda kosong');
       return;
     }
 
@@ -406,14 +447,7 @@ const Cart: React.FC = () => {
       }
 
       // Show success message if no invoice_url (fallback)
-      await Swal.fire({
-        icon: 'success',
-        title: 'Pesanan Berhasil!',
-        text: `Pesanan #${orderId} telah dibuat dan sedang diproses.`,
-        confirmButtonColor: '#28a745',
-        timer: 3000,
-        timerProgressBar: true,
-      });
+      toast.success(`Pesanan #${orderId} telah dibuat dan sedang diproses.`);
 
       console.log('🎊 Order process completed successfully!');
       
@@ -433,12 +467,7 @@ const Cart: React.FC = () => {
         error: error.message,
       }));
 
-      await Swal.fire({
-        icon: 'error',
-        title: 'Pesanan Gagal',
-        text: error.message || 'Gagal melakukan pemesanan. Silakan coba lagi.',
-        confirmButtonColor: '#d33',
-      });
+      toast.error(error.message || 'Gagal melakukan pemesanan. Silakan coba lagi.');
     }
   };
 
@@ -575,7 +604,7 @@ const Cart: React.FC = () => {
 
       <div className="cart-page">
         <AppbarDefault
-          title={`Shopping Cart (${apiCartCount})`}
+          title={`Keranjang Belanja (${apiCartCount})`}
           onBack={handleBackClick}
           onCartClick={handleCartClick}
           cartCount={apiCartCount}
@@ -584,164 +613,164 @@ const Cart: React.FC = () => {
         <div className="cart-content">
           {/* Cart Items */}
           <div className="cart-items-section">
-            <div className="cart-header">
-              <h3>Daftar Belanja</h3>
-              {hasApiCartItems && (
-                <button
-                  className="remove-all-btn"
-                  onClick={handleRemoveAllFromCart}
-                  disabled={removeAllFromCartMutation.isPending}
-                  title="Remove all items from cart"
-                >
-                  <MdClear />
-                  <span>{removeAllFromCartMutation.isPending ? 'Menghapus...' : 'Hapus Semua'}</span>
-                </button>
-              )}
+        <div className="cart-header">
+          <h3>Daftar Belanja</h3>
+          {hasApiCartItems && (
+            <button
+          className="remove-all-btn"
+          onClick={handleRemoveAllFromCart}
+          disabled={removeAllFromCartMutation.isPending}
+          title="Hapus semua item dari keranjang"
+            >
+          <MdClear />
+          <span>{removeAllFromCartMutation.isPending ? 'Menghapus...' : 'Hapus Semua'}</span>
+            </button>
+          )}
+        </div>
+
+        {/* Loading State */}
+        {cartLoading && isAuthenticated && (
+          <div className="cart-loading">
+            <p>Memuat daftar belanja...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {cartError && isAuthenticated && (
+          <div className="cart-error">
+            <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
+          Gagal memuat keranjang dari server
+            </p>
+            <button
+          onClick={() => refetchCart()}
+          style={{
+            background: '#161129',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
+            >
+          Coba Lagi
+            </button>
+          </div>
+        )}
+
+        {/* API Cart Items */}
+        {apiCartData?.content?.result?.map((item) => (
+          <div key={item.id} className="cart-item">
+            <div
+          className="remove-btn"
+          onClick={() => handleRemoveItem(item.id)}
+          aria-label="Hapus item"
+            >
+          <MdDelete />
             </div>
 
-            {/* Loading State */}
-            {cartLoading && isAuthenticated && (
-              <div className="cart-loading">
-                <p>Memuat daftar belanja...</p>
+            <div className="item-content">
+          {/* Left Column - Product Image */}
+          <div className="item-image-column">
+            <img
+              src={item.image || '/nodata.png'}
+              alt={item.name}
+              onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/nodata.png';
+              }}
+            />
+          </div>
+
+          {/* Right Column - Product Info */}
+          <div className="item-info-column">
+            <div className="product-details">
+              <h4 className="item-title" style={{ textTransform: 'uppercase' }}>{item.name}</h4>
+              <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
+            </div>
+
+            <div className="quantity-section">
+              <div
+            className="quantity-btn decrease"
+            onClick={() => handleQuantityChange(item, item.qty - 1)}
+            style={{
+              opacity: item.qty <= 1 ? 0.5 : 1,
+              pointerEvents: item.qty <= 1 ? 'none' : 'auto',
+            }}
+              >
+            <MdRemove />
               </div>
-            )}
-
-            {/* Error State */}
-            {cartError && isAuthenticated && (
-              <div className="cart-error">
-                <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
-                  Gagal memuat keranjang dari server
-                </p>
-                <button
-                  onClick={() => refetchCart()}
-                  style={{
-                    background: '#161129',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Coba Lagi
-                </button>
+              <span className="quantity-value">{item.qty}</span>
+              <div
+            className="quantity-btn increase"
+            onClick={() => handleQuantityChange(item, item.qty + 1)}
+              >
+            <MdAdd />
               </div>
-            )}
+            </div>
 
-            {/* API Cart Items */}
-            {apiCartData?.content?.result?.map((item) => (
-              <div key={item.id} className="cart-item">
-                <div
-                  className="remove-btn"
-                  onClick={() => handleRemoveItem(item.id)}
-                  aria-label="Remove item"
-                >
-                  <MdDelete />
-                </div>
-
-                <div className="item-content">
-                  {/* Left Column - Product Image */}
-                  <div className="item-image-column">
-                    <img
-                      src={item.image || '/nodata.png'}
-                      alt={item.name}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/nodata.png';
-                      }}
-                    />
-                  </div>
-
-                  {/* Right Column - Product Info */}
-                  <div className="item-info-column">
-                    <div className="product-details">
-                      <h4 className="item-title" style={{ textTransform: 'uppercase' }}>{item.name}</h4>
-                      <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
-                    </div>
-
-                    <div className="quantity-section">
-                      <div
-                        className="quantity-btn decrease"
-                        onClick={() => handleQuantityChange(item, item.qty - 1)}
-                        style={{
-                          opacity: item.qty <= 1 ? 0.5 : 1,
-                          pointerEvents: item.qty <= 1 ? 'none' : 'auto',
-                        }}
-                      >
-                        <MdRemove />
-                      </div>
-                      <span className="quantity-value">{item.qty}</span>
-                      <div
-                        className="quantity-btn increase"
-                        onClick={() => handleQuantityChange(item, item.qty + 1)}
-                      >
-                        <MdAdd />
-                      </div>
-                    </div>
-
-                    <div className="item-total-section">
-                      <span className="item-total-label">Total:</span>
-                      <span className="item-total">Rp {item.amount.toLocaleString('id-ID')}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )) || []}
+            <div className="item-total-section">
+              <span className="item-total-label">Total:</span>
+              <span className="item-total">Rp {item.amount.toLocaleString('id-ID')}</span>
+            </div>
+          </div>
+            </div>
+          </div>
+        )) || []}
           </div>
 
           {/* Order Summary */}
           <div className="order-summary">
-            <h3>Ringkasan Pesanan</h3>
-            <div className="summary-details">
-              <div className="summary-row">
-                <span>Subtotal ({apiCartCount} item)</span>
-                <span>Rp {subtotal.toLocaleString('id-ID')}</span>
-              </div>
-              
-              {paymentFee > 0 && (
-                <div className="summary-row">
-                  <span>Biaya Pembayaran</span>
-                  <span>Rp {paymentFee.toLocaleString('id-ID')}</span>
-                </div>
-              )}
-              <div className="summary-divider"></div>
-              <div className="summary-row total">
-                <span>Total Bayar</span>
-                <span>Rp {totalPayment.toLocaleString('id-ID')}</span>
-              </div>
+        <h3>Ringkasan Pesanan</h3>
+        <div className="summary-details">
+          <div className="summary-row">
+            <span>Subtotal ({apiCartCount} item)</span>
+            <span>Rp {subtotal.toLocaleString('id-ID')}</span>
+          </div>
+          
+          {paymentFee > 0 && (
+            <div className="summary-row">
+          <span>Biaya Pembayaran</span>
+          <span>Rp {paymentFee.toLocaleString('id-ID')}</span>
             </div>
+          )}
+          <div className="summary-divider"></div>
+          <div className="summary-row total">
+            <span>Total Bayar</span>
+            <span>Rp {totalPayment.toLocaleString('id-ID')}</span>
+          </div>
+        </div>
           </div>
 
           {/* Place Order Button */}
           <div className="checkout-section">
-            <button 
-              className="checkout-btn" 
-              onClick={handlePlaceOrder}
-              disabled={orderingStatus.isOrdering || !hasApiCartItems}
-            >
-              {orderingStatus.isOrdering ? (
-                <>
-                  <div className="spinner"></div>
-                  <span>Memproses Pesanan...</span>
-                </>
-              ) : (
-                <>
-                  <MdPayment size={24} />
-                  <span>Checkout / Proses Pembayaran</span>
-                  <span className="checkout-total">Rp {totalPayment.toLocaleString('id-ID')}</span>
-                </>
-              )}
-            </button>
-            <div className="checkout-actions">
-              <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
-                <MdShoppingCart size={20} />
-                <span>Lanjut Belanja</span>
-              </button>
-              <button className="home-btn" onClick={() => navigate('/')}>
-                <MdHome size={20} />
-                <span>Ke Beranda</span>
-              </button>
-            </div>
+        <button 
+          className="checkout-btn" 
+          onClick={handlePlaceOrder}
+          disabled={orderingStatus.isOrdering || !hasApiCartItems}
+        >
+          {orderingStatus.isOrdering ? (
+            <>
+          <div className="spinner"></div>
+          <span>Memproses Pesanan...</span>
+            </>
+          ) : (
+            <>
+          <MdPayment size={24} />
+          <span>Checkout</span>
+          <span className="checkout-total">Rp {totalPayment.toLocaleString('id-ID')}</span>
+            </>
+          )}
+        </button>
+        <div className="checkout-actions">
+          <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
+            <MdShoppingCart size={20} />
+            <span>Lanjut Belanja</span>
+          </button>
+          <button className="home-btn" onClick={() => navigate('/')}>
+            <MdHome size={20} />
+            <span>Ke Beranda</span>
+          </button>
+        </div>
           </div>
         </div>
       </div>

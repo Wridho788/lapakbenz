@@ -21,6 +21,8 @@ const PublicRegistration: React.FC = () => {
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [registrationResult, setRegistrationResult] = useState<any>(null);
 
   const publicRegistration = usePublicRegistration();
 
@@ -100,24 +102,33 @@ const PublicRegistration: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleViewInvoice = () => {
+    if (registrationResult?.content?.invoice_url) {
+      const fullUrl = getFullUrl(registrationResult.content.invoice_url);
+      window.open(fullUrl, '_blank');
+    }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate(`/event/${eventId}`);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
+      toast.error('Mohon lengkapi semua field yang wajib diisi');
       return;
     }
 
     if (!eventId) {
-      Swal.fire({
-        icon: 'error',
-        title: 'ID Event Tidak Ada',
-        text: 'ID event tidak ditemukan. Silakan coba lagi dari halaman event.',
-        confirmButtonColor: '#3b82f6'
-      });
+      toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.');
       return;
     }
 
     setIsSubmitting(true);
+    const loadingToast = toast.loading('Mengirim pendaftaran...');
     
     try {
       const payload = {
@@ -135,83 +146,24 @@ const PublicRegistration: React.FC = () => {
       
       console.log('✅ Public Registration Success:', result);
       
+      toast.dismiss(loadingToast);
+      
       // Check if registration was successful
       if (result.status === 200 && result.content) {
-        const hasInvoice = result.content.invoice_url;
-        const invoiceUrl = result.content.invoice_url;
+        setRegistrationResult(result);
+        setShowSuccessModal(true);
         
-        if (!hasInvoice) {
-          // Free registration - redirect to event detail
-          await Swal.fire({
-            icon: 'success',
-            title: '🎉 Pendaftaran Berhasil!',
-            html: `
-              <p>Pendaftaran Anda berhasil dikirim.</p>
-              <br>
-              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
-                <p><strong>📋 Detail Pendaftaran:</strong></p>
-                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
-                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
-                <p><strong>Jumlah Tenant:</strong> ${formData.tenantCount} Tenant</p>
-                <p style="color: #10b981; margin-top: 10px;"><strong>Biaya pendaftaran: GRATIS</strong></p>
-              </div>
-            `,
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'Kembali ke Detail Event',
-            allowOutsideClick: false
-          });
-          
-          // Redirect to event detail
-          navigate(`/event/${eventId}`);
-          
-        } else {
-          // Paid registration - show invoice option
-          const swalResult = await Swal.fire({
-            icon: 'success',
-            title: '🎉 Pendaftaran Berhasil!',
-            html: `
-              <p>Pendaftaran Anda berhasil dikirim.</p>
-              <br>
-              <div style="text-align: left; background: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 16px;">
-                <p><strong>📋 Detail Pendaftaran:</strong></p>
-                <p><strong>Kode Order:</strong> ${result.content.ordercode || 'N/A'}</p>
-                <p><strong>ID Transaksi:</strong> ${result.content.transid || 'N/A'}</p>
-                <p><strong>Jumlah Tenant:</strong> ${formData.tenantCount} Tenant</p>
-              </div>
-            `,
-            confirmButtonColor: '#10b981',
-            confirmButtonText: 'Lanjut',
-            showDenyButton: true,
-            denyButtonText: '💳 Lihat Invoice',
-            denyButtonColor: '#3b82f6',
-            allowOutsideClick: false
-          });
-          
-          if (swalResult.isDenied && invoiceUrl) {
-            // Open invoice in new tab
-            const fullUrl = getFullUrl(invoiceUrl);
-            window.open(fullUrl, '_blank');
-          }
-          
-          // Redirect to event detail after modal closes
-          navigate(`/event/${eventId}`);
-        }
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Pendaftaran Gagal',
-          text: result.message || 'Pendaftaran gagal. Silakan coba lagi.',
-          confirmButtonColor: '#3b82f6'
+        toast.success('🎉 Pendaftaran berhasil!', {
+          autoClose: 3000
         });
+      } else {
+        toast.error(result.message || 'Pendaftaran gagal. Silakan coba lagi.');
       }
     } catch (error: any) {
       console.error('❌ Registration failed:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Pendaftaran Gagal',
-        text: error.response?.data?.error || 'Pendaftaran gagal. Silakan coba lagi.',
-        confirmButtonColor: '#3b82f6',
-        footer: 'Silakan periksa data Anda dan coba lagi.'
+      toast.dismiss(loadingToast);
+      toast.error(error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.', {
+        autoClose: 5000
       });
     } finally {
       setIsSubmitting(false);
@@ -374,6 +326,59 @@ const PublicRegistration: React.FC = () => {
           </div>
         </form>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && registrationResult && (
+        <div className="modal-overlay" onClick={handleCloseSuccessModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>🎉 Pendaftaran Berhasil!</h2>
+            </div>
+            <div className="modal-body">
+              <p>Pendaftaran Anda berhasil dikirim.</p>
+              <div className="registration-details">
+                <h3>📋 Detail Pendaftaran:</h3>
+                <div className="detail-item">
+                  <strong>Kode Order:</strong>
+                  <span>{registrationResult.content.ordercode || 'N/A'}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>ID Transaksi:</strong>
+                  <span>{registrationResult.content.transid || 'N/A'}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>Jumlah Tenant:</strong>
+                  <span>{formData.tenantCount} Tenant</span>
+                </div>
+                {!registrationResult.content.invoice_url && (
+                  <div className="detail-item free-registration">
+                    <strong>Biaya pendaftaran:</strong>
+                    <span className="free-badge">GRATIS</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="modal-actions">
+              {registrationResult.content.invoice_url && (
+                <button
+                  type="button"
+                  onClick={handleViewInvoice}
+                  className="btn-secondary"
+                >
+                  💳 Lihat Invoice
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleCloseSuccessModal}
+                className="btn-primary"
+              >
+                {registrationResult.content.invoice_url ? 'Lanjut' : 'Kembali ke Detail Event'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

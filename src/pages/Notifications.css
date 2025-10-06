@@ -115,7 +115,9 @@ body.force-light-mode .error-state {
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
+    background: #ededed;
+
 }
 
 .notification-item {

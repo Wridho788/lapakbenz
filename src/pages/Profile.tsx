@@ -23,6 +23,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const [activeMembershipTab, setActiveMembershipTab] = useState(0);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   
   // Auth state
   const { isAuthenticated, logout: authLogout } = useAuthStore();
@@ -181,6 +182,53 @@ const Profile: React.FC = () => {
     console.log('========================');
   }, [profileData, ledgerData, profileLoading, ledgerLoading, profileError, ledgerError, userData]);
 
+  // Handle logout with confirmation
+  const handleLogout = async () => {
+    // Show confirmation toast with custom buttons
+    const confirmLogout = window.confirm('Apakah Anda yakin ingin keluar?');
+    
+    if (!confirmLogout) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      console.error('Not authenticated for logout');
+      navigate('/login');
+      return;
+    }
+
+    setIsLoggingOut(true);
+    const loadingToast = toast.info('Keluar...', {
+      autoClose: false,
+      closeButton: false,
+    });
+
+    try {
+      await authLogout();
+      console.log('✅ Logout successful');
+      
+      toast.dismiss(loadingToast);
+      toast.success('Anda berhasil keluar', {
+        autoClose: 1500,
+        onClose: () => {
+          navigate('/login');
+        }
+      });
+    } catch (error) {
+      console.error('❌ Logout failed:', error);
+      
+      toast.dismiss(loadingToast);
+      toast.warning('Sesi telah dihapus secara lokal', {
+        autoClose: 1500,
+        onClose: () => {
+          navigate('/login');
+        }
+      });
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   // Account menu items
   const accountMenuItems = [
     { id: 'profile', title: 'Profil Saya', icon: MdPerson },
@@ -219,69 +267,7 @@ const Profile: React.FC = () => {
         window.open('https://wa.me/62813742424', '_blank');
         break;
       case 'logout':
-        // Handle logout logic here
-        console.log('Logout clicked');
-        
-        Swal.fire({
-          title: 'Konfirmasi Keluar',
-          text: 'Apakah Anda yakin ingin keluar?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Ya, keluar',
-          cancelButtonText: 'Batal'
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            if (!isAuthenticated) {
-              console.error('Not authenticated for logout');
-              // Still navigate to login even without authentication
-              navigate('/login');
-              return;
-            }
-            
-            // Show loading during logout
-            Swal.fire({
-              title: 'Keluar...',
-              text: 'Mohon tunggu',
-              icon: 'info',
-              allowOutsideClick: false,
-              showConfirmButton: false,
-              didOpen: () => {
-                Swal.showLoading();
-              }
-            });
-            
-            // Execute logout using Zustand
-            try {
-              await authLogout();
-              console.log('✅ Logout successful');
-              // Close loading and show success message
-              Swal.fire({
-                title: 'Berhasil!',
-                text: 'Anda berhasil keluar',
-                icon: 'success',
-                timer: 1500,
-                showConfirmButton: false
-              }).then(() => {
-                // Navigate to login page after successful logout
-                navigate('/login');
-              });
-            } catch (error) {
-              console.error('❌ Logout failed:', error);
-              // Even if logout fails, still navigate to login
-              Swal.fire({
-                title: 'Keluar',
-                text: 'Sesi telah dihapus secara lokal',
-                icon: 'warning',
-                timer: 1500,
-                showConfirmButton: false
-              }).then(() => {
-                navigate('/login');
-              });
-            }
-          }
-        });
+        handleLogout();
         break;
       default:
         console.log('Unknown menu item:', menuId);
@@ -295,6 +281,7 @@ const Profile: React.FC = () => {
   const handleRefresh = () => {
     // Force refresh data - Zustand handles token management
     console.log('🔄 Profile data refreshed');
+    toast.info('Memuat ulang data...', { autoClose: 1000 });
   };
 
   const isError = (profileError || ledgerError) && !profileLoading && !ledgerLoading;
@@ -379,20 +366,20 @@ const Profile: React.FC = () => {
           <div className="membership-tabs">
             {membershipTabs.map((tab, index) => (
               <button
-          key={tab}
-          className={`membership-tab ${activeMembershipTab === index ? 'active' : ''}`}
-          onClick={() => setActiveMembershipTab(index)}
+                key={tab}
+                className={`membership-tab ${activeMembershipTab === index ? 'active' : ''}`}
+                onClick={() => setActiveMembershipTab(index)}
               >
-          {(() => {
-            switch (tab) {
-              case 'BASIC': return 'BASIC';
-              case 'BRONZE': return 'BRONZE';
-              case 'SILVER': return 'SILVER';
-              case 'GOLD': return 'GOLD';
-              case 'PLATINUM': return 'PLATINUM';
-              default: return tab;
-            }
-          })()}
+                {(() => {
+                  switch (tab) {
+                    case 'BASIC': return 'BASIC';
+                    case 'BRONZE': return 'BRONZE';
+                    case 'SILVER': return 'SILVER';
+                    case 'GOLD': return 'GOLD';
+                    case 'PLATINUM': return 'PLATINUM';
+                    default: return tab;
+                  }
+                })()}
               </button>
             ))}
           </div>
@@ -412,6 +399,7 @@ const Profile: React.FC = () => {
                 key={item.id}
                 className="account-menu-item"
                 onClick={() => handleMenuClick(item.id)}
+                disabled={isLoggingOut && item.id === 'logout'}
               >
                 <div className="account-menu-left">
                   <item.icon className="account-menu-icon" />

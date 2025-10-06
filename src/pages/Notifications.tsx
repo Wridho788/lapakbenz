@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useNotifications, useNotificationDetail } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
@@ -120,13 +120,21 @@ const Notifications: React.FC = () => {
 
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!isAuthenticated || !token) {
-      toast.warning('Silakan masuk untuk melihat detail notifikasi');
+      toast.warning('Silakan masuk untuk melihat detail notifikasi', {
+        position: 'top-center',
+        autoClose: 3000,
+      });
       return;
     }
 
     try {
       // Set the selected notification to trigger detail fetch
       setSelectedNotificationId(notification.id);
+
+      // Show loading toast
+      const loadingToastId = toast.loading('Loading notification details...', {
+        position: 'top-center',
+      });
 
       // Wait for detail to be fetched
       let attempts = 0;
@@ -136,30 +144,31 @@ const Notifications: React.FC = () => {
         
         if (notificationDetail?.content || attempts >= maxAttempts || !isDetailLoading) {
           clearInterval(checkInterval);
-          Swal.close();
+          toast.dismiss(loadingToastId);
           
           // Extract detail data
           const detailContent = notificationDetail?.content;
           const displayTitle = detailContent?.subject || notification.title;
           
-          // For now, do not show displayContent
-          const result = await Swal.fire({
-            title: displayTitle,
-            icon: 'info',
-            confirmButtonText: 'Close',
-            confirmButtonColor: '#161129',
-            width: '90%',
-            customClass: {
-              popup: 'notification-alert',
-              title: 'notification-alert-title',
-              htmlContainer: 'notification-alert-content',
-            },
-          });
-
-          // Mark as read when user closes the alert
-          if (result.isConfirmed && notification.reading === "0") {
-            await markAsRead();
-          }
+          // Show notification detail in toast
+          toast.info(
+            <div style={{ textAlign: 'left' }}>
+              <strong style={{ display: 'block', marginBottom: '8px', fontSize: '16px' }}>
+                {displayTitle}
+              </strong>
+            </div>,
+            {
+              position: 'top-center',
+              autoClose: 5000,
+              closeOnClick: true,
+              onClose: async () => {
+                // Mark as read when user closes the toast
+                if (notification.reading === "0") {
+                  await markAsRead();
+                }
+              }
+            }
+          );
 
           // Clear selected notification
           setSelectedNotificationId(null);
@@ -170,7 +179,10 @@ const Notifications: React.FC = () => {
       console.error('Notification detail error:', err);
 
       // Fallback to basic notification data
-      toast.info(`${notification.title}: ${notification.message}`);
+      toast.info(`${notification.title}: ${notification.message}`, {
+        position: 'top-center',
+        autoClose: 4000,
+      });
       
       if (notification.reading === "0") {
         await markAsRead();

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import EventRegistration from '../components/EventRegistration';
-import RegistrationSuccess from '../components/RegistrationSuccess';
 import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
 import { useEventById, useEventRegister } from '../api/hooks/index';
@@ -10,22 +9,14 @@ import { extractIdFromParam } from '../api/codeMapping';
 import { toast } from 'react-toastify';
 import './EventDetail.css';
 
-interface RegistrationData {
-  transid: number;
-  ordercode: string;
-  invoice_url: string;
-}
-
 const EventDetail: React.FC = () => {
   const { eventId: eventParam } = useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
   const { cartCount } = useCart();
   
-  const [registrationData, setRegistrationData] = useState<RegistrationData | null>(null);
   const [isAuthValidated, setIsAuthValidated] = useState(false);
   const [triggerRegistration, setTriggerRegistration] = useState(false);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   
   // Extract actual event ID from URL parameter (handles both old ID format and new SEO format)
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
@@ -42,13 +33,6 @@ const EventDetail: React.FC = () => {
       console.log('🎫 Event Registration Response:', result);
 
       if (result.status === 200 && result.content) {
-        setRegistrationData({
-          transid: result.content.transid,
-          ordercode: result.content.ordercode,
-          invoice_url: result.content.invoice_url,
-        });
-        setShowRegistrationModal(true);
-
         toast.success('🎉 Registration Successful! Your event registration has been completed successfully.');
       } else {
         const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
@@ -106,15 +90,6 @@ const EventDetail: React.FC = () => {
     navigate('/cart');
   };
 
-  // Helper function to ensure URL has https protocol
-  const getFullUrl = (url: string): string => {
-    if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    return `https://${url}`;
-  };
-
   const handleEventRegister = async () => {
     // Enhanced authentication check
     const authSuccess = requireAuth(() => {}, 'register for event');
@@ -141,17 +116,6 @@ const EventDetail: React.FC = () => {
     
     // Trigger the registration query
     setTriggerRegistration(true);
-  };
-
-  const handleOpenInvoice = () => {
-    if (registrationData?.invoice_url) {
-      const fullUrl = getFullUrl(registrationData.invoice_url);
-      window.open(fullUrl, '_blank');
-    }
-  };
-
-  const handleCloseRegistrationModal = () => {
-    setShowRegistrationModal(false);
   };
 
   const handleMerchantRegistration = () => {
@@ -276,24 +240,6 @@ const EventDetail: React.FC = () => {
             isPending={eventRegisterQuery.isFetching && triggerRegistration}
             onRegister={handleEventRegister}
           />
-
-          {showRegistrationModal && registrationData && (
-            <div className="modal-overlay" onClick={handleCloseRegistrationModal}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <button 
-                  className="modal-close-btn"
-                  onClick={handleCloseRegistrationModal}
-                  aria-label="Close modal"
-                >
-                  ×
-                </button>
-                <RegistrationSuccess
-                  registrationData={registrationData}
-                  onOpenInvoice={handleOpenInvoice}
-                />
-              </div>
-            </div>
-          )}
 
           {(eventContent.allow_merchant === 1 || eventContent.allow_public === 1) && (
             <div className="registration-navigation">

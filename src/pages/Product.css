@@ -245,7 +245,7 @@
   justify-content: center;
   padding: 40px 20px;
   text-align: center;
-  background: white !important;
+  background: #ededed !important;
 }
 
 .empty-icon {
@@ -355,6 +355,7 @@
   .loading-state,
   .error-state {
     background: white !important;
+    border-radius: 10px
   }
 }
 

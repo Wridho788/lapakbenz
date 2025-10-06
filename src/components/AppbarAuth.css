@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: flex-start;
   height: 56px;
-  background: #161129;
+  background: #ff8800;
   color: #fff;
   padding: 0 16px;
   position: sticky;
@@ -15,7 +15,7 @@
 .appbar-auth .appbar-back-btn {
   background: none;
   border: none;
-  color: #fff;
+  color: #161129;
   font-size: 1.8rem;
   margin-right: 12px;
   cursor: pointer;
@@ -27,6 +27,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: 0.5px;
+  
 }
 
 @media (max-width: 430px) {
@@ -36,5 +37,14 @@
   }
   .appbar-auth .appbar-title {
     font-size: 1rem;
+    color: #161129;
+  }
+}
+
+/* Dark mode enhancement */
+@media (prefers-color-scheme: dark) {
+  .appbar-default {
+    background: #ff8800;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   }
 }

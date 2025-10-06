@@ -6,7 +6,7 @@
 
 .news-scroll-container {
   display: flex;
-  gap: 1rem;
+  gap: 10px;
   overflow-x: auto;
   padding: 0.5rem 0;
   scroll-snap-type: x mandatory;

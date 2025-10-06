@@ -4,7 +4,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import './AccountPages.css';
 import { useChangePassword } from '../api/hooks/index';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const ChangePassword: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      alert('Password baru dan konfirmasi password tidak sama');
+      toast.warning('Password baru dan konfirmasi password tidak sama');
       return;
     }
     changePassword(
@@ -50,21 +50,11 @@ const ChangePassword: React.FC = () => {
       },
       {
         onSuccess: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Password berhasil diubah!',
-            confirmButtonText: 'OK',
-          });
+          toast.success('Password berhasil diubah!');
           setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         },
         onError: () => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: 'Gagal mengubah password. Silakan coba lagi.',
-            confirmButtonText: 'Tutup',
-          });
+          toast.error('Gagal mengubah password. Silakan coba lagi.');
         },
       }
     );
