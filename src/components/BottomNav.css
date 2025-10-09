@@ -35,7 +35,7 @@
   justify-content: center;
   flex: 1;
   text-decoration: none;
-  color: #161129;
+  color: #ededed;
   font-weight: 500;
   font-size: 1em;
   padding: 0.5rem 0;
@@ -52,8 +52,8 @@
 }
 
 .nav-link.active {
-  color: #ffd700;
-  background: rgba(255, 215, 0, 0.1);
+  color: #ededed;
+  background: rgba(207, 207, 205, 0.1);
 }
 
 .nav-link.active::before {
@@ -64,7 +64,7 @@
   transform: translateX(-50%);
   width: 20px;
   height: 3px;
-  background: #ffd700;
+  background: #ededed;
   border-radius: 0 0 4px 4px;
   animation: slideDown 0.3s ease;
 }
@@ -81,7 +81,7 @@
 
 .nav-link.active .nav-icon {
   transform: scale(1.05);
-  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.3));
+  filter: drop-shadow(0 0 8px rgba(207, 207, 205, 0.3));
 }
 
 .nav-label {
@@ -141,7 +141,7 @@
 /* Dark mode enhancement */
 @media (prefers-color-scheme: dark) {
   .bottom-nav {
-    background: #ff8800;
+    background: #161129;
     box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
   }
 }

@@ -88,7 +88,7 @@ const MyEventHistory: React.FC = () => {
               style={{
                 textAlign: 'center',
                 padding: '20px',
-                color: '#666',
+                color: '#161129',
               }}
             >
               Memuat riwayat event...
@@ -144,7 +144,7 @@ const MyEventHistory: React.FC = () => {
                         padding: '6px 12px',
                         borderRadius: '6px',
                         fontSize: '14px',
-                        fontWeight: 'bold',
+                        fontWeight: '900',
                         textTransform: 'uppercase'
                       }}
                     >
@@ -164,16 +164,16 @@ const MyEventHistory: React.FC = () => {
                   <div className="event-column-1">
                     {/* Name */}
                     <div style={{ marginBottom: '12px' }}>
-                      <div style={{ 
-                        fontSize: '12px', 
-                        fontWeight: 'bold', 
-                        color: '#666',
+                        <div style={{ 
+                        fontSize: '15px', 
+                        fontWeight: '900', 
+                        color: '#161129',
                         marginBottom: '4px'
-                      }}>
+                        }}>
                         NAMA EVENT
-                      </div>
+                        </div>
                       <div style={{ 
-                        fontSize: '16px', 
+                        fontSize: '15px', 
                         fontWeight: '600',
                         lineHeight: '1.3'
                       }}>
@@ -184,9 +184,9 @@ const MyEventHistory: React.FC = () => {
                     {/* Chapter */}
                     <div style={{ marginBottom: '12px' }}>
                       <div style={{ 
-                        fontSize: '12px', 
-                        fontWeight: 'bold', 
-                        color: '#666',
+                        fontSize: '15px', 
+                        fontWeight: '900', 
+                        color: '#161129',
                         marginBottom: '4px'
                       }}>
                         CHAPTER
@@ -198,9 +198,9 @@ const MyEventHistory: React.FC = () => {
                     {event.code && (
                       <div style={{ marginBottom: '12px' }}>
                         <div style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 'bold', 
-                          color: '#666',
+                          fontSize: '15px', 
+                          fontWeight: '900', 
+                          color: '#161129',
                           marginBottom: '4px'
                         }}>
                           KODE EVENT
@@ -213,9 +213,9 @@ const MyEventHistory: React.FC = () => {
                     {event.minimum_participants && (
                       <div style={{ marginBottom: '12px' }}>
                         <div style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 'bold', 
-                          color: '#666',
+                          fontSize: '15px', 
+                          fontWeight: '900', 
+                          color: '#161129',
                           marginBottom: '4px'
                         }}>
                           MIN. PESERTA
@@ -230,9 +230,9 @@ const MyEventHistory: React.FC = () => {
                     {/* Date */}
                     <div style={{ marginBottom: '12px' }}>
                       <div style={{ 
-                        fontSize: '12px', 
-                        fontWeight: 'bold', 
-                        color: '#666',
+                        fontSize: '15px', 
+                        fontWeight: '900', 
+                        color: '#161129',
                         marginBottom: '4px'
                       }}>
                         TANGGAL
@@ -244,9 +244,9 @@ const MyEventHistory: React.FC = () => {
                     {event.time && (
                       <div style={{ marginBottom: '12px' }}>
                         <div style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 'bold', 
-                          color: '#666',
+                          fontSize: '15px', 
+                          fontWeight: '900', 
+                          color: '#161129',
                           marginBottom: '4px'
                         }}>
                           WAKTU
@@ -256,19 +256,20 @@ const MyEventHistory: React.FC = () => {
                     )}
                     
                     {/* Fee */}
-                    {event.fee && (
+                    {event.fee !== null && event.fee !== undefined && (
                       <div style={{ marginBottom: '12px' }}>
                         <div style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 'bold', 
-                          color: '#666',
+                          fontSize: '15px', 
+                          fontWeight: '900', 
+                          color: '#161129',
                           marginBottom: '4px'
                         }}>
                           BIAYA
                         </div>
                         <div style={{ 
-                          fontWeight: '600',
-                          color: '#e74c3c'
+                          fontSize: '14px', 
+                          lineHeight: '1.4',
+                          color: '#161129'
                         }}>
                           Rp {event.fee.toLocaleString()}
                         </div>
@@ -279,9 +280,9 @@ const MyEventHistory: React.FC = () => {
                     {event.desc && (
                       <div style={{ marginBottom: '12px' }}>
                         <div style={{ 
-                          fontSize: '12px', 
-                          fontWeight: 'bold', 
-                          color: '#666',
+                          fontSize: '15px', 
+                          fontWeight: '900', 
+                          color: '#161129',
                           marginBottom: '4px'
                         }}>
                           DESKRIPSI
@@ -289,7 +290,7 @@ const MyEventHistory: React.FC = () => {
                         <div style={{ 
                           fontSize: '14px', 
                           lineHeight: '1.4',
-                          color: '#555'
+                          color: '#161129'
                         }}>
                           {event.desc}
                         </div>

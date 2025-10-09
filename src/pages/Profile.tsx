@@ -298,17 +298,7 @@ const Profile: React.FC = () => {
           defaultBack="/dashboard" 
         />
         <div className="profile-content">
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '200px',
-            background: 'white',
-            borderRadius: '12px',
-            margin: '20px 0'
-          }}>
-            <p style={{ margin: 0, color: '#666', fontSize: '16px' }}>Checking authentication...</p>
-          </div>
+          <div>Loading...</div>
         </div>
       </div>
     );

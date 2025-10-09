@@ -7,8 +7,6 @@
   justify-content: space-between;
   padding: 0.75rem 1rem;
   box-shadow: 0 2px 12px rgba(22, 17, 41, 0.15);
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
   min-height: 56px;
   position: sticky;
   top: 0;
@@ -23,7 +21,6 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: white;
 }
 
 .appbar-user-info {

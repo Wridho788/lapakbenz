@@ -9,7 +9,7 @@
 /* Force light mode - override any dark mode preferences */
 .account-page {
   min-height: 100vh;
-  background-color: #fff !important;
+  background-color: #ededed !important;
   font-family: 'Lato', sans-serif;
   color-scheme: light; /* Tells browser to use light mode for form controls */
 }
@@ -17,7 +17,7 @@
 /* Ensure all elements stay light regardless of system preference */
 @media (prefers-color-scheme: dark) {
   .account-page {
-    background-color: #f5f5f5 !important;
+    background-color: #ededed !important;
   }
   
   .account-card {
@@ -439,6 +439,7 @@ form {
 @media (max-width: 480px) {
   .account-content {
     padding: 16px;
+    background-color: #ededed !important;
   }
   
   .account-card {

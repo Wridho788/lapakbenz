@@ -12,8 +12,6 @@ import {
   useCart,
 } from '../api/hooks/index';
 import { SectionWrapper } from '../components/SectionWrapper';
-import { PointCard } from '../components/PointCard';
-import { ButtonGrid } from '../components/ButtonGrid';
 import { Partnership } from '../components/Partnership';
 import { CompletedEvent } from '../components/CompletedEvent';
 import { UpcomingNews } from '../components/UpcomingNews';
@@ -22,6 +20,7 @@ import { FAB } from '../components/FAB';
 import BottomNav from '../components/BottomNav';
 import SplashScreen from '../components/SplashScreen';
 import './Dashboard.css';
+import { UserCard } from '../components/userCard';
 
 const Dashboard: React.FC = () => {
   const { unreadCount } = useNotificationContext();
@@ -517,10 +516,8 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           )}
-
-          <PointCard points={userPoints} />
-
-          <ButtonGrid
+          <UserCard
+            points={userPoints}
             onProfileClick={handleProfileClick}
             onEventHistoryClick={handleEventHistoryClick}
             onTransactionClick={handleTransactionClick}
@@ -545,9 +542,9 @@ const Dashboard: React.FC = () => {
             </SectionWrapper>
           )}
         </div>
-        <FAB onClick={handleFABClick} ariaLabel="Notifications" />
-        <BottomNav />
       </div>
+      <FAB onClick={handleFABClick} ariaLabel="Notifications" />
+      <BottomNav />
     </>
   );
 };
