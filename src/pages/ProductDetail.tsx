@@ -118,7 +118,7 @@ const ProductDetail: React.FC = () => {
     console.log('Cart clicked - Navigate to cart page');
     // Small delay to ensure any pending cart operations complete
     setTimeout(() => {
-      navigate('/cart');
+      navigate('/cart', { state: { from: '/product-detail' } });
     }, 100);
   };
 

@@ -270,7 +270,7 @@ const Event: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    navigate('/cart');
+    navigate('/cart', { state: { from: '/event' } });
   };
 
   const handleNotificationClick = () => {

@@ -119,7 +119,7 @@ const Product: React.FC = () => {
 
   const handleCartClick = () => {
     console.log('Cart clicked - Navigate to cart page');
-    navigate('/cart');
+    navigate('/cart', { state: { from: '/product' } });
   };
 
   const handleNotificationClick = () => {

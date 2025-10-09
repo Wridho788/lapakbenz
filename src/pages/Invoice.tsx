@@ -67,7 +67,7 @@ const Invoice: React.FC = () => {
   }, []);
 
   const handleBackClick = () => {
-    navigate('/cart');
+    navigate('/cart', { state: { from: '/invoice' } });
   };
 
   const handleRefresh = () => {
@@ -106,7 +106,7 @@ const Invoice: React.FC = () => {
         <div className="invoice-error">
           <h3>Faktur Tidak Ditemukan</h3>
           <p>Tidak dapat memuat faktur. Silakan coba lagi.</p>
-          <button onClick={() => navigate('/cart')} className="back-to-cart-btn">
+          <button onClick={() => navigate('/cart', { state: { from: '/invoice' } })} className="back-to-cart-btn">
             Kembali ke Keranjang
           </button>
         </div>

@@ -49,6 +49,49 @@ const Cart: React.FC = () => {
   const location = useLocation();
   const { cartCount, removeFromCart } = useCartContext();
   const { isAuthenticated, token: authToken, requireAuth } = useAuthStore();
+
+  // Get the referring page from location state or referrer
+  const getBackDestination = () => {
+    // Priority 1: Check location state for explicit 'from' parameter
+    if (location.state?.from) {
+      console.log('📍 Cart back destination from state:', location.state.from);
+      return location.state.from;
+    }
+
+    // Priority 2: Check document.referrer and map to appropriate routes
+    const referrer = document.referrer;
+    if (referrer) {
+      try {
+        const referrerUrl = new URL(referrer);
+        const referrerPath = referrerUrl.pathname;
+
+        console.log('📍 Cart back destination from referrer:', referrerPath);
+
+        // Map referrer paths to appropriate back destinations
+        if (referrerPath.includes('/product-detail')) return referrerPath; // Return to specific product detail
+        if (referrerPath.includes('/product')) return '/product';
+        if (referrerPath.includes('/dashboard')) return '/dashboard';
+        if (referrerPath.includes('/event-detail')) return referrerPath; // Return to specific event detail
+        if (referrerPath.includes('/event')) return '/event';
+        if (referrerPath.includes('/profile')) return '/profile';
+        if (referrerPath.includes('/invoice')) return '/orders'; // Invoice should go to orders
+        if (referrerPath.includes('/orders')) return '/orders';
+        if (referrerPath.includes('/checkout')) return '/product'; // Checkout should go back to products
+        if (referrerPath === '/' || referrerPath === '') return '/dashboard';
+
+        // Return the referrer path if it's a valid route
+        return referrerPath;
+      } catch (error) {
+        console.warn('📍 Error parsing referrer URL:', error);
+      }
+    }
+
+    // Priority 3: Default fallback
+    console.log('📍 Cart back destination using default: /dashboard');
+    return '/dashboard';
+  };
+
+  const backDestination = getBackDestination();
   // const [selectedAddress, setSelectedAddress] = useState<ShippingAddress | null>(null);
   // const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(null);
   const [orderingStatus, setOrderingStatus] = useState<OrderingStatus>({
@@ -74,7 +117,7 @@ const Cart: React.FC = () => {
     error: cartError,
     refetch: refetchCart,
   } = useCart();
-  
+
   const removeAllFromCartMutation = useRemoveFromCart();
   const addToCartMutation = useAddToCart();
 
@@ -117,7 +160,7 @@ const Cart: React.FC = () => {
       const timer = setTimeout(() => {
         refetchCart();
       }, 200);
-      
+
       return () => clearTimeout(timer);
     }
   }, [location.pathname, isAuthenticated, refetchCart]);
@@ -170,7 +213,8 @@ const Cart: React.FC = () => {
   }, [cartError]);
 
   const handleBackClick = () => {
-    navigate(-1);
+    // Navigate to the determined back destination
+    navigate(backDestination);
   };
 
   const handleCartClick = () => {
@@ -211,7 +255,7 @@ const Cart: React.FC = () => {
                 padding: '6px 12px',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '12px'
+                fontSize: '12px',
               }}
             >
               Batal
@@ -228,7 +272,7 @@ const Cart: React.FC = () => {
                 padding: '6px 12px',
                 borderRadius: '4px',
                 cursor: 'pointer',
-                fontSize: '12px'
+                fontSize: '12px',
               }}
             >
               Hapus Semua
@@ -243,7 +287,7 @@ const Cart: React.FC = () => {
         closeOnClick: false,
         closeButton: false,
         draggable: false,
-      }
+      },
     );
   };
 
@@ -278,8 +322,8 @@ const Cart: React.FC = () => {
 
   const subtotal = getApiCartTotal();
   const apiCartCount = getApiCartCount();
-  const paymentFee =  0;
-  const totalPayment = subtotal  + paymentFee;
+  const paymentFee = 0;
+  const totalPayment = subtotal + paymentFee;
 
   // New order flow function
   const handlePlaceOrder = async () => {
@@ -315,7 +359,7 @@ const Cart: React.FC = () => {
     }
 
     const cartItems = apiCartData?.content?.result || [];
-    
+
     // Initialize ordering status
     setOrderingStatus({
       isOrdering: true,
@@ -334,7 +378,7 @@ const Cart: React.FC = () => {
       // Step 1: Create Order (useAddOrder)
       console.log('📝 Step 1: Creating new order...');
       const orderResponse = await addOrderMutation.mutateAsync(authToken!);
-      
+
       if (!orderResponse?.content?.id) {
         throw new Error('Failed to create order - no order ID returned');
       }
@@ -344,7 +388,7 @@ const Cart: React.FC = () => {
       console.log('📋 Order details:', orderResponse.content);
 
       // Step 2: Add Items to Order (useAddItemToOrder)
-      setOrderingStatus(prev => ({
+      setOrderingStatus((prev) => ({
         ...prev,
         currentStep: 'Adding Items to Order...',
         currentStepNumber: 2,
@@ -355,16 +399,16 @@ const Cart: React.FC = () => {
 
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
-        
+
         console.log(`📦 Processing item ${i + 1}/${cartItems.length}:`, {
           sku: item.sku,
           name: item.name,
           quantity: item.qty,
-          price: item.price
+          price: item.price,
         });
 
         // Update status for each item
-        setOrderingStatus(prev => ({
+        setOrderingStatus((prev) => ({
           ...prev,
           processedItems: i,
           currentStep: `Adding Item ${i + 1}/${cartItems.length}: ${item.name}...`,
@@ -396,13 +440,13 @@ const Cart: React.FC = () => {
       console.log('✅ Step 2 completed: All items added to order');
 
       // Update status for final processed items
-      setOrderingStatus(prev => ({
+      setOrderingStatus((prev) => ({
         ...prev,
         processedItems: cartItems.length,
       }));
 
       // Step 3: Checkout Order (useCheckoutOrder)
-      setOrderingStatus(prev => ({
+      setOrderingStatus((prev) => ({
         ...prev,
         currentStep: 'Processing Checkout...',
         currentStepNumber: 3,
@@ -430,18 +474,18 @@ const Cart: React.FC = () => {
       // Check if we have an invoice_url in the response
       if (checkoutResponse?.content?.invoice_url) {
         console.log('📄 Invoice URL found:', checkoutResponse.content.invoice_url);
-        
+
         // Clear cart after successful order
         await removeAllFromCartMutation.mutateAsync(authToken!);
         refetchCart();
 
         // Navigate to invoice page with the invoice_url
-        navigate('/invoice', { 
-          state: { 
+        navigate('/invoice', {
+          state: {
             invoiceUrl: checkoutResponse.content.invoice_url,
             orderId: checkoutResponse.content.orderid || orderId,
-            transId: checkoutResponse.content.transid
-          } 
+            transId: checkoutResponse.content.transid,
+          },
         });
         return;
       }
@@ -450,18 +494,17 @@ const Cart: React.FC = () => {
       toast.success(`Pesanan #${orderId} telah dibuat dan sedang diproses.`);
 
       console.log('🎊 Order process completed successfully!');
-      
+
       // Clear cart after successful order
       await removeAllFromCartMutation.mutateAsync(authToken!);
       refetchCart();
 
       // Navigate to orders page or home
       navigate('/orders');
-
     } catch (error: any) {
       console.error('❌ Order process failed:', error);
-      
-      setOrderingStatus(prev => ({
+
+      setOrderingStatus((prev) => ({
         ...prev,
         isOrdering: false,
         error: error.message,
@@ -479,9 +522,10 @@ const Cart: React.FC = () => {
         <AppbarDefault
           title="Keranjang Belanja"
           onBack={handleBackClick}
+          backTo={backDestination}
           onCartClick={handleCartClick}
           cartCount={cartCount}
-          defaultBack="/dashboard" 
+          defaultBack="/dashboard"
         />
 
         <div className="cart-content">
@@ -493,7 +537,7 @@ const Cart: React.FC = () => {
               <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
                 Lanjut Belanja
               </button>
-              <button className="home-btn" onClick={() => navigate('/')}> 
+              <button className="home-btn" onClick={() => navigate('/')}>
                 <MdHome /> Ke Beranda
               </button>
             </div>
@@ -509,93 +553,117 @@ const Cart: React.FC = () => {
     <>
       {/* Ordering Status Modal */}
       {orderingStatus.isOrdering && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999,
-        }}>
-          <div style={{
-            background: 'white',
-            padding: '40px 30px',
-            borderRadius: '20px',
-            textAlign: 'center',
-            maxWidth: '350px',
-            width: '90%',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-          }}>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              border: '4px solid #f3f3f3',
-              borderTop: '4px solid #161129',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              margin: '0 auto 20px',
-            }}></div>
-            
-            <h3 style={{
-              margin: '0 0 15px 0',
-              color: '#161129',
-              fontSize: '18px',
-              fontWeight: '600',
-            }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: 'white',
+              padding: '40px 30px',
+              borderRadius: '20px',
+              textAlign: 'center',
+              maxWidth: '350px',
+              width: '90%',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            <div
+              style={{
+                width: '60px',
+                height: '60px',
+                border: '4px solid #f3f3f3',
+                borderTop: '4px solid #161129',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+                margin: '0 auto 20px',
+              }}
+            ></div>
+
+            <h3
+              style={{
+                margin: '0 0 15px 0',
+                color: '#161129',
+                fontSize: '18px',
+                fontWeight: '600',
+              }}
+            >
               Processing Order
             </h3>
-            
-            <p style={{
-              margin: '0 0 20px 0',
-              color: '#666',
-              fontSize: '14px',
-              lineHeight: '1.4',
-            }}>
+
+            <p
+              style={{
+                margin: '0 0 20px 0',
+                color: '#666',
+                fontSize: '14px',
+                lineHeight: '1.4',
+              }}
+            >
               {orderingStatus.currentStep}
             </p>
 
-            <div style={{
-              background: '#f8f9ff',
-              borderRadius: '10px',
-              padding: '15px',
-              marginBottom: '15px',
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginBottom: '8px',
-                fontSize: '12px',
-                color: '#666',
-              }}>
-                <span>Step {orderingStatus.currentStepNumber} of {orderingStatus.totalSteps}</span>
-                <span>{orderingStatus.processedItems}/{orderingStatus.totalItems} items</span>
+            <div
+              style={{
+                background: '#f8f9ff',
+                borderRadius: '10px',
+                padding: '15px',
+                marginBottom: '15px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginBottom: '8px',
+                  fontSize: '12px',
+                  color: '#666',
+                }}
+              >
+                <span>
+                  Step {orderingStatus.currentStepNumber} of {orderingStatus.totalSteps}
+                </span>
+                <span>
+                  {orderingStatus.processedItems}/{orderingStatus.totalItems} items
+                </span>
               </div>
-              
-              <div style={{
-                width: '100%',
-                height: '8px',
-                background: '#e9ecef',
-                borderRadius: '4px',
-                overflow: 'hidden',
-              }}>
-                <div style={{
-                  width: `${(orderingStatus.currentStepNumber / orderingStatus.totalSteps) * 100}%`,
-                  height: '100%',
-                  background: 'linear-gradient(90deg, #161129, #2c5aa0)',
-                  transition: 'width 0.3s ease',
-                }}></div>
+
+              <div
+                style={{
+                  width: '100%',
+                  height: '8px',
+                  background: '#e9ecef',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    width: `${(orderingStatus.currentStepNumber / orderingStatus.totalSteps) * 100}%`,
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #161129, #2c5aa0)',
+                    transition: 'width 0.3s ease',
+                  }}
+                ></div>
               </div>
             </div>
 
-            <p style={{
-              margin: '0',
-              color: '#999',
-              fontSize: '12px',
-            }}>
+            <p
+              style={{
+                margin: '0',
+                color: '#999',
+                fontSize: '12px',
+              }}
+            >
               Please wait, do not close this page
             </p>
           </div>
@@ -606,6 +674,7 @@ const Cart: React.FC = () => {
         <AppbarDefault
           title={`Keranjang Belanja (${apiCartCount})`}
           onBack={handleBackClick}
+          backTo={backDestination}
           onCartClick={handleCartClick}
           cartCount={apiCartCount}
         />
@@ -613,164 +682,168 @@ const Cart: React.FC = () => {
         <div className="cart-content">
           {/* Cart Items */}
           <div className="cart-items-section">
-        <div className="cart-header">
-          <h3>Daftar Belanja</h3>
-          {hasApiCartItems && (
-            <button
-          className="remove-all-btn"
-          onClick={handleRemoveAllFromCart}
-          disabled={removeAllFromCartMutation.isPending}
-          title="Hapus semua item dari keranjang"
-            >
-          <MdClear />
-          <span>{removeAllFromCartMutation.isPending ? 'Menghapus...' : 'Hapus Semua'}</span>
-            </button>
-          )}
-        </div>
-
-        {/* Loading State */}
-        {cartLoading && isAuthenticated && (
-          <div className="cart-loading">
-            <p>Memuat daftar belanja...</p>
-          </div>
-        )}
-
-        {/* Error State */}
-        {cartError && isAuthenticated && (
-          <div className="cart-error">
-            <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
-          Gagal memuat keranjang dari server
-            </p>
-            <button
-          onClick={() => refetchCart()}
-          style={{
-            background: '#161129',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-          }}
-            >
-          Coba Lagi
-            </button>
-          </div>
-        )}
-
-        {/* API Cart Items */}
-        {apiCartData?.content?.result?.map((item) => (
-          <div key={item.id} className="cart-item">
-            <div
-          className="remove-btn"
-          onClick={() => handleRemoveItem(item.id)}
-          aria-label="Hapus item"
-            >
-          <MdDelete />
+            <div className="cart-header">
+              <h3>Daftar Belanja</h3>
+              {hasApiCartItems && (
+                <button
+                  className="remove-all-btn"
+                  onClick={handleRemoveAllFromCart}
+                  disabled={removeAllFromCartMutation.isPending}
+                  title="Hapus semua item dari keranjang"
+                >
+                  <MdClear />
+                  <span>
+                    {removeAllFromCartMutation.isPending ? 'Menghapus...' : 'Hapus Semua'}
+                  </span>
+                </button>
+              )}
             </div>
 
-            <div className="item-content">
-          {/* Left Column - Product Image */}
-          <div className="item-image-column">
-            <img
-              src={item.image || '/nodata.png'}
-              alt={item.name}
-              onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = '/nodata.png';
-              }}
-            />
-          </div>
-
-          {/* Right Column - Product Info */}
-          <div className="item-info-column">
-            <div className="product-details">
-              <h4 className="item-title" style={{ textTransform: 'uppercase' }}>{item.name}</h4>
-              <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
-            </div>
-
-            <div className="quantity-section">
-              <div
-            className="quantity-btn decrease"
-            onClick={() => handleQuantityChange(item, item.qty - 1)}
-            style={{
-              opacity: item.qty <= 1 ? 0.5 : 1,
-              pointerEvents: item.qty <= 1 ? 'none' : 'auto',
-            }}
-              >
-            <MdRemove />
+            {/* Loading State */}
+            {cartLoading && isAuthenticated && (
+              <div className="cart-loading">
+                <p>Memuat daftar belanja...</p>
               </div>
-              <span className="quantity-value">{item.qty}</span>
-              <div
-            className="quantity-btn increase"
-            onClick={() => handleQuantityChange(item, item.qty + 1)}
-              >
-            <MdAdd />
-              </div>
-            </div>
+            )}
 
-            <div className="item-total-section">
-              <span className="item-total-label">Total:</span>
-              <span className="item-total">Rp {item.amount.toLocaleString('id-ID')}</span>
-            </div>
-          </div>
-            </div>
-          </div>
-        )) || []}
+            {/* Error State */}
+            {cartError && isAuthenticated && (
+              <div className="cart-error">
+                <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
+                  Gagal memuat keranjang dari server
+                </p>
+                <button
+                  onClick={() => refetchCart()}
+                  style={{
+                    background: '#161129',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Coba Lagi
+                </button>
+              </div>
+            )}
+
+            {/* API Cart Items */}
+            {apiCartData?.content?.result?.map((item) => (
+              <div key={item.id} className="cart-item">
+                <div
+                  className="remove-btn"
+                  onClick={() => handleRemoveItem(item.id)}
+                  aria-label="Hapus item"
+                >
+                  <MdDelete />
+                </div>
+
+                <div className="item-content">
+                  {/* Left Column - Product Image */}
+                  <div className="item-image-column">
+                    <img
+                      src={item.image || '/nodata.png'}
+                      alt={item.name}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/nodata.png';
+                      }}
+                    />
+                  </div>
+
+                  {/* Right Column - Product Info */}
+                  <div className="item-info-column">
+                    <div className="product-details">
+                      <h4 className="item-title" style={{ textTransform: 'uppercase' }}>
+                        {item.name}
+                      </h4>
+                      <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
+                    </div>
+
+                    <div className="quantity-section">
+                      <div
+                        className="quantity-btn decrease"
+                        onClick={() => handleQuantityChange(item, item.qty - 1)}
+                        style={{
+                          opacity: item.qty <= 1 ? 0.5 : 1,
+                          pointerEvents: item.qty <= 1 ? 'none' : 'auto',
+                        }}
+                      >
+                        <MdRemove />
+                      </div>
+                      <span className="quantity-value">{item.qty}</span>
+                      <div
+                        className="quantity-btn increase"
+                        onClick={() => handleQuantityChange(item, item.qty + 1)}
+                      >
+                        <MdAdd />
+                      </div>
+                    </div>
+
+                    <div className="item-total-section">
+                      <span className="item-total-label">Total:</span>
+                      <span className="item-total">Rp {item.amount.toLocaleString('id-ID')}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )) || []}
           </div>
 
           {/* Order Summary */}
           <div className="order-summary">
-        <h3>Ringkasan Pesanan</h3>
-        <div className="summary-details">
-          <div className="summary-row">
-            <span>Subtotal ({apiCartCount} item)</span>
-            <span>Rp {subtotal.toLocaleString('id-ID')}</span>
-          </div>
-          
-          {paymentFee > 0 && (
-            <div className="summary-row">
-          <span>Biaya Pembayaran</span>
-          <span>Rp {paymentFee.toLocaleString('id-ID')}</span>
+            <h3>Ringkasan Pesanan</h3>
+            <div className="summary-details">
+              <div className="summary-row">
+                <span>Subtotal ({apiCartCount} item)</span>
+                <span>Rp {subtotal.toLocaleString('id-ID')}</span>
+              </div>
+
+              {paymentFee > 0 && (
+                <div className="summary-row">
+                  <span>Biaya Pembayaran</span>
+                  <span>Rp {paymentFee.toLocaleString('id-ID')}</span>
+                </div>
+              )}
+              <div className="summary-divider"></div>
+              <div className="summary-row total">
+                <span>Total Bayar</span>
+                <span>Rp {totalPayment.toLocaleString('id-ID')}</span>
+              </div>
             </div>
-          )}
-          <div className="summary-divider"></div>
-          <div className="summary-row total">
-            <span>Total Bayar</span>
-            <span>Rp {totalPayment.toLocaleString('id-ID')}</span>
-          </div>
-        </div>
           </div>
 
           {/* Place Order Button */}
           <div className="checkout-section">
-        <button 
-          className="checkout-btn" 
-          onClick={handlePlaceOrder}
-          disabled={orderingStatus.isOrdering || !hasApiCartItems}
-        >
-          {orderingStatus.isOrdering ? (
-            <>
-          <div className="spinner"></div>
-          <span>Memproses Pesanan...</span>
-            </>
-          ) : (
-            <>
-          <MdPayment size={24} />
-          <span>Checkout</span>
-          <span className="checkout-total">Rp {totalPayment.toLocaleString('id-ID')}</span>
-            </>
-          )}
-        </button>
-        <div className="checkout-actions">
-          <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
-            <MdShoppingCart size={20} />
-            <span>Lanjut Belanja</span>
-          </button>
-          <button className="home-btn" onClick={() => navigate('/')}>
-            <MdHome size={20} />
-            <span>Ke Beranda</span>
-          </button>
-        </div>
+            <button
+              className="checkout-btn"
+              onClick={handlePlaceOrder}
+              disabled={orderingStatus.isOrdering || !hasApiCartItems}
+            >
+              {orderingStatus.isOrdering ? (
+                <>
+                  <div className="spinner"></div>
+                  <span>Memproses Pesanan...</span>
+                </>
+              ) : (
+                <>
+                  <MdPayment size={24} />
+                  <span>Checkout</span>
+                  <span className="checkout-total">Rp {totalPayment.toLocaleString('id-ID')}</span>
+                </>
+              )}
+            </button>
+            <div className="checkout-actions">
+              <button className="continue-shopping-btn" onClick={() => navigate('/product')}>
+                <MdShoppingCart size={20} />
+                <span>Lanjut Belanja</span>
+              </button>
+              <button className="home-btn" onClick={() => navigate('/')}>
+                <MdHome size={20} />
+                <span>Ke Beranda</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

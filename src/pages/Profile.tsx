@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
-import { useCart } from '../contexts/CartContext';
-import { useProfile, useLedger } from '../api/hooks/index';
+// import { useCart } from '../contexts/CartContext';
+import { useProfile, useLedger, useCart } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import {
   MdPerson,
@@ -21,7 +21,6 @@ import { FAB } from '../components/FAB';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const { cartCount } = useCart();
   const [activeMembershipTab, setActiveMembershipTab] = useState(0);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   
@@ -39,6 +38,7 @@ const Profile: React.FC = () => {
   // API hooks
   const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile();
   const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
+  const { data: apiCartData } = useCart();
 
   const membershipTabs = ['BASIC', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
 
@@ -47,7 +47,7 @@ const Profile: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    navigate('/cart');
+    navigate('/cart', { state: { from: '/profile' } });
   };
 
   // Process user data from API responses
@@ -274,6 +274,21 @@ const Profile: React.FC = () => {
     }
   };
 
+    useEffect(() => {
+      if (apiCartData) {
+        console.log('🛒 Cart API Response:', apiCartData);
+        console.log('🛒 Cart Items:', apiCartData?.content?.result);
+        console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
+        console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
+      }
+    }, [apiCartData]);
+  
+     const getApiCartCount = () => {
+      return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
+    };
+  
+      const apiCartCount = getApiCartCount();
+
   const handleNotificationClick = () => {
     navigate('/notifications');
   };
@@ -294,7 +309,7 @@ const Profile: React.FC = () => {
           title="Profile"
           onBack={handleBackClick}
           onCartClick={handleCartClick}
-          cartCount={cartCount}
+          cartCount={apiCartCount}
           defaultBack="/dashboard" 
         />
         <div className="profile-content">
@@ -310,7 +325,7 @@ const Profile: React.FC = () => {
         title="Profile"
         onBack={handleBackClick}
         onCartClick={handleCartClick}
-        cartCount={cartCount}
+        cartCount={apiCartCount}
       />
 
       <div className="profile-content">

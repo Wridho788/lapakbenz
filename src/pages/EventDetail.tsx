@@ -87,7 +87,7 @@ const EventDetail: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    navigate('/cart');
+    navigate('/cart', { state: { from: `/event-detail/${eventParam || ''}` } });
   };
 
   const handleEventRegister = async () => {

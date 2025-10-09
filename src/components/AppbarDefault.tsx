@@ -9,18 +9,18 @@ export type AppbarDefaultProps = {
   onCartClick?: () => void;
   cartCount?: number;
   showCart?: boolean; // New optional prop to control cart visibility
-   backTo?: string; // NEW: Explicit back destination
+  backTo?: string; // NEW: Explicit back destination
   defaultBack?: string; // NEW: Default fallback route
 };
 
-export const AppbarDefault: React.FC<AppbarDefaultProps> = ({ 
-  title, 
-  onBack, 
-  onCartClick, 
+export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
+  title,
+  onBack,
+  onCartClick,
   cartCount = 0,
   showCart = true, // Default to true to maintain backward compatibility
   backTo, // NEW
-  defaultBack = '/dashboard' // NEW: Default fallback
+  defaultBack = '/dashboard', // NEW: Default fallback
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,11 +28,10 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
     if (onCartClick) {
       onCartClick();
     } else {
-      navigate('/cart');
+      navigate('/cart', { state: { from: window.location.pathname } });
     }
   };
 
-  
   const handleBackClick = () => {
     if (onBack) {
       onBack();
@@ -74,9 +73,7 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
         >
           <MdShoppingCart />
           {cartCount > 0 && (
-            <span className="cart-badge">
-              {cartCount > 99 ? '99+' : cartCount}
-            </span>
+            <span className="cart-badge">{cartCount > 99 ? '99+' : cartCount}</span>
           )}
         </button>
       )}
