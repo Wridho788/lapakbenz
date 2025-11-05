@@ -18,6 +18,8 @@ import { useProductDetail, useAddToCart, useCart } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import { extractIdFromParam } from '../api/codeMapping';
 import { toast } from 'react-toastify';
+import AturPengiriman from '../components/AturPengiriman';
+import { isShippingAddressRequiredError, logErrorDetails, getErrorMessage, isAuthenticationError } from '../utils/errorUtils';
 import './ProductDetail.css';
 
 interface ProductDetailType {
@@ -44,6 +46,7 @@ const ProductDetail: React.FC = () => {
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const { addToCart } = useCartContext();
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();
@@ -502,27 +505,30 @@ const ProductDetail: React.FC = () => {
       console.log('✅ Item added to cart successfully');
     } catch (error: any) {
       console.error('Failed to add to cart:', error);
+      
+      // Enhanced error logging for debugging
+      logErrorDetails(error, 'Add to Cart');
 
-      let errorMessage = 'Failed to add item to cart. Please try again.';
+      // Check if error is 307 - Shipping address required
+      if (isShippingAddressRequiredError(error)) {
+        console.log('🚚 Error 307 detected: Shipping address required, opening shipping modal');
+        toast.warning('Please set your shipping address first');
+        setIsShippingModalOpen(true);
+        return;
+      }
 
       // Check if error is related to authentication
-      if (
-        error?.response?.status === 401 ||
-        error?.message?.toLowerCase().includes('unauthorized')
-      ) {
-        errorMessage = 'Your session has expired. Please login again.';
-
-        toast.warning(errorMessage);
+      if (isAuthenticationError(error)) {
+        const authErrorMessage = 'Your session has expired. Please login again.';
+        toast.warning(authErrorMessage);
         // Logout and redirect to login
         useAuthStore.getState().logout();
         navigate('/login');
         return;
       }
 
-      if (error?.message) {
-        errorMessage = error.message;
-      }
-
+      // Handle other errors
+      const errorMessage = getErrorMessage(error) || 'Failed to add item to cart. Please try again.';
       toast.error(`Add to Cart Failed: ${errorMessage}`);
     }
   };
@@ -546,6 +552,10 @@ const ProductDetail: React.FC = () => {
     }
 
     return stars;
+  };
+
+  const handleShippingModalClose = () => {
+    setIsShippingModalOpen(false);
   };
 
   return (
@@ -891,6 +901,24 @@ const ProductDetail: React.FC = () => {
                 </span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shipping Address Modal */}
+      {isShippingModalOpen && (
+        <div className="shipping-modal-overlay" onClick={handleShippingModalClose}>
+          <div className="shipping-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="shipping-modal-header">
+              <button 
+                className="shipping-modal-close"
+                onClick={handleShippingModalClose}
+                aria-label="Tutup"
+              >
+                <MdClose />
+              </button>
+            </div>
+            <AturPengiriman onSuccess={handleShippingModalClose} />
           </div>
         </div>
       )}

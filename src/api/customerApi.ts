@@ -14,7 +14,8 @@ import {
   ENDPOINT_NOTIF_DETAIL,
   ENDPOINT_DECODE_TOKEN,
   ENDPOINT_UPLOAD_IMAGE,
-  ENDPOINT_VERIFY
+  ENDPOINT_VERIFY,
+  ENDPOINT_SET_SHIPPING
 } from './constants';
 import type {
   LoginRequest,
@@ -35,6 +36,8 @@ import type {
   NotificationPayload,
   DecodeTokenResponse,
   LogoutResponse,
+  SetShippingRequest,
+  SetShippingResponse,
 } from './types';
 
 // Create axios instance with base configuration
@@ -474,6 +477,43 @@ verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
   },
 
   /**
+   * Set shipping address
+   */
+  setShipping: async (
+    payload: SetShippingRequest,
+    authToken: string
+  ): Promise<SetShippingResponse> => {
+    try {
+      console.log('📤 Set Shipping API Request:', {
+        url: `${BASE_URL}${ENDPOINT_SET_SHIPPING}`,
+        payload,
+        headers: { 'X-auth-token': authToken }
+      });
+      
+      const response = await apiClient.post(
+        ENDPOINT_SET_SHIPPING,
+        createFormData(payload),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-auth-token': authToken,
+          },
+        }
+      );
+      
+      console.log('📥 Set Shipping API Response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Set Shipping API Error:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('📥 Error Response:', error.response?.data);
+        console.error('📊 Error Status:', error.response?.status);
+      }
+      throw error;
+    }
+  },
+
+  /**
    * Logout customer
    */
   logout: async (authToken: string): Promise<LogoutResponse> => {
@@ -520,6 +560,7 @@ export const {
   getNotificationDetail,
   decodeToken,
   uploadImage,
+  setShipping,
   logout,
 } = customerApi;
 
@@ -542,6 +583,8 @@ export type {
   NotificationDetailResponse,
   DecodeTokenResponse,
   LogoutResponse,
+  SetShippingRequest,
+  SetShippingResponse,
 } from './types';
 
 // Export default

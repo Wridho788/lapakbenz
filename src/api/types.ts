@@ -205,3 +205,20 @@ export interface LogoutResponse {
   success: boolean;
   message: string;
 }
+
+export interface SetShippingRequest {
+  province: string;
+  city: string;
+  district: string;
+  province_name: string;
+  city_name: string;
+  district_name: string;
+  address: string;
+  ccity: string;
+}
+
+export interface SetShippingResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}

@@ -320,10 +320,15 @@ const Cart: React.FC = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
   };
 
+  const getShippingCost = () => {
+    return apiCartData?.content?.result?.reduce((total, item) => total + (item.shipping || 0), 0) || 0;
+  };
+
   const subtotal = getApiCartTotal();
   const apiCartCount = getApiCartCount();
+  const shippingCost = getShippingCost();
   const paymentFee = 0;
-  const totalPayment = subtotal + paymentFee;
+  const totalPayment = subtotal + shippingCost + paymentFee;
 
   // New order flow function
   const handlePlaceOrder = async () => {
@@ -795,6 +800,13 @@ const Cart: React.FC = () => {
           <div className="order-summary">
             <h3>Ringkasan Pesanan</h3>
             <div className="summary-details">
+              {shippingCost > 0 && (
+                <div className="summary-row">
+                  <span>Biaya Pengiriman</span>
+                  <span>Rp {shippingCost.toLocaleString('id-ID')}</span>
+                </div>
+              )}
+              
               <div className="summary-row">
                 <span>Subtotal ({apiCartCount} item)</span>
                 <span>Rp {subtotal.toLocaleString('id-ID')}</span>

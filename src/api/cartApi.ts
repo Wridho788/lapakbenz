@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { BASE_URL, ENDPOINT_CART, ENDPOINT_CART_ADD, ENDPOINT_CART_CLEAN } from './constants';
+import { isShippingAddressRequiredError, logErrorDetails } from '../utils/errorUtils';
 
 // TypeScript interfaces for Cart API
 export interface CartItem {
@@ -9,7 +10,10 @@ export interface CartItem {
   image: string;
   qty: number;
   price: number;
+  shipping: number;
   amount: number;
+  total: number;
+  pickup: string;
   created: string;
   updated: string | null;
 }
@@ -91,6 +95,15 @@ export const cartApi = {
     } catch (error) {
       console.error('❌ Add to cart API error:', error);
       if (axios.isAxiosError(error)) {
+        // Enhanced error logging for debugging
+        logErrorDetails(error, 'Cart API - Add to Cart');
+        
+        // For error 307 (shipping address required), preserve the original error structure
+        if (isShippingAddressRequiredError(error)) {
+          console.log('🚚 Cart API: Error 307 detected, preserving error structure');
+          throw error; // Throw the original axios error to preserve all error details
+        }
+        
         throw new Error(error.response?.data?.message || error.message || 'Failed to add item to cart');
       }
       throw error;

@@ -1,0 +1,209 @@
+.atur-pengiriman {
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.atur-pengiriman__container {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.atur-pengiriman__title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.atur-pengiriman__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.required {
+  color: #ef4444;
+}
+
+.optional {
+  color: #6b7280;
+  font-weight: normal;
+}
+
+.form-select {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: white;
+  color: #1f2937;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-select:disabled {
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+.form-textarea {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  background-color: white;
+  color: #1f2937;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.submit-button {
+  padding: 14px 28px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 8px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  padding: 12px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .atur-pengiriman {
+    padding: 16px;
+  }
+
+  .atur-pengiriman__container {
+    padding: 20px;
+  }
+
+  .atur-pengiriman__title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-select,
+  .form-textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .submit-button {
+    padding: 16px 28px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .atur-pengiriman {
+    padding: 12px;
+  }
+
+  .atur-pengiriman__container {
+    padding: 16px;
+  }
+
+  .atur-pengiriman__title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .atur-pengiriman__form {
+    gap: 16px;
+  }
+}
+
+/* Loading states */
+.form-select option {
+  padding: 8px;
+}
+
+/* Focus states for accessibility */
+.form-select:focus-visible,
+.form-textarea:focus-visible,
+.submit-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar for textarea */
+.form-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.form-textarea::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.form-textarea::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.form-textarea::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

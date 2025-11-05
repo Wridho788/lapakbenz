@@ -19,6 +19,7 @@ export const ENDPOINT_GET_TICKET = 'customer/get_ticket/';
 export const ENDPOINT_UPLOAD_IMAGE = 'customer/upload_image';
 export const ENDPOINT_DECODE_TOKEN = 'customer/decode_token';
 export const ENDPOINT_VERIFY = 'customer/verify/';
+export const ENDPOINT_SET_SHIPPING = 'customer/set_shipping/';
 // product
 export const ENDPOINT_PRODUCT = 'product';
 export const ENDPOINT_PRODUCT_SEARCH = 'product/search';
@@ -33,7 +34,7 @@ export const ENDPOINT_ARTICLE_CATEGORY = 'article/category';
 export const ENDPOINT_ARTICLE_GET_PERMALINK = 'article/get_by_permalink';
 export const ENDPOINT_ARTICLE_GET_BY_ID = 'article/get_by_id/';
 // city
-export const ENDPOINT_CITY_GET_CITY = 'city/get_city_rj';
+export const ENDPOINT_CITY_GET_CITY = 'city/get_city_rj/';
 export const ENDPOINT_CITY_GET_PROVINCE = 'city/get_province_rj/';
 export const ENDPOINT_CITY_GET_DISTRICT = 'city/get_district_rj/';
 export const ENDPOINT_GET_DISTRICT = 'city/get_district/';

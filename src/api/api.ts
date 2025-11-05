@@ -8,6 +8,8 @@ import {
   ENDPOINT_ARTICLE,
   ENDPOINT_EVENT_BY_ID,
   ENDPOINT_CITY_GET_CITY,
+  ENDPOINT_CITY_GET_PROVINCE,
+  ENDPOINT_CITY_GET_DISTRICT,
   ENDPOINT_EVENT_GET_BY_CUSTOMER,
   ENDPOINT_EVENT_REGISTER_MERCHANT,
   ENDPOINT_EVENT_REGISTER_PUBLIC,
@@ -64,6 +66,24 @@ export const postArticle = async (data?: any) => {
 export const getCity = async () => {
   const url = `${BASE_URL}${ENDPOINT_CITY_GET_CITY}`;
 
+  const response = await axios.get(url);
+  return response.data;
+};
+
+export const getProvince = async () => {
+  const url = `${BASE_URL}${ENDPOINT_CITY_GET_PROVINCE}`;
+  const response = await axios.get(url);
+  return response.data;
+};
+
+export const getCityByProvince = async (provinceId: string) => {
+  const url = `${BASE_URL}${ENDPOINT_CITY_GET_CITY}${provinceId}`;
+  const response = await axios.get(url);
+  return response.data;
+};
+
+export const getDistrictByCity = async (cityId: string) => {
+  const url = `${BASE_URL}${ENDPOINT_CITY_GET_DISTRICT}${cityId}`;
   const response = await axios.get(url);
   return response.data;
 };
