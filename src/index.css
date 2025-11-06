@@ -1,130 +1,140 @@
 /* Mobile-first base styles dengan dark mode support */
 :root {
-	font-family: 'Lato', system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
-	color-scheme: light dark; /* Mendukung kedua mode */
-	color: #161129;
-	background-color: #fff;
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  font-family: 'Lato', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark; /* Mendukung kedua mode */
+  color: #161129;
+  background-color: #fff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Dark mode styles */
 @media (prefers-color-scheme: dark) {
-	:root {
-		color: #e0e0e0;
-		background-color: #1a1a1a;
-	}
-	
-	body {
-		background: #1a1a1a;
-		color: #e0e0e0;
-	}
-	
-	.main-layout {
-		background: #1a1a1a;
-		box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
-	}
-	
-	.card {
-		background: #2d2d2d;
-		box-shadow: 0 2px 8px rgba(255, 255, 255, 0.08);
-		color: #e0e0e0;
-	}
-	
-	button {
-		background-color: #2d2d2d;
-		color: #e0e0e0;
-		border: 1px solid #404040;
-	}
-	
-	button:hover {
-		background-color: #404040;
-	}
-	
-	.read-the-docs {
-		color: #aaa;
-	}
+  html {
+    color: #e0e0e0;
+    background-color: #1a1a1a;
+  }
+  :root {
+    color: #e0e0e0;
+    background-color: #1a1a1a;
+  }
+
+  body {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+
+  .main-layout {
+    background: #1a1a1a;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  }
+
+  .card {
+    background: #2d2d2d;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.08);
+    color: #e0e0e0;
+  }
+
+  button {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #404040;
+  }
+
+  button:hover {
+    background-color: #404040;
+  }
+
+  .read-the-docs {
+    color: #aaa;
+  }
 }
 
 a {
-	font-weight: 500;
-	color: #646cff;
-	text-decoration: none;
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: none;
 }
 a:hover {
-	color: #535bf2;
+  color: #535bf2;
 }
 
 /* Dark mode untuk links */
 @media (prefers-color-scheme: dark) {
-	a {
-		color: #8b92ff;
-	}
-	a:hover {
-		color: #a5acff;
-	}
+  a {
+    color: #8b92ff;
+  }
+  a:hover {
+    color: #a5acff;
+  }
+}
+html{
+	  background: #ededed;
+
 }
 
 body {
-	margin: 0;
-	min-width: 0;
-	min-height: 100vh;
-	background: #fff;
-	color: #161129;
+  margin: 0;
+  min-width: 0;
+  min-height: 100vh;
+  background: #ededed;
+  color: #161129;
 }
 
 h1 {
-	font-size: 2em;
-	line-height: 1.2;
+  font-size: 2em;
+  line-height: 1.2;
 }
 
 button {
-	border-radius: 8px;
-	border: none;
-	padding: 0.6em 1.2em;
-	font-size: 1em;
-	font-weight: 500;
-	font-family: inherit;
-	background-color: #f5f5f5;
-	color: #161129;
-	cursor: pointer;
-	transition: background 0.2s, color 0.2s;
+  border-radius: 8px;
+  border: none;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f5f5f5;
+  color: #161129;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 button:hover {
-	background-color: #e0e0e0;
+  background-color: #e0e0e0;
 }
 button:focus,
 button:focus-visible {
-	outline: 2px solid #646cff;
+  outline: 2px solid #646cff;
 }
 
 /* Default phone width */
 .main-layout {
-	max-width: 430px;
-	margin: 0 auto;
-	min-height: 100vh;
-	background: #fff;
-	box-shadow: 0 0 10px rgba(22, 17, 41, 0.05);
-	display: flex;
-	flex-direction: column;
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(22, 17, 41, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 430px) {
-	.main-layout {
-		max-width: 100vw;
-		min-height: 100vh;
-	}
+  .main-layout {
+    max-width: 100vw;
+    min-height: 100vh;
+  }
 }
 
 /* Foldable device support: slightly larger width */
 @media (horizontal-viewport-segments: 2) {
-	.main-layout {
-		max-width: 600px;
-		padding-left: env(fold-left, 0px);
-		padding-right: env(fold-right, 0px);
-	}
+  .main-layout {
+    max-width: 600px;
+    padding-left: env(fold-left, 0px);
+    padding-right: env(fold-right, 0px);
+  }
 }

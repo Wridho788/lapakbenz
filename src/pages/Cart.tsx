@@ -463,6 +463,7 @@ const Cart: React.FC = () => {
           ctax: '0',
           tqty: item.qty.toString(),
           tdiscount: '0',
+          tshipping: item.pickup === "1" ? '0' : item.shipping.toString(),
         };
 
         console.log(`📤 Sending item payload:`, itemPayload);

@@ -84,6 +84,7 @@ export interface OrderAddItemRequest {
   ctax: string;
   tqty: string;
   tdiscount: string;
+  tshipping: string;
 }
 
 export interface OrderAddItemResponse {
@@ -232,6 +233,7 @@ export const orderApi = {
       formData.append('ctax', payload.ctax);
       formData.append('tqty', payload.tqty);
       formData.append('tdiscount', payload.tdiscount);
+      formData.append('tshipping', payload.tshipping);
 
       const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_ADD_ITEM}${orderId}`, formData, {
         headers: {
