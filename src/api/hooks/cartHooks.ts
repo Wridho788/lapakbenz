@@ -9,6 +9,7 @@ import type {
   AddToCartRequest,
   AddToCartResponse,
   RemoveFromCartResponse,
+  SetPickupResponse,
 } from '../cartApi';
 import type {
   OrderListResponse,
@@ -63,6 +64,23 @@ export function useRemoveFromCart(): UseMutationResult<RemoveFromCartResponse, E
     mutationFn: async () => {
       try {
         return await cartApi.removeFromCart(token!);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+export function useSetPickup(): UseMutationResult<SetPickupResponse, Error, string> {
+  const { token } = useAuthStore();
+
+  return useMutation({
+    mutationFn: async (cartId: string) => {
+      if (!cartId || cartId.trim() === '') {
+        throw new Error('Cart ID is required');
+      }
+      try {
+        return await cartApi.setPickup(cartId, token!);
       } catch (error) {
         throw error;
       }

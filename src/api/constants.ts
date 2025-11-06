@@ -41,6 +41,7 @@ export const ENDPOINT_GET_DISTRICT = 'city/get_district/';
 export const ENDPOINT_GET_DISTRICT_BY_ID = 'city/get_district_by_id/';
 export const ENDPOINT_CITY_RECON_PROVINCE = 'city/recon_province';
 export const ENDPOINT_RECON_CITY = 'city/recon_city';
+export const ENDPOINT_CITY = 'city/get_city'
 // event
 export const ENDPOINT_EVENT = 'event';
 export const ENDPOINT_EVENT_BY_ID = 'event/get_by_id/';
@@ -86,6 +87,7 @@ export const ENDPOINT_POS_API = 'pos/post_api/';
 export const ENDPOINT_CART = 'cart';
 export const ENDPOINT_CART_ADD = 'cart/add/';
 export const ENDPOINT_CART_CLEAN = 'cart/clean/';
+export const ENDPOINT_CART_SET_PICKUP = 'cart/set_pickup/';
 // other
 export const ENDPOINT_MEMBER_TOKEN = 'member/tes_token';
 export const ENDPOINT_BANKLIST = 'banklist';

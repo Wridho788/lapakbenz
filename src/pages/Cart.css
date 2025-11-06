@@ -249,6 +249,223 @@
   font-size: 14px;
 }
 
+/* Pickup Options Section */
+.pickup-options-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.pickup-options-section h3 {
+  font-family: 'Lato', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pickup-options-section h3::before {
+  content: '🚚';
+  font-size: 20px;
+}
+
+.pickup-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pickup-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.pickup-item:hover {
+  border-color: #161129;
+  background: #f5f6fa;
+}
+
+.pickup-item-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.pickup-item-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+.pickup-item-details {
+  flex: 1;
+}
+
+.pickup-item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+}
+
+.pickup-item-qty {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+.pickup-item-options {
+  display: flex;
+  align-items: center;
+}
+
+.pickup-radio-group {
+  display: flex;
+  gap: 20px;
+}
+
+.pickup-radio-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: white;
+  transition: all 0.2s ease;
+  min-width: 100px;
+}
+
+.pickup-radio-option:hover {
+  border-color: #161129;
+  background: #f8f9ff;
+}
+
+.pickup-radio-option:has(.pickup-radio-input:checked) {
+  border-color: #161129;
+  background: #161129;
+  color: white;
+}
+
+.pickup-radio-input {
+  margin: 0 0 6px 0;
+  cursor: pointer;
+  transform: scale(1.2);
+}
+
+.pickup-radio-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.pickup-radio-desc {
+  font-size: 11px;
+  opacity: 0.8;
+  text-align: center;
+  font-weight: 500;
+}
+
+.pickup-radio-option:has(.pickup-radio-input:checked) .pickup-radio-label,
+.pickup-radio-option:has(.pickup-radio-input:checked) .pickup-radio-desc {
+  color: white;
+}
+
+/* Global Pickup Options */
+.pickup-global-options {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9ff, #ffffff);
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+}
+
+.pickup-global-options .pickup-radio-group {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.pickup-global-options .pickup-radio-option {
+  flex: 1;
+  max-width: 200px;
+  padding: 16px 20px;
+  text-align: center;
+}
+
+/* Product List */
+.pickup-items-list {
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+}
+
+.pickup-items-list h4 {
+  font-family: 'Lato', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pickup-items-list h4::before {
+  content: '📦';
+  font-size: 16px;
+}
+
+.pickup-item-display {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 12px;
+}
+
+.pickup-item-display .pickup-item-info {
+  flex: 1;
+}
+
+.pickup-item-display .pickup-item-image {
+  width: 40px;
+  height: 40px;
+}
+
+.pickup-item-status {
+  font-size: 12px;
+  margin: 4px 0 0 0;
+  font-weight: 500;
+}
+
+.status-pickup {
+  color: #28a745;
+}
+
+.status-shipping {
+  color: #007bff;
+}
+
 .item-total-section {
   display: flex;
   align-items: center;
@@ -819,6 +1036,62 @@
   .quantity-display {
     min-width: 50px;
     height: 40px;
+  }
+
+  .pickup-options-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .pickup-options-section h3 {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+
+  .pickup-global-options {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .pickup-global-options .pickup-radio-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pickup-global-options .pickup-radio-option {
+    max-width: none;
+    padding: 12px 16px;
+  }
+
+  .pickup-items-list h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .pickup-item-display {
+    padding: 8px 12px;
+  }
+
+  .pickup-item-display .pickup-item-image {
+    width: 32px;
+    height: 32px;
+  }
+
+  .pickup-item-name {
+    font-size: 12px;
+  }
+
+  .pickup-item-qty,
+  .pickup-item-status {
+    font-size: 11px;
+  }
+
+  .pickup-radio-label {
+    font-size: 12px;
+  }
+
+  .pickup-radio-desc {
+    font-size: 10px;
   }
 
   .remove-btn {

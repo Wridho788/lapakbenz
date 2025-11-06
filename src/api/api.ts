@@ -14,6 +14,7 @@ import {
   ENDPOINT_EVENT_REGISTER_MERCHANT,
   ENDPOINT_EVENT_REGISTER_PUBLIC,
   ENDPOINT_EVENT_REGISTER,
+  ENDPOINT_CITY,
 } from './constants';
 
 export const getLedger = async (authToken: string) => {
@@ -66,6 +67,13 @@ export const postArticle = async (data?: any) => {
 export const getCity = async () => {
   const url = `${BASE_URL}${ENDPOINT_CITY_GET_CITY}`;
 
+  const response = await axios.get(url);
+  return response.data;
+};
+
+export const getCityList = async () => {
+  const url = `${BASE_URL}${ENDPOINT_CITY}`;
+  
   const response = await axios.get(url);
   return response.data;
 };

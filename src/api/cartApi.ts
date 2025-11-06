@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL, ENDPOINT_CART, ENDPOINT_CART_ADD, ENDPOINT_CART_CLEAN } from './constants';
+import { BASE_URL, ENDPOINT_CART, ENDPOINT_CART_ADD, ENDPOINT_CART_CLEAN, ENDPOINT_CART_SET_PICKUP } from './constants';
 import { isShippingAddressRequiredError, logErrorDetails } from '../utils/errorUtils';
 
 // TypeScript interfaces for Cart API
@@ -36,6 +36,10 @@ export interface AddToCartResponse {
 }
 
 export interface RemoveFromCartResponse {
+  content: null;
+}
+
+export interface SetPickupResponse {
   content: null;
 }
 
@@ -126,6 +130,27 @@ export const cartApi = {
       console.error('❌ Remove from cart API error:', error);
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || error.message || 'Failed to remove items from cart');
+      }
+      throw error;
+    }
+  },
+
+  // Set Pickup - GET method
+  async setPickup(cartId: string, authToken: string): Promise<SetPickupResponse> {
+    try {
+      const response = await axios.get(`${BASE_URL}${ENDPOINT_CART_SET_PICKUP}${cartId}`, {
+        headers: {
+          'X-auth-token': authToken
+        },
+        timeout: 10000
+      });
+
+      console.log('📦 Set pickup API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Set pickup API error:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || error.message || 'Failed to set pickup option');
       }
       throw error;
     }

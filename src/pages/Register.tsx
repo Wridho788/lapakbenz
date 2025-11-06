@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { MdPersonAdd } from 'react-icons/md';
 import { MdCalendarToday } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
-import { useRegister, useChapters, useCity } from '../api/hooks/index';
+import { useRegister, useChapters, useCityList } from '../api/hooks/index';
 import { toast } from 'react-toastify';
 import './Register.css';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const [registrationType, setRegistrationType] = useState<'member' | 'participant' | ''>('');
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     chapter: '',
     fullName: '',
@@ -29,7 +31,7 @@ const Register: React.FC = () => {
   // Hooks for API calls
   const registerMutation = useRegister();
   const { data: chaptersData, isLoading: chaptersLoading, error: chaptersError } = useChapters();
-  const { data: citiesData, isLoading: citiesLoading, error: citiesError } = useCity();
+  const { data: citiesData, isLoading: citiesLoading, error: citiesError } = useCityList();
 
   // State for loading and error handling
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,6 +47,51 @@ const Register: React.FC = () => {
     }
   }, [chaptersError, citiesError]);
 
+
+  const handleRegistrationTypeChange = (type: 'member' | 'participant') => {
+    setRegistrationType(type);
+    // Reset chapter when switching to participant
+    if (type === 'participant') {
+      setFormData(prev => ({
+        ...prev,
+        chapter: '999' // Set chapter ID to 999 for non-member participants
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        chapter: '' // Reset chapter for member selection
+      }));
+    }
+  };
+
+  const handleContinueToForm = () => {
+    if (!registrationType) {
+      toast.warning('Silakan pilih tipe pendaftaran terlebih dahulu');
+      return;
+    }
+    setShowForm(true);
+  };
+
+  const handleBackToSelection = () => {
+    setShowForm(false);
+    // Reset form data when going back
+    setFormData({
+      chapter: registrationType === 'participant' ? '999' : '',
+      fullName: '',
+      phone: '',
+      email: '',
+      address: '',
+      zip: '',
+      city: '',
+      dob: '',
+      nik: '',
+      vehicleType: '',
+      policeNo: '',
+      password: '',
+      confirmPassword: '',
+      agree: '',
+    });
+  };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -64,6 +111,32 @@ const Register: React.FC = () => {
     e.preventDefault();
     
     // Validation
+    if (!registrationType) {
+      toast.warning('Silakan pilih tipe pendaftaran (Member atau Participant)');
+      return;
+    }
+
+    if (registrationType === 'member' && !formData.chapter) {
+      toast.warning('Silakan pilih chapter untuk pendaftaran member');
+      return;
+    }
+
+    // Member-specific validation
+    if (registrationType === 'member') {
+      if (!formData.vehicleType) {
+        toast.warning('Jenis kendaraan Mercedes-Benz wajib diisi untuk member');
+        return;
+      }
+      if (!formData.policeNo) {
+        toast.warning('Nomor polisi wajib diisi untuk member');
+        return;
+      }
+      if (!formData.nik) {
+        toast.warning('NIK wajib diisi untuk member');
+        return;
+      }
+    }
+    
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match');
       return;
@@ -79,7 +152,7 @@ const Register: React.FC = () => {
     try {
       // Prepare data for API according to RegisterRequest interface
       const registerData = {
-        cchapter: formData.chapter,
+        cchapter: registrationType === 'participant' ? '999' : formData.chapter,
         tname: formData.fullName,
         tphone1: formData.phone,
         temail: formData.email,
@@ -138,47 +211,154 @@ const Register: React.FC = () => {
 
   return (
     <div className="register-page">
-      <AppbarAuth title="Daftar" onBack={handleBackClick} />
+      <AppbarAuth 
+        title={!showForm ? "Pilih Tipe Pendaftaran" : `Daftar ${registrationType === 'member' ? 'Member' : 'Participant'}`} 
+        onBack={showForm ? handleBackToSelection : handleBackClick} 
+      />
       <div className="register-card">
-        <h1 className="register-title">Daftar Sekarang!</h1>
+        {!showForm ? (
+          <>
+            {/* Registration Type Selection Screen */}
+            <h1 className="register-title">Daftar Sebagai Apa?</h1>
+            <p className="register-subtitle">Pilih tipe pendaftaran yang sesuai dengan kebutuhan Anda</p>
 
-        {/* The correct form starts below */}
-        <form>
-          {/* Chapter Dropdown */}
-          <div className="form-group">
-            <label htmlFor="chapter" className="form-label">
-              Chapter
-            </label>
-            <select
-              id="chapter"
-              name="chapter"
-              value={formData.chapter}
-              onChange={handleInputChange}
-              className="form-input"
-              required
-              disabled={chaptersLoading}
+            <div className="registration-type-container">
+              <div className="registration-type-options">
+                <label className={`registration-type-option ${registrationType === 'member' ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="registrationType"
+                    value="member"
+                    checked={registrationType === 'member'}
+                    onChange={() => handleRegistrationTypeChange('member')}
+                    className="registration-type-radio"
+                  />
+                  <div className="registration-type-content">
+                    <div className="registration-type-icon">👥</div>
+                    <div className="registration-type-text">
+                      <h4>Member Komunitas</h4>
+                      <p>Anggota resmi Mercedes-Benz Club dengan akses penuh ke semua fitur komunitas</p>
+                      <ul className="registration-benefits">
+                        <li>✓ Akses ke semua event eksklusif</li>
+                        <li>✓ Fitur komunitas lengkap</li>
+                        <li>✓ Networking dengan sesama member</li>
+                        <li>✓ Merchandise club eksklusif</li>
+                      </ul>
+                    </div>
+                  </div>
+                </label>
+
+                <label className={`registration-type-option ${registrationType === 'participant' ? 'selected' : ''}`}>
+                  <input
+                    type="radio"
+                    name="registrationType"
+                    value="participant"
+                    checked={registrationType === 'participant'}
+                    onChange={() => handleRegistrationTypeChange('participant')}
+                    className="registration-type-radio"
+                  />
+                  <div className="registration-type-content">
+                    <div className="registration-type-icon">👤</div>
+                    <div className="registration-type-text">
+                      <h4>Participant Umum</h4>
+                      <p>Peserta umum yang dapat mengikuti event-event terbuka untuk umum</p>
+                      <ul className="registration-benefits">
+                        <li>✓ Akses ke event publik</li>
+                        <li>✓ Pendaftaran event mudah</li>
+                        <li>✓ Notifikasi event terbaru</li>
+                        <li>✓ Komunitas yang ramah</li>
+                      </ul>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="continue-button"
+              onClick={handleContinueToForm}
+              disabled={!registrationType}
             >
-              <option value="">
-                {chaptersLoading ? 'Memuat chapter...' : 'Pilih Chapter'}
-              </option>
-              {chaptersData?.content?.result?.map((chapter: any) => (
-                <option key={chapter.id} value={chapter.id}>
-                  {chapter.code} - {chapter.name}
+              <span>
+                {registrationType ? `Lanjut sebagai ${registrationType === 'member' ? 'Member' : 'Participant'}` : 'Pilih tipe pendaftaran'}
+              </span>
+              <span className="continue-arrow">→</span>
+            </button>
+          </>
+        ) : (
+          <>
+            {/* Registration Form Screen */}
+            <h1 className="register-title">
+              {registrationType === 'member' ? 'Daftar Member Komunitas' : 'Daftar Participant Umum'}
+            </h1>
+            <p className="register-subtitle">
+              {registrationType === 'member' 
+                ? 'Lengkapi data untuk menjadi anggota resmi Mercedes-Benz Club' 
+                : 'Lengkapi data untuk dapat mengikuti event-event kami'
+              }
+            </p>
+
+            <form>
+            {/* Registration Type Badge */}
+            <div className="selected-type-badge">
+              <span className="badge-icon">
+                {registrationType === 'member' ? '👥' : '👤'}
+              </span>
+              <span className="badge-text">
+                {registrationType === 'member' ? 'Member Komunitas' : 'Participant Umum'}
+              </span>
+            </div>
+
+          {/* Chapter Dropdown - Only show for member */}
+          {registrationType === 'member' && (
+            <div className="form-group">
+              <label htmlFor="chapter" className="form-label">
+                Chapter / Club
+              </label>
+              <select
+                id="chapter"
+                name="chapter"
+                value={formData.chapter}
+                onChange={handleInputChange}
+                className="form-input"
+                required
+                disabled={chaptersLoading}
+              >
+                <option value="">
+                  {chaptersLoading ? 'Memuat chapter...' : 'Pilih Chapter'}
                 </option>
-              )) || []}
-              {/* Fallback options if API fails */}
-              {chaptersError && !chaptersData && [
-                <option key="MBW202.05" value="MBW202.05">MBW202.05 - MERCEDESBENZ W202 CHAPTER MEDAN</option>,
-                <option key="MBCL" value="MBCL">MBCL - MERCEDES BENZ CLUB LAMPUNG</option>,
-                <option key="MBCPKU" value="MBCPKU">MBCPKU - MERCEDES BENZ CLUB PEKAN BARU</option>
-              ]}
-            </select>
-            {chaptersError && (
-              <small style={{ color: 'red', fontSize: '12px' }}>
-                Error loading chapters. Using fallback options.
-              </small>
-            )}
-          </div>
+                {chaptersData?.content?.result?.map((chapter: any) => (
+                  <option key={chapter.id} value={chapter.id}>
+                    {chapter.code} - {chapter.name}
+                  </option>
+                )) || []}
+                {/* Fallback options if API fails */}
+                {chaptersError && !chaptersData && [
+                  <option key="MBW202.05" value="MBW202.05">MBW202.05 - MERCEDESBENZ W202 CHAPTER MEDAN</option>,
+                  <option key="MBCL" value="MBCL">MBCL - MERCEDES BENZ CLUB LAMPUNG</option>,
+                  <option key="MBCPKU" value="MBCPKU">MBCPKU - MERCEDES BENZ CLUB PEKAN BARU</option>
+                ]}
+              </select>
+              {chaptersError && (
+                <small style={{ color: 'red', fontSize: '12px' }}>
+                  Error loading chapters. Using fallback options.
+                </small>
+              )}
+            </div>
+          )}
+
+          {/* Info message for participant */}
+          {registrationType === 'participant' && (
+            <div className="participant-info">
+              <div className="info-card">
+                <div className="info-icon">ℹ️</div>
+                <div className="info-text">
+                  <p><strong>Participant Umum:</strong> Anda akan terdaftar sebagai peserta umum dan dapat mengikuti event-event yang dibuka untuk umum.</p>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Name */}
           <div className="form-group">
             <label htmlFor="fullName" className="form-label">
@@ -278,9 +458,9 @@ const Register: React.FC = () => {
               <option value="">
                 {citiesLoading ? 'Memuat kota...' : 'Pilih Kota'}
               </option>
-              {citiesData?.content?.result?.map((city: any) => (
-                <option key={city.value} value={city.value}>
-                  {city.label}
+              {citiesData?.content?.map((city: any) => (
+                <option key={city.id} value={city.id}>
+                  {city.nama}
                 </option>
               )) || []}
               {/* Fallback options if API fails */}
@@ -317,10 +497,10 @@ const Register: React.FC = () => {
               <MdCalendarToday style={{ position: 'absolute', right: 12, color: '#888', pointerEvents: 'none', fontSize: 22 }} />
             </div>
           </div>
-          {/* NIK */}
+          {/* NIK - Required for Member, Optional for Participant */}
           <div className="form-group">
             <label htmlFor="nik" className="form-label">
-              NIK
+              NIK {registrationType === 'participant' && <span className="optional-label">(Opsional)</span>}
             </label>
             <input
               type="text"
@@ -331,41 +511,92 @@ const Register: React.FC = () => {
               className="form-input"
               placeholder="Masukkan NIK Anda"
               pattern="[0-9]+"
-              required
+              required={registrationType === 'member'}
             />
           </div>
-          {/* Vehicle Type */}
-          <div className="form-group">
-            <label htmlFor="vehicleType" className="form-label">
-              Jenis Kendaraan
-            </label>
-            <input
-              type="text"
-              id="vehicleType"
-              name="vehicleType"
-              value={formData.vehicleType}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="W202 - W124 - W190"
-              required
-            />
-          </div>
-          {/* Police No */}
-          <div className="form-group">
-            <label htmlFor="policeNo" className="form-label">
-              Nomor Polisi
-            </label>
-            <input
-              type="text"
-              id="policeNo"
-              name="policeNo"
-              value={formData.policeNo}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="Masukkan nomor polisi Anda"
-              required
-            />
-          </div>
+
+          {/* Vehicle Information - Different for Member vs Participant */}
+          {registrationType === 'member' ? (
+            <>
+              {/* Vehicle Type - Required for Member */}
+              <div className="form-group">
+                <label htmlFor="vehicleType" className="form-label">
+                  Jenis Kendaraan Mercedes-Benz
+                </label>
+                <input
+                  type="text"
+                  id="vehicleType"
+                  name="vehicleType"
+                  value={formData.vehicleType}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Contoh: W202, W124, W190, C-Class, E-Class"
+                  required
+                />
+                <small className="field-help">
+                  Masukkan tipe Mercedes-Benz yang Anda miliki
+                </small>
+              </div>
+              {/* Police No - Required for Member */}
+              <div className="form-group">
+                <label htmlFor="policeNo" className="form-label">
+                  Nomor Polisi
+                </label>
+                <input
+                  type="text"
+                  id="policeNo"
+                  name="policeNo"
+                  value={formData.policeNo}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Contoh: B 1234 ABC"
+                  required
+                />
+                <small className="field-help">
+                  Nomor polisi kendaraan Mercedes-Benz Anda
+                </small>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Vehicle Type - Optional for Participant */}
+              <div className="form-group">
+                <label htmlFor="vehicleType" className="form-label">
+                  Jenis Kendaraan <span className="optional-label">(Opsional)</span>
+                </label>
+                <input
+                  type="text"
+                  id="vehicleType"
+                  name="vehicleType"
+                  value={formData.vehicleType}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Contoh: Toyota Avanza, Honda Jazz, dll"
+                />
+                <small className="field-help">
+                  Boleh kosong jika tidak memiliki kendaraan
+                </small>
+              </div>
+              {/* Police No - Optional for Participant */}
+              <div className="form-group">
+                <label htmlFor="policeNo" className="form-label">
+                  Nomor Polisi <span className="optional-label">(Opsional)</span>
+                </label>
+                <input
+                  type="text"
+                  id="policeNo"
+                  name="policeNo"
+                  value={formData.policeNo}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Contoh: B 1234 ABC"
+                />
+                <small className="field-help">
+                  Boleh kosong jika tidak memiliki kendaraan
+                </small>
+              </div>
+            </>
+          )}
           {/* Password */}
           <div className="form-group">
             <label htmlFor="password" className="form-label">
@@ -426,17 +657,18 @@ const Register: React.FC = () => {
             type="submit"
             className="register-button dark-bg"
             onClick={handleRegister}
-            disabled={isSubmitting || chaptersLoading || citiesLoading}
+            disabled={isSubmitting || chaptersLoading || citiesLoading || !registrationType}
             >
             <span style={{ color: '#fff' }}>
-              {isSubmitting ? 'Sedang mendaftar...' : 'Daftar'}
+              {isSubmitting ? 'Sedang mendaftar...' : `Daftar sebagai ${registrationType === 'member' ? 'Member' : registrationType === 'participant' ? 'Participant' : 'Pilih Tipe'}`}
             </span>
             <MdPersonAdd className="register-icon" />
             </button>
-        </form>
+            </form>
+          </>
+        )}
       </div>
     </div>
-    // </div>
   );
 };
 

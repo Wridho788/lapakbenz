@@ -6,6 +6,7 @@ import {
   getSlider,
   getSplash,
   getCity,
+  getCityList,
   getProvince,
   getCityByProvince,
   getDistrictByCity,
@@ -63,6 +64,22 @@ export function useCity(): UseQueryResult<any, Error> {
       try {
         return await getCity();
       } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 10, // 10 minutes (city data doesn't change often)
+    retry: 2,
+  });
+}
+
+export function useCityList(): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['city-list'],
+    queryFn: async () => {
+      try {
+        return await getCityList();
+      } catch (error) {
+        console.error('Error fetching city list:', error);
         throw error;
       }
     },

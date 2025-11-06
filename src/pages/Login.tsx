@@ -169,7 +169,7 @@ const Login: React.FC = () => {
       <AppbarAuth title="Login" onBack={handleBackClick} />
       <div className="login-card">
         {/* Debug panel - development only */}
-        {import.meta.env.DEV && (
+        {/* {import.meta.env.DEV && (
           <div
             style={{
               padding: '10px',
@@ -190,7 +190,7 @@ const Login: React.FC = () => {
               Fill Test Credentials
             </button>
           </div>
-        )}
+        )} */}
 
         <h1 className="login-title">Selamat Datang Kembali!</h1>
 

@@ -14,7 +14,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useCart, useRemoveFromCart, useAddToCart } from '../api/hooks/index';
+import { useCart, useRemoveFromCart, useAddToCart, useSetPickup } from '../api/hooks/index';
 import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
 import { toast } from 'react-toastify';
 import './Cart.css';
@@ -120,6 +120,7 @@ const Cart: React.FC = () => {
 
   const removeAllFromCartMutation = useRemoveFromCart();
   const addToCartMutation = useAddToCart();
+  const setPickupMutation = useSetPickup();
 
   // Order API hooks
   const addOrderMutation = useAddOrder();
@@ -227,6 +228,44 @@ const Cart: React.FC = () => {
 
   const handleRemoveItem = (itemId: string) => {
     removeFromCart(itemId);
+  };
+
+  const handlePickupToggle = async (isPickup: boolean) => {
+    if (!requireAuth(() => {}, 'change pickup option')) {
+      toast.warning('Silakan login untuk mengubah opsi pengambilan');
+      navigate('/login');
+      return;
+    }
+
+    const cartItems = apiCartData?.content?.result || [];
+    
+    if (cartItems.length === 0) {
+      toast.warning('Keranjang kosong');
+      return;
+    }
+
+    try {
+      console.log(`📦 ${isPickup ? 'Setting' : 'Removing'} pickup for all ${cartItems.length} items`);
+      
+      // Set pickup for all items
+      const promises = cartItems.map(item => 
+        setPickupMutation.mutateAsync(item.id)
+      );
+      
+      await Promise.all(promises);
+      
+      toast.success(
+        isPickup 
+          ? `Berhasil mengatur pengambilan sendiri untuk ${cartItems.length} produk` 
+          : `Berhasil mengatur pengiriman untuk ${cartItems.length} produk`
+      );
+      
+      // Refresh cart data to get updated pickup status and shipping costs
+      refetchCart();
+    } catch (error: any) {
+      console.error('❌ Failed to set pickup option:', error);
+      toast.error('Gagal mengubah opsi pengambilan. Silakan coba lagi.');
+    }
   };
 
   const handleRemoveAllFromCart = async () => {
@@ -794,6 +833,74 @@ const Cart: React.FC = () => {
                 </div>
               </div>
             )) || []}
+          </div>
+
+          {/* Pickup Options Section */}
+          <div className="pickup-options-section">
+            <h3>Opsi Pengiriman</h3>
+            
+            {/* Global Pickup Options */}
+            <div className="pickup-global-options">
+              <div className="pickup-radio-group">
+                <label className="pickup-radio-option">
+                  <input
+                    type="radio"
+                    name="pickup-global"
+                    checked={apiCartData?.content?.result?.every(item => item.pickup === "1") || false}
+                    onChange={() => handlePickupToggle(true)}
+                    className="pickup-radio-input"
+                  />
+                  <span className="pickup-radio-label">Ambil Sendiri</span>
+                  <span className="pickup-radio-desc">Gratis - Untuk semua produk</span>
+                </label>
+                
+                <label className="pickup-radio-option">
+                  <input
+                    type="radio"
+                    name="pickup-global"
+                    checked={apiCartData?.content?.result?.every(item => item.pickup === "0") || false}
+                    onChange={() => handlePickupToggle(false)}
+                    className="pickup-radio-input"
+                  />
+                  <span className="pickup-radio-label">Pakai Ongkir</span>
+                  <span className="pickup-radio-desc">
+                    {shippingCost > 0 ? `Rp ${shippingCost.toLocaleString('id-ID')} - Untuk semua produk` : 'Untuk semua produk'}
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {/* Product List */}
+            <div className="pickup-items-list">
+              <h4>Produk dalam keranjang:</h4>
+              <div className="pickup-items">
+                {apiCartData?.content?.result?.map((item) => (
+                  <div key={item.id} className="pickup-item-display">
+                    <div className="pickup-item-info">
+                      <img 
+                        src={item.image || '/nodata.png'} 
+                        alt={item.name}
+                        className="pickup-item-image"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/nodata.png';
+                        }}
+                      />
+                      <div className="pickup-item-details">
+                        <h4 className="pickup-item-name">{item.name}</h4>
+                        <p className="pickup-item-qty">Qty: {item.qty}</p>
+                        <p className="pickup-item-status">
+                          Status: {item.pickup === "1" ? 
+                            <span className="status-pickup">📦 Ambil Sendiri</span> : 
+                            <span className="status-shipping">🚚 Kirim (Rp {item.shipping.toLocaleString('id-ID')})</span>
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Order Summary */}
