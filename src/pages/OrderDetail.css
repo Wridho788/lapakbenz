@@ -1170,3 +1170,234 @@ html, body, .order-detail-page {
     font-size: 0.875rem;
   }
 }
+
+/* Order Tracking Section */
+.order-tracking-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.order-tracking-section h3 {
+  margin: 0 0 1rem 0;
+  color: #161129;
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: flex;
+  ;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.order-tracking-section h3 .card-icon {
+  color: #161129;
+}
+
+.tracking-info-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: white;
+}
+
+.tracking-info-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  background: white;
+}
+
+.tracking-number-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tracking-label {
+  color: #161129;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tracking-number {
+  color: #161129;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.tracking-status-note {
+  color: #161129;
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-family: inherit;
+  font-style: italic;
+  margin-top: 0.25rem;
+  line-height: 1.3;
+  opacity: 0.7;
+}
+
+.track-order-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  color: #161129;
+  border: 2px solid #161129;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(22, 17, 41, 0.1);
+}
+
+.track-order-btn:hover {
+  background: #161129;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(22, 17, 41, 0.2);
+}
+
+.track-order-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(22, 17, 41, 0.1);
+}
+
+.track-order-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.track-order-btn.disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.track-order-btn.disabled:hover {
+  background: #e0e0e0;
+  transform: none;
+  box-shadow: none;
+}
+
+.tracking-component-container {
+  padding: 0;
+  border-top: 1px solid #e0e0e0;
+  background: white;
+}
+
+.tracking-component-container .embedded-tracking {
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+  background: white;
+}
+
+/* Dark mode for tracking section - maintain white background and #161129 colors */
+@media (prefers-color-scheme: dark) {
+  .order-tracking-section {
+    background: white !important;
+  }
+
+  .order-tracking-section h3 {
+    color: #161129 !important;
+  }
+
+  .order-tracking-section h3 .card-icon {
+    color: #161129 !important;
+  }
+
+  .tracking-info-card {
+    border-color: #e0e0e0 !important;
+    background: white !important;
+  }
+
+  .tracking-info-content {
+    background: white !important;
+  }
+
+  .tracking-label,
+  .tracking-number {
+    color: #161129 !important;
+  }
+
+  .tracking-status-note {
+    color: #161129 !important;
+    opacity: 0.7;
+  }
+
+  .track-order-btn {
+    background: white !important;
+    color: #161129 !important;
+    border-color: #161129 !important;
+  }
+
+  .track-order-btn:hover {
+    background: #161129 !important;
+    color: white !important;
+  }
+
+  .tracking-component-container {
+    background: white !important;
+    border-top-color: #e0e0e0 !important;
+  }
+
+  .tracking-component-container .embedded-tracking {
+    background: white !important;
+  }
+}
+
+/* Responsive Design for Tracking Section */
+@media (max-width: 768px) {
+  .tracking-info-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .tracking-number-display {
+    text-align: center;
+  }
+
+  .track-order-btn {
+    justify-content: center;
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-tracking-section {
+    padding: 1rem;
+  }
+
+  .tracking-info-content {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .tracking-number {
+    font-size: 0.875rem;
+  }
+
+  .track-order-btn {
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .track-order-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+}

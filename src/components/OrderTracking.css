@@ -1,0 +1,375 @@
+.order-tracking {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tracking-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tracking-header h2 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.tracking-number {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Loading State */
+.tracking-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff8800;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tracking-loading p {
+  color: #666;
+  margin: 0;
+}
+
+/* Error State */
+.tracking-error {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.tracking-error h3 {
+  color: #f44336;
+  margin: 0 0 8px 0;
+  font-size: 20px;
+}
+
+.tracking-error p {
+  color: #666;
+  margin: 0 0 20px 0;
+}
+
+.retry-button {
+  background-color: #ff8800;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #e67700;
+}
+
+/* Not Found State */
+.tracking-not-found {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.not-found-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.tracking-not-found h3 {
+  color: #333;
+  margin: 0 0 16px 0;
+  font-size: 20px;
+}
+
+.tracking-not-found p {
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+/* Summary Card */
+.tracking-summary-card {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid #e9ecef;
+}
+
+.tracking-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tracking-summary-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tracking-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tracking-summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tracking-summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.tracking-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tracking-summary-item label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tracking-summary-item span {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Timeline Container */
+.tracking-timeline-container {
+  margin-bottom: 24px;
+}
+
+.tracking-timeline-container h3 {
+  margin: 0 0 20px 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tracking-timeline-wrapper {
+  position: relative;
+  padding-left: 0;
+}
+
+/* Timeline Items */
+.tracking-manifest-item {
+  display: flex;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.tracking-manifest-item:last-child {
+  margin-bottom: 0;
+}
+
+.tracking-timeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 16px;
+  position: relative;
+}
+
+.tracking-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #e0e0e0;
+  z-index: 2;
+}
+
+.tracking-dot.active {
+  background-color: #ff8800;
+  box-shadow: 0 0 0 2px #ff8800;
+}
+
+.tracking-line {
+  width: 2px;
+  height: 32px;
+  background-color: #e0e0e0;
+  margin-top: 8px;
+}
+
+.tracking-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tracking-date {
+  font-size: 12px;
+  color: #ff8800;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tracking-description {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+.tracking-city {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.tracking-manifest-item.latest .tracking-date {
+  color: #4CAF50;
+  font-weight: 700;
+}
+
+.tracking-manifest-item.latest .tracking-description {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+/* Footer */
+.tracking-footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.refresh-button {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refresh-button:hover {
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .order-tracking {
+    padding: 16px;
+    margin: 0 16px;
+  }
+
+  .tracking-header h2 {
+    font-size: 20px;
+  }
+
+  .tracking-number {
+    font-size: 14px;
+  }
+
+  .tracking-summary-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .tracking-summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tracking-summary-header h3 {
+    font-size: 16px;
+  }
+
+  .tracking-timeline-container h3 {
+    font-size: 16px;
+  }
+
+  .tracking-manifest-item {
+    margin-bottom: 20px;
+  }
+
+  .tracking-timeline {
+    margin-right: 12px;
+  }
+
+  .tracking-description {
+    font-size: 13px;
+  }
+
+  .tracking-date {
+    font-size: 11px;
+  }
+
+  .tracking-city {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-tracking {
+    margin: 0 8px;
+    padding: 12px;
+  }
+
+  .tracking-summary-card {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .tracking-summary-item span {
+    font-size: 13px;
+  }
+
+  .tracking-summary-item label {
+    font-size: 11px;
+  }
+}

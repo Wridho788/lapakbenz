@@ -212,7 +212,7 @@ const Register: React.FC = () => {
   return (
     <div className="register-page">
       <AppbarAuth 
-        title={!showForm ? "Pilih Tipe Pendaftaran" : `Daftar ${registrationType === 'member' ? 'Member' : 'Participant'}`} 
+        title={!showForm ? "Pilih Tipe Pendaftaran" : `Daftar ${registrationType === 'member' ? 'Member' : 'Peserta'}`} 
         onBack={showForm ? handleBackToSelection : handleBackClick} 
       />
       <div className="register-card">
@@ -260,7 +260,7 @@ const Register: React.FC = () => {
                   <div className="registration-type-content">
                     <div className="registration-type-icon">👤</div>
                     <div className="registration-type-text">
-                      <h4>Participant Umum</h4>
+                      <h4>Peserta Umum</h4>
                       <p>Peserta umum yang dapat mengikuti event-event terbuka untuk umum</p>
                       <ul className="registration-benefits">
                         <li>✓ Akses ke event publik</li>
@@ -281,7 +281,7 @@ const Register: React.FC = () => {
               disabled={!registrationType}
             >
               <span>
-                {registrationType ? `Lanjut sebagai ${registrationType === 'member' ? 'Member' : 'Participant'}` : 'Pilih tipe pendaftaran'}
+                {registrationType ? `Lanjut sebagai ${registrationType === 'member' ? 'Member' : 'Peserta'}` : 'Pilih tipe pendaftaran'}
               </span>
               <span className="continue-arrow">→</span>
             </button>
@@ -290,7 +290,7 @@ const Register: React.FC = () => {
           <>
             {/* Registration Form Screen */}
             <h1 className="register-title">
-              {registrationType === 'member' ? 'Daftar Member Komunitas' : 'Daftar Participant Umum'}
+              {registrationType === 'member' ? 'Daftar Member Komunitas' : 'Daftar Peserta Umum'}
             </h1>
             <p className="register-subtitle">
               {registrationType === 'member' 
@@ -306,7 +306,7 @@ const Register: React.FC = () => {
                 {registrationType === 'member' ? '👥' : '👤'}
               </span>
               <span className="badge-text">
-                {registrationType === 'member' ? 'Member Komunitas' : 'Participant Umum'}
+                {registrationType === 'member' ? 'Member Komunitas' : 'Peserta Umum'}
               </span>
             </div>
 
@@ -354,7 +354,7 @@ const Register: React.FC = () => {
               <div className="info-card">
                 <div className="info-icon">ℹ️</div>
                 <div className="info-text">
-                  <p><strong>Participant Umum:</strong> Anda akan terdaftar sebagai peserta umum dan dapat mengikuti event-event yang dibuka untuk umum.</p>
+                  <p><strong>Peserta Umum:</strong> Anda akan terdaftar sebagai peserta umum dan dapat mengikuti event-event yang dibuka untuk umum.</p>
                 </div>
               </div>
             </div>
@@ -660,7 +660,7 @@ const Register: React.FC = () => {
             disabled={isSubmitting || chaptersLoading || citiesLoading || !registrationType}
             >
             <span style={{ color: '#fff' }}>
-              {isSubmitting ? 'Sedang mendaftar...' : `Daftar sebagai ${registrationType === 'member' ? 'Member' : registrationType === 'participant' ? 'Participant' : 'Pilih Tipe'}`}
+              {isSubmitting ? 'Sedang mendaftar...' : `Daftar sebagai ${registrationType === 'member' ? 'Member' : registrationType === 'participant' ? 'Peserta' : 'Pilih Tipe'}`}
             </span>
             <MdPersonAdd className="register-icon" />
             </button>

@@ -166,7 +166,7 @@
 }
 
 .registration-type-option.selected .registration-type-icon {
-  background: linear-gradient(135deg, #161129, #2c5aa0);
+  background: #ff8800;
   color: white;
 }
 

@@ -1,15 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdOpenInNew } from 'react-icons/md';
+import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdOpenInNew, MdLocalShipping } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useAuthStore } from '../stores/authStore';
 import { useOrderDetail } from '../api/hooks/index';
+import OrderTracking from '../components/OrderTracking';
 import './OrderDetail.css';
 
 const OrderDetail: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const [showTracking, setShowTracking] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -73,6 +75,47 @@ const OrderDetail: React.FC = () => {
       const fullUrl = getFullUrl(order.link_url);
       window.open(fullUrl, '_blank');
     }
+  };
+
+  // Get tracking information from order items
+  const getTrackingInfo = () => {
+    console.log('order tracking items:', orderDetail?.content?.items);
+    if (!orderDetail?.content?.items?.length) return null;
+    
+    // Find first item with tracking info - check for either awb or last_digit
+    const itemWithTracking = orderDetail.content.items.find(item => 
+      (item.awb && item.awb !== null) || (item.last_digit && item.last_digit !== null)
+    );
+    
+    console.log('item with tracking found:', itemWithTracking);
+    
+    if (itemWithTracking) {
+      // Handle cases where awb might be null but last_digit exists
+      const awb = itemWithTracking.awb || '';
+      const lastDigit = itemWithTracking.last_digit || '';
+      
+      console.log('tracking data - awb:', awb, 'lastDigit:', lastDigit);
+      
+      // If we have at least one of them, create tracking info
+      if (awb || lastDigit) {
+        return {
+          awb: awb,
+          lastDigit: lastDigit,
+          // Concatenate AWB and last digit for display
+          fullTrackingNumber: `${awb}${lastDigit}`,
+          // Add flags to know what data we have
+          hasAwb: !!awb,
+          hasLastDigit: !!lastDigit
+        };
+      }
+    }
+    
+    console.log('no valid tracking info found');
+    return null;
+  };
+
+  const handleToggleTracking = () => {
+    setShowTracking(!showTracking);
   };
 
   const getPaymentStatusIcon = (status: string | null) => {
@@ -312,6 +355,62 @@ const OrderDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* Tracking Section */}
+        {(() => {
+          const trackingInfo = getTrackingInfo();
+          
+          if (!trackingInfo) return null;
+          
+          // Check if we have complete tracking data (both AWB and lastDigit)
+          const hasCompleteTracking = trackingInfo.hasAwb && trackingInfo.hasLastDigit;
+          
+          return (
+            <div className="order-tracking-section">
+              <h3>
+                <MdLocalShipping className="card-icon" />
+                Lacak Pengiriman
+              </h3>
+              <div className="tracking-info-card">
+                <div className="tracking-info-content">
+                  <div className="tracking-number-display">
+                    <span className="tracking-label">
+                      {trackingInfo.hasAwb ? 'No. Resi:' : 'Info Pengiriman:'}
+                    </span>
+                    <span className="tracking-number">
+                      {trackingInfo.fullTrackingNumber || 'Sedang diproses'}
+                    </span>
+                    {!trackingInfo.hasAwb && (
+                      <span className="tracking-status-note">
+                        Nomor resi akan tersedia setelah paket dikirim
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Only show button if AWB exists */}
+                  {trackingInfo.hasAwb && (
+                    <button 
+                      className="track-order-btn"
+                      onClick={handleToggleTracking}
+                    >
+                      <MdLocalShipping />
+                      {showTracking ? 'Tutup Tracking' : 'Lacak Pengiriman'}
+                    </button>
+                  )}
+                </div>
+                
+                {showTracking && hasCompleteTracking && (
+                  <div className="tracking-component-container">
+                    <OrderTracking 
+                      awb={trackingInfo.awb} 
+                      lastDigit={trackingInfo.lastDigit}
+                      className="embedded-tracking"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Order Summary Section */}
         <div className="order-summary-section">

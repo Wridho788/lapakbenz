@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL, ENDPOINT_ORDER, ENDPOINT_ORDER_ADD, ENDPOINT_ORDER_ADD_ITEM, ENDPOINT_ORDER_CHECKOUT, ENDPOINT_ORDER_GET } from './constants';
+import { BASE_URL, ENDPOINT_ORDER, ENDPOINT_ORDER_ADD, ENDPOINT_ORDER_ADD_ITEM, ENDPOINT_ORDER_CHECKOUT, ENDPOINT_ORDER_GET, ENDPOINT_ORDER_TRACKING } from './constants';
 import { type UseQueryResult, useQuery, type UseMutationResult, useMutation } from '@tanstack/react-query';
 
 // TypeScript interfaces for Order API
@@ -158,8 +158,50 @@ export interface OrderDetailResponse {
       tax: number;
       amount: number;
       price: number;
+      awb?: string;
+      last_digit?: string;
     }>;
   };
+}
+
+// TypeScript interfaces untuk Order Tracking
+export interface TrackingManifest {
+  manifest_code: string;
+  manifest_description: string;
+  manifest_date: string;
+  manifest_time: string;
+  city_name: string;
+}
+
+export interface TrackingSummary {
+  courier_code: string;
+  courier_name: string;
+  waybill_number: string;
+  service_code: string;
+  waybill_date: string;
+  shipper_name: string;
+  receiver_name: string;
+  origin: string;
+  destination: string;
+  status: string;
+}
+
+export interface OrderTrackingResponse {
+  content: {
+    status: boolean;
+    manifest: TrackingManifest[];
+    summary: TrackingSummary;
+  };
+}
+
+export interface OrderTrackingRequest {
+  awb: string;
+  lastDigit: string;
+  limit?: string;
+  offset?: string;
+  confirm?: string;
+  paid?: string;
+  date?: string;
 }
 
 // Order API functions
@@ -291,7 +333,7 @@ export const orderApi = {
           'X-auth-token': authToken,
           'Content-Type': 'application/json'
         },
-        timeout: 10000
+        timeout: 30000
       });
 
       console.log('📋 Order detail API response:', response.data);
@@ -307,6 +349,51 @@ export const orderApi = {
           throw new Error('Access denied to order details');
         }
         throw new Error(error.response?.data?.message || error.message || 'Failed to get order details');
+      }
+      throw error;
+    }
+  },
+
+  // Track Order - POST method
+  async trackOrder(
+    awb: string, 
+    lastDigit: string, 
+    authToken: string,
+    payload: Partial<OrderTrackingRequest> = {}
+  ): Promise<OrderTrackingResponse> {
+    try {
+      const requestPayload = {
+        limit: payload.limit || "120",
+        offset: payload.offset || "0",
+        confirm: payload.confirm || "",
+        paid: payload.paid || "",
+        date: payload.date || ""
+      };
+
+      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_TRACKING}/${awb}/${lastDigit}`, requestPayload, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
+      });
+
+      console.log('📦 Order tracking API response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Order tracking API error:', error);
+      if (axios.isAxiosError(error)) {
+        // Handle specific error codes
+        if (error.response?.status === 404) {
+          throw new Error('Tracking information not found');
+        }
+        if (error.response?.status === 403) {
+          throw new Error('Access denied to tracking information');
+        }
+        if (error.response?.status === 400) {
+          throw new Error('Invalid tracking number or last digit');
+        }
+        throw new Error(error.response?.data?.message || error.message || 'Failed to track order');
       }
       throw error;
     }

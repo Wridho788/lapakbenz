@@ -72,6 +72,7 @@ export const ENDPOINT_ORDER_CALLBACK = 'orders/callback/';
 export const ENDPOINT_ORDER_DELETE = 'orders/delete/';
 export const ENDPOINT_ORDER_DELETE_ITEM = 'orders/delete_item/';
 export const ENDPOINT_ORDER_GET = 'orders/get/';
+export const ENDPOINT_ORDER_TRACKING = 'orders/tracking';
 export const ENDPOINT_ORDER_LIST_BONUS_ORDER = 'orders/list_bonus_order';
 export const ENDPOINT_ORDER_SET_BONUS_ORDER = 'orders/set_bonus_order';
 

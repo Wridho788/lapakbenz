@@ -18,6 +18,7 @@ import type {
   OrderAddItemResponse,
   OrderCheckoutResponse,
   OrderDetailResponse,
+  OrderTrackingResponse,
 } from '../ordersApi';
 
 // Cart API Hooks
@@ -214,6 +215,25 @@ export function useOrderDetail(orderId: string): UseQueryResult<OrderDetailRespo
     retry: (failureCount, error) => {
       // Don't retry on auth errors (401, 403) or not found (404)
       if (axios.isAxiosError(error) && [401, 403, 404].includes(error.response?.status || 0)) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}
+
+export function useOrderTracking(awb: string, lastDigit: string): UseQueryResult<OrderTrackingResponse, Error> {
+  const { token, isAuthenticated } = useAuthStore();
+
+  return useQuery({
+    queryKey: ['orderTracking', awb, lastDigit, token],
+    queryFn: () => orderApi.trackOrder(awb, lastDigit, token!),
+    enabled: isAuthenticated && !!awb && !!lastDigit && awb.trim() !== '' && lastDigit.trim() !== '',
+    staleTime: 1000 * 60 * 5, // 5 minutes (tracking data doesn't change frequently)
+    retry: (failureCount, error) => {
+      // Don't retry on auth errors (401, 403) or not found (404) or bad request (400)
+      if (axios.isAxiosError(error) && [400, 401, 403, 404].includes(error.response?.status || 0)) {
         return false;
       }
       return failureCount < 2;
