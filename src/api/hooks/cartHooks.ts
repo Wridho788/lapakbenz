@@ -54,6 +54,16 @@ export function useAddToCart(): UseMutationResult<AddToCartResponse, Error, UseA
         throw error;
       }
     },
+    retry: (failureCount, error) => {
+      // Retry only for timeout and network errors, max 2 retries
+      if (failureCount < 2) {
+        const isTimeoutError = error?.message?.includes('timeout') || error?.message?.includes('ECONNABORTED');
+        const isNetworkError = error?.message?.includes('Network Error') || error?.message?.includes('ERR_NETWORK');
+        return isTimeoutError || isNetworkError;
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
   });
 }
 

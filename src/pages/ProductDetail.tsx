@@ -121,7 +121,7 @@ const ProductDetail: React.FC = () => {
     console.log('Cart clicked - Navigate to cart page');
     // Small delay to ensure any pending cart operations complete
     setTimeout(() => {
-      navigate('/cart', { state: { from: '/product-detail' } });
+      navigate('/cart', { state: { from: window.location.pathname } });
     }, 100);
   };
 
@@ -476,17 +476,22 @@ const ProductDetail: React.FC = () => {
       // Get the SKU from the API data or use the product ID as fallback
       const productSku = productDetailData?.content?.sku || productData.id;
 
-      // Add to cart using API
+      // Check if item already exists in cart
+      const existingItem = apiCartData?.content?.result?.find(item => item.sku === productSku);
+      const newQuantity = existingItem ? existingItem.qty + quantity : quantity;
+
+      // Add to cart using API with cumulative quantity
       await addToCartMutation.mutateAsync({
         data: {
           sku: productSku,
-          qty: quantity.toString(),
+          qty: newQuantity.toString(),
         },
       });
 
       // Show success message with toast
-      toast.success(`${quantity} ${productData.title} added to cart successfully`);
+      toast.success(`${quantity} ${productData.title.toUpperCase()} added to cart successfully`);
       cartRefetch();
+      
       // Also add to cart context for immediate UI update
       addToCart(
         {
@@ -527,9 +532,21 @@ const ProductDetail: React.FC = () => {
         return;
       }
 
+      // Handle timeout errors specifically
+      if (error?.message?.includes('timeout') || error?.code === 'ECONNABORTED') {
+        toast.error('Koneksi timeout. Silakan periksa koneksi internet dan coba lagi.');
+        return;
+      }
+
+      // Handle network errors
+      if (error?.message?.includes('Network Error') || error?.code === 'ERR_NETWORK') {
+        toast.error('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+        return;
+      }
+
       // Handle other errors
-      const errorMessage = getErrorMessage(error) || 'Failed to add item to cart. Please try again.';
-      toast.error(`Add to Cart Failed: ${errorMessage}`);
+      const errorMessage = getErrorMessage(error) || 'Gagal menambahkan ke keranjang. Silakan coba lagi.';
+      toast.error(`${errorMessage}`);
     }
   };
 
@@ -822,7 +839,7 @@ const ProductDetail: React.FC = () => {
           <div className="product-info-section">
             <div className="product-header">
               <span className="product-category">{productData.category}</span>
-              <h1 className="product-title">{productData.title}</h1>
+              <h1 className="product-title">{productData.title.toUpperCase()}</h1>
 
               <div className="product-rating-section">
                 <div className="rating-stars">{renderStars(productData.rating)}</div>
@@ -897,7 +914,14 @@ const ProductDetail: React.FC = () => {
               >
                 <MdShoppingCart className="cart-icon" />
                 <span>
-                  {addToCartMutation.isPending ? 'Menambahkan...' : 'Tambah ke Keranjang'}
+                  {addToCartMutation.isPending ? (
+                    <>
+                      <div className="spinner" style={{ marginRight: '8px' }}></div>
+                      Menambahkan...
+                    </>
+                  ) : (
+                    'Tambah ke Keranjang'
+                  )}
                 </span>
               </button>
             </div>

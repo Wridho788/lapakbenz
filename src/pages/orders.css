@@ -44,8 +44,13 @@
   .detail-label,
   .amount-label,
   .date-label,
-  .date-value {
+  .date-value,
+  .service-fee-label {
     color: #666 !important;
+  }
+
+  .service-fee-value {
+    color: #e67e22 !important;
   }
 
   .orders-action-btn {
@@ -398,6 +403,27 @@
 .amount-value {
   color: #161129;
   font-size: 1rem;
+  font-weight: 600;
+}
+
+.order-service-fee {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.service-fee-label {
+  color: #666;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.service-fee-value {
+  color: #e67e22;
+  font-size: 0.875rem;
   font-weight: 600;
 }
 

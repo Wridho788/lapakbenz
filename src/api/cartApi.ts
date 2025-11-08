@@ -53,7 +53,7 @@ export const cartApi = {
           'X-auth-token': authToken,
           'Content-Type': 'application/json'
         },
-        timeout: 10000
+        timeout: 30000
       });
 
       console.log('🛒 Cart API response:', response.data);
@@ -91,7 +91,7 @@ export const cartApi = {
           'X-auth-token': authToken,
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        timeout: 10000
+        timeout: 30000
       });
 
       console.log('✅ Add to cart API response:', response.data);
@@ -121,10 +121,10 @@ export const cartApi = {
         headers: {
           'X-auth-token': authToken
         },
-        timeout: 10000
+        timeout: 30000
       });
 
-      console.log('🗑️ Remove from cart API response:', response.data);
+      console.log('✅ Remove from cart API response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Remove from cart API error:', error);
@@ -142,10 +142,10 @@ export const cartApi = {
         headers: {
           'X-auth-token': authToken
         },
-        timeout: 10000
+        timeout: 30000
       });
 
-      console.log('📦 Set pickup API response:', response.data);
+      console.log('✅ Set pickup API response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Set pickup API error:', error);

@@ -226,8 +226,40 @@ const Cart: React.FC = () => {
     navigate('/notifications');
   };
 
-  const handleRemoveItem = (itemId: string) => {
-    removeFromCart(itemId);
+  const handleRemoveItem = async (itemId: string) => {
+    if (!requireAuth(() => {}, 'remove cart item')) {
+      toast.warning('Silakan login untuk mengelola keranjang');
+      navigate('/login');
+      return;
+    }
+
+    try {
+      console.log('🗑️ Removing specific item from cart:', itemId);
+      
+      // Find the item to get its details for the success message
+      const itemToRemove = apiCartData?.content?.result?.find(item => item.id === itemId);
+      const itemName = itemToRemove?.name || 'Item';
+      
+      // Use quantity change with 0 to remove specific item via API
+      await addToCartMutation.mutateAsync({
+        data: {
+          sku: itemToRemove?.sku || itemId,
+          qty: '0', // Setting quantity to 0 removes the item
+        },
+      });
+      
+      // Remove from context cart (for immediate UI update)
+      removeFromCart(itemId);
+      
+      // Show success message with item name
+      toast.success(`${itemName.toUpperCase()} telah dihapus dari keranjang`);
+      
+      // Refresh cart data from API
+      refetchCart();
+    } catch (error: any) {
+      console.error('❌ Failed to remove item:', error);
+      toast.error('Gagal menghapus item. Silakan coba lagi.');
+    }
   };
 
   const handlePickupToggle = async (isPickup: boolean) => {
@@ -334,7 +366,29 @@ const Cart: React.FC = () => {
     try {
       console.log('🗑️ Removing all items from cart...');
 
-      await removeAllFromCartMutation.mutateAsync(authToken!);
+      // Get current cart items
+      const cartItems = apiCartData?.content?.result || [];
+      
+      if (cartItems.length === 0) {
+        toast.warning('Keranjang sudah kosong');
+        return;
+      }
+
+      // Remove each item by setting quantity to 0
+      const removePromises = cartItems.map(item => 
+        addToCartMutation.mutateAsync({
+          data: {
+            sku: item.sku,
+            qty: '0', // Setting quantity to 0 removes the item
+          },
+        })
+      );
+
+      await Promise.all(removePromises);
+      
+      // Clear context cart as well
+      cartItems.forEach(item => removeFromCart(item.id));
+      
       toast.success('Semua item telah dihapus dari keranjang Anda');
       refetchCart();
     } catch (error: any) {
@@ -801,7 +855,7 @@ const Cart: React.FC = () => {
                   <div className="item-info-column">
                     <div className="product-details">
                       <h4 className="item-title" style={{ textTransform: 'uppercase' }}>
-                        {item.name}
+                        {item.name.toUpperCase()}
                       </h4>
                       <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
                     </div>
@@ -888,7 +942,7 @@ const Cart: React.FC = () => {
                         }}
                       />
                       <div className="pickup-item-details">
-                        <h4 className="pickup-item-name">{item.name}</h4>
+                        <h4 className="pickup-item-name">{item.name.toUpperCase()}</h4>
                         <p className="pickup-item-qty">Qty: {item.qty}</p>
                         <p className="pickup-item-status">
                           Status: {item.pickup === "1" ? 

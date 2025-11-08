@@ -277,7 +277,7 @@ const Product: React.FC = () => {
                     />
                   </div>
                   <div className="product-info">
-                    <h4 className="product-title">{product.title || product.name}</h4>
+                    <h4 className="product-title">{(product.title || product.name).toUpperCase()}</h4>
                     <div className="product-rating">
                       <span className="rating-stars">⭐ {product.rating || '4.5'}</span>
                       <span className="product-category">{product.category}</span>
