@@ -42,6 +42,7 @@ export {
   useProductCategories,
   useProductSearch,
   useProductDetail,
+  useProductCities,
 } from './productHooks';
 
 // Cart & Order Management Hooks

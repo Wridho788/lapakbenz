@@ -8,6 +8,7 @@ export const ENDPOINT_PRODUCT_WHISTLIST = 'product/whishlist/';
 export const ENDPOINT_PRODUCT_DETAIL = 'product/get/';
 export const ENDPOINT_PRODUCT_CEK_RESTRICTED = 'product/cek_restricted';
 export const ENDPOINT_PRODUCT_SEARCH = 'product/search';
+export const ENDPOINT_PRODUCT_CITY = 'product/city_product';
 
 
 // Axios instance
@@ -26,6 +27,8 @@ export const productAPI = {
       orderby: '',
       order: 'asc',
       category: '',
+      location: '',
+      condition: '',
       ...payload
     };
 
@@ -109,6 +112,21 @@ export const productAPI = {
       return response.data;
     } catch (error) {
       console.error('Error searching products:', error);
+      throw error;
+    }
+  },
+
+  // GET Product Cities
+  getProductCities: async () => {
+    try {
+      const response = await apiClient.get(ENDPOINT_PRODUCT_CITY, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching product cities:', error);
       throw error;
     }
   }

@@ -9,6 +9,8 @@ interface UseProductsPayload {
   orderby?: string;
   order?: 'asc' | 'desc';
   category?: string;
+  location?: string;
+  condition?: string;
 }
 
 export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<any, Error> {
@@ -18,6 +20,8 @@ export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<an
     orderby: '',
     order: 'asc' as const,
     category: '',
+    location: '',
+    condition: '',
     ...payload,
   };
 
@@ -67,5 +71,16 @@ export function useProductDetail(productId: string): UseQueryResult<any, Error> 
     enabled: !!productId,
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: 2,
+  });
+}
+
+export function useProductCities(): UseQueryResult<any, Error> {
+  
+  return useQuery({
+    queryKey: ['productCities'],
+    queryFn: () => productAPI.getProductCities(),
+    staleTime: 1000 * 60 * 10, // 10 minutes (cities don't change often)
+    retry: 2,
+    enabled: true, // Always fetch since no token is required
   });
 }

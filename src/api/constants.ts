@@ -27,6 +27,7 @@ export const ENDPOINT_PRODUCT_CATEGORY = 'product/category';
 export const ENDPOINT_PRODUCT_WHISHLIST = 'product/whishlist';
 export const ENDPOINT_PRODUCT_DETAIL = 'product/get/';
 export const ENDPOINT_PRODUCT_CEK_RESTRICTED = 'product/cek_restricted';
+export const ENDPOINT_PRODUCT_CITY = 'product/city_product';
 // article
 export const ENDPOINT_GET_ARTICLE = 'article/get/';
 export const ENDPOINT_ARTICLE = 'article';

@@ -1,32 +1,51 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdFilterList, MdClear } from 'react-icons/md';
+import { MdSearch, MdFilterList, MdClear, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useProducts, useProductCategories, useProductSearch, useCart } from '../api/hooks/index';
+import { useProducts, useProductCategories, useProductSearch, useProductCities, useCart } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
 import './Product.css';
+
+// TypeScript interfaces
+interface City {
+  name: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
 
 const Product: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(''); // Changed to use category ID
   
+  // New filter states
+  const [priceOrder, setPriceOrder] = useState<'asc' | 'desc' | ''>('');
+  const [selectedCondition, setSelectedCondition] = useState<'new' | 'used' | ''>('');
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  
   // API hooks for cart
   const {
     data: apiCartData,
   } = useCart();
   
-  // API hooks - now passing category ID instead of category name
+  // API hooks - now including all filter parameters
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
     limit: 10,
     offset: 0,
-    orderby: '',
-    order: 'asc',
+    orderby: priceOrder ? 'price' : '',
+    order: priceOrder || 'asc',
     category: selectedCategoryId, // Using category ID
+    location: selectedLocations.join(','), // Join locations with comma
+    condition: selectedCondition,
   });
 
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useProductCategories();
+  const { data: citiesData, isLoading: citiesLoading, error: citiesError } = useProductCities();
   
   const productSearchMutation = useProductSearch();
 
@@ -34,6 +53,11 @@ const Product: React.FC = () => {
   const handleSearch = (query: string) => {
     if (query.trim()) {
       console.log('🔍 Searching for:', query);
+      // Clear category filter when searching to show all search results
+      if (selectedCategoryId) {
+        console.log('🔍 Clearing category filter for search');
+        setSelectedCategoryId('');
+      }
       productSearchMutation.mutate(
         { filter: query.trim() },
         {
@@ -52,11 +76,11 @@ const Product: React.FC = () => {
   };
 
   // Process categories from API - now storing both ID and name
-  const categories = useMemo(() => {
-    const baseCategories = [{ id: '', name: 'Semua' }]; // Base category with empty ID
+  const categories = useMemo((): Category[] => {
+    const baseCategories: Category[] = [{ id: '', name: 'Semua' }]; // Base category with empty ID
     
     if (categoriesData?.content?.result) {
-      const apiCategories = categoriesData.content.result.map((cat: any) => ({
+      const apiCategories = categoriesData.content.result.map((cat: any): Category => ({
         id: cat.id || cat.category_id || '',
         name: cat.name || cat.category_name || cat.title || 'Kategori Tidak Diketahui'
       }));
@@ -65,6 +89,16 @@ const Product: React.FC = () => {
     
     return baseCategories;
   }, [categoriesData]);
+
+  // Process cities from API
+  const cities = useMemo((): City[] => {
+    if (citiesData?.content?.result && Array.isArray(citiesData.content.result)) {
+      return citiesData.content.result.map((city: any): City => ({
+        name: city.name || city.city_name || 'Kota Tidak Diketahui'
+      }));
+    }
+    return [];
+  }, [citiesData]);
 
   // Process products from API
   const products = useMemo(() => {
@@ -94,19 +128,27 @@ const Product: React.FC = () => {
   const filteredProducts = useMemo(() => {
     let filtered = products;
 
-    // If we have an active search query, products are already filtered by the search API
-    // No need to filter again unless we're using the main products API
-    if (searchQuery.trim() && !productSearchMutation.data?.content) {
-      // Only apply local filtering if search API hasn't been called yet
+    // If we have search results from API, don't apply additional category filtering
+    // because search should show all relevant products regardless of category filter
+    if (productSearchMutation.data?.content && searchQuery.trim()) {
+      console.log('🔍 Using search results without category filtering');
+      console.log('🔍 Search query:', searchQuery);
+      console.log('🔍 Selected category:', selectedCategoryId);
+      console.log('🔍 Search results count:', filtered.length);
+      return filtered; // Return search results as-is
+    }
+
+    // Only apply category filtering when NOT searching
+    if (!searchQuery.trim() && selectedCategoryId && selectedCategoryId !== '') {
       filtered = filtered.filter((product: any) =>
-        (product.title || product.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+        (product.category_id || product.categoryId || '') === selectedCategoryId
       );
     }
 
-    // Filter by category ID (always apply this filter)
-    if (selectedCategoryId && selectedCategoryId !== '') {
+    // Apply local search filtering only when using main products API (not search API)
+    if (searchQuery.trim() && !productSearchMutation.data?.content) {
       filtered = filtered.filter((product: any) =>
-        (product.category_id || product.categoryId || '') === selectedCategoryId
+        (product.title || product.name || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -177,6 +219,32 @@ const Product: React.FC = () => {
     }
   };
 
+  // New filter handlers
+  const handlePriceOrderChange = (order: 'asc' | 'desc' | '') => {
+    setPriceOrder(order);
+  };
+
+  const handleConditionChange = (condition: 'new' | 'used' | '') => {
+    setSelectedCondition(condition);
+  };
+
+  const handleLocationToggle = (cityName: string) => {
+    setSelectedLocations(prev => {
+      if (prev.includes(cityName)) {
+        return prev.filter(loc => loc !== cityName);
+      } else {
+        return [...prev, cityName];
+      }
+    });
+  };
+
+  const clearAllFilters = () => {
+    setPriceOrder('');
+    setSelectedCondition('');
+    setSelectedLocations([]);
+    setSelectedCategoryId('');
+  };
+
   // Get current category name for display
   const getCurrentCategoryName = () => {
     if (!selectedCategoryId) return 'Semua Produk';
@@ -185,8 +253,8 @@ const Product: React.FC = () => {
   };
 
   // Loading states
-  const isLoading = productsLoading || categoriesLoading || productSearchMutation.isPending;
-  const hasError = productsError || categoriesError || productSearchMutation.error;
+  const isLoading = productsLoading || categoriesLoading || citiesLoading || productSearchMutation.isPending;
+  const hasError = productsError || categoriesError || citiesError || productSearchMutation.error;
 
   return (
     <div className="product-page">
@@ -221,18 +289,146 @@ const Product: React.FC = () => {
           </div>
           
           <div className="filter-section">
-            <MdFilterList className="filter-icon" />
-            <div className="category-filters">
-              {categories.map((category) => (
-                <button
-                  key={category.id || 'all'}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className={`filter-btn ${selectedCategoryId === category.id ? 'active' : ''}`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
+            <button 
+              className="filter-toggle-btn"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <MdFilterList className="filter-icon" />
+              <span>Filter</span>
+              {showFilters ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />}
+              {(priceOrder || selectedCondition || selectedLocations.length > 0 || selectedCategoryId) && (
+                <span className="filter-badge">{
+                  [priceOrder, selectedCondition, ...selectedLocations, selectedCategoryId].filter(Boolean).length
+                }</span>
+              )}
+            </button>
+            
+            {showFilters && (
+              <div className="advanced-filters">
+                {/* Categories */}
+                <div className="filter-group">
+                  <h4>Kategori</h4>
+                  <div className="filter-options">
+                    {categories.map((category) => (
+                      <label key={category.id || 'all'} className="filter-checkbox">
+                        <input
+                          type="radio"
+                          name="category"
+                          checked={selectedCategoryId === category.id}
+                          onChange={() => handleCategoryChange(category.id)}
+                        />
+                        <span className="checkmark"></span>
+                        {category.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Price Order */}
+                <div className="filter-group">
+                  <h4>Urutkan Harga</h4>
+                  <div className="filter-options">
+                    <label className="filter-checkbox">
+                      <input
+                        type="radio"
+                        name="priceOrder"
+                        checked={priceOrder === ''}
+                        onChange={() => handlePriceOrderChange('')}
+                      />
+                      <span className="checkmark"></span>
+                      Default
+                    </label>
+                    <label className="filter-checkbox">
+                      <input
+                        type="radio"
+                        name="priceOrder"
+                        checked={priceOrder === 'asc'}
+                        onChange={() => handlePriceOrderChange('asc')}
+                      />
+                      <span className="checkmark"></span>
+                      Harga Terendah
+                    </label>
+                    <label className="filter-checkbox">
+                      <input
+                        type="radio"
+                        name="priceOrder"
+                        checked={priceOrder === 'desc'}
+                        onChange={() => handlePriceOrderChange('desc')}
+                      />
+                      <span className="checkmark"></span>
+                      Harga Tertinggi
+                    </label>
+                  </div>
+                </div>
+
+                {/* Condition */}
+                <div className="filter-group">
+                  <h4>Kondisi Barang</h4>
+                  <div className="filter-options">
+                    <label className="filter-checkbox">
+                      <input
+                        type="radio"
+                        name="condition"
+                        checked={selectedCondition === ''}
+                        onChange={() => handleConditionChange('')}
+                      />
+                      <span className="checkmark"></span>
+                      Semua Kondisi
+                    </label>
+                    <label className="filter-checkbox">
+                      <input
+                        type="radio"
+                        name="condition"
+                        checked={selectedCondition === 'new'}
+                        onChange={() => handleConditionChange('new')}
+                      />
+                      <span className="checkmark"></span>
+                      Baru
+                    </label>
+                    <label className="filter-checkbox">
+                      <input
+                        type="radio"
+                        name="condition"
+                        checked={selectedCondition === 'used'}
+                        onChange={() => handleConditionChange('used')}
+                      />
+                      <span className="checkmark"></span>
+                      Bekas
+                    </label>
+                  </div>
+                </div>
+
+                {/* Locations */}
+                {cities.length > 0 && (
+                  <div className="filter-group">
+                    <h4>Lokasi Produk</h4>
+                    <div className="filter-options location-options">
+                      {cities.map((city: City) => (
+                        <label key={city.name} className="filter-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={selectedLocations.includes(city.name)}
+                            onChange={() => handleLocationToggle(city.name)}
+                          />
+                          <span className="checkmark"></span>
+                          {city.name}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Clear Filters */}
+                <div className="filter-actions">
+                  <button 
+                    className="clear-filters-btn"
+                    onClick={clearAllFilters}
+                  >
+                    Hapus Semua Filter
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
