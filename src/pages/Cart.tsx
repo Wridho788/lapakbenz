@@ -16,6 +16,7 @@ import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
 import { useCart, useRemoveFromCart, useAddToCart, useSetPickup } from '../api/hooks/index';
 import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
+import { useDecodeToken } from '../api/hooks/authHooks';
 import { toast } from 'react-toastify';
 import './Cart.css';
 
@@ -146,6 +147,9 @@ const Cart: React.FC = () => {
   const addItemToOrderMutation = useAddItemToOrder();
   const checkoutOrderMutation = useCheckoutOrder();
 
+  // Decode token hook untuk mendapatkan cost data
+  const { data: decodeTokenData } = useDecodeToken();
+
   // Refetch cart data when component mounts to ensure fresh data
   useEffect(() => {
     if (isAuthenticated) {
@@ -224,6 +228,14 @@ const Cart: React.FC = () => {
       console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
     }
   }, [apiCartData]);
+
+  // Log decode token data
+  useEffect(() => {
+    if (decodeTokenData) {
+      console.log('🔍 Decode Token Data in Cart:', decodeTokenData);
+      console.log('💰 Cost from Token:', decodeTokenData?.content?.cost);
+    }
+  }, [decodeTokenData]);
 
   // Log cart errors
   useEffect(() => {
@@ -436,11 +448,16 @@ const Cart: React.FC = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + (item.shipping || 0), 0) || 0;
   };
 
+  const getCostFromToken = () => {
+    return decodeTokenData?.content?.cost || 0;
+  };
+
   const subtotal = getApiCartTotal();
   const apiCartCount = getApiCartCount();
   const shippingCost = getShippingCost();
+  const costFromToken = getCostFromToken();
   const paymentFee = 0;
-  const totalPayment = subtotal + shippingCost + paymentFee;
+  const totalPayment = subtotal + shippingCost + costFromToken + paymentFee;
 
   // New order flow function
   const handlePlaceOrder = async () => {
@@ -984,6 +1001,13 @@ const Cart: React.FC = () => {
           <div className="order-summary">
             <h3>Ringkasan Pesanan</h3>
             <div className="summary-details">
+              {costFromToken > 0 && (
+                <div className="summary-row">
+                  <span>Biaya Tambahan</span>
+                  <span>Rp {costFromToken.toLocaleString('id-ID')}</span>
+                </div>
+              )}
+              
               {shippingCost > 0 && (
                 <div className="summary-row">
                   <span>Biaya Pengiriman</span>

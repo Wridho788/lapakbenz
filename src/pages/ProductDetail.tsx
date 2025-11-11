@@ -114,7 +114,7 @@ const ProductDetail: React.FC = () => {
   const apiCartCount = getApiCartCount();
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate('/product');
   };
 
   const handleCartClick = () => {
