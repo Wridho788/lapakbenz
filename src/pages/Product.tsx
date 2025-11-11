@@ -34,14 +34,15 @@ const Product: React.FC = () => {
   } = useCart();
   
   // API hooks - now including all filter parameters
+  // When search is active, don't send filter parameters to API
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
     limit: 10,
     offset: 0,
-    orderby: priceOrder ? 'price' : '',
-    order: priceOrder || 'asc',
-    category: selectedCategoryId, // Using category ID
-    location: selectedLocations.join(','), // Join locations with comma
-    condition: selectedCondition,
+    orderby: searchQuery.trim() ? '' : (priceOrder ? 'price' : ''),
+    order: searchQuery.trim() ? 'asc' : (priceOrder || 'asc'),
+    category: searchQuery.trim() ? '' : selectedCategoryId, // Clear filters when searching
+    location: searchQuery.trim() ? '' : selectedLocations.join(','), // Clear filters when searching
+    condition: searchQuery.trim() ? '' : selectedCondition, // Clear filters when searching
   });
 
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useProductCategories();
@@ -53,10 +54,13 @@ const Product: React.FC = () => {
   const handleSearch = (query: string) => {
     if (query.trim()) {
       console.log('🔍 Searching for:', query);
-      // Clear category filter when searching to show all search results
-      if (selectedCategoryId) {
-        console.log('🔍 Clearing category filter for search');
+      // Clear ALL filters when searching to show all search results
+      if (selectedCategoryId || priceOrder || selectedCondition || selectedLocations.length > 0) {
+        console.log('🔍 Clearing all filters for search');
         setSelectedCategoryId('');
+        setPriceOrder('');
+        setSelectedCondition('');
+        setSelectedLocations([]);
       }
       productSearchMutation.mutate(
         { filter: query.trim() },
@@ -213,10 +217,13 @@ const Product: React.FC = () => {
   };
 
   const handleClearSearch = () => {
+    console.log('🔍 Clearing search query');
     setSearchQuery('');
     if (productSearchMutation.data) {
       productSearchMutation.reset();
     }
+    // Note: We don't restore previous filters when clearing search
+    // User can manually set filters again if needed
   };
 
   // New filter handlers

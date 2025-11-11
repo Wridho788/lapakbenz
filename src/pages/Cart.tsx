@@ -55,7 +55,12 @@ const Cart: React.FC = () => {
     // Priority 1: Check location state for explicit 'from' parameter
     if (location.state?.from) {
       console.log('📍 Cart back destination from state:', location.state.from);
-      return location.state.from;
+      
+      // Validate the path to ensure it's not blank or invalid
+      const fromPath = location.state.from;
+      if (fromPath && fromPath !== '' && fromPath !== '/') {
+        return fromPath;
+      }
     }
 
     // Priority 2: Check document.referrer and map to appropriate routes
@@ -68,7 +73,13 @@ const Cart: React.FC = () => {
         console.log('📍 Cart back destination from referrer:', referrerPath);
 
         // Map referrer paths to appropriate back destinations
-        if (referrerPath.includes('/product-detail')) return referrerPath; // Return to specific product detail
+        if (referrerPath.includes('/product-detail')) {
+          // Ensure we return the full product detail path
+          if (referrerPath.startsWith('/product-detail/')) {
+            return referrerPath;
+          }
+          return '/product'; // Fallback to product list if path is malformed
+        }
         if (referrerPath.includes('/product')) return '/product';
         if (referrerPath.includes('/dashboard')) return '/dashboard';
         if (referrerPath.includes('/event-detail')) return referrerPath; // Return to specific event detail
@@ -79,16 +90,24 @@ const Cart: React.FC = () => {
         if (referrerPath.includes('/checkout')) return '/product'; // Checkout should go back to products
         if (referrerPath === '/' || referrerPath === '') return '/dashboard';
 
-        // Return the referrer path if it's a valid route
-        return referrerPath;
+        // Return the referrer path if it's a valid route and not empty
+        if (referrerPath && referrerPath !== '' && referrerPath !== '/') {
+          return referrerPath;
+        }
       } catch (error) {
         console.warn('📍 Error parsing referrer URL:', error);
       }
     }
 
-    // Priority 3: Default fallback
-    console.log('📍 Cart back destination using default: /dashboard');
-    return '/dashboard';
+    // Priority 3: Check if we have product info in location state
+    if (location.state?.productId) {
+      console.log('📍 Found productId in state, returning to product detail');
+      return `/product-detail/${location.state.productId}`;
+    }
+
+    // Priority 4: Default fallback - use product page instead of dashboard for better UX
+    console.log('📍 Cart back destination using default: /product');
+    return '/product';
   };
 
   const backDestination = getBackDestination();
@@ -830,14 +849,6 @@ const Cart: React.FC = () => {
             {/* API Cart Items */}
             {apiCartData?.content?.result?.map((item) => (
               <div key={item.id} className="cart-item">
-                <div
-                  className="remove-btn"
-                  onClick={() => handleRemoveItem(item.id)}
-                  aria-label="Hapus item"
-                >
-                  <MdDelete />
-                </div>
-
                 <div className="item-content">
                   {/* Left Column - Product Image */}
                   <div className="item-image-column">
@@ -860,23 +871,34 @@ const Cart: React.FC = () => {
                       <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
                     </div>
 
-                    <div className="quantity-section">
-                      <div
-                        className="quantity-btn decrease"
-                        onClick={() => handleQuantityChange(item, item.qty - 1)}
-                        style={{
-                          opacity: item.qty <= 1 ? 0.5 : 1,
-                          pointerEvents: item.qty <= 1 ? 'none' : 'auto',
-                        }}
-                      >
-                        <MdRemove />
+                    <div className="quantity-and-remove-section">
+                      <div className="quantity-section">
+                        <div
+                          className="quantity-btn decrease"
+                          onClick={() => handleQuantityChange(item, item.qty - 1)}
+                          style={{
+                            opacity: item.qty <= 1 ? 0.5 : 1,
+                            pointerEvents: item.qty <= 1 ? 'none' : 'auto',
+                          }}
+                        >
+                          <MdRemove />
+                        </div>
+                        <span className="quantity-value">{item.qty}</span>
+                        <div
+                          className="quantity-btn increase"
+                          onClick={() => handleQuantityChange(item, item.qty + 1)}
+                        >
+                          <MdAdd />
+                        </div>
                       </div>
-                      <span className="quantity-value">{item.qty}</span>
+                      
                       <div
-                        className="quantity-btn increase"
-                        onClick={() => handleQuantityChange(item, item.qty + 1)}
+                        className="remove-btn-inline"
+                        onClick={() => handleRemoveItem(item.id)}
+                        aria-label="Hapus item"
+                        title="Hapus item dari keranjang"
                       >
-                        <MdAdd />
+                        <MdDelete />
                       </div>
                     </div>
 

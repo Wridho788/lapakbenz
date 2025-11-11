@@ -148,8 +148,6 @@
   margin-bottom: 16px;
 }
 
-
-
 /* New Column Layout */
 .item-content {
   display: flex;
@@ -486,6 +484,46 @@
   color: #28a745;
 }
 
+/* Quantity and Remove Section Layout */
+.quantity-and-remove-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 8px 0;
+}
+
+.remove-btn-inline {
+  background: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  font-size: 16px;
+  opacity: 1;
+}
+
+.remove-btn-inline:hover {
+  background: #dc3545;
+  color: white;
+  opacity: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.remove-btn-inline:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(220, 53, 69, 0.3);
+}
+
+/* Legacy remove button - keeping for fallback */
 .remove-btn {
   position: absolute;
   top: 12px;
@@ -1371,8 +1409,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .checkout-actions {

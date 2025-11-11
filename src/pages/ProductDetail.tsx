@@ -121,7 +121,12 @@ const ProductDetail: React.FC = () => {
     console.log('Cart clicked - Navigate to cart page');
     // Small delay to ensure any pending cart operations complete
     setTimeout(() => {
-      navigate('/cart', { state: { from: window.location.pathname } });
+      navigate('/cart', { 
+        state: { 
+          from: window.location.pathname,
+          productId: productId // Include productId for better back navigation
+        } 
+      });
     }, 100);
   };
 
