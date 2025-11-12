@@ -192,7 +192,11 @@ const Cart: React.FC = () => {
   // Handle quantity change for API cart items
   const handleQuantityChange = async (item: any, newQuantity: number) => {
     if (!requireAuth(() => {}, 'update cart quantity')) {
-      toast.warning('Silakan login untuk mengubah keranjang');
+      toast.warning('Silakan login untuk mengubah keranjang', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
@@ -215,7 +219,11 @@ const Cart: React.FC = () => {
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to update quantity:', error);
-      toast.error('Gagal memperbarui jumlah item. Silakan coba lagi.');
+      toast.error('Gagal memperbarui jumlah item. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 
@@ -259,7 +267,11 @@ const Cart: React.FC = () => {
 
   const handleRemoveItem = async (itemId: string) => {
     if (!requireAuth(() => {}, 'remove cart item')) {
-      toast.warning('Silakan login untuk mengelola keranjang');
+      toast.warning('Silakan login untuk mengelola keranjang', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
@@ -283,19 +295,31 @@ const Cart: React.FC = () => {
       removeFromCart(itemId);
       
       // Show success message with item name
-      toast.success(`${itemName.toUpperCase()} telah dihapus dari keranjang`);
+      toast.success(`${itemName.toUpperCase()} telah dihapus dari keranjang`, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       
       // Refresh cart data from API
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to remove item:', error);
-      toast.error('Gagal menghapus item. Silakan coba lagi.');
+      toast.error('Gagal menghapus item. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 
   const handlePickupToggle = async (isPickup: boolean) => {
     if (!requireAuth(() => {}, 'change pickup option')) {
-      toast.warning('Silakan login untuk mengubah opsi pengambilan');
+      toast.warning('Silakan login untuk mengubah opsi pengambilan', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
@@ -303,7 +327,11 @@ const Cart: React.FC = () => {
     const cartItems = apiCartData?.content?.result || [];
     
     if (cartItems.length === 0) {
-      toast.warning('Keranjang kosong');
+      toast.warning('Keranjang kosong', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
@@ -320,20 +348,33 @@ const Cart: React.FC = () => {
       toast.success(
         isPickup 
           ? `Berhasil mengatur pengambilan sendiri untuk ${cartItems.length} produk` 
-          : `Berhasil mengatur pengiriman untuk ${cartItems.length} produk`
+          : `Berhasil mengatur pengiriman untuk ${cartItems.length} produk`,
+        {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        }
       );
       
       // Refresh cart data to get updated pickup status and shipping costs
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to set pickup option:', error);
-      toast.error('Gagal mengubah opsi pengambilan. Silakan coba lagi.');
+      toast.error('Gagal mengubah opsi pengambilan. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 
   const handleRemoveAllFromCart = async () => {
     if (!requireAuth(() => {}, 'clear cart')) {
-      toast.warning('Silakan login untuk mengelola keranjang Anda');
+      toast.warning('Silakan login untuk mengelola keranjang Anda', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
@@ -401,7 +442,11 @@ const Cart: React.FC = () => {
       const cartItems = apiCartData?.content?.result || [];
       
       if (cartItems.length === 0) {
-        toast.warning('Keranjang sudah kosong');
+        toast.warning('Keranjang sudah kosong', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         return;
       }
 
@@ -420,7 +465,11 @@ const Cart: React.FC = () => {
       // Clear context cart as well
       cartItems.forEach(item => removeFromCart(item.id));
       
-      toast.success('Semua item telah dihapus dari keranjang Anda');
+      toast.success('Semua item telah dihapus dari keranjang Anda', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to clear cart:', error);
@@ -431,7 +480,11 @@ const Cart: React.FC = () => {
         errorMessage = error.message;
       }
 
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 
@@ -462,7 +515,11 @@ const Cart: React.FC = () => {
   // New order flow function
   const handlePlaceOrder = async () => {
     if (!requireAuth(() => {}, 'place order')) {
-      toast.warning('Silakan login untuk melakukan pemesanan');
+      toast.warning('Silakan login untuk melakukan pemesanan', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
@@ -488,7 +545,11 @@ const Cart: React.FC = () => {
     // }
 
     if (!hasApiCartItems) {
-      toast.warning('Keranjang Anda kosong');
+      toast.warning('Keranjang Anda kosong', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
@@ -626,7 +687,11 @@ const Cart: React.FC = () => {
       }
 
       // Show success message if no invoice_url (fallback)
-      toast.success(`Pesanan #${orderId} telah dibuat dan sedang diproses.`);
+      toast.success(`Pesanan #${orderId} telah dibuat dan sedang diproses.`, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
 
       console.log('🎊 Order process completed successfully!');
 
@@ -645,7 +710,11 @@ const Cart: React.FC = () => {
         error: error.message,
       }));
 
-      toast.error(error.message || 'Gagal melakukan pemesanan. Silakan coba lagi.');
+      toast.error(error.message || 'Gagal melakukan pemesanan. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 

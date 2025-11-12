@@ -36,14 +36,22 @@ const VerifyOtp: React.FC = () => {
 
   const { requestOTP, canRequest } = useSimpleRequestOTP(username, {
     onSuccess: () => {
-      toast.success('OTP dikirim');
+      toast.success('OTP dikirim', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     },
     onError: (err) => {
       let msg = 'Terjadi kesalahan saat mengirim OTP. Silakan coba lagi.';
       if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
         msg = err.message;
       }
-      toast.error(msg);
+      toast.error(msg, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     },
   });
 
@@ -81,7 +89,11 @@ const VerifyOtp: React.FC = () => {
     if (canRequest) {
       requestOTP();
     } else {
-      toast.error('Username tidak valid, tidak dapat mengirim OTP.');
+      toast.error('Username tidak valid, tidak dapat mengirim OTP.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
     setTimeout(() => setResendDisabled(false), 10000); // 10 detik cooldown
   };
@@ -116,7 +128,11 @@ const VerifyOtp: React.FC = () => {
       console.log('✅ OTP Verification Success:', result);
 
       // Tampilkan success message
-      toast.success('Kode OTP Anda telah diverifikasi!');
+      toast.success('Kode OTP Anda telah diverifikasi!', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       setTimeout(() => {
         // Navigate ke halaman login atau halaman berikutnya
         navigate('/login', { replace: true });
@@ -135,7 +151,11 @@ const VerifyOtp: React.FC = () => {
 
       // Tampilkan error
       setError(errorMessage);
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     } finally {
       setIsSubmitting(false);
     }

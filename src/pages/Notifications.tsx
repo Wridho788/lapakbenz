@@ -121,8 +121,9 @@ const Notifications: React.FC = () => {
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!isAuthenticated || !token) {
       toast.warning('Silakan masuk untuk melihat detail notifikasi', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -133,7 +134,8 @@ const Notifications: React.FC = () => {
 
       // Show loading toast
       const loadingToastId = toast.loading('Loading notification details...', {
-        position: 'top-center',
+        position: 'bottom-right',
+        theme: 'dark',
       });
 
       // Wait for detail to be fetched
@@ -158,8 +160,9 @@ const Notifications: React.FC = () => {
               </strong>
             </div>,
             {
-              position: 'top-center',
-              autoClose: 5000,
+              position: 'bottom-right',
+              autoClose: 1500,
+              theme: 'dark',
               closeOnClick: true,
               onClose: async () => {
                 // Mark as read when user closes the toast
@@ -180,8 +183,9 @@ const Notifications: React.FC = () => {
 
       // Fallback to basic notification data
       toast.info(`${notification.title}: ${notification.message}`, {
-        position: 'top-center',
-        autoClose: 4000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       
       if (notification.reading === "0") {

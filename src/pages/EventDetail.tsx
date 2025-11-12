@@ -33,10 +33,18 @@ const EventDetail: React.FC = () => {
       console.log('🎫 Event Registration Response:', result);
 
       if (result.status === 200 && result.content) {
-        toast.success('🎉 Registration Successful! Your event registration has been completed successfully.');
+        toast.success('🎉 Registration Successful! Your event registration has been completed successfully.', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
       } else {
         const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        toast.error(`❌ Registration Failed: ${errorMsg}`);
+        toast.error(`❌ Registration Failed: ${errorMsg}`, {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
       }
       setTriggerRegistration(false);
     }
@@ -54,7 +62,11 @@ const EventDetail: React.FC = () => {
         errorMessage = eventRegisterQuery.error.message;
       }
       
-      toast.error(`❌ Registration Failed: ${errorMessage}`);
+      toast.error(`❌ Registration Failed: ${errorMessage}`, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       setTriggerRegistration(false);
     }
   }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
@@ -94,20 +106,32 @@ const EventDetail: React.FC = () => {
     // Enhanced authentication check
     const authSuccess = requireAuth(() => {}, 'register for event');
     if (!authSuccess || !isAuthValidated) {
-      toast.warning('Please login first to register for this event.');
+      toast.warning('Please login first to register for this event.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
 
     if (!eventId) {
-      toast.error('Event not found or invalid event code.');
+      toast.error('Event not found or invalid event code.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
     // Validate event ID format
     if (!eventId.match(/^\d+$/)) {
       console.error('❌ Invalid event ID format:', eventId);
-      toast.error('Event ID format is invalid.');
+      toast.error('Event ID format is invalid.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 

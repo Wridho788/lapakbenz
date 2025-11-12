@@ -199,8 +199,10 @@ const Profile: React.FC = () => {
 
     setIsLoggingOut(true);
     const loadingToast = toast.info('Keluar...', {
+      position: 'bottom-right',
       autoClose: false,
       closeButton: false,
+      theme: 'dark',
     });
 
     try {
@@ -209,7 +211,9 @@ const Profile: React.FC = () => {
       
       toast.dismiss(loadingToast);
       toast.success('Anda berhasil keluar', {
+        position: 'bottom-right',
         autoClose: 1500,
+        theme: 'dark',
         onClose: () => {
           navigate('/login');
         }
@@ -219,7 +223,9 @@ const Profile: React.FC = () => {
       
       toast.dismiss(loadingToast);
       toast.warning('Sesi telah dihapus secara lokal', {
+        position: 'bottom-right',
         autoClose: 1500,
+        theme: 'dark',
         onClose: () => {
           navigate('/login');
         }
@@ -296,7 +302,11 @@ const Profile: React.FC = () => {
   const handleRefresh = () => {
     // Force refresh data - Zustand handles token management
     console.log('🔄 Profile data refreshed');
-    toast.info('Memuat ulang data...', { autoClose: 1000 });
+    toast.info('Memuat ulang data...', { 
+      position: 'bottom-right',
+      autoClose: 1500,
+      theme: 'dark',
+    });
   };
 
   const isError = (profileError || ledgerError) && !profileLoading && !ledgerLoading;

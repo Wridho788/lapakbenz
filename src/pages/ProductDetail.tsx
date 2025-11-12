@@ -459,7 +459,11 @@ const ProductDetail: React.FC = () => {
     if (!isAuthenticated || !token || !isTokenValid) {
       console.log('🔒 Authentication required for adding to cart');
 
-      toast.warning('Please login to add items to cart');
+      toast.warning('Please login to add items to cart', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/login');
       return;
     }
@@ -494,7 +498,11 @@ const ProductDetail: React.FC = () => {
       });
 
       // Show success message with toast
-      toast.success(`${quantity} ${productData.title.toUpperCase()} added to cart successfully`);
+      toast.success(`${quantity} ${productData.title.toUpperCase()} added to cart successfully`, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       cartRefetch();
       
       // Also add to cart context for immediate UI update
@@ -522,7 +530,11 @@ const ProductDetail: React.FC = () => {
       // Check if error is 307 - Shipping address required
       if (isShippingAddressRequiredError(error)) {
         console.log('🚚 Error 307 detected: Shipping address required, opening shipping modal');
-        toast.warning('Please set your shipping address first');
+        toast.warning('Please set your shipping address first', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         setIsShippingModalOpen(true);
         return;
       }
@@ -530,7 +542,11 @@ const ProductDetail: React.FC = () => {
       // Check if error is related to authentication
       if (isAuthenticationError(error)) {
         const authErrorMessage = 'Your session has expired. Please login again.';
-        toast.warning(authErrorMessage);
+        toast.warning(authErrorMessage, {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         // Logout and redirect to login
         useAuthStore.getState().logout();
         navigate('/login');
@@ -539,19 +555,31 @@ const ProductDetail: React.FC = () => {
 
       // Handle timeout errors specifically
       if (error?.message?.includes('timeout') || error?.code === 'ECONNABORTED') {
-        toast.error('Koneksi timeout. Silakan periksa koneksi internet dan coba lagi.');
+        toast.error('Koneksi timeout. Silakan periksa koneksi internet dan coba lagi.', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         return;
       }
 
       // Handle network errors
       if (error?.message?.includes('Network Error') || error?.code === 'ERR_NETWORK') {
-        toast.error('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+        toast.error('Gagal terhubung ke server. Periksa koneksi internet Anda.', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         return;
       }
 
       // Handle other errors
       const errorMessage = getErrorMessage(error) || 'Gagal menambahkan ke keranjang. Silakan coba lagi.';
-      toast.error(`${errorMessage}`);
+      toast.error(`${errorMessage}`, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 

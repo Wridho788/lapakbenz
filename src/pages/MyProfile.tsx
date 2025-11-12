@@ -199,8 +199,9 @@ const MyProfile: React.FC = () => {
     // Validate email format if field is not empty
     if (value.trim() !== '' && !validateEmail(value)) {
       toast.warning('Please enter a valid email address (e.g., user@example.com)', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
     }
   };
@@ -214,8 +215,9 @@ const MyProfile: React.FC = () => {
     if (!file || !authToken) {
       if (!authToken) {
         toast.warning('Please login first', {
-          position: 'top-center',
-          autoClose: 3000,
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
         });
       }
       return;
@@ -225,8 +227,9 @@ const MyProfile: React.FC = () => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
       toast.error('Please select a valid image file (JPEG, PNG, GIF)', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -235,8 +238,9 @@ const MyProfile: React.FC = () => {
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       toast.error('File size must be less than 5MB', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -245,8 +249,9 @@ const MyProfile: React.FC = () => {
       console.log('🖼️ Uploading image:', file.name);
       await uploadImageMutation.mutateAsync({ file, authToken });
       toast.success('Profile image updated successfully!', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
 
       // Auto-refresh profile data to get updated image URL
@@ -259,10 +264,11 @@ const MyProfile: React.FC = () => {
         setTimeout(() => setIsRefreshing(false), 300);
       }
     } catch (error) {
-      console.error('Upload image error:', error);
+      console.error('Upload error:', error);
       toast.error('Failed to upload image', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
     }
   };
@@ -270,8 +276,9 @@ const MyProfile: React.FC = () => {
   const handleUpdateProfile = async () => {
     if (!authToken) {
       toast.warning('Please login first', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -285,8 +292,9 @@ const MyProfile: React.FC = () => {
       !formData.tdob.trim()
     ) {
       toast.warning('Field Profession, Organization, Instagram, Address, dan Date of Birth wajib diisi!', {
-        position: 'top-center',
-        autoClose: 4000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -294,8 +302,9 @@ const MyProfile: React.FC = () => {
     // Validasi email format jika email diisi
     if (formData.temail.trim() !== '' && !validateEmail(formData.temail)) {
       toast.error('Please enter a valid email address (e.g., user@example.com)', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -319,8 +328,9 @@ const MyProfile: React.FC = () => {
         data: payload,
       });
       toast.success('Profile updated successfully!', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
 
       // Auto-refresh profile data to get updated information
@@ -335,8 +345,9 @@ const MyProfile: React.FC = () => {
     } catch (error) {
       console.error('Update profile error:', error);
       toast.error('Failed to update profile', {
-        position: 'top-center',
-        autoClose: 3000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
     }
   };

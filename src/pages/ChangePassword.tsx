@@ -37,7 +37,11 @@ const ChangePassword: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.warning('Password baru dan konfirmasi password tidak sama');
+      toast.warning('Password baru dan konfirmasi password tidak sama', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
     changePassword(
@@ -50,11 +54,19 @@ const ChangePassword: React.FC = () => {
       },
       {
         onSuccess: () => {
-          toast.success('Password berhasil diubah!');
+          toast.success('Password berhasil diubah!', {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
           setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         },
         onError: () => {
-          toast.error('Gagal mengubah password. Silakan coba lagi.');
+          toast.error('Gagal mengubah password. Silakan coba lagi.', {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
         },
       }
     );

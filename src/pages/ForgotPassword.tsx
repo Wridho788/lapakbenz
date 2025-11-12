@@ -15,7 +15,11 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailOrPhone.trim()) {
-      toast.warning('Masukkan email atau nomor HP Anda');
+      toast.warning('Masukkan email atau nomor HP Anda', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
     requestOTP(
@@ -23,14 +27,22 @@ const ForgotPassword: React.FC = () => {
       {
         onSuccess: () => {
           setIsSubmitted(true);
-          toast.success('Kode OTP telah dikirim ke email/nomor HP Anda.');
+          toast.success('Kode OTP telah dikirim ke email/nomor HP Anda.', {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
         },
         onError: (err: any) => {
           let msg = 'Gagal mengirim OTP.';
           if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
             msg = err.message;
           }
-          toast.error(msg);
+          toast.error(msg, {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
         },
       }
     );
@@ -48,7 +60,11 @@ const ForgotPassword: React.FC = () => {
   const handleSetPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (!otp.trim() || !newPassword.trim()) {
-      toast.warning('OTP dan password baru wajib diisi');
+      toast.warning('OTP dan password baru wajib diisi', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
     setForgotPassword(
@@ -59,7 +75,11 @@ const ForgotPassword: React.FC = () => {
       },
       {
         onSuccess: () => {
-          toast.success('Password berhasil diubah! Silakan login dengan password baru Anda.');
+          toast.success('Password berhasil diubah! Silakan login dengan password baru Anda.', {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
           setTimeout(() => navigate('/login'), 2000);
         },
         onError: (err: any) => {
@@ -67,7 +87,11 @@ const ForgotPassword: React.FC = () => {
           if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
             msg = err.message;
           }
-          toast.error(msg);
+          toast.error(msg, {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
         },
       }
     );

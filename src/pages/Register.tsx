@@ -66,7 +66,11 @@ const Register: React.FC = () => {
 
   const handleContinueToForm = () => {
     if (!registrationType) {
-      toast.warning('Silakan pilih tipe pendaftaran terlebih dahulu');
+      toast.warning('Silakan pilih tipe pendaftaran terlebih dahulu', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
     setShowForm(true);
@@ -112,38 +116,66 @@ const Register: React.FC = () => {
     
     // Validation
     if (!registrationType) {
-      toast.warning('Silakan pilih tipe pendaftaran (Member atau Participant)');
+      toast.warning('Silakan pilih tipe pendaftaran (Member atau Participant)', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
     if (registrationType === 'member' && !formData.chapter) {
-      toast.warning('Silakan pilih chapter untuk pendaftaran member');
+      toast.warning('Silakan pilih chapter untuk pendaftaran member', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
     // Member-specific validation
     if (registrationType === 'member') {
       if (!formData.vehicleType) {
-        toast.warning('Jenis kendaraan Mercedes-Benz wajib diisi untuk member');
+        toast.warning('Jenis kendaraan Mercedes-Benz wajib diisi untuk member', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         return;
       }
       if (!formData.policeNo) {
-        toast.warning('Nomor polisi wajib diisi untuk member');
+        toast.warning('Nomor polisi wajib diisi untuk member', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         return;
       }
       if (!formData.nik) {
-        toast.warning('NIK wajib diisi untuk member');
+        toast.warning('NIK wajib diisi untuk member', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
         return;
       }
     }
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Passwords do not match', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
     
     if (formData.agree !== 'true') {
-      toast.warning('Please agree to the terms and conditions');
+      toast.warning('Please agree to the terms and conditions', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
@@ -172,7 +204,11 @@ const Register: React.FC = () => {
       console.log('Registration successful:', result);
       
       // Show success message with toast
-      toast.success('Registration Successful! Your registration will be processed offline by admin.');
+      toast.success('Registration Successful! Your registration will be processed offline by admin.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       navigate('/verify', { state: { username: registerData.tphone1,
             id_customer: result.content?.id // dari response register/request OTP
         } });
@@ -197,7 +233,11 @@ const Register: React.FC = () => {
       }
       
       // Show error message with toast
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     } finally {
       setIsSubmitting(false);
     }

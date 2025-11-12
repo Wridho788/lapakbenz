@@ -93,8 +93,9 @@ const MerchantRegistration: React.FC = () => {
 
     if (!eventId) {
       toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.', {
-        position: 'top-center',
-        autoClose: 4000,
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
       return;
     }
@@ -129,8 +130,9 @@ const MerchantRegistration: React.FC = () => {
               </div>
             </div>,
             {
-              position: 'top-center',
-              autoClose: 5000,
+              position: 'bottom-right',
+              autoClose: 1500,
+              theme: 'dark',
               onClose: () => navigate(`/event/${eventId}`)
             }
           );
@@ -163,16 +165,18 @@ const MerchantRegistration: React.FC = () => {
               </div>
             </div>,
             {
-              position: 'top-center',
-              autoClose: 6000,
+              position: 'bottom-right',
+              autoClose: 1500,
+              theme: 'dark',
               onClose: () => navigate(`/event/${eventId}`)
             }
           );
         }
       } else {
         toast.error(result.message || 'Pendaftaran gagal. Silakan coba lagi.', {
-          position: 'top-center',
-          autoClose: 4000,
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
         });
       }
     } catch (error: any) {
@@ -180,8 +184,9 @@ const MerchantRegistration: React.FC = () => {
       toast.error(
         error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.',
         {
-          position: 'top-center',
-          autoClose: 5000,
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
         }
       );
     } finally {

@@ -118,17 +118,28 @@ const PublicRegistration: React.FC = () => {
     e.preventDefault();
     
     if (!validateForm()) {
-      toast.error('Mohon lengkapi semua field yang wajib diisi');
+      toast.error('Mohon lengkapi semua field yang wajib diisi', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
     if (!eventId) {
-      toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.');
+      toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
     setIsSubmitting(true);
-    const loadingToast = toast.loading('Mengirim pendaftaran...');
+    const loadingToast = toast.loading('Mengirim pendaftaran...', {
+      position: 'bottom-right',
+      theme: 'dark',
+    });
     
     try {
       const payload = {
@@ -154,16 +165,24 @@ const PublicRegistration: React.FC = () => {
         setShowSuccessModal(true);
         
         toast.success('🎉 Pendaftaran berhasil!', {
-          autoClose: 3000
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
         });
       } else {
-        toast.error(result.message || 'Pendaftaran gagal. Silakan coba lagi.');
+        toast.error(result.message || 'Pendaftaran gagal. Silakan coba lagi.', {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
       }
     } catch (error: any) {
       console.error('❌ Registration failed:', error);
       toast.dismiss(loadingToast);
       toast.error(error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.', {
-        autoClose: 5000
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
       });
     } finally {
       setIsSubmitting(false);
