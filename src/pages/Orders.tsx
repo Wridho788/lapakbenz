@@ -233,13 +233,13 @@ const Orders: React.FC = () => {
                 </div>
 
                 <div className="order-footer">
-                  <div className="order-amount">
-                    <span className="amount-label">Total:</span>
-                    <span className="amount-value">{formatCurrency(order.total)}</span>
-                  </div>
                   <div className="order-service-fee">
                     <span className="service-fee-label">Biaya Layanan:</span>
                     <span className="service-fee-value">{formatCurrency(order.cost)}</span>
+                  </div>
+                  <div className="order-amount">
+                    <span className="amount-label">Total:</span>
+                    <span className="amount-value">{formatCurrency(order.amount)}</span>
                   </div>
                   <div className="order-dates">
                     <div className="date-info">
