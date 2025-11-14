@@ -1070,12 +1070,7 @@ const Cart: React.FC = () => {
           <div className="order-summary">
             <h3>Ringkasan Pesanan</h3>
             <div className="summary-details">
-              {costFromToken > 0 && (
-                <div className="summary-row">
-                  <span>Biaya Tambahan</span>
-                  <span>Rp {costFromToken.toLocaleString('id-ID')}</span>
-                </div>
-              )}
+              
               
               {shippingCost > 0 && (
                 <div className="summary-row">
@@ -1088,6 +1083,12 @@ const Cart: React.FC = () => {
                 <span>Subtotal ({apiCartCount} item)</span>
                 <span>Rp {subtotal.toLocaleString('id-ID')}</span>
               </div>
+              {costFromToken > 0 && (
+                <div className="summary-row">
+                  <span>Biaya Tambahan</span>
+                  <span>Rp {costFromToken.toLocaleString('id-ID')}</span>
+                </div>
+              )}
 
               {paymentFee > 0 && (
                 <div className="summary-row">

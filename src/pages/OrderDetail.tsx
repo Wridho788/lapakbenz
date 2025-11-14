@@ -450,7 +450,7 @@ const OrderDetail: React.FC = () => {
                 <span className="total-value">{formatCurrency(order.tax)}</span>
               </div>
               <div className="total-row">
-                <span className="total-label">Biaya Tambahan:</span>
+                <span className="total-label">Biaya Layanan:</span>
                 <span className="total-value">{formatCurrency(order.costs)}</span>
               </div>
             <div className="total-row final-total">
