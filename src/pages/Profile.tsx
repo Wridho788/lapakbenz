@@ -261,7 +261,7 @@ const Profile: React.FC = () => {
         navigate('/profile/event-history');
         break;
       case 'transaction':
-        navigate('/profile/transaction-history');
+        navigate('/orders');
         break;
       case 'redeem':
         navigate('/profile/redeem-history');

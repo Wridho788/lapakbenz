@@ -214,10 +214,7 @@ const Orders: React.FC = () => {
                     <span className="detail-label">Tanggal:</span>
                     <span className="detail-value">{order.dates}</span>
                   </div>
-                  <div className="order-detail-row">
-                    <span className="detail-label">Pelanggan:</span>
-                    <span className="detail-value">{order.customer}</span>
-                  </div>
+                 
                   <div className="order-detail-row">
                     <span className="detail-label">Item:</span>
                     <span className="detail-value">{order.items_count} item</span>

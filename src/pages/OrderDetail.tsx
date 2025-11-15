@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MdCancel, MdCheckCircle, MdPending, MdReceipt, MdOpenInNew, MdLocalShipping } from 'react-icons/md';
+import {
+  MdCancel,
+  MdCheckCircle,
+  MdPending,
+  MdReceipt,
+  MdOpenInNew,
+  MdLocalShipping,
+} from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useAuthStore } from '../stores/authStore';
 import { useOrderDetail } from '../api/hooks/index';
@@ -20,29 +27,23 @@ const OrderDetail: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const {
-    data: orderDetail,
-    isLoading,
-    error,
-    refetch
-  } = useOrderDetail(orderId || '');
+  const { data: orderDetail, isLoading, error, refetch } = useOrderDetail(orderId || '');
 
   const handleBackClick = () => {
     navigate('/orders');
   };
 
-  
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
     if (!dateString || dateString === ' - ') return '-';
-    
+
     try {
       const date = new Date(dateString);
       return date.toLocaleString('id-ID', {
@@ -50,7 +51,7 @@ const OrderDetail: React.FC = () => {
         month: 'short',
         day: '2-digit',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     } catch {
       return dateString;
@@ -60,12 +61,12 @@ const OrderDetail: React.FC = () => {
   // Helper function to ensure URL has https protocol
   const getFullUrl = (url: string): string => {
     if (!url) return '';
-    
+
     // If URL already has protocol, return as is
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    
+
     // If URL doesn't have protocol, add https://
     return `https://${url}`;
   };
@@ -81,21 +82,21 @@ const OrderDetail: React.FC = () => {
   const getTrackingInfo = () => {
     console.log('order tracking items:', orderDetail?.content?.items);
     if (!orderDetail?.content?.items?.length) return null;
-    
+
     // Find first item with tracking info - check for either awb or last_digit
-    const itemWithTracking = orderDetail.content.items.find(item => 
-      (item.awb && item.awb !== null) || (item.last_digit && item.last_digit !== null)
+    const itemWithTracking = orderDetail.content.items.find(
+      (item) => (item.awb && item.awb !== null) || (item.last_digit && item.last_digit !== null),
     );
-    
+
     console.log('item with tracking found:', itemWithTracking);
-    
+
     if (itemWithTracking) {
       // Handle cases where awb might be null but last_digit exists
       const awb = itemWithTracking.awb || '';
       const lastDigit = itemWithTracking.last_digit || '';
-      
+
       console.log('tracking data - awb:', awb, 'lastDigit:', lastDigit);
-      
+
       // If we have at least one of them, create tracking info
       if (awb || lastDigit) {
         return {
@@ -105,11 +106,11 @@ const OrderDetail: React.FC = () => {
           fullTrackingNumber: `${awb}${lastDigit}`,
           // Add flags to know what data we have
           hasAwb: !!awb,
-          hasLastDigit: !!lastDigit
+          hasLastDigit: !!lastDigit,
         };
       }
     }
-    
+
     console.log('no valid tracking info found');
     return null;
   };
@@ -122,12 +123,13 @@ const OrderDetail: React.FC = () => {
     if (status === null) {
       return <MdPending className="status-icon pending" />;
     }
-    
-    switch (status.toLowerCase()) {
-      case 'success':
+
+    switch (status) {
+      case 'SUCCESSFUL':
         return <MdCheckCircle className="status-icon paid" />;
-      case 'failed':
-      case 'cancel':
+      case 'FAILED':
+        return <MdCancel className="status-icon canceled" />;
+      case 'CANCEL':
         return <MdCancel className="status-icon canceled" />;
       default:
         return <MdPending className="status-icon pending" />;
@@ -138,13 +140,13 @@ const OrderDetail: React.FC = () => {
     if (status === null) {
       return 'Menunggu Pembayaran';
     }
-    
-    switch (status.toLowerCase()) {
-      case 'success':
+
+    switch (status) {
+      case 'SUCCESSFUL':
         return 'Pembayaran Berhasil';
-      case 'failed':
+      case 'FAILED':
         return 'Pembayaran Gagal';
-      case 'cancel':
+      case 'CANCEL':
         return 'Pembayaran Dibatalkan';
       default:
         return 'Status Tidak Diketahui';
@@ -155,12 +157,12 @@ const OrderDetail: React.FC = () => {
     if (status === null) {
       return 'pending';
     }
-    
-    switch (status.toLowerCase()) {
+
+    switch (status) {
       case 'SUCCESSFUL':
         return 'paid';
-      case 'failed':
-      case 'C':
+      case 'FAILED':
+      case 'CANCEL':
         return 'canceled';
       default:
         return 'pending';
@@ -170,10 +172,7 @@ const OrderDetail: React.FC = () => {
   if (isLoading) {
     return (
       <div className="order-detail-page">
-        <AppbarDefault
-          title="Detail Pesanan"
-          onBack={handleBackClick}
-        />
+        <AppbarDefault title="Detail Pesanan" onBack={handleBackClick} />
         <div className="order-detail-content">
           <div className="order-detail-loading">
             <div className="loading-spinner"></div>
@@ -187,10 +186,7 @@ const OrderDetail: React.FC = () => {
   if (error) {
     return (
       <div className="order-detail-page">
-        <AppbarDefault
-          title="Detail Pesanan"
-          onBack={handleBackClick}
-        />
+        <AppbarDefault title="Detail Pesanan" onBack={handleBackClick} />
         <div className="order-detail-content">
           <div className="order-detail-error">
             <h3>Gagal Memuat Pesanan</h3>
@@ -207,10 +203,7 @@ const OrderDetail: React.FC = () => {
   if (!orderDetail?.content) {
     return (
       <div className="order-detail-page">
-        <AppbarDefault
-          title="Detail Pesanan"
-          onBack={handleBackClick}
-        />
+        <AppbarDefault title="Detail Pesanan" onBack={handleBackClick} />
         <div className="order-detail-content">
           <div className="order-detail-error">
             <h3>Pesanan Tidak Ditemukan</h3>
@@ -226,14 +219,11 @@ const OrderDetail: React.FC = () => {
 
   return (
     <div className="order-detail-page">
-      <AppbarDefault
-        title={`Order #${order?.code || ''}`}
-        onBack={handleBackClick}
-      />
+      <AppbarDefault title={`Order #${order?.code || ''}`} onBack={handleBackClick} />
 
       <div className="order-detail-content">
         {/* Payment Status Banner */}
-        {(order.status === 'SUCCESSFUL') && (
+        {order.status === 'SUCCESSFUL' && (
           <div className="payment-success-banner">
             <MdCheckCircle className="success-icon" />
             <div className="success-info">
@@ -260,10 +250,7 @@ const OrderDetail: React.FC = () => {
               <h3>Pembayaran Tertunda</h3>
               <p>Silakan selesaikan pembayaran Anda untuk memproses pesanan ini</p>
               {order.link_url && (
-                <button 
-                  onClick={handleOpenPaymentLink}
-                  className="payment-link-btn-banner"
-                >
+                <button onClick={handleOpenPaymentLink} className="payment-link-btn-banner">
                   <MdOpenInNew />
                   Selesaikan Pembayaran
                 </button>
@@ -323,7 +310,7 @@ const OrderDetail: React.FC = () => {
                 {getPaymentStatusIcon(order.status)}
                 <span>{getPaymentStatusText(order.status)}</span>
                 {order.status === null && order.link_url && (
-                  <button 
+                  <button
                     onClick={handleOpenPaymentLink}
                     className="payment-link-btn"
                     title="Buka halaman pembayaran"
@@ -358,12 +345,38 @@ const OrderDetail: React.FC = () => {
         {/* Tracking Section */}
         {(() => {
           const trackingInfo = getTrackingInfo();
-          
+
+          // Jika tidak ada tracking info sama sekali, tidak tampilkan apapun
           if (!trackingInfo) return null;
-          
-          // Check if we have complete tracking data (both AWB and lastDigit)
+
+          // Jika AWB null/kosong, tampilkan status processing
+          if (!trackingInfo.hasAwb) {
+            return (
+              <div className="order-tracking-section">
+                <h3>
+                  <MdLocalShipping className="card-icon" />
+                  Status Pengiriman
+                </h3>
+                <div className="tracking-info-card">
+                  <div className="tracking-info-content">
+                    <div className="tracking-number-display">
+                      <span className="tracking-label">Status:</span>
+                      <span className="tracking-status-processing">
+                        Barang sedang diproses penjual
+                      </span>
+                      {/* <span className="tracking-status-note">
+                        Nomor resi akan tersedia setelah barang dikirim
+                      </span> */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          // Jika AWB ada, tampilkan komponen tracking normal
           const hasCompleteTracking = trackingInfo.hasAwb && trackingInfo.hasLastDigit;
-          
+
           return (
             <div className="order-tracking-section">
               <h3>
@@ -373,35 +386,20 @@ const OrderDetail: React.FC = () => {
               <div className="tracking-info-card">
                 <div className="tracking-info-content">
                   <div className="tracking-number-display">
-                    <span className="tracking-label">
-                      {trackingInfo.hasAwb ? 'No. Resi:' : 'Info Pengiriman:'}
-                    </span>
-                    <span className="tracking-number">
-                      {trackingInfo.fullTrackingNumber || 'Sedang diproses'}
-                    </span>
-                    {!trackingInfo.hasAwb && (
-                      <span className="tracking-status-note">
-                        Nomor resi akan tersedia setelah paket dikirim
-                      </span>
-                    )}
+                    <span className="tracking-label">No. Resi:</span>
+                    <span className="tracking-number">{trackingInfo.fullTrackingNumber}</span>
                   </div>
-                  
-                  {/* Only show button if AWB exists */}
-                  {trackingInfo.hasAwb && (
-                    <button 
-                      className="track-order-btn"
-                      onClick={handleToggleTracking}
-                    >
-                      <MdLocalShipping />
-                      {showTracking ? 'Tutup Tracking' : 'Lacak Pengiriman'}
-                    </button>
-                  )}
+
+                  <button className="track-order-btn" onClick={handleToggleTracking}>
+                    <MdLocalShipping />
+                    {showTracking ? 'Tutup Tracking' : 'Lacak Pengiriman'}
+                  </button>
                 </div>
-                
+
                 {showTracking && hasCompleteTracking && (
                   <div className="tracking-component-container">
-                    <OrderTracking 
-                      awb={trackingInfo.awb} 
+                    <OrderTracking
+                      awb={trackingInfo.awb}
                       lastDigit={trackingInfo.lastDigit}
                       className="embedded-tracking"
                     />
@@ -420,16 +418,46 @@ const OrderDetail: React.FC = () => {
             <h4>Item Pesanan ({orderItems?.length || 0})</h4>
             <div className="summary-items-list">
               {orderItems?.map((item: any) => (
-                <div key={item.id} className="summary-item-row">
-                  <div className="summary-item-info">
-                    <h5>{item.product}</h5>
-                    <p>SKU: {item.sku}</p>
-                    <span className="summary-item-qty">Jumlah: {item.qty}</span>
+                <div key={item.id} style={{padding: '1rem', background: '#f8f9fa'}}>
+                  <h5 >{item.product}</h5>
+                  <div className="summary-item-row">
+                    <div style={{display: 'flex', flexDirection: 'column'}}>
+                      <span className="summary-item-qty">Jumlah</span>
+                      <span className="summary-item-sku">Harga</span>
+                    </div>
+                    <div className="summary-item-right">
+                      <span className="summary-item-qty">{item.qty} pcs</span>
+                      <div className="total-price">{formatCurrency(item.amount)}</div>
+                    </div>
                   </div>
-                  <div className="summary-item-price">
-                    <div className="unit-price">{formatCurrency(item.price)}</div>
-                    <div className="total-price">{formatCurrency(item.amount)}</div>
-                  </div>
+
+                  {/* Tombol lacak pesanan jika AWB tersedia */}
+                  {item.awb && item.awb !== null && (
+                    <button
+                      className="track-item-btn"
+                      onClick={() => {
+                        // Toggle tracking untuk item specific ini
+                        const trackingInfo = {
+                          awb: item.awb,
+                          lastDigit: item.last_digit || '',
+                          hasAwb: !!item.awb,
+                          hasLastDigit: !!item.last_digit,
+                        };
+
+                        if (trackingInfo.hasAwb && trackingInfo.hasLastDigit) {
+                          setShowTracking(!showTracking);
+                          // Scroll ke tracking section jika ada
+                          const trackingSection = document.querySelector('.order-tracking-section');
+                          if (trackingSection) {
+                            trackingSection.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }
+                      }}
+                    >
+                      <MdLocalShipping />
+                      Lacak Pesanan
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -439,20 +467,24 @@ const OrderDetail: React.FC = () => {
           <div className="summary-totals">
             <div className="total-row">
               <span className="total-label">Total Belanja:</span>
-              <span className="total-value">{formatCurrency(order.amount)}</span>
+              <span className="total-value">{formatCurrency((order.total || 0) - (order.shipping || 0))}</span>
             </div>
-              <div className="total-row savings">
-                <span className="total-label">Hemat Belanja:</span>
-                <span className="total-value">-{formatCurrency(order.discount)}</span>
-              </div>
-              <div className="total-row">
-                <span className="total-label">Pajak:</span>
-                <span className="total-value">{formatCurrency(order.tax)}</span>
-              </div>
-              <div className="total-row">
-                <span className="total-label">Biaya Layanan:</span>
-                <span className="total-value">{formatCurrency(order.costs)}</span>
-              </div>
+             <div className="total-row">
+              <span className="total-label">Biaya Pengiriman:</span>
+              <span className="total-value">{formatCurrency(order.shipping)}</span>
+            </div>
+            <div className="total-row savings">
+              <span className="total-label">Discount:</span>
+              <span className="total-value">-{formatCurrency(order.discount)}</span>
+            </div>
+            <div className="total-row">
+              <span className="total-label">Pajak:</span>
+              <span className="total-value">{formatCurrency(order.tax)}</span>
+            </div>
+            <div className="total-row">
+              <span className="total-label">Biaya Layanan:</span>
+              <span className="total-value">{formatCurrency(order.costs)}</span>
+            </div>
             <div className="total-row final-total">
               <span className="total-label">Total Bayar:</span>
               <span className="total-value">{formatCurrency(order.tot_amt || order.total)}</span>
@@ -460,7 +492,6 @@ const OrderDetail: React.FC = () => {
           </div>
         </div>
 
-        
         {/* Cancellation Notice */}
         {order.canceled && (
           <div className="cancellation-card">

@@ -863,7 +863,6 @@ html, body, .order-detail-page {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 1rem;
   background: #f8f9fa;
   border-radius: 8px;
   gap: 1rem;
@@ -888,15 +887,6 @@ html, body, .order-detail-page {
   font-size: 0.75rem;
 }
 
-.summary-item-qty {
-  color: #666;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  display: inline-block;
-}
 
 .summary-item-price {
   display: flex;

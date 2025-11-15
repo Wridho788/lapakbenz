@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MdRefresh, MdOpenInNew } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
+import { useOrderDetail } from '../api/hooks/cartHooks';
+import { useAuthStore } from '../stores/authStore';
 import './Invoice.css';
 
 interface InvoiceState {
   invoiceUrl: string;
   orderId: string;
   transId?: number;
+  orderPayment?: string;
 }
 
 const Invoice: React.FC = () => {
@@ -15,10 +18,17 @@ const Invoice: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [error] = useState<string | null>(null);
+  const { isAuthenticated } = useAuthStore();
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get invoice data from navigation state
   const invoiceData = location.state as InvoiceState;
+  console.log(invoiceData?.orderPayment, 'order payment');
 
+  // Use OrderDetail hook for polling payment status
+  const { data: orderDetail, refetch } = useOrderDetail(
+    invoiceData?.orderPayment || '',
+  );
   useEffect(() => {
     // Redirect to cart if no invoice data is provided
     if (!invoiceData?.invoiceUrl) {
@@ -34,7 +44,7 @@ const Invoice: React.FC = () => {
     const autoOpenTimer = setTimeout(() => {
       setIsLoading(false);
       console.log('🚀 Auto-opening payment page in browser');
-      
+
       const fullUrl = getFullUrl(invoiceData.invoiceUrl);
       window.open(fullUrl, '_blank');
     }, 2000); // 2 seconds delay to show the page first
@@ -42,9 +52,49 @@ const Invoice: React.FC = () => {
     return () => clearTimeout(autoOpenTimer);
   }, [invoiceData?.invoiceUrl, navigate]);
 
+  // Polling effect untuk mengecek status pembayaran
+  useEffect(() => {
+    // Hanya lakukan polling jika ada orderPayment dan user sudah authenticated
+    if (!invoiceData?.orderPayment || !isAuthenticated) {
+      return;
+    }
+
+    console.log('🔄 Starting payment status polling for order:', invoiceData.orderPayment);
+
+    // Polling setiap 3 detik
+    intervalRef.current = setInterval(() => {
+      console.log('📊 Polling payment status...');
+      refetch();
+    }, 3000);
+
+    return () => {
+      if (intervalRef.current) {
+        console.log('⏹️ Stopping payment status polling');
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [invoiceData?.orderPayment, isAuthenticated, refetch]);
+
+  // Effect untuk mengecek status pembayaran dan navigasi
+  useEffect(() => {
+    if (orderDetail?.content?.status === 'SUCCESSFUL') {
+      console.log('✅ Payment successful! Navigating to order detail page');
+      
+      // Hentikan polling
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      
+      // Navigasi ke halaman order detail
+      navigate(`/orders/${invoiceData?.orderPayment}`);
+    }
+  }, [orderDetail?.content?.status, navigate, invoiceData?.orderPayment]);
+
   useEffect(() => {
     // Memastikan class dark mode diterapkan dengan benar
-    // Jika ada sistem dark mode di aplikasi Anda, pastikan class 'dark-mode' 
+    // Jika ada sistem dark mode di aplikasi Anda, pastikan class 'dark-mode'
     // ditambahkan ke body element ketika dark mode aktif
 
     // Contoh: jika Anda memiliki context atau state untuk dark mode
@@ -59,7 +109,7 @@ const Invoice: React.FC = () => {
 
     // Untuk testing, Anda bisa uncomment baris berikut untuk memaksa dark mode:
     // document.body.classList.add('dark-mode');
-    
+
     return () => {
       // Cleanup jika diperlukan
       // document.body.classList.remove('dark-mode', 'light-mode');
@@ -86,12 +136,12 @@ const Invoice: React.FC = () => {
   // Helper function to ensure URL has https protocol
   const getFullUrl = (url: string): string => {
     if (!url) return '';
-    
+
     // If URL already has protocol, return as is
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
-    
+
     // If URL doesn't have protocol, add https://
     return `https://${url}`;
   };
@@ -99,14 +149,14 @@ const Invoice: React.FC = () => {
   if (!invoiceData?.invoiceUrl) {
     return (
       <div className="invoice-page">
-        <AppbarDefault
-          title="Faktur"
-          onBack={handleBackClick}
-        />
+        <AppbarDefault title="Faktur" onBack={handleBackClick} />
         <div className="invoice-error">
           <h3>Faktur Tidak Ditemukan</h3>
           <p>Tidak dapat memuat faktur. Silakan coba lagi.</p>
-          <button onClick={() => navigate('/cart', { state: { from: '/invoice' } })} className="back-to-cart-btn">
+          <button
+            onClick={() => navigate('/cart', { state: { from: '/invoice' } })}
+            className="back-to-cart-btn"
+          >
             Kembali ke Keranjang
           </button>
         </div>
@@ -116,10 +166,7 @@ const Invoice: React.FC = () => {
 
   return (
     <div className="invoice-page">
-      <AppbarDefault
-        title={`Faktur - ${invoiceData.orderId}`}
-        onBack={handleBackClick}
-      />
+      <AppbarDefault title={`Faktur - ${invoiceData.orderId}`} onBack={handleBackClick} />
 
       <div className="invoice-content">
         {/* Invoice Header */}
@@ -129,17 +176,17 @@ const Invoice: React.FC = () => {
             <p>ID Pesanan: {invoiceData.orderId}</p>
             {invoiceData.transId && <p>ID Transaksi: {invoiceData.transId}</p>}
           </div>
-          
+
           <div className="invoice-actions">
-            <button 
-              onClick={handleRefresh} 
+            <button
+              onClick={handleRefresh}
               className="invoice-action-btn"
               title="Buka Halaman Pembayaran"
             >
               <MdRefresh />
             </button>
-            <button 
-              onClick={handleOpenInNewTab} 
+            <button
+              onClick={handleOpenInNewTab}
               className="invoice-action-btn primary"
               title="Buka di browser"
             >

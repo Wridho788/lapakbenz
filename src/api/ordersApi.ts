@@ -147,6 +147,7 @@ export interface OrderDetailResponse {
     paid_date: string | null;
     canceled_date: string | null;
     tot_amt: number;
+    shipping: number;
     items: Array<{
       id: string;
       order_id: string;

@@ -681,6 +681,7 @@ const Cart: React.FC = () => {
             invoiceUrl: checkoutResponse.content.invoice_url,
             orderId: checkoutResponse.content.orderid || orderId,
             transId: checkoutResponse.content.transid,
+            orderPayment: orderId,
           },
         });
         return;
@@ -1071,6 +1072,10 @@ const Cart: React.FC = () => {
             <h3>Ringkasan Pesanan</h3>
             <div className="summary-details">
               
+              <div className="summary-row">
+                <span>Subtotal ({apiCartCount} item)</span>
+                <span>Rp {subtotal.toLocaleString('id-ID')}</span>
+              </div>
               
               {shippingCost > 0 && (
                 <div className="summary-row">
@@ -1079,13 +1084,9 @@ const Cart: React.FC = () => {
                 </div>
               )}
               
-              <div className="summary-row">
-                <span>Subtotal ({apiCartCount} item)</span>
-                <span>Rp {subtotal.toLocaleString('id-ID')}</span>
-              </div>
               {costFromToken > 0 && (
                 <div className="summary-row">
-                  <span>Biaya Tambahan</span>
+                  <span>Biaya Layanan</span>
                   <span>Rp {costFromToken.toLocaleString('id-ID')}</span>
                 </div>
               )}
