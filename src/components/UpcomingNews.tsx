@@ -55,7 +55,7 @@ export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
   };
 
   return (
-    <div className={`upcoming-news ${className || ''}`} style={{marginBottom: '5rem'}}>
+    <div className={`upcoming-news ${className || ''}`} style={{marginBottom: '7rem'}}>
       <div className="news-scroll-container">
         {upcomingNews.map((news) => (
           <div 

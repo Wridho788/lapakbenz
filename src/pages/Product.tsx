@@ -160,7 +160,7 @@ const Product: React.FC = () => {
   }, [products, searchQuery, selectedCategoryId, productSearchMutation.data]);
 
   const handleBackClick = () => {
-    navigate(-1);
+    navigate('/');
   };
 
   const handleCartClick = () => {
