@@ -57,10 +57,25 @@ const ProductDetail: React.FC = () => {
   // Auth state - get all needed auth properties
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
 
-  // Log when productParam changes
+  // Scroll to top on component mount
+  useEffect(() => {
+    // Immediate scroll to top when component first mounts
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Log when productParam changes and scroll to top
   useEffect(() => {
     console.log('📦 ProductDetail page loaded with productParam:', productParam);
     console.log('📦 Extracted productId:', productId);
+    
+    // Scroll to top when productParam changes (for navigation between products)
+    if (productParam && productId) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
   }, [productParam, productId]);
 
   // API hook for product detail

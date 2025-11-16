@@ -859,13 +859,197 @@ html, body, .order-detail-page {
   margin-bottom: 1.5rem;
 }
 
-.summary-item-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  background: #f8f9fa;
+/* Updated styles for 2-column grid layout */
+.summary-item-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: white;
   border-radius: 8px;
-  gap: 1rem;
+  border: 1px solid #e9ecef;
+}
+
+.grid-row {
+  display: contents;
+}
+
+.grid-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 0.25rem 0;
+}
+
+.grid-value {
+  font-size: 0.875rem;
+  color: #161129;
+  font-weight: 600;
+  padding: 0.25rem 0;
+  text-align: right;
+}
+
+/* Tracking Action Section Styles */
+.tracking-action-section {
+  margin-top: 1rem;
+}
+
+/* Active Track Button */
+.track-item-btn.active {
+  background: white;
+  color: #161129;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(22, 17, 41, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.track-item-btn.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(22, 17, 41, 0.3);
+}
+
+.track-item-btn.active:active {
+  transform: translateY(0);
+}
+
+.track-btn-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.track-icon {
+  font-size: 1.5rem;
+  color: #4ade80;
+}
+
+.track-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.track-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.track-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.track-item-btn.active:hover .track-arrow {
+  transform: translateX(4px);
+}
+
+/* Processing Status Styles */
+.processing-status {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.processing-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.processing-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+}
+
+.processing-icon {
+  font-size: 1.2rem;
+  color: white;
+}
+
+.processing-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.processing-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+.processing-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+/* Processing Dots Animation */
+.processing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #94a3b8;
+  animation: dotPulse 1.5s infinite;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 60%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
 }
 
 .summary-item-info {

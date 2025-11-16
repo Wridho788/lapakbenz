@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MdRefresh, MdOpenInNew } from 'react-icons/md';
+import { MdOpenInNew } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useOrderDetail } from '../api/hooks/cartHooks';
 import { useAuthStore } from '../stores/authStore';
@@ -120,11 +120,11 @@ const Invoice: React.FC = () => {
     navigate('/cart', { state: { from: '/invoice' } });
   };
 
-  const handleRefresh = () => {
-    console.log('🔄 Refresh clicked - Opening payment page');
-    const fullUrl = getFullUrl(invoiceData.invoiceUrl);
-    window.open(fullUrl, '_blank');
-  };
+  // const handleRefresh = () => {
+  //   console.log('🔄 Refresh clicked - Opening payment page');
+  //   const fullUrl = getFullUrl(invoiceData.invoiceUrl);
+  //   window.open(fullUrl, '_blank');
+  // };
 
   const handleOpenInNewTab = () => {
     if (invoiceData?.invoiceUrl) {
@@ -178,13 +178,13 @@ const Invoice: React.FC = () => {
           </div>
 
           <div className="invoice-actions">
-            <button
+            {/* <button
               onClick={handleRefresh}
               className="invoice-action-btn"
               title="Buka Halaman Pembayaran"
             >
               <MdRefresh />
-            </button>
+            </button> */}
             <button
               onClick={handleOpenInNewTab}
               className="invoice-action-btn primary"

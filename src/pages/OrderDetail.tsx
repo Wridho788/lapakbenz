@@ -420,44 +420,66 @@ const OrderDetail: React.FC = () => {
               {orderItems?.map((item: any) => (
                 <div key={item.id} style={{padding: '1rem', background: '#f8f9fa'}}>
                   <h5 >{item.product}</h5>
-                  <div className="summary-item-row">
-                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                      <span className="summary-item-qty">Jumlah</span>
-                      <span className="summary-item-sku">Harga</span>
+                  <div className="summary-item-grid">
+                    <div className="grid-row">
+                      <span className="grid-label">Jumlah</span>
+                      <span className="grid-value">{item.qty} pcs</span>
                     </div>
-                    <div className="summary-item-right">
-                      <span className="summary-item-qty">{item.qty} pcs</span>
-                      <div className="total-price">{formatCurrency(item.amount)}</div>
+                    <div className="grid-row">
+                      <span className="grid-label">Harga</span>
+                      <span className="grid-value">{formatCurrency(item.amount)}</span>
                     </div>
                   </div>
 
-                  {/* Tombol lacak pesanan jika AWB tersedia */}
-                  {item.awb && item.awb !== null && (
-                    <button
-                      className="track-item-btn"
-                      onClick={() => {
-                        // Toggle tracking untuk item specific ini
-                        const trackingInfo = {
-                          awb: item.awb,
-                          lastDigit: item.last_digit || '',
-                          hasAwb: !!item.awb,
-                          hasLastDigit: !!item.last_digit,
-                        };
+                  {/* Tombol lacak pesanan dengan status yang lebih menarik */}
+                  <div className="tracking-action-section">
+                    {item.awb && item.awb !== null ? (
+                      <div
+                        className="track-item-btn active"
+                        onClick={() => {
+                          const trackingInfo = {
+                            awb: item.awb,
+                            lastDigit: item.last_digit || '',
+                            hasAwb: !!item.awb,
+                            hasLastDigit: !!item.last_digit,
+                          };
 
-                        if (trackingInfo.hasAwb && trackingInfo.hasLastDigit) {
-                          setShowTracking(!showTracking);
-                          // Scroll ke tracking section jika ada
-                          const trackingSection = document.querySelector('.order-tracking-section');
-                          if (trackingSection) {
-                            trackingSection.scrollIntoView({ behavior: 'smooth' });
+                          if (trackingInfo.hasAwb && trackingInfo.hasLastDigit) {
+                            setShowTracking(!showTracking);
+                            const trackingSection = document.querySelector('.order-tracking-section');
+                            if (trackingSection) {
+                              trackingSection.scrollIntoView({ behavior: 'smooth' });
+                            }
                           }
-                        }
-                      }}
-                    >
-                      <MdLocalShipping />
-                      Lacak Pesanan
-                    </button>
-                  )}
+                        }}
+                      >
+                        <div className="track-btn-content">
+                          <MdLocalShipping className="track-icon" color='#161129' />
+                          <div className="track-text">
+                            <span className="track-title">Lacak Pengiriman</span>
+                            <span className="track-subtitle">Resi: {item.awb}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="processing-status">
+                        <div className="processing-content">
+                          <div className="processing-icon-wrapper">
+                            <MdPending className="processing-icon" />
+                          </div>
+                          <div className="processing-text">
+                            <span className="processing-title">Sedang Diproses</span>
+                            <span className="processing-subtitle">Nomor resi akan tersedia setelah dikirim</span>
+                          </div>
+                        </div>
+                        <div className="processing-dots">
+                          <span className="dot"></span>
+                          <span className="dot"></span>
+                          <span className="dot"></span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
