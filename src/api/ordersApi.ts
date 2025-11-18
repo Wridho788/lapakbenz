@@ -8,7 +8,8 @@ export interface OrderListRequest {
   offset?: string;
   confirm?: string;
   paid?: string;
-  date?: string;
+  start?: string;
+  end?: string;
 }
 
 export interface OrderItem {
@@ -202,7 +203,8 @@ export interface OrderTrackingRequest {
   offset?: string;
   confirm?: string;
   paid?: string;
-  date?: string;
+  start?: string;
+  end?: string;
 }
 
 // Order API functions
@@ -214,7 +216,8 @@ export const orderApi = {
       offset: "0",
       confirm: "",
       paid: "",
-      date: ""
+      start: "",
+      end: ""
     },
     authToken: string
   ): Promise<OrderListResponse> {
@@ -368,7 +371,8 @@ export const orderApi = {
         offset: payload.offset || "0",
         confirm: payload.confirm || "",
         paid: payload.paid || "",
-        date: payload.date || ""
+        start: payload.start || "",
+        end: payload.end || ""
       };
 
       const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_TRACKING}/${awb}/${lastDigit}`, requestPayload, {
@@ -408,7 +412,8 @@ export function useOrders(
     offset: "0",
     confirm: "",
     paid: "",
-    date: ""
+    start: "",
+    end: ""
   },
   authToken?: string | null
 ): UseQueryResult<OrderListResponse, Error> {

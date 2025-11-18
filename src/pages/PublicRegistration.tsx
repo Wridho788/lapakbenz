@@ -242,7 +242,7 @@ const PublicRegistration: React.FC = () => {
             {errors.type && <span className="error-text">{errors.type}</span>}
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label htmlFor="tenantCount">Jumlah Tenant *</label>
             <select
               id="tenantCount"
@@ -251,15 +251,15 @@ const PublicRegistration: React.FC = () => {
               onChange={handleInputChange}
               className={errors.tenantCount ? 'error' : ''}
               disabled={isSubmitting}
-            >
-              {tenantCountOptions.map((option) => (
+            > */}
+              {/* {tenantCountOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
-              ))}
-            </select>
-            {errors.tenantCount && <span className="error-text">{errors.tenantCount}</span>}
-          </div>
+              ))} */}
+            {/* </select> */}
+            {/* {errors.tenantCount && <span className="error-text">{errors.tenantCount}</span>} */}
+          {/* </div> */}
 
           <div className="form-group">
             <label htmlFor="policeno">Nomor Polisi *</label>

@@ -105,7 +105,8 @@ interface UseOrdersPayload {
   offset?: string;
   confirm?: string;
   paid?: string;
-  date?: string;
+  start?: string;
+  end?: string;
 }
 
 export function useOrders(
@@ -114,7 +115,8 @@ export function useOrders(
     offset: '0',
     confirm: '',
     paid: '',
-    date: '',
+    start: '',
+    end: '',
   },
 ): UseQueryResult<OrderListResponse, Error> {
   const { token, isAuthenticated } = useAuthStore();
