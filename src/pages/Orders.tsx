@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdRefresh, MdShoppingCart, MdCancel, MdCheckCircle, MdPending, MdFilterList, MdClose, MdPayment, MdVerified, MdCalendarToday, MdClear, MdTune } from 'react-icons/md';
+import { MdShoppingCart, MdCancel, MdCheckCircle, MdPending, MdFilterList, MdClose, MdPayment, MdVerified, MdCalendarToday, MdClear, MdTune } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useAuthStore } from '../stores/authStore';
 import { useOrders } from '../api/hooks/index';
@@ -9,7 +9,7 @@ import './orders.css';
 
 const Orders: React.FC = () => {
   const navigate = useNavigate();
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  // const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Filter states
   const [showFilters, setShowFilters] = useState(false);
@@ -66,11 +66,11 @@ const Orders: React.FC = () => {
     navigate('/');
   };
 
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await refetch();
-    setTimeout(() => setIsRefreshing(false), 500);
-  };
+  // const handleRefresh = async () => {
+  //   setIsRefreshing(true);
+  //   await refetch();
+  //   setTimeout(() => setIsRefreshing(false), 500);
+  // };
 
   const handleOrderClick = (orderId: string) => {
     navigate(`/orders/${orderId}`);
@@ -174,10 +174,10 @@ const Orders: React.FC = () => {
           <div className="orders-error">
             <h3>Failed to Load Orders</h3>
             <p>Unable to fetch your orders. Please try again.</p>
-            <button onClick={handleRefresh} className="retry-btn">
+            {/* <button onClick={handleRefresh} className="retry-btn">
               <MdRefresh />
               Try Again
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
