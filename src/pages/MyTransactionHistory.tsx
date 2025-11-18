@@ -26,13 +26,14 @@ const MyTransactionHistory: React.FC = () => {
     isLoading,
     error,
     refetch,
-    isFetching
+    isFetching,
   } = useOrders({
     limit: "120",
     offset: "0",
     confirm: "",
     paid: "",
-    date: ""
+    start: "",
+    end: ""
   });
 
   // Set up auto-refresh every 3 seconds

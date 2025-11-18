@@ -98,16 +98,7 @@ const Orders: React.FC = () => {
     return today.toISOString().split('T')[0];
   };
 
-  // Get filter display text
-  const getActiveFiltersText = () => {
-    const filters = [];
-    if (filterPaid === '0') filters.push('Belum Bayar');
-    if (filterPaid === '1') filters.push('Sudah Bayar');
-    if (filterConfirm === '1') filters.push('Dikonfirmasi');
-    if (filterStartDate) filters.push(`Dari: ${filterStartDate}`);
-    if (filterEndDate) filters.push(`Sampai: ${filterEndDate}`);
-    return filters.length > 0 ? filters.join(', ') : 'Semua Data';
-  };
+
 
   const getStatusIcon = (paidStatus: string, canceled: string | null) => {
     if (canceled) {

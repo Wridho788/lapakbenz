@@ -33,12 +33,7 @@ const PublicRegistration: React.FC = () => {
     { value: 'car', label: '🚗 Mobil' }
   ];
 
-  // Tenant count options (max 2)
-  const tenantCountOptions = [
-    { value: '', label: 'Pilih Jumlah Tenant' },
-    { value: '1', label: '1 Tenant' },
-    { value: '2', label: '2 Tenant' }
-  ];
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
