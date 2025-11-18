@@ -200,22 +200,23 @@ const Orders: React.FC = () => {
           </div>
 
           <div className="orders-actions">
-            {/* <button
+            <button
               onClick={handleToggleFilters}
               className={`orders-action-btn ${showFilters ? 'active' : ''}`}
               title="Filter pesanan"
             >
+              Filter
               <MdFilterList />
-            </button> */}
-            <button
+            </button>
+            {/* <button
               onClick={handleRefresh}
               className={`orders-action-btn ${isRefreshing || isFetching ? 'loading' : ''}`}
               title="Segarkan pesanan"
               disabled={isRefreshing}
             >
-              Filter
+              
               <MdRefresh />
-            </button>
+            </button> */}
           </div>
         </div>
 
