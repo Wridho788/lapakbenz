@@ -24,13 +24,45 @@ interface EventItem {
 interface EventListCardProps {
   event: EventItem;
   onClick: (eventId: string) => void;
+  isGrid?: boolean;
 }
 
-const EventListCard: React.FC<EventListCardProps> = ({ event, onClick }) => {
+const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = false }) => {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
     target.src = '/bea2x.jpg';
   };
+
+  if (isGrid) {
+    return (
+      <div
+        className="custom-event-card grid-card"
+        onClick={() => onClick(event.id)}
+        style={{ cursor: 'pointer' }}
+      >
+        <div className="event-grid-layout">
+          <div className="event-img-grid">
+            <img
+              src={event.image || '/bea2x.jpg'}
+              alt={event.name || 'Event'}
+              className="grid-event-image"
+              onError={handleImageError}
+            />
+          </div>
+          <div className="event-info-grid">
+            <div className="event-title-grid">
+              <h4 className="grid-event-title">{event.code}</h4>
+              <p className="grid-event-name">{event.name}</p>
+            </div>
+            <div className="event-meta-grid">
+              <span className="grid-event-chapter">{event.chapter}</span>
+              <span className="grid-event-date">{event.dates}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

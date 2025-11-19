@@ -103,6 +103,62 @@
   background: rgba(22, 17, 41, 0.05) !important;
 }
 
+/* Layout Toggle Styles */
+.layout-toggle {
+  background: #fff !important;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: flex-end;
+  box-shadow: 0 1px 4px rgba(22, 17, 41, 0.05);
+}
+
+.layout-toggle-buttons {
+  display: flex;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.layout-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: transparent !important;
+  color: #666 !important;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.layout-btn:hover {
+  background: rgba(22, 17, 41, 0.05) !important;
+  color: #161129 !important;
+}
+
+.layout-btn.active {
+  background: #fff !important;
+  color: #161129 !important;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(22, 17, 41, 0.1);
+}
+
+.layout-btn svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+}
+
+.layout-btn.active svg {
+  opacity: 1;
+}
+
 .event-content {
   padding: 1rem;
   flex: 1;
@@ -114,6 +170,135 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 0;
+}
+
+/* Grid Card Styles */
+.custom-event-card.grid-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(22, 17, 41, 0.08);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+  min-height: 160px;
+}
+
+.custom-event-card.grid-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(22, 17, 41, 0.12);
+  border-color: #e0e0e0;
+}
+
+.event-grid-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.event-img-grid {
+  width: 100%;
+  height: 80px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.grid-event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.event-info-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.event-title-grid {
+  margin-bottom: 6px;
+}
+
+.grid-event-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #161129;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.grid-event-name {
+  font-size: 0.7rem;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 500;
+}
+
+.event-meta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.grid-event-chapter {
+  font-size: 0.65rem;
+  color: #666;
+  font-weight: 500;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.grid-event-date {
+  font-size: 0.65rem;
+  color: #888;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.grid-news-content {
+  font-size: 0.65rem;
+  color: #888;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+}
+
+/* Loading and empty states for grid */
+.event-grid .loading-state,
+.event-grid .loading-more {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.event-grid .empty-state {
+  grid-column: 1 / -1;
+  padding: 3rem 1rem;
 }
 
 .event-card {
@@ -354,6 +539,53 @@
   .event-content {
     padding: 0.75rem;
     background-color: white !important;
+  }
+  
+  .event-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 0;
+  }
+  
+  .custom-event-card.grid-card {
+    padding: 8px;
+    min-height: 140px;
+  }
+  
+  .event-img-grid {
+    height: 60px;
+    margin-bottom: 6px;
+  }
+  
+  .grid-event-title {
+    font-size: 0.7rem;
+  }
+  
+  .grid-event-name {
+    font-size: 0.65rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .grid-event-chapter,
+  .grid-event-date,
+  .grid-news-content {
+    font-size: 0.6rem;
+  }
+  
+  .layout-toggle {
+    padding: 8px 12px;
+  }
+  
+  .layout-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+  
+  .layout-btn svg {
+    width: 12px;
+    height: 12px;
   }
   
   .event-card {

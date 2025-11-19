@@ -46,6 +46,7 @@ const Event: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedChapters, setSelectedChapters] = useState<string[]>([]);
+  const [layoutMode, setLayoutMode] = useState<'grid' | 'list'>('grid');
   
   // State untuk akumulasi data (infinite scroll)
   const [allEvents, setAllEvents] = useState<EventItem[]>([]);
@@ -365,8 +366,34 @@ const Event: React.FC = () => {
         ))}
       </div>
 
+      {/* Layout Toggle */}
+      <div className="layout-toggle">
+        <div className="layout-toggle-buttons">
+          <button
+            className={`layout-btn ${layoutMode === 'grid' ? 'active' : ''}`}
+            onClick={() => setLayoutMode('grid')}
+            disabled={refreshing}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 3h7v7H3V3zm0 11h7v7H3v-7zm11-11h7v7h-7V3zm0 11h7v7h-7v-7z"/>
+            </svg>
+            Grid
+          </button>
+          <button
+            className={`layout-btn ${layoutMode === 'list' ? 'active' : ''}`}
+            onClick={() => setLayoutMode('list')}
+            disabled={refreshing}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+            </svg>
+            List
+          </button>
+        </div>
+      </div>
+
       <div className="event-content">
-        <div className="event-list">
+        <div className={layoutMode === 'grid' ? 'event-grid' : 'event-list'}>
           {isLoading() ? (
             <div className="loading-state">
               <p>{refreshing ? 'Menyegarkan...' : 'Memuat...'}</p>
@@ -379,12 +406,14 @@ const Event: React.FC = () => {
                     key={item.id}
                     news={item}
                     onClick={() => item.text && window.open(item.text, '_blank')}
+                    isGrid={layoutMode === 'grid'}
                   />
                 ) : (
                   <EventListCard
                     key={item.id}
                     event={item}
                     onClick={() => handleEventClick(item)}
+                    isGrid={layoutMode === 'grid'}
                   />
                 ),
               )}
