@@ -1,6 +1,6 @@
 /* Dashboard Page Styles */
 .dashboard-page {
-  min-height: 115vh;
+  min-height: 250vh;
   /* background: #161129; */
   background: #ededed;
   padding-bottom: 80px; /* Space for bottom nav */
