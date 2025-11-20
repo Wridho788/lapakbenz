@@ -4,6 +4,7 @@ import {
   ENDPOINT_CHAPTER,
   ENDPOINT_CHAPTER_BY_ID,
   ENDPOINT_CHAPTER_GET_BY_CUSTOMER,
+  ENDPOINT_GET_FRONT,
 } from './constants';
 
 // Types for Chapter API
@@ -131,6 +132,32 @@ export const chapterApi = {
       console.error('❌ Error fetching customer chapters:', error);
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || 'Failed to fetch customer chapters');
+      }
+      throw error;
+    }
+  },
+
+  // Get front chapters
+  getFrontChapters: async (payload: ChapterListRequest): Promise<ChapterListResponse> => {
+    try {
+      console.log('🏠 Fetching front chapters with payload:', payload);
+      
+      const response = await chapterApiClient.post(
+        ENDPOINT_GET_FRONT,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('✅ Front chapters fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error fetching front chapters:', error);
+      if (axios.isAxiosError(error)) {
+        throw new Error(error.response?.data?.message || 'Failed to fetch front chapters');
       }
       throw error;
     }

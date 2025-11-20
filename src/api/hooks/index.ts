@@ -29,6 +29,7 @@ export {
   useChapters,
   useChapterById,
   useChaptersByCustomer,
+  useFrontChapters,
   useMerchantRegistration,
   usePublicRegistration,
   useEventRegister,

@@ -10,10 +10,12 @@ import {
   usePostArticle,
   useProfile,
   useCart,
+  useFrontChapters,
 } from '../api/hooks/index';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { Partnership } from '../components/Partnership';
 import { CompletedEvent } from '../components/CompletedEvent';
+import { FrontChapter } from '../components/FrontChapter';
 import { UpcomingNews } from '../components/UpcomingNews';
 import { AppbarHomepage } from '../components/AppbarHomepage';
 import { FAB } from '../components/FAB';
@@ -130,6 +132,14 @@ const Dashboard: React.FC = () => {
     refetch: ledgerRefetch,
   } = useLedger();
 
+  // Panggil useFrontChapters hook
+  const {
+    data: frontChaptersData,
+    isLoading: frontChaptersLoading,
+    error: frontChaptersError,
+    refetch: frontChaptersRefetch,
+  } = useFrontChapters({ limit: 100, offset: 0 });
+
   // Panggil usePostArticle untuk check upcoming news
   const upcomingNewsMutation = usePostArticle();
 
@@ -209,6 +219,9 @@ const Dashboard: React.FC = () => {
       // Refresh cart data
       if (cartRefetch) refreshPromises.push(cartRefetch());
 
+      // Refresh front chapters data
+      if (frontChaptersRefetch) refreshPromises.push(frontChaptersRefetch());
+
       // Wait for all refreshes to complete
       await Promise.allSettled(refreshPromises);
 
@@ -228,6 +241,7 @@ const Dashboard: React.FC = () => {
     profileRefetch,
     splashRefetch,
     upcomingNewsMutation,
+    frontChaptersRefetch,
   ]);
 
   // Cleanup on unmount
@@ -366,6 +380,20 @@ const Dashboard: React.FC = () => {
     }
   }, [apiCartData]);
 
+  // Log front chapters API data
+  useEffect(() => {
+    if (frontChaptersData) {
+      console.log('🏠 Front Chapters API Response:', frontChaptersData);
+      console.log('🏠 Front Chapters Result:', frontChaptersData?.content?.result);
+      console.log('🏠 Front Chapters Total:', frontChaptersData?.content?.total);
+    }
+    if (frontChaptersError) {
+      console.error('❌ Front Chapters API Error:', frontChaptersError);
+    }
+    if (frontChaptersLoading) {
+      console.log('⏳ Front Chapters API Loading...');
+    }
+  }, [frontChaptersData, frontChaptersError, frontChaptersLoading]);
   const getApiCartCount = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
   };
@@ -534,6 +562,13 @@ const Dashboard: React.FC = () => {
           <SectionWrapper title="Upcoming Events">
             <CompletedEvent />
           </SectionWrapper>
+
+          {/* Front Chapter sections - Loop through chapters */}
+          {frontChaptersData?.content?.result?.map((chapter: any) => (
+            <SectionWrapper key={chapter.id} title={chapter.name}>
+              <FrontChapter chapterId={chapter.id} />
+            </SectionWrapper>
+          ))}
 
           {/* Conditionally render UpcomingNews section */}
           {shouldShowUpcomingNews && (

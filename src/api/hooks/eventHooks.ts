@@ -130,6 +130,27 @@ export function useChaptersByCustomer(customerId: string): UseQueryResult<any, E
   });
 }
 
+export function useFrontChapters(payload: UseChaptersPayload = {}): UseQueryResult<any, Error> {
+  const defaultPayload = {
+    limit: 100,
+    offset: 0,
+    ...payload,
+  };
+
+  return useQuery({
+    queryKey: ['frontChapters', JSON.stringify(defaultPayload)],
+    queryFn: async () => {
+      try {
+        return await chapterApi.getFrontChapters(defaultPayload);
+      } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
 // Event Registration Hooks
 interface UseMerchantRegistrationPayload {
   eventid: string;

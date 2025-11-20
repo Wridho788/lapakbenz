@@ -54,6 +54,7 @@ export const ENDPOINT_EVENT_REGISTER_PUBLIC = 'event/register_public';
 export const ENDPOINT_CHAPTER = 'chapter';
 export const ENDPOINT_CHAPTER_BY_ID = 'chapter/get_by_id/';
 export const ENDPOINT_CHAPTER_GET_BY_CUSTOMER = 'chapter/get_by_customer/';
+export const ENDPOINT_GET_FRONT = 'chapter/get_front'
 // redeem
 export const ENDPOINT_REDEEM = 'redeem';
 export const ENDPOINT_REDEEM_ADD = 'redeem/add';

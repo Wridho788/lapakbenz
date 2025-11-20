@@ -155,13 +155,13 @@ const Event: React.FC = () => {
             const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
             const offset = allEvents.length;
             const payload = activeTab === 0
-              ? { status: '0', limit: 10, offset, chapter: chapterParam }
-              : { status: '1', limit: 10, offset, chapter: chapterParam };
+              ? { status: '0', limit: 9, offset, chapter: chapterParam }
+              : { status: '1', limit: 9, offset, chapter: chapterParam };
             eventMutation.mutate(payload);
           } else if (activeTab === 2) {
             // Infinite scroll article
             const offset = allArticles.length;
-            articleMutation.mutate({ limit: 10, offset });
+            articleMutation.mutate({ limit: 9, offset });
           }
         }
       },
