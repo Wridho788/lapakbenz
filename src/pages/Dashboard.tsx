@@ -557,48 +557,18 @@ const Dashboard: React.FC = () => {
           <SplashScreen imageUrl={splashImage} onClose={handleCloseSplash} />
         )}
 
+        {/* Black background behind dashboard content */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '20vh',
+          background: 'black',
+          zIndex: -1
+        }} />
+        
         <div className="dashboard-content">
-          {/* Development Tools - Only shown when enabled */}
-          {/* {showDevTools && (
-            <div
-              style={{
-                padding: '1rem',
-                backgroundColor: '#f0f0f0',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                margin: '1rem 0',
-              }}
-            >
-              <h3>🧪 Notification API Debug</h3>
-              <p>Auth Token: {authToken ? authToken.substring(0, 20) + '...' : 'Not set'}</p>
-              <p>Unread Count: {unreadCount}</p>
-              <p>Check browser console for API request/response logs</p>
-              <div style={{ marginTop: '10px' }}>
-                <strong>Expected API Response Structure:</strong>
-                <pre
-                  style={{
-                    fontSize: '11px',
-                    backgroundColor: '#fff',
-                    padding: '5px',
-                    borderRadius: '3px',
-                  }}
-                >
-                  {`{
-  "content": [
-    {
-      "id": "832",
-      "subject": "Title here",
-      "content": "Message here", 
-      "reading": "0", // 0=unread, 1=read
-      "type": "wa",
-      "created": "30 October 2024 00:14:32"
-    }
-  ]
-}`}
-                </pre>
-              </div>
-            </div>
-          )} */}
           <UserCard
             points={userPoints}
             onProfileClick={handleProfileClick}
