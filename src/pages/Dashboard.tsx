@@ -11,12 +11,15 @@ import {
   useProfile,
   useCart,
   useFrontChapters,
+  useLatestProducts,
+  useBestSellerProducts,
 } from '../api/hooks/index';
 import { SectionWrapper } from '../components/SectionWrapper';
 import { Partnership } from '../components/Partnership';
 import { CompletedEvent } from '../components/CompletedEvent';
 import { FrontChapter } from '../components/FrontChapter';
 import { UpcomingNews } from '../components/UpcomingNews';
+import { ProductTabs } from '../components/ProductTabs';
 import { AppbarHomepage } from '../components/AppbarHomepage';
 import { FAB } from '../components/FAB';
 import BottomNav from '../components/BottomNav';
@@ -42,7 +45,7 @@ const Dashboard: React.FC = () => {
   const { data: apiCartData, refetch: cartRefetch } = useCart();
 
   // State untuk development mode dan notification testing
-  const [showDevTools, setShowDevTools] = useState(false);
+  // const [showDevTools, setShowDevTools] = useState(false);
 
   // Pull to refresh state
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -54,24 +57,24 @@ const Dashboard: React.FC = () => {
   const MAX_PULL_DISTANCE = 120;
 
   // Development helper function untuk testing
-  const setTestToken = () => {
-    const testToken = 'test-valid-token-12345';
-    // Use auth store instead of localStorage
-    useAuthStore.getState().login(testToken, { username: 'test-user' });
-    console.log('🧪 Test token set:', testToken);
-  };
+  // const setTestToken = () => {
+  //   const testToken = 'test-valid-token-12345';
+  //   // Use auth store instead of localStorage
+  //   useAuthStore.getState().login(testToken, { username: 'test-user' });
+  //   console.log('🧪 Test token set:', testToken);
+  // };
 
-  const clearToken = () => {
-    logout();
-    console.log('🗑️ Token cleared');
-  };
+  // const clearToken = () => {
+  //   logout();
+  //   console.log('🗑️ Token cleared');
+  // };
 
   // Add to window for debugging (development only)
-  if (typeof window !== 'undefined') {
-    (window as any).setTestToken = setTestToken;
-    (window as any).clearToken = clearToken;
-    (window as any).toggleDevTools = () => setShowDevTools((prev) => !prev);
-  }
+  // if (typeof window !== 'undefined') {
+  //   (window as any).setTestToken = setTestToken;
+  //   (window as any).clearToken = clearToken;
+  //   (window as any).toggleDevTools = () => setShowDevTools((prev) => !prev);
+  // }
 
   // Helper function untuk check authentication using Zustand store
   const requireAuth = (callback: () => void, actionName: string = 'access this feature') => {
@@ -139,6 +142,22 @@ const Dashboard: React.FC = () => {
     error: frontChaptersError,
     refetch: frontChaptersRefetch,
   } = useFrontChapters({ limit: 100, offset: 0 });
+
+  // Panggil useLatestProducts hook
+  const {
+    data: latestProductsData,
+    isLoading: latestProductsLoading,
+    error: latestProductsError,
+    refetch: latestProductsRefetch,
+  } = useLatestProducts();
+
+  // Panggil useBestSellerProducts hook
+  const {
+    data: bestSellerProductsData,
+    isLoading: bestSellerProductsLoading,
+    error: bestSellerProductsError,
+    refetch: bestSellerProductsRefetch,
+  } = useBestSellerProducts();
 
   // Panggil usePostArticle untuk check upcoming news
   const upcomingNewsMutation = usePostArticle();
@@ -222,6 +241,10 @@ const Dashboard: React.FC = () => {
       // Refresh front chapters data
       if (frontChaptersRefetch) refreshPromises.push(frontChaptersRefetch());
 
+      // Refresh product data
+      if (latestProductsRefetch) refreshPromises.push(latestProductsRefetch());
+      if (bestSellerProductsRefetch) refreshPromises.push(bestSellerProductsRefetch());
+
       // Wait for all refreshes to complete
       await Promise.allSettled(refreshPromises);
 
@@ -242,6 +265,8 @@ const Dashboard: React.FC = () => {
     splashRefetch,
     upcomingNewsMutation,
     frontChaptersRefetch,
+    latestProductsRefetch,
+    bestSellerProductsRefetch,
   ]);
 
   // Cleanup on unmount
@@ -394,6 +419,36 @@ const Dashboard: React.FC = () => {
       console.log('⏳ Front Chapters API Loading...');
     }
   }, [frontChaptersData, frontChaptersError, frontChaptersLoading]);
+
+  // Log latest products API data
+  useEffect(() => {
+    if (latestProductsData) {
+      console.log('🆕 Latest Products API Response:', latestProductsData);
+      console.log('🆕 Latest Products Result:', latestProductsData?.content?.result);
+      console.log('🆕 Latest Products Total:', latestProductsData?.content?.total);
+    }
+    if (latestProductsError) {
+      console.error('❌ Latest Products API Error:', latestProductsError);
+    }
+    if (latestProductsLoading) {
+      console.log('⏳ Latest Products API Loading...');
+    }
+  }, [latestProductsData, latestProductsError, latestProductsLoading]);
+
+  // Log best seller products API data
+  useEffect(() => {
+    if (bestSellerProductsData) {
+      console.log('🔥 Best Seller Products API Response:', bestSellerProductsData);
+      console.log('🔥 Best Seller Products Result:', bestSellerProductsData?.content?.result);
+      console.log('🔥 Best Seller Products Total:', bestSellerProductsData?.content?.total);
+    }
+    if (bestSellerProductsError) {
+      console.error('❌ Best Seller Products API Error:', bestSellerProductsError);
+    }
+    if (bestSellerProductsLoading) {
+      console.log('⏳ Best Seller Products API Loading...');
+    }
+  }, [bestSellerProductsData, bestSellerProductsError, bestSellerProductsLoading]);
   const getApiCartCount = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
   };
@@ -504,7 +559,7 @@ const Dashboard: React.FC = () => {
 
         <div className="dashboard-content">
           {/* Development Tools - Only shown when enabled */}
-          {showDevTools && (
+          {/* {showDevTools && (
             <div
               style={{
                 padding: '1rem',
@@ -543,7 +598,7 @@ const Dashboard: React.FC = () => {
                 </pre>
               </div>
             </div>
-          )}
+          )} */}
           <UserCard
             points={userPoints}
             onProfileClick={handleProfileClick}
@@ -561,6 +616,11 @@ const Dashboard: React.FC = () => {
           {/* Conditionally render CompletedEvent section */}
           <SectionWrapper title="Upcoming Events">
             <CompletedEvent />
+          </SectionWrapper>
+
+          {/* Product Tabs - Latest & Best Seller */}
+          <SectionWrapper title="Our Products">
+            <ProductTabs />
           </SectionWrapper>
 
           {/* Front Chapter sections - Loop through chapters */}

@@ -84,3 +84,33 @@ export function useProductCities(): UseQueryResult<any, Error> {
     enabled: true, // Always fetch since no token is required
   });
 }
+
+export function useLatestProducts(): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['latestProducts'],
+    queryFn: async () => {
+      try {
+        return await productAPI.getLatestProducts();
+      } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}
+
+export function useBestSellerProducts(): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['bestSellerProducts'],
+    queryFn: async () => {
+      try {
+        return await productAPI.getBestSellerProducts();
+      } catch (error) {
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
+  });
+}

@@ -44,6 +44,8 @@ export {
   useProductSearch,
   useProductDetail,
   useProductCities,
+  useLatestProducts,
+  useBestSellerProducts,
 } from './productHooks';
 
 // Cart & Order Management Hooks

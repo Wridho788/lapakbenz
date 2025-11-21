@@ -315,8 +315,8 @@
 
 /* Staggered Animation for Products */
 .product-card {
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 1;
+  transform: translateY(5px);
 }
 
 .product-card[style*="animation"] {

@@ -1,6 +1,6 @@
 /* Dashboard Page Styles */
 .dashboard-page {
-  min-height: 250vh;
+  min-height: 150vh;
   /* background: #161129; */
   background: #ededed;
   padding-bottom: 80px; /* Space for bottom nav */
@@ -18,8 +18,12 @@
 
 /* Pull to refresh animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive */

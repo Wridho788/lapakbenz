@@ -213,7 +213,7 @@ const EventDetail: React.FC = () => {
         
         <div className="event-detail-body">
           <h3 className="event-detail-title">
-            {eventContent.code} - {eventContent.name}
+            {eventContent.name}
           </h3>
           
           <div className="event-detail-info">

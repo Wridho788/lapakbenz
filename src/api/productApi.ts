@@ -1,5 +1,9 @@
 import axios from 'axios';
-import { BASE_URL } from './constants';
+import { 
+  BASE_URL,
+  ENDPOINT_PRODUCT_LATEST,
+  ENDPOINT_PRODUCT_BEST_SELLER
+} from './constants';
 
 // API Endpoints
 export const ENDPOINT_PRODUCT = 'product';
@@ -127,6 +131,36 @@ export const productAPI = {
       return response.data;
     } catch (error) {
       console.error('Error fetching product cities:', error);
+      throw error;
+    }
+  },
+
+  // GET Latest Products
+  getLatestProducts: async () => {
+    try {
+      const response = await apiClient.get(ENDPOINT_PRODUCT_LATEST, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching latest products:', error);
+      throw error;
+    }
+  },
+
+  // GET Best Seller Products
+  getBestSellerProducts: async () => {
+    try {
+      const response = await apiClient.get(ENDPOINT_PRODUCT_BEST_SELLER, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching best seller products:', error);
       throw error;
     }
   }
