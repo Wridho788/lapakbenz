@@ -87,7 +87,7 @@ const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = 
         <div className="event-info-col">
           <div className="event-title-row">
             <h3 className="event-title">
-              {event.code} - {event.name}
+              {event.name}
             </h3>
             <span className="event-chapter">{event.chapter}</span>
           </div>
