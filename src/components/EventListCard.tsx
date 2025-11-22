@@ -51,8 +51,7 @@ const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = 
           </div>
           <div className="event-info-grid">
             <div className="event-title-grid">
-              <h4 className="grid-event-title">{event.code}</h4>
-              <p className="grid-event-name">{event.name}</p>
+              <h4 className="grid-event-title">{event.name}</h4>
             </div>
             <div className="event-meta-grid">
               <span className="grid-event-chapter">{event.chapter}</span>
