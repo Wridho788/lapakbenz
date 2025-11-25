@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdSearch, MdFilterList, MdClear, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
+import { MdSearch, MdFilterList, MdClear, MdKeyboardArrowDown, MdKeyboardArrowUp, MdStar } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
+import SEO from '../components/SEO';
+import { generateBreadcrumbs } from '../utils/seoUtils';
 import { useProducts, useProductCategories, useProductSearch, useProductCities, useCart } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
 import './Product.css';
@@ -22,6 +24,28 @@ const Product: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState(''); // Changed to use category ID
+  
+  // Render stars function similar to ProductDetail
+  const renderStars = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(<MdStar key={i} className="star filled" />);
+    }
+
+    if (hasHalfStar) {
+      stars.push(<MdStar key="half" className="star half" />);
+    }
+
+    const remainingStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < remainingStars; i++) {
+      stars.push(<MdStar key={`empty-${i}`} className="star empty" />);
+    }
+
+    return stars;
+  };
   
   // New filter states
   const [priceOrder, setPriceOrder] = useState<'asc' | 'desc' | ''>('');
@@ -461,6 +485,13 @@ const Product: React.FC = () => {
 
   return (
     <div className="product-page">
+      <SEO 
+        title="Katalog Produk lapakBenz - Temukan Produk Komunitas Terbaik"
+        description={`Jelajahi katalog produk lengkap lapakBenz. Temukan ${filteredProducts.length > 0 ? filteredProducts.length + ' produk' : 'berbagai produk'} berkualitas dari komunitas UMKM dan otomotif Indonesia. ${searchQuery ? `Hasil pencarian: ${searchQuery}` : getCurrentCategoryName() !== 'Semua' ? `Kategori: ${getCurrentCategoryName()}` : 'Semua kategori tersedia'}.`}
+        keywords={`produk lapakbenz, ${searchQuery || 'katalog produk'}, marketplace indonesia, produk umkm, produk otomotif, ${getCurrentCategoryName() !== 'Semua' ? getCurrentCategoryName().toLowerCase() : 'semua kategori'}, belanja online, produk komunitas`}
+        schemaType="WebPage"
+        breadcrumbs={generateBreadcrumbs('product')}
+      />
       <AppbarDefault
         title="Katalog Produk"
         onBack={handleBackClick}
@@ -746,7 +777,10 @@ const Product: React.FC = () => {
                   <div className="product-info">
                     <h4 className="product-title">{(product.title || product.name).toUpperCase()}</h4>
                     <div className="product-rating">
-                      <span className="rating-stars">⭐ {product.rating || '4.5'}</span>
+                      <div className="rating-stars">
+                        {renderStars(parseFloat(product.rating) || 4.5)}
+                        <span className="rating-number">({product.rating || '4.5'})</span>
+                      </div>
                       <span className="product-category">{product.category}</span>
                     </div>
                     <div className="product-price">

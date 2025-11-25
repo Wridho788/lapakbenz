@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { HelmetProvider } from 'react-helmet-async';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { CartProvider } from './contexts/CartContext';
 import MainLayout from './layouts/MainLayout';
@@ -33,10 +34,11 @@ import EventDetail from './pages/EventDetail';
 
 function App() {
   return (
-    <NotificationProvider>
-      <CartProvider>
-        <Router>
-          <MainLayout>
+    <HelmetProvider>
+      <NotificationProvider>
+        <CartProvider>
+          <Router>
+            <MainLayout>
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Dashboard />} />
@@ -81,6 +83,7 @@ function App() {
         theme="light"
       />
     </NotificationProvider>
+    </HelmetProvider>
   );
 }
 export default App;

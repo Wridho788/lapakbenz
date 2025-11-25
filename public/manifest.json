@@ -1,16 +1,38 @@
 {
-  "name": "lapakBenz",
+  "name": "lapakBenz - Platform Komunitas & Event Indonesia",
   "short_name": "lapakBenz",
-  "description": "Aplikasi komunitas Mercedes-Benz W202 Indonesia untuk event, berita, dan marketplace.",
-  "start_url": ".",
+  "description": "Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia. Temukan event menarik, marketplace terpercaya, dan peluang networking baru.",
+  "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#161129",
   "theme_color": "#161129",
+  "categories": ["social", "business", "lifestyle"],
+  "lang": "id",
+  "dir": "ltr",
+  "scope": "/",
   "icons": [
     {
       "src": "lapakbenz.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "lapakbenz.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "lapakbenz.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "label": "lapakBenz Homepage"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

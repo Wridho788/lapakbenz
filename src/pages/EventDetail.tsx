@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import EventRegistration from '../components/EventRegistration';
+import SEO from '../components/SEO';
+import { generateBreadcrumbs, formatDateForSchema, truncateText, stripHtml, formatPrice } from '../utils/seoUtils';
 import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
 import { useEventById, useEventRegister } from '../api/hooks/index';
@@ -196,6 +198,17 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="event-detail-page">
+      <SEO 
+        title={`${eventContent.name} - ${eventContent.chapter} | Event lapakBenz`}
+        description={truncateText(stripHtml(eventContent.desc), 155) + ` Event ${eventContent.chapter} pada ${eventContent.dates} - ${eventContent.time}. ${eventContent.fee > 0 ? `Biaya kontribusi: ${formatPrice(eventContent.fee)}` : 'Gratis'}. Daftar sekarang di lapakBenz!`}
+        keywords={`${eventContent.name.toLowerCase()}, event ${eventContent.chapter.toLowerCase()}, ${eventContent.type_desc.toLowerCase()}, event lapakbenz, event komunitas indonesia, ${eventContent.dates}, ${eventContent.chapter}`}
+        image={eventContent.image}
+        schemaType="Event"
+        publishedTime={formatDateForSchema(eventContent.dates)}
+        section="Event"
+        tags={[eventContent.chapter, eventContent.type_desc, 'Event', 'Komunitas']}
+        breadcrumbs={generateBreadcrumbs('event', eventContent.name)}
+      />
       <AppbarDefault
         title="Detail Event"
         onBack={handleBackClick}

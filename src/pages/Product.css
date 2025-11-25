@@ -398,8 +398,34 @@
 }
 
 .rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   font-size: 12px;
+}
+
+.rating-stars .star {
+  color: #e0e0e0;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.rating-stars .star.filled {
+  color: #ffc107;
+}
+
+.rating-stars .star.half {
+  color: #ffc107;
+}
+
+.rating-stars .star.empty {
+  color: #e0e0e0;
+}
+
+.rating-number {
+  font-size: 10px;
   color: #666 !important;
+  margin-left: 4px;
 }
 
 .product-category {

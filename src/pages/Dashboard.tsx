@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useAuthStore } from '../stores/authStore';
+import SEO from '../components/SEO';
+import StructuredData from '../components/StructuredData';
 import {
   useSplash,
   useSlider,
@@ -486,6 +488,22 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
+      <SEO 
+        title="lapakBenz - Platform Komunitas & Event Indonesia"
+        description="Bergabunglah dengan lapakBenz, platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia. Temukan event menarik, marketplace terpercaya, dan peluang networking baru."
+        keywords="lapakbenz, platform komunitas indonesia, event umkm, event otomotif, komunitas otomotif indonesia, marketplace komunitas, aplikasi komunitas, platform event indonesia, umkm indonesia, komunitas bisnis"
+        schemaType="WebPage"
+        breadcrumbs={[
+          { name: 'Home', url: '/' }
+        ]}
+      />
+      <StructuredData 
+        type="WebSite" 
+        data={{
+          name: 'lapakBenz',
+          url: 'https://lapakbenz.com'
+        }} 
+      />
       <AppbarHomepage
         avatar={userImage}
         name={decodeTokenError ? 'User' : capitalizeName(decodeTokenData?.content?.name || 'User')}

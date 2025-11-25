@@ -13,6 +13,8 @@ import {
 } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
+import SEO from '../components/SEO';
+import { generateBreadcrumbs, formatPrice, truncateText, stripHtml } from '../utils/seoUtils';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useProductDetail, useAddToCart, useCart } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
@@ -625,6 +627,19 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div className="product-detail-page">
+      <SEO 
+        title={`${productData.title} - ${formatPrice(productData.price)} | lapakBenz`}
+        description={truncateText(stripHtml(productData.description), 155)}
+        keywords={`${productData.title.toLowerCase()}, ${productData.category.toLowerCase()}, produk lapakbenz, beli ${productData.title.toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
+        image={productData.image}
+        schemaType="Product"
+        price={productData.price}
+        currency="IDR"
+        availability={productData.stock > 0 ? 'in stock' : 'out of stock'}
+        brand="lapakBenz"
+        category={productData.category}
+        breadcrumbs={generateBreadcrumbs('product', productData.title)}
+      />
       <AppbarDefault
         title="Product Detail"
         onBack={handleBackClick}

@@ -5,6 +5,8 @@ import { FAB } from '../components/FAB';
 import EventListCard from '../components/EventListCard';
 import NewsCard from '../components/NewsCard';
 import ChapterFilter from '../components/ChapterFilter';
+import SEO from '../components/SEO';
+import { generateBreadcrumbs } from '../utils/seoUtils';
 import { useCart } from '../contexts/CartContext';
 import { usePostEvent, usePostArticle } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
@@ -321,6 +323,13 @@ const Event: React.FC = () => {
         overscrollBehavior: 'contain',
       }}
     >
+      <SEO 
+        title={`Event lapakBenz - ${tabs[activeTab]} | Platform Event Komunitas Indonesia`}
+        description={`Temukan event menarik di lapakBenz. ${activeTab === 0 ? `${allEvents.filter(e => e.done === 0).length} event akan datang` : activeTab === 1 ? `${allEvents.filter(e => e.done === 1).length} event selesai` : `${allArticles.length} berita terbaru`} dari berbagai komunitas UMKM dan otomotif di Indonesia. Bergabunglah sekarang!`}
+        keywords={`event lapakbenz, ${tabs[activeTab].toLowerCase()}, event komunitas indonesia, event umkm, event otomotif, ${selectedChapters.length > 0 ? selectedChapters.join(', ') + ', ' : ''}komunitas indonesia, acara komunitas`}
+        schemaType="WebPage"
+        breadcrumbs={generateBreadcrumbs('event')}
+      />
       <AppbarDefault
         title="Events"
         onBack={handleBackClick}

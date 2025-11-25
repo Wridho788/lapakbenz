@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:seo": "npm run generate-static && npm run build",
+    "generate-static": "node scripts/generate-static.mjs",
+    "integrate-seo": "node scripts/integrate-seo.mjs",
+    "seo:setup": "npm run integrate-seo && npm run generate-static",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -15,6 +19,7 @@
     "multiselect-react-dropdown": "^2.0.25",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-helmet-async": "^2.0.5",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.8.1",
     "react-toastify": "^11.0.5",
@@ -33,9 +38,12 @@
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
+    "puppeteer": "^24.31.0",
     "tailwindcss": "^4.1.12",
+    "@types/node": "^22.10.5",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vite-plugin-prerender": "^1.0.8"
   }
 }

@@ -1,3 +1,37 @@
 User-agent: *
 Allow: /
-Sitemap: /sitemap.xml
+Allow: /product/
+Allow: /event/
+Allow: /login
+Allow: /register
+
+# Disallow sensitive pages
+Disallow: /profile/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders/
+Disallow: /notifications
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*?*
+
+# Allow specific bots
+User-agent: Googlebot
+Allow: /
+Allow: /product/
+Allow: /event/
+
+User-agent: Bingbot
+Allow: /
+Allow: /product/
+Allow: /event/
+
+# Crawl-delay for all bots (1 second)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://lapakbenz.com/sitemap.xml
+
+# Host
+Host: https://lapakbenz.com

@@ -19,7 +19,7 @@ const Invoice: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error] = useState<string | null>(null);
   const { isAuthenticated } = useAuthStore();
-  const intervalRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get invoice data from navigation state
   const invoiceData = location.state as InvoiceState;
