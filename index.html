@@ -122,153 +122,204 @@
         </header>
         
         <main>
-          <!-- User Dashboard Section -->
+          <!-- User Dashboard Section - matching UserCard component -->
           <section class="user-dashboard">
-            <h2>Dashboard Pengguna</h2>
-            <div class="user-cards">
-              <div class="user-card">
-                <div class="user-avatar">👤</div>
-                <div class="user-info">
-                  <h3>Ahmad Kusuma</h3>
-                  <p>Member Aktif • Jakarta</p>
-                  <div class="user-stats">
-                    <span>125 Poin</span>
-                    <span>15 Event</span>
-                  </div>
+            <div class="user-card">
+              <!-- Point Section -->
+              <div class="user-card-points">
+                <div class="point-text">
+                  <h3 class="point-label">My Point</h3>
+                  <p class="point-value">125</p>
+                </div>
+                <div class="point-image">
+                  <img src="/lapakbenz.png" alt="Merci Points" width="110" />
                 </div>
               </div>
-              <div class="user-card">
-                <div class="user-avatar">👤</div>
-                <div class="user-info">
-                  <h3>Sari Dewi</h3>
-                  <p>UMKM Partner • Bandung</p>
-                  <div class="user-stats">
-                    <span>89 Poin</span>
-                    <span>8 Event</span>
-                  </div>
+
+              <!-- Divider -->
+              <div class="user-card-divider"></div>
+
+              <!-- Button Grid Section -->
+              <div class="user-card-buttons">
+                <div class="user-card-button">
+                  <div class="button-icon">👤</div>
+                  <span class="button-label">Profil</span>
                 </div>
-              </div>
-              <div class="user-card">
-                <div class="user-avatar">👤</div>
-                <div class="user-info">
-                  <h3>Budi Santoso</h3>
-                  <p>Komunitas Leader • Surabaya</p>
-                  <div class="user-stats">
-                    <span>200 Poin</span>
-                    <span>25 Event</span>
-                  </div>
+                <div class="user-card-button">
+                  <div class="button-icon">📅</div>
+                  <span class="button-label">Riwayat Event</span>
+                </div>
+                <div class="user-card-button">
+                  <div class="button-icon">💳</div>
+                  <span class="button-label">Transaksi</span>
                 </div>
               </div>
             </div>
           </section>
 
-          <!-- Partnership Section -->
-          <section class="partnership">
-            <h2>Partnership & Kolaborasi</h2>
-            <div class="partnership-grid">
-              <div class="partnership-card">
-                <h3>🤝 UMKM Partnership</h3>
-                <p>Bergabung dengan komunitas UMKM terpercaya dan kembangkan bisnis Anda bersama ribuan mitra lainnya.</p>
-                <ul>
-                  <li>Akses marketplace eksklusif</li>
-                  <li>Training bisnis gratis</li>
-                  <li>Networking dengan sesama UMKM</li>
-                </ul>
+          <!-- 2. Partnership Slider Section -->
+          <section class="partnership-section">
+            <h2>Partnership</h2>
+            <div class="partnership">
+              <div class="partnership-slider">
+                <div class="partnership-slides">
+                  <div class="partnership-slide">
+                    <img src="/lapakbenz.png" alt="Partner 1" class="sponsor-image" />
+                  </div>
+                  <div class="partnership-slide">
+                    <img src="/lapakbenz.png" alt="Partner 2" class="sponsor-image" />
+                  </div>
+                  <div class="partnership-slide">
+                    <img src="/lapakbenz.png" alt="Partner 3" class="sponsor-image" />
+                  </div>
+                </div>
               </div>
-              <div class="partnership-card">
-                <h3>🚗 Komunitas Otomotif</h3>
-                <p>Terhubung dengan komunitas otomotif terbesar di Indonesia. Sharing pengalaman dan tips otomotif.</p>
-                <ul>
-                  <li>Gathering rutin komunitas</li>
-                  <li>Workshop teknis otomotif</li>
-                  <li>Kontes dan kompetisi</li>
-                </ul>
-              </div>
-              <div class="partnership-card">
-                <h3>💼 Business Network</h3>
-                <p>Bangun jaringan bisnis yang kuat dengan para entrepreneur dan business owner di seluruh Indonesia.</p>
-                <ul>
-                  <li>Business matching</li>
-                  <li>Seminar dan webinar</li>
-                  <li>Peluang investasi</li>
-                </ul>
+              <div class="slider-dots">
+                <div class="slider-dot active"></div>
+                <div class="slider-dot"></div>
+                <div class="slider-dot"></div>
               </div>
             </div>
           </section>
 
-          <!-- Upcoming Events Section -->
+          <!-- 3. Upcoming Events Section -->
           <section class="upcoming-events">
-            <h2>Event Mendatang</h2>
-            <div class="events-preview">
-              <div class="event-item">
-                <div class="event-date">
-                  <div class="date-num">15</div>
-                  <div class="date-month">Feb</div>
+            <h2>Upcoming Events</h2>
+            <div class="upcoming-news">
+              <div class="news-scroll-container">
+                <div class="news-item">
+                  <div class="news-image-container">
+                    <img src="/lapakbenz.png" alt="Go Tourism Fest" class="news-image" />
+                  </div>
+                  <div class="news-content">
+                    <h3 class="news-title">Go Tourism Fest</h3>
+                    <div class="news-date-info">
+                      <span class="news-icon">📅</span>
+                      <span class="news-date">15 December 2024</span>
+                    </div>
+                    <div class="news-time-info">
+                      <span class="news-icon">🕐</span>
+                      <span class="news-time">09:00 WIB</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="event-details">
-                  <h3>Workshop Digital Marketing UMKM</h3>
-                  <p>📍 Jakarta • 🕐 09:00 WIB</p>
-                  <span class="event-badge">Workshop</span>
+                <div class="news-item">
+                  <div class="news-image-container">
+                    <img src="/lapakbenz.png" alt="Deevali 2025" class="news-image" />
+                  </div>
+                  <div class="news-content">
+                    <h3 class="news-title">Deevali 2025</h3>
+                    <div class="news-date-info">
+                      <span class="news-icon">📅</span>
+                      <span class="news-date">20 January 2025</span>
+                    </div>
+                    <div class="news-time-info">
+                      <span class="news-icon">🕐</span>
+                      <span class="news-time">14:00 WIB</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="event-item">
-                <div class="event-date">
-                  <div class="date-num">20</div>
-                  <div class="date-month">Feb</div>
-                </div>
-                <div class="event-details">
-                  <h3>Gathering Komunitas Otomotif</h3>
-                  <p>📍 Bandung • 🕐 14:00 WIB</p>
-                  <span class="event-badge">Gathering</span>
-                </div>
-              </div>
-              <div class="event-item">
-                <div class="event-date">
-                  <div class="date-num">25</div>
-                  <div class="date-month">Feb</div>
-                </div>
-                <div class="event-details">
-                  <h3>Seminar Strategi Bisnis 2024</h3>
-                  <p>📍 Surabaya • 🕐 13:00 WIB</p>
-                  <span class="event-badge">Seminar</span>
+                <div class="news-item">
+                  <div class="news-image-container">
+                    <img src="/lapakbenz.png" alt="Menuju Kopdarnas" class="news-image" />
+                  </div>
+                  <div class="news-content">
+                    <h3 class="news-title">Menuju Kopdarnas</h3>
+                    <div class="news-date-info">
+                      <span class="news-icon">📅</span>
+                      <span class="news-date">25 February 2025</span>
+                    </div>
+                    <div class="news-time-info">
+                      <span class="news-icon">🕐</span>
+                      <span class="news-time">13:00 WIB</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
 
-          <!-- Product Categories Section -->
+          <!-- Our Products Section - matching ProductTabs component -->
           <section class="product-categories">
-            <h2>Kategori Produk Terbaru</h2>
-            <div class="category-tabs">
-              <div class="tab active">Terbaru</div>
-              <div class="tab">Terlaris</div>
-            </div>
-            <div class="products-grid">
-              <div class="product-card">
-                <div class="product-image">📱</div>
-                <h3>Aksesori HP Premium</h3>
-                <p class="product-price">Rp 150.000</p>
-                <div class="product-meta">
-                  <span class="seller">UMKM Jakarta</span>
-                  <span class="rating">⭐ 4.8</span>
-                </div>
+            <h2>Our Products</h2>
+            <div class="product-tabs">
+              <!-- Tab Headers -->
+              <div class="tab-headers">
+                <button class="tab-header active">Latest Products</button>
+                <button class="tab-header">Best Seller</button>
               </div>
-              <div class="product-card">
-                <div class="product-image">👕</div>
-                <h3>Kaos Komunitas Limited</h3>
-                <p class="product-price">Rp 85.000</p>
-                <div class="product-meta">
-                  <span class="seller">Bandung Clothing</span>
-                  <span class="rating">⭐ 4.9</span>
-                </div>
-              </div>
-              <div class="product-card">
-                <div class="product-image">🔧</div>
-                <h3>Tools Otomotif Pro</h3>
-                <p class="product-price">Rp 250.000</p>
-                <div class="product-meta">
-                  <span class="seller">AutoParts ID</span>
-                  <span class="rating">⭐ 4.7</span>
+
+              <!-- Tab Content -->
+              <div class="tab-content">
+                <div class="products-grid">
+                  <div class="product-card">
+                    <div class="product-card-image">
+                      <img src="/lapakbenz.png" alt="Kacamata Polarized Mercedes-Benz" />
+                    </div>
+                    <div class="product-card-content">
+                      <div class="product-card-rating">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star half">★</span>
+                        <span class="rating-number">4.8</span>
+                      </div>
+                      <h3 class="product-card-name">Kacamata Polarized Mercedes-Benz</h3>
+                      <p class="product-card-price">Rp 850.000</p>
+                    </div>
+                  </div>
+                  <div class="product-card">
+                    <div class="product-card-image">
+                      <img src="/lapakbenz.png" alt="Dompet Kulit Mercedes-Benz" />
+                    </div>
+                    <div class="product-card-content">
+                      <div class="product-card-rating">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="rating-number">4.9</span>
+                      </div>
+                      <h3 class="product-card-name">Dompet Kulit Mercedes-Benz</h3>
+                      <p class="product-card-price">Rp 1.250.000</p>
+                    </div>
+                  </div>
+                  <div class="product-card">
+                    <div class="product-card-image">
+                      <img src="/lapakbenz.png" alt="Velg Mercedes-Benz AMG" />
+                    </div>
+                    <div class="product-card-content">
+                      <div class="product-card-rating">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star">★</span>
+                        <span class="rating-number">4.7</span>
+                      </div>
+                      <h3 class="product-card-name">Velg Mercedes-Benz AMG</h3>
+                      <p class="product-card-price">Rp 15.500.000</p>
+                    </div>
+                  </div>
+                  <div class="product-card">
+                    <div class="product-card-image">
+                      <img src="/lapakbenz.png" alt="Oli Lupromax Premium" />
+                    </div>
+                    <div class="product-card-content">
+                      <div class="product-card-rating">
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star filled">★</span>
+                        <span class="star">★</span>
+                        <span class="rating-number">4.6</span>
+                      </div>
+                      <h3 class="product-card-name">Oli Lupromax Premium</h3>
+                      <p class="product-card-price">Rp 385.000</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -385,22 +436,144 @@
       }
       
       /* User Dashboard */
-      .user-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-top: 1rem;
+      .user-dashboard {
+        margin-bottom: 2rem;
       }
+      
+      /* User Card Component Styles - matching UserCard.css */
       .user-card {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        background: #161129;
         border-radius: 12px;
         padding: 1.5rem;
-        border-left: 4px solid #007bff;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
       }
+
+      .user-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Point Section */
+      .user-card-points {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .point-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        color: white;
+      }
+
+      .point-label {
+        font-size: 16px;
+        font-weight: 400;
+        color: white;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .point-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin: 0;
+        line-height: 1;
+        letter-spacing: -0.5px;
+        transition: all 0.3s ease;
+      }
+
+      .point-image {
+        flex-shrink: 0;
+        width: 110px;
+        height: 11vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .point-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      /* Divider */
+      .user-card-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin-bottom: 1.5rem;
+      }
+
+      /* Button Grid Section */
+      .user-card-buttons {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+      }
+
+      .user-card-button {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-height: 80px;
+      }
+
+      .user-card-button:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .user-card-button:active {
+        transform: translateY(0);
+      }
+
+      .button-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.15) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 1.2rem;
+        transition: all 0.2s ease;
+      }
+
+      .user-card-button:hover .button-icon {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.2) 100%);
+        transform: scale(1.05);
+      }
+
+      .button-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: white;
+        text-align: center;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      /* Legacy user avatar and stats for compatibility */
       .user-avatar {
         font-size: 2rem;
         margin-bottom: 0.5rem;
+        color: white;
       }
       .user-stats {
         display: flex;
@@ -408,134 +581,320 @@
         margin-top: 0.5rem;
       }
       .user-stats span {
-        background: #007bff;
+        background: rgba(255, 255, 255, 0.1);
         color: white;
         padding: 0.2rem 0.8rem;
         border-radius: 15px;
         font-size: 0.85rem;
       }
       
-      /* Partnership */
-      .partnership-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 2rem;
-        margin-top: 1.5rem;
-      }
-      .partnership-card {
-        background: white;
-        border: 1px solid #e9ecef;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease;
-      }
-      .partnership-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-      }
-      .partnership-card ul {
-        list-style: none;
-        padding: 0;
-      }
-      .partnership-card li {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #f1f3f4;
-      }
-      .partnership-card li:before {
-        content: "✓ ";
-        color: #28a745;
-        font-weight: bold;
+      /* Partnership Component Styles - matching Partnership.css */
+      .partnership-section {
+        margin-bottom: 2rem;
       }
       
-      /* Events */
-      .events-preview {
-        display: grid;
-        gap: 1rem;
-        margin-top: 1.5rem;
+      .partnership {
+        width: 100%;
+        margin: -1rem 0 0 0; /* Stretch beyond container margins */
       }
-      .event-item {
+
+      .partnership-slider {
+        position: relative;
+        height: 240px;
+        width: 100%; /* Full viewport width */
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .partnership-slides {
+        display: flex;
+        width: 100%;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .partnership-slide {
+        min-width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
-        background: white;
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        justify-content: center;
       }
-      .event-date {
-        background: #007bff;
-        color: white;
-        border-radius: 8px;
-        padding: 1rem;
-        text-align: center;
-        margin-right: 1.5rem;
-        min-width: 60px;
+
+      .sponsor-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Changed from contain to cover for full stretch */
       }
-      .date-num {
-        font-size: 1.5rem;
-        font-weight: bold;
-      }
-      .date-month {
-        font-size: 0.9rem;
-      }
-      .event-badge {
-        background: #28a745;
-        color: white;
-        padding: 0.3rem 0.8rem;
-        border-radius: 15px;
-        font-size: 0.8rem;
-        margin-top: 0.5rem;
-        display: inline-block;
-      }
-      
-      /* Products */
-      .category-tabs {
+
+      /* Dots Indicator */
+      .slider-dots {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-top: -2rem;
       }
-      .tab {
-        padding: 0.8rem 1.5rem;
-        border: 2px solid #e9ecef;
-        border-radius: 25px;
+
+      .slider-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 100%;
+        border: none;
+        background: #D1D5DB;
         cursor: pointer;
         transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
-      .tab.active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
+
+      .slider-dot.active {
+        background: #161129;
+        transform: scale(1.3);
+        box-shadow: 0 0 0 3px rgba(22, 17, 41, 0.2), 0 2px 8px rgba(22, 17, 41, 0.3);
       }
+
+      .slider-dot:hover:not(.active) {
+        background: #9CA3AF;
+        transform: scale(1.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      
+      /* Upcoming News - matching UpcomingNews.css */
+      .upcoming-news {
+        margin-bottom: 2rem;
+      }
+
+      .news-scroll-container {
+        display: flex;
+        overflow-x: auto;
+        gap: 16px;
+        padding: 0 4px 12px 4px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .news-scroll-container::-webkit-scrollbar {
+        height: 6px;
+      }
+
+      .news-scroll-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+
+      .news-scroll-container::-webkit-scrollbar-thumb {
+        background: #161129;
+        border-radius: 3px;
+      }
+
+      .news-item {
+        flex: 0 0 280px;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        scroll-snap-align: start;
+      }
+
+      .news-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      }
+
+      .news-image-container {
+        width: 100%;
+        height: 140px;
+        overflow: hidden;
+        background: #f8f9fa;
+      }
+
+      .news-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .news-content {
+        padding: 16px;
+      }
+
+      .news-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 12px 0;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .news-date-info,
+      .news-time-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+
+      .news-icon {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .news-date,
+      .news-time {
+        font-size: 12px;
+        color: #666;
+      }
+      
+      /* Product Tabs - matching ProductTabs.css */
+      .product-tabs {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .tab-headers {
+        display: flex;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .tab-header {
+        flex: 1;
+        padding: 16px 12px;
+        background: none;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .tab-header.active {
+        color: #161129;
+        background: white;
+      }
+
+      .tab-header.active::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #161129;
+      }
+
+      .tab-content {
+        padding: 20px 16px;
+        min-height: 280px;
+        background: white;
+        position: relative;
+      }
+
       .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        max-width: 100%;
+        padding: 0;
+        align-items: start;
       }
+
       .product-card {
         background: white;
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid #f0f0f0;
+        width: 100%;
+        height: auto;
+        min-height: 200px;
       }
-      .product-image {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+
+      .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
       }
-      .product-price {
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #007bff;
-        margin: 0.5rem 0;
+
+      .product-card-image {
+        width: 100%;
+        height: 120px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 8px;
+        background: #f8f8f8;
       }
-      .product-meta {
+
+      .product-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-card-content {
         display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-        font-size: 0.9rem;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .product-card-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 2px;
+      }
+
+      .product-card-rating .star {
+        font-size: 12px;
+        color: #ddd;
+      }
+
+      .product-card-rating .star.filled {
+        color: #ffd700;
+      }
+
+      .product-card-rating .star.half {
+        color: #ffd700;
+      }
+
+      .product-card-rating .rating-number {
+        font-size: 10px;
         color: #666;
+        margin-left: 2px;
+      }
+
+      .product-card-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 2.6em;
+      }
+
+      .product-card-price {
+        font-size: 14px;
+        font-weight: 700;
+        color: #161129;
+        margin-top: 4px;
       }
       
       /* Chapters */
@@ -640,19 +999,223 @@
         padding-top: 2rem;
       }
       
-      /* Responsive */
+      /* UserCard Responsive - matching UserCard.css */
+      @media (max-width: 430px) {
+        .user-card {
+          padding: 1.25rem;
+        }
+        
+        .user-card-points {
+          gap: 0.75rem;
+          margin-bottom: 1.25rem;
+        }
+        
+        .point-label {
+          font-size: 0.9rem;
+        }
+        
+        .point-value {
+          font-size: 1.75rem;
+        }
+        
+        .point-image {
+          width: 110px;
+          height: 10vh;
+        }
+        
+        .user-card-divider {
+          margin-bottom: 1.25rem;
+        }
+        
+        .user-card-buttons {
+          gap: 0.5rem;
+        }
+        
+        .user-card-button {
+          padding: 0.75rem 0.25rem;
+          min-height: 70px;
+        }
+        
+        .button-icon {
+          width: 28px;
+          height: 28px;
+          font-size: 1rem;
+        }
+        
+        .button-label {
+          font-size: 0.65rem;
+        }
+      }
+
+      /* Alternative layout for very small screens */
+      @media (max-width: 320px) {
+        .user-card-buttons {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.5rem;
+        }
+        
+        .user-card-button {
+          padding: 1rem 0.5rem;
+          min-height: 80px;
+        }
+        
+        .button-icon {
+          width: 32px;
+          height: 32px;
+          font-size: 1.2rem;
+        }
+        
+        .button-label {
+          font-size: 0.75rem;
+        }
+      }
+
+      /* Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .user-card,
+        .user-card-button,
+        .button-icon,
+        .point-value {
+          transition: none;
+        }
+        
+        .user-card:hover,
+        .user-card-button:hover {
+          transform: none;
+        }
+        
+        .user-card-button:hover .button-icon {
+          transform: none;
+        }
+      }
+
+      /* Focus states for keyboard navigation */
+      .user-card-button:focus {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline-offset: 2px;
+      }
+
+      .user-card-button:focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      /* Partnership Responsive - matching Partnership.css */
+      @media (max-width: 430px) {
+        .partnership {
+          padding-bottom: 0.1rem;
+        }
+        
+        .partnership-slider {
+          width: 95%;
+          height: 140px;
+        }
+        
+        .partnership-slide {
+          padding: 1px;
+        }
+        
+        .slider-dots {
+          gap: 6px;
+          margin-top: 1rem;
+        }
+        
+        .slider-dot {
+          width: 8px;
+          height: 8px;
+        }
+        
+        .slider-dot.active {
+          transform: scale(1.4);
+          box-shadow: 0 0 0 2px rgba(22, 17, 41, 0.2), 0 2px 6px rgba(22, 17, 41, 0.3);
+        }
+      }
+
+      @media (max-width: 320px) {
+        .partnership-slider {
+          width: 98%;
+          height: 120px;
+        }
+        
+        .partnership-slide {
+          padding: 1px;
+        }
+        
+        .slider-dots {
+          gap: 5px;
+        }
+        
+        .slider-dot {
+          width: 6px;
+          height: 6px;
+        }
+      }
+
+      /* Partnership Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .partnership-slides {
+          transition: none;
+        }
+        
+        .slider-dot,
+        .slider-dot.active,
+        .slider-dot:hover {
+          transition: none;
+          transform: none;
+        }
+      }
+
+      /* Partnership Focus states */
+      .slider-dot:focus {
+        outline: 2px solid #161129;
+        outline-offset: 4px;
+      }
+
+      .slider-dot:focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      /* Product Tabs Responsive */
+      @media (max-width: 480px) {
+        .tab-header {
+          padding: 14px 8px;
+          font-size: 13px;
+        }
+        
+        .tab-content {
+          padding: 16px 12px;
+          min-height: 260px;
+        }
+
+        .products-grid {
+          gap: 12px;
+        }
+
+        .product-card-image {
+          height: 100px;
+        }
+        
+        .product-card-name {
+          font-size: 12px;
+        }
+        
+        .product-card-price {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 320px) {
+        .products-grid {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+      }
+
       @media (max-width: 768px) {
         .seo-fallback {
           padding: 1rem;
         }
-        .user-cards {
-          grid-template-columns: 1fr;
-        }
         .partnership-grid {
           grid-template-columns: 1fr;
-        }
-        .products-grid {
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         }
         .chapter-grid {
           grid-template-columns: 1fr;

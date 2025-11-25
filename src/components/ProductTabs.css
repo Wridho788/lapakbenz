@@ -51,6 +51,20 @@
   position: relative;
 }
 
+.product-tabs .products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 100%;
+  padding: 0;
+  align-items: start;
+}
+
+.product-tabs .product-card {
+  height: auto;
+  min-height: 200px;
+}
+
 .products-loading,
 .products-empty {
   display: flex;
@@ -76,5 +90,16 @@
   .tab-content {
     padding: 16px 12px;
     min-height: 260px;
+  }
+
+  .product-tabs .products-grid {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 320px) {
+  .product-tabs .products-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
