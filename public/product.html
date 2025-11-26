@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <!-- Primary Meta Tags -->
-    <title>Katalog Produk lapakBenz - Temukan Produk Komunitas Terbaik Indonesia</title>
+    <title>Produk - Otomotif, Fashion, Elektronik, Makanan | LapakBenz - Platform Komunitas & Event Indonesia</title>
     <meta name="description" content="Jelajahi katalog produk lengkap lapakBenz. Temukan berbagai produk berkualitas dari komunitas UMKM dan otomotif Indonesia dengan harga terjangkau dan kualitas terjamin." />
     <meta name="keywords" content="produk lapakbenz, katalog produk, marketplace indonesia, produk umkm, produk otomotif, belanja online, produk komunitas, lapakbenz produk" />
     <meta name="author" content="lapakBenz" />
@@ -15,7 +15,7 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Katalog Produk lapakBenz - Temukan Produk Komunitas Terbaik Indonesia" />
+    <meta property="og:title" content="Produk - Otomotif, Fashion, Elektronik, Makanan | LapakBenz - Platform Komunitas & Event Indonesia" />
     <meta property="og:description" content="Jelajahi katalog produk lengkap lapakBenz. Temukan berbagai produk berkualitas dari komunitas UMKM dan otomotif Indonesia dengan harga terjangkau dan kualitas terjamin." />
     <meta property="og:image" content="https://lapakbenz.com/lapakbenz.png" />
     <meta property="og:url" content="https://lapakbenz.com/product" />
@@ -24,9 +24,9 @@
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Katalog Produk lapakBenz - Temukan Produk Komunitas Terbaik Indonesia" />
+    <meta name="twitter:title" content="Produk - Otomotif, Fashion, Elektronik, Makanan | LapakBenz - Platform Komunitas & Event Indonesia" />
     <meta name="twitter:description" content="Jelajahi katalog produk lengkap lapakBenz. Temukan berbagai produk berkualitas dari komunitas UMKM dan otomotif Indonesia dengan harga terjangkau dan kualitas terjamin." />
-    <meta name="twitter:image" content="https://lapakbenz.com/lapakbenz.png" />
+    <meta property="twitter:image" content="https://lapakbenz.com/lapakbenz.png" />
     <meta name="twitter:site" content="@lapakbenz" />
     
     <!-- SEO Meta Tags -->
@@ -108,220 +108,1557 @@
     </script>
     
     <style>
-      * { box-sizing: border-box; }
-      body { 
-        font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
-        line-height: 1.6; 
-        color: #333; 
-        margin: 0; 
-        padding: 0;
-        background-color: #f8f9fa;
-      }
-      .container { 
-        max-width: 1200px; 
-        margin: 0 auto; 
-        padding: 20px; 
-        background: white;
+      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+      /* Force light mode for entire product page */
+      .product-page {
         min-height: 100vh;
+        background-color: white !important;
+        color: #333 !important;
+        font-family: 'Lato', sans-serif;
+        padding-bottom: 80px; /* Space for bottom nav */
       }
-      header { 
-        margin-bottom: 2rem; 
-        border-bottom: 2px solid #161129;
-        padding-bottom: 1rem;
+
+      /* Ensure all child elements also maintain light mode */
+      .product-page * {
+        color-scheme: light !important;
       }
-      nav ol { 
-        list-style: none; 
-        padding: 0; 
-        display: flex; 
-        margin: 0 0 1rem 0; 
-        flex-wrap: wrap;
+
+      .product-content {
+        padding: 8px 10px 8px 8px;
       }
-      nav li { margin-right: 1rem; }
-      nav li:not(:last-child)::after { content: ' › '; margin-left: 1rem; color: #666; }
-      nav a { color: #007bff; text-decoration: none; }
-      nav a:hover { text-decoration: underline; }
-      h1 { 
-        color: #161129; 
-        font-size: 2.5rem; 
-        margin: 0 0 1rem 0; 
+
+      /* Search and Filter Section */
+      .search-filter-section {
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+
+      .search-bar {
+        position: relative;
+        margin-bottom: 16px;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666 !important;
+        font-size: 20px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px 44px 12px 44px; /* Added right padding for clear button */
+        border: 2px solid #e1e5e9 !important;
+        border-radius: 8px;
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+        background: white !important;
+        color: #333 !important;
+      }
+
+      .search-input::placeholder {
+        color: #666 !important;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #161129 !important;
+        background: white !important;
+        color: #333 !important;
+      }
+
+      .clear-search-btn {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none !important;
+        border: none !important;
+        color: #666 !important;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+      }
+
+      .clear-search-btn:hover {
+        color: #161129 !important;
+        background: rgba(22, 17, 41, 0.1) !important;
+      }
+
+      .filter-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      /* Filter Toggle Button */
+      .filter-toggle-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        border: 2px solid #e1e5e9 !important;
+        border-radius: 8px;
+        background: white !important;
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        color: #333 !important;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        position: relative;
+      }
+
+      .filter-toggle-btn:hover {
+        border-color: #161129 !important;
+        background: #f8f9fa !important;
+      }
+
+      .filter-icon {
+        color: #666 !important;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .filter-badge {
+        background: #ff6b35 !important;
+        color: white !important;
+        border-radius: 12px;
+        padding: 2px 8px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: auto;
+        margin-right: 8px;
+      }
+
+      /* Advanced Filters Panel */
+      .advanced-filters {
+        background: white !important;
+        border: 2px solid #e1e5e9 !important;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .filter-group {
+        margin-bottom: 24px;
+      }
+
+      .filter-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .filter-group h4 {
+        font-family: 'Lato', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #333 !important;
+        margin: 0 0 12px 0;
+      }
+
+      .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Location options can be in columns for better space usage */
+      .location-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+      }
+
+      /* Custom Checkbox/Radio Styling */
+      .filter-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        color: #333 !important;
+        cursor: pointer;
+        position: relative;
+        padding: 8px 0;
+        transition: color 0.2s ease;
+      }
+
+      .filter-checkbox input[type="checkbox"],
+      .filter-checkbox input[type="radio"] {
+        display: none;
+      }
+
+      /* Custom checkmark/radio styling */
+      .checkmark {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #e1e5e9 !important;
+        border-radius: 4px;
+        background: white !important;
+        position: relative;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+
+      /* Radio buttons should be circular */
+      .filter-checkbox input[type="radio"] + .checkmark {
+        border-radius: 50%;
+      }
+
+      /* Checked state */
+      .filter-checkbox input:checked + .checkmark {
+        background: #161129 !important;
+        border-color: #161129 !important;
+      }
+
+      /* Checkmark icon */
+      .filter-checkbox input:checked + .checkmark::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: white;
+      }
+
+      /* Different styles for checkbox vs radio */
+      .filter-checkbox input[type="checkbox"]:checked + .checkmark::after {
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: translate(-50%, -60%) rotate(45deg);
+        background: none;
+      }
+
+      .filter-checkbox input[type="radio"]:checked + .checkmark::after {
+        border-radius: 50%;
+      }
+
+      /* Hover effect */
+      .filter-checkbox:hover .checkmark {
+        border-color: #161129 !important;
+      }
+
+      .filter-checkbox:hover {
+        color: #161129 !important;
+      }
+
+      /* Filter Actions */
+      .filter-actions {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e1e5e9;
+      }
+
+      .clear-filters-btn {
+        width: 100%;
+        padding: 12px;
+        background: #f8f9fa !important;
+        border: 2px solid #e1e5e9 !important;
+        border-radius: 8px;
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #666 !important;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .clear-filters-btn:hover {
+        background: #ff6b35 !important;
+        border-color: #ff6b35 !important;
+        color: white !important;
+      }
+
+      /* Product Catalog */
+      .product-catalog {
+        background: white !important;
+      }
+
+      .catalog-title {
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        color: #333 !important;
+        margin: 0 0 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .product-count {
+        font-weight: 400;
+        font-size: 14px;
+        color: #666 !important;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+        max-width: 100%;
+      }
+
+      .product-card {
+        background: white !important;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        border: 1px solid #f0f0f0 !important;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        background: white !important;
+      }
+
+      .product-image {
+        width: 100%;
+        height: 120px;
+        overflow: hidden;
+        background: #f8f9fa !important;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .product-card:hover .product-image img {
+        transform: scale(1.05);
+      }
+
+      .product-info {
+        padding: 8px;
+        background: white !important;
+      }
+
+      .product-title {
+        font-family: 'Lato', sans-serif;
+        font-size: 12px;
+        color: #333 !important;
+        margin: 0;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+
+      .product-rating {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .rating-stars {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 12px;
+      }
+
+      .rating-stars .star {
+        color: #e0e0e0;
+        font-size: 14px;
+        transition: color 0.2s ease;
+      }
+
+      .rating-stars .star.filled {
+        color: #ffc107;
+      }
+
+      .rating-stars .star.half {
+        color: #ffc107;
+      }
+
+      .rating-stars .star.empty {
+        color: #e0e0e0;
+      }
+
+      .rating-number {
+        font-size: 10px;
+        color: #666 !important;
+        margin-left: 4px;
+      }
+
+      .product-category {
+        font-size: 8px;
+        color: #999 !important;
+        padding: 2px;
+      }
+
+      .product-price {
+        font-family: 'Lato', sans-serif;
         font-weight: 700;
-        line-height: 1.2;
+        font-size: 16px;
+        color: #161129 !important;
+        margin: 0;
       }
-      h2 { 
-        color: #333; 
-        font-size: 1.8rem; 
-        margin: 2rem 0 1rem 0; 
-        border-left: 4px solid #007bff;
-        padding-left: 1rem;
+
+      /* Empty State */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        background: #ededed !important;
       }
-      h3 { 
-        color: #555; 
-        font-size: 1.3rem; 
-        margin: 1.5rem 0 0.5rem 0; 
+
+      .empty-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 16px;
+        opacity: 0.6;
       }
-      .lead { 
-        font-size: 1.2rem; 
-        color: #666; 
-        margin-bottom: 2rem; 
+
+      .empty-state h3 {
+        font-family: 'Lato', sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        color: #333 !important;
+        margin: 0 0 8px 0;
+      }
+
+      .empty-state p {
+        font-family: 'Lato', sans-serif;
+        font-size: 14px;
+        color: #666 !important;
+        margin: 0 0 16px 0;
         line-height: 1.5;
       }
-      .cta-button { 
-        display: inline-block; 
-        padding: 12px 32px; 
-        background: linear-gradient(45deg, #007bff, #0056b3); 
-        color: white; 
-        text-decoration: none; 
-        border-radius: 8px; 
-        margin: 20px 0; 
-        font-weight: bold;
-        font-size: 1.1rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+
+      .clear-search-action-btn {
+        background: #161129 !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 8px;
       }
-      .cta-button:hover { 
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 123, 255, 0.4);
-        color: white;
+
+      .clear-search-action-btn:hover {
+        background: #2c1e3f !important;
+        transform: translateY(-1px);
+      }
+
+      /* Loading and Error States */
+      .loading-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white !important;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .loading-state p {
+        margin: 0;
+        color: #666 !important;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .error-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white !important;
+        flex-direction: column;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .error-state p {
+        margin: 0 0 16px 0;
+        color: #e74c3c !important;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .error-state button {
+        background: #161129 !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-family: 'Lato', sans-serif;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .error-state button:hover {
+        background: #2c1e3f !important;
+      }
+
+      /* AppbarDefault Styles matching component */
+      .appbar-default {
+        background: linear-gradient(135deg, #161129 0%, #23203a 100%);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 2px 12px rgba(22, 17, 41, 0.15);
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        min-height: 56px;
+        position: relative;
+        backdrop-filter: blur(8px);
+      }
+
+      .appbar-default::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      }
+
+      .appbar-back-btn {
+        background: rgba(255, 255, 255, 0);
+        border: none;
+        color: #fff;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        margin-right: 0.75rem;
+        backdrop-filter: blur(4px);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-decoration: none;
       }
-      .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin: 2rem 0;
+
+      .appbar-back-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
       }
-      .feature-card {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 8px;
-        border-left: 4px solid #007bff;
+
+      .appbar-back-btn:active {
+        transform: scale(0.95);
       }
-      .feature-card h4 {
-        margin: 0 0 1rem 0;
-        color: #161129;
+
+      .appbar-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        color: #fff;
+      }
+
+      /* Cart button styling */
+      .appbar-cart-btn {
+        background: rgba(255, 255, 255, 0);
+        border: none;
+        color: #fff;
         font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(4px);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        text-decoration: none;
       }
-      ul { padding-left: 1.5rem; margin: 1rem 0; }
-      li { margin-bottom: 0.5rem; }
-      li::marker { color: #007bff; }
-      footer { 
-        margin-top: 3rem; 
-        padding: 2rem 0; 
-        border-top: 1px solid #eee; 
-        color: #666; 
-        text-align: center;
-        background: #161129;
-        color: white;
-        margin-left: -20px;
-        margin-right: -20px;
-        padding-left: 20px;
-        padding-right: 20px;
+
+      .appbar-cart-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: scale(1.05);
       }
+
+      .appbar-cart-btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Cart badge with count */
+      .cart-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #161129;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+        animation: bounceIn 0.5s ease-out;
+        z-index: 1;
+      }
+
+      .cart-badge:empty {
+        display: none;
+      }
+
+      /* Badge animation */
+      @keyframes bounceIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Override any potential dark mode styles from parent components or global styles */
+      @media (prefers-color-scheme: dark) {
+        .product-page {
+          background-color: white !important;
+          color: #333 !important;
+        }
+
+        .search-input,
+        .filter-btn,
+        .product-card,
+        .search-filter-section,
+        .product-catalog,
+        .empty-state,
+        .loading-state,
+        .error-state {
+          background: white !important;
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 480px) {
+        .product-grid {
+          grid-template-columns: repeat(2, 1fr);
+          max-width: 100%;
+        }
+
+        /* Mobile optimization for filters */
+        .advanced-filters {
+          padding: 16px;
+        }
+
+        .filter-group h4 {
+          font-size: 14px;
+        }
+
+        .filter-checkbox {
+          font-size: 13px;
+          padding: 6px 0;
+        }
+
+        .location-options {
+          grid-template-columns: 1fr;
+        }
+
+        .filter-toggle-btn {
+          padding: 10px 14px;
+          font-size: 13px;
+        }
+      }
+
+      /* Additional safeguards against dark mode inheritance */
+      html[data-theme='dark'] .product-page,
+      [data-theme='dark'] .product-page,
+      .dark .product-page,
+      .product-page.dark {
+        background-color: white !important;
+        color: #333 !important;
+      }
+
+      html[data-theme='dark'] .product-page *,
+      [data-theme='dark'] .product-page *,
+      .dark .product-page *,
+      .product-page.dark * {
+        color: inherit !important;
+      }
+
+      html[data-theme='dark'] .search-input,
+      [data-theme='dark'] .search-input,
+      .dark .search-input,
+      .product-page.dark .search-input {
+        background: white !important;
+        color: #333 !important;
+        border-color: #e1e5e9 !important;
+      }
+
+      html[data-theme='dark'] .search-input:focus,
+      [data-theme='dark'] .search-input:focus,
+      .dark .search-input:focus,
+      .product-page.dark .search-input:focus {
+        border-color: #161129 !important;
+      }
+
       .hidden { display: none !important; }
-      
-      @media (max-width: 768px) {
-        .container { padding: 15px; }
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.5rem; }
-        .feature-grid { grid-template-columns: 1fr; gap: 1rem; }
-      }
     </style>
   </head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJ4K0EPQGJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZJ4K0EPQGJ');
+</script>
   <body>
-    <div class="container">
-      
-    <header>
-      
-    <nav aria-label="Breadcrumb">
-      <ol>
-        
-          <li >
-            <a href="/">Home</a>
-          </li>
-        
-          <li aria-current="page">
-            Products
-          </li>
-        
-      </ol>
-    </nav>
-  
-      <h1>Katalog Produk lapakBenz</h1>
-      <p class="lead">Temukan produk-produk berkualitas dari komunitas UMKM dan otomotif terpercaya di Indonesia</p>
-    </header>
-    
-    <main>
-      
-      <section>
-        <h2>Kategori Produk Unggulan</h2>
-        <p class="lead">Kami menyediakan berbagai kategori produk untuk memenuhi kebutuhan Anda</p>
-    
-        <div class="feature-grid">
-          
-            <div class="feature-card">
-              <h4>Otomotif & Spare Parts</h4>
-              <p>Suku cadang berkualitas, aksesoris kendaraan, dan perlengkapan otomotif dari supplier terpercaya</p>
-            </div>
-          
-            <div class="feature-card">
-              <h4>Fashion & Apparel</h4>
-              <p>Koleksi pakaian, aksesoris fashion, dan produk lifestyle dari designer lokal Indonesia</p>
-            </div>
-          
-            <div class="feature-card">
-              <h4>Elektronik & Gadget</h4>
-              <p>Perangkat elektronik, gadget terbaru, dan aksesoris teknologi dengan harga kompetitif</p>
-            </div>
-          
-            <div class="feature-card">
-              <h4>Makanan & Minuman</h4>
-              <p>Produk kuliner khas nusantara, makanan olahan, dan minuman tradisional Indonesia</p>
-            </div>
-          
-            <div class="feature-card">
-              <h4>Kerajinan & Handicraft</h4>
-              <p>Karya seni unik, kerajinan tangan tradisional, dan produk kreatif dari artisan lokal</p>
-            </div>
-          
-            <div class="feature-card">
-              <h4>Peralatan & Tools</h4>
-              <p>Alat kerja profesional, peralatan rumah tangga, dan tools berkualitas untuk berbagai kebutuhan</p>
-            </div>
-          
-        </div>
-      </section>
-      <section>
-        <h2>Keunggulan Berbelanja di lapakBenz</h2>
-        <p class="lead">Dapatkan pengalaman berbelanja terbaik dengan keunggulan yang kami tawarkan</p>
-    
-        <ul>
-          <li>Produk berkualitas tinggi dari komunitas UMKM terpercaya di seluruh Indonesia</li><li>Harga terjangkau dan kompetitif dengan sistem pembayaran yang aman</li><li>Mendukung pertumbuhan ekonomi UMKM dan entrepreneur lokal Indonesia</li><li>Sistem pengiriman cepat dan terpercaya ke seluruh nusantara</li><li>Customer service responsif 24/7 untuk membantu segala kebutuhan Anda</li><li>Program loyalty dan cashback menarik untuk member setia lapakBenz</li>
-        </ul>
-      </section>
-      
-      <div style="text-align: center; margin: 3rem 0;">
-        <a href="/" class="cta-button">Mulai Belanja Sekarang</a>
+    <!-- Product Page Content (accessible to both JavaScript and no-JavaScript users) -->
+    <div class="product-page">
+      <!-- AppbarDefault matching Product.tsx layout -->
+      <div class="appbar-default">
+        <a href="/" class="appbar-back-btn" title="Kembali ke Beranda" aria-label="Kembali ke Beranda">
+          ←
+        </a>
+        <h1 class="appbar-title">Produk</h1>
+        <a href="/cart.html" class="appbar-cart-btn" title="Keranjang Belanja" aria-label="Keranjang Belanja">
+          🛒
+          <span class="cart-badge" aria-label="3 item di keranjang">3</span>
+        </a>
       </div>
-    </main>
-    
-    <footer>
-      <p>&copy; 2024 lapakBenz - Platform Komunitas UMKM & Event Terbesar Indonesia</p>
-      <p>Bergabunglah dengan ribuan entrepreneur sukses di seluruh nusantara</p>
-    </footer>
-  
+
+        <!-- Product Content matching Product.tsx structure -->
+        <div class="product-content">
+          <!-- Search and Filter Section -->
+          <div class="search-filter-section">
+            <!-- Search Bar -->
+            <div class="search-bar">
+              <div class="search-icon" aria-hidden="true">🔍</div>
+              <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Cari produk, kategori, atau brand..."
+                aria-label="Cari produk"
+                id="searchInput"
+              >
+              <button class="clear-search-btn" title="Hapus pencarian" aria-label="Hapus pencarian" style="display: none;" id="clearSearchBtn">
+                ✕
+              </button>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+              <button class="filter-toggle-btn" id="filterToggleBtn" aria-expanded="false" aria-controls="advancedFilters">
+                <span class="filter-icon" aria-hidden="true">⚙️</span>
+                <span>Filter & Urutkan</span>
+                <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
+                <span aria-hidden="true">▼</span>
+              </button>
+              
+              <!-- Advanced Filters Panel (Initially Hidden) -->
+              <div class="advanced-filters" id="advancedFilters" style="display: none;" role="region" aria-labelledby="filterToggleBtn">
+                <!-- Categories Filter -->
+                <div class="filter-group">
+                  <h4 id="categoryFilterTitle">Kategori</h4>
+                  <div class="filter-options" role="group" aria-labelledby="categoryFilterTitle">
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="otomotif" name="category" aria-describedby="categoryFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Otomotif</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="fashion" name="category" aria-describedby="categoryFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Fashion</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="elektronik" name="category" aria-describedby="categoryFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Elektronik</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="makanan" name="category" aria-describedby="categoryFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Makanan & Minuman</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="aksesoris" name="category" aria-describedby="categoryFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Aksesoris</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="koleksi" name="category" aria-describedby="categoryFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Koleksi</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Location Filter -->
+                <div class="filter-group">
+                  <h4 id="locationFilterTitle">Lokasi Penjual</h4>
+                  <div class="filter-options location-options" role="group" aria-labelledby="locationFilterTitle">
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="jakarta" name="location" aria-describedby="locationFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>DKI Jakarta</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="bandung" name="location" aria-describedby="locationFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Bandung</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="surabaya" name="location" aria-describedby="locationFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Surabaya</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="yogyakarta" name="location" aria-describedby="locationFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Yogyakarta</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="medan" name="location" aria-describedby="locationFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Medan</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="checkbox" value="semarang" name="location" aria-describedby="locationFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Semarang</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="filter-group">
+                  <h4 id="priceFilterTitle">Rentang Harga</h4>
+                  <div class="filter-options" role="radiogroup" aria-labelledby="priceFilterTitle">
+                    <label class="filter-checkbox">
+                      <input type="radio" name="priceRange" value="0-100000" aria-describedby="priceFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Di bawah Rp 100.000</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="priceRange" value="100000-500000" aria-describedby="priceFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Rp 100.000 - Rp 500.000</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="priceRange" value="500000-1000000" aria-describedby="priceFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Rp 500.000 - Rp 1.000.000</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="priceRange" value="1000000-5000000" aria-describedby="priceFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Rp 1.000.000 - Rp 5.000.000</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="priceRange" value="5000000+" aria-describedby="priceFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Di atas Rp 5.000.000</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Sort Options -->
+                <div class="filter-group">
+                  <h4 id="sortFilterTitle">Urutkan Berdasarkan</h4>
+                  <div class="filter-options" role="radiogroup" aria-labelledby="sortFilterTitle">
+                    <label class="filter-checkbox">
+                      <input type="radio" name="sortBy" value="newest" checked aria-describedby="sortFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Terbaru</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="sortBy" value="price-low-high" aria-describedby="sortFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Harga Terendah</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="sortBy" value="price-high-low" aria-describedby="sortFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Harga Tertinggi</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="sortBy" value="rating" aria-describedby="sortFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Rating Tertinggi</span>
+                    </label>
+                    <label class="filter-checkbox">
+                      <input type="radio" name="sortBy" value="popular" aria-describedby="sortFilterTitle">
+                      <span class="checkmark" aria-hidden="true"></span>
+                      <span>Terpopuler</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="filter-actions">
+                  <button class="clear-filters-btn" id="clearFiltersBtn">
+                    Bersihkan Semua Filter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Catalog -->
+          <div class="product-catalog">
+            <div class="catalog-title">
+              Katalog Produk
+              <span class="product-count" id="productCount">(15 produk ditemukan)</span>
+            </div>
+            
+            <!-- Product Grid -->
+            <div class="product-grid" id="productGrid">
+              <!-- Sample Product Cards matching Mercedes-Benz community theme -->
+              <a href="/product/mercedes-c200-2022" class="product-card" data-category="otomotif" data-location="jakarta" data-price="850000000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=C200+AMG" alt="Mercedes-Benz C200 AMG Line 2022" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz C200 AMG Line 2022</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">(4.8)</span>
+                    </div>
+                    <div class="product-category">Otomotif</div>
+                  </div>
+                  <p class="product-price">Rp 850.000.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-amg-jacket" class="product-card" data-category="fashion" data-location="bandung" data-price="2500000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=AMG+Jacket" alt="Mercedes-Benz AMG Leather Jacket" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz AMG Leather Jacket Premium</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star empty">☆</span>
+                      <span class="rating-number">(4.2)</span>
+                    </div>
+                    <div class="product-category">Fashion</div>
+                  </div>
+                  <p class="product-price">Rp 2.500.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-keychain-premium" class="product-card" data-category="aksesoris" data-location="surabaya" data-price="150000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Keychain" alt="Mercedes-Benz Premium Keychain" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Premium Keychain</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">(4.9)</span>
+                    </div>
+                    <div class="product-category">Aksesoris</div>
+                  </div>
+                  <p class="product-price">Rp 150.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-sport-watch" class="product-card" data-category="elektronik" data-location="jakarta" data-price="5200000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Watch+LE" alt="Mercedes-Benz Sport Watch Limited Edition" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Sport Watch Limited Edition</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star half">★</span>
+                      <span class="rating-number">(4.5)</span>
+                    </div>
+                    <div class="product-category">Elektronik</div>
+                  </div>
+                  <p class="product-price">Rp 5.200.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-coffee-beans" class="product-card" data-category="makanan" data-location="yogyakarta" data-price="250000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Coffee" alt="Mercedes-Benz Premium Coffee Beans" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Premium Coffee Beans</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star empty">☆</span>
+                      <span class="rating-number">(4.1)</span>
+                    </div>
+                    <div class="product-category">Makanan</div>
+                  </div>
+                  <p class="product-price">Rp 250.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-gclass-model" class="product-card" data-category="koleksi" data-location="bandung" data-price="850000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=G-Class+1%3A18" alt="Mercedes-Benz G-Class Scale Model 1:18" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz G-Class Scale Model 1:18</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">(4.7)</span>
+                    </div>
+                    <div class="product-category">Koleksi</div>
+                  </div>
+                  <p class="product-price">Rp 850.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-f1-cap" class="product-card" data-category="fashion" data-location="medan" data-price="450000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=F1+Cap" alt="Mercedes-Benz AMG Petronas F1 Cap" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz AMG Petronas F1 Cap</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star empty">☆</span>
+                      <span class="rating-number">(4.3)</span>
+                    </div>
+                    <div class="product-category">Fashion</div>
+                  </div>
+                  <p class="product-price">Rp 450.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-travel-bag" class="product-card" data-category="fashion" data-location="semarang" data-price="1200000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Travel+Bag" alt="Mercedes-Benz Professional Travel Bag" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Professional Travel Bag</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">(4.6)</span>
+                    </div>
+                    <div class="product-category">Fashion</div>
+                  </div>
+                  <p class="product-price">Rp 1.200.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-signature-fragrance" class="product-card" data-category="fashion" data-location="jakarta" data-price="750000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Fragrance" alt="Mercedes-Benz Signature Fragrance" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Signature Fragrance</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star empty">☆</span>
+                      <span class="rating-number">(4.0)</span>
+                    </div>
+                    <div class="product-category">Fashion</div>
+                  </div>
+                  <p class="product-price">Rp 750.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-carbon-phone-case" class="product-card" data-category="elektronik" data-location="surabaya" data-price="350000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Phone+Case" alt="Mercedes-Benz Carbon Fiber iPhone Case" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Carbon Fiber iPhone Case</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">(4.8)</span>
+                    </div>
+                    <div class="product-category">Elektronik</div>
+                  </div>
+                  <p class="product-price">Rp 350.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-coffee-mug-set" class="product-card" data-category="makanan" data-location="bandung" data-price="280000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Mug+Set" alt="Mercedes-Benz Ceramic Coffee Mug Set" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Ceramic Coffee Mug Set</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star half">★</span>
+                      <span class="rating-number">(4.4)</span>
+                    </div>
+                    <div class="product-category">Makanan</div>
+                  </div>
+                  <p class="product-price">Rp 280.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-classic-polo" class="product-card" data-category="fashion" data-location="yogyakarta" data-price="680000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Polo+Shirt" alt="Mercedes-Benz Classic Polo Shirt" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Classic Polo Shirt</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star empty">☆</span>
+                      <span class="rating-number">(4.2)</span>
+                    </div>
+                    <div class="product-category">Fashion</div>
+                  </div>
+                  <p class="product-price">Rp 680.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-eqc-400" class="product-card" data-category="otomotif" data-location="jakarta" data-price="1250000000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=EQC+400" alt="Mercedes-EQC 400 Electric SUV" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-EQC 400 Electric SUV 2023</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">(4.9)</span>
+                    </div>
+                    <div class="product-category">Otomotif</div>
+                  </div>
+                  <p class="product-price">Rp 1.250.000.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-amg-wheel" class="product-card" data-category="otomotif" data-location="medan" data-price="15000000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=AMG+Wheel" alt="Mercedes-AMG Forged Wheel Set" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-AMG Forged Wheel Set 19 inch</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star half">★</span>
+                      <span class="rating-number">(4.6)</span>
+                    </div>
+                    <div class="product-category">Otomotif</div>
+                  </div>
+                  <p class="product-price">Rp 15.000.000</p>
+                </div>
+              </a>
+
+              <a href="/product/mercedes-bluetooth-speaker" class="product-card" data-category="elektronik" data-location="semarang" data-price="950000">
+                <div class="product-image">
+                  <img src="https://via.placeholder.com/160x120/161129/ffffff?text=Speaker" alt="Mercedes-Benz Bluetooth Speaker" loading="lazy">
+                </div>
+                <div class="product-info">
+                  <h3 class="product-title">Mercedes-Benz Premium Bluetooth Speaker</h3>
+                  <div class="product-rating">
+                    <div class="rating-stars">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star empty">☆</span>
+                      <span class="rating-number">(4.3)</span>
+                    </div>
+                    <div class="product-category">Elektronik</div>
+                  </div>
+                  <p class="product-price">Rp 950.000</p>
+                </div>
+              </a>
+            </div>
+
+            <!-- Empty State (Hidden by default, shown when no products match filters) -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+              <div class="empty-icon">
+                <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="40" cy="40" r="39" stroke="#e0e0e0" stroke-width="2"/>
+                  <path d="M25 40h30M40 25v30" stroke="#e0e0e0" stroke-width="2"/>
+                </svg>
+              </div>
+              <h3>Tidak ada produk yang ditemukan</h3>
+              <p>Coba ubah kata kunci pencarian atau filter yang Anda gunakan.</p>
+              <button class="clear-search-action-btn" onclick="clearAllFiltersAndSearch()">
+                Bersihkan Filter & Pencarian
+              </button>
+            </div>
+
+            <!-- Loading State (Hidden by default) -->
+            <div class="loading-state" id="loadingState" style="display: none;">
+              <p>Memuat produk...</p>
+            </div>
+
+            <!-- Error State (Hidden by default) -->
+            <div class="error-state" id="errorState" style="display: none;">
+              <p>Terjadi kesalahan saat memuat produk.</p>
+              <button onclick="location.reload()">Coba Lagi</button>
+            </div>
+          </div>
+        </div>
+
+      <!-- FAB for Quick Actions -->
+      <button class="fab" title="Scroll to top" aria-label="Kembali ke atas" onclick="scrollToTop()" style="display: none;" id="scrollToTopBtn">
+        ↑
+      </button>
     </div>
     
-    <!-- React App Root (hidden dari crawler) -->
+    <!-- SEO Fallback for bots that don't execute JavaScript -->
+    <noscript>
+      <style>
+        .product-page { display: block !important; }
+        #root { display: none !important; }
+      </style>
+    </noscript>
+    
+    <!-- React App Root (will be shown when React loads) -->
     <div id="root" class="hidden"></div>
     
-    <!-- Vite HMR untuk development -->
+    <!-- Interactive JavaScript for static HTML matching Product.tsx functionality -->
     <script>
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        // Only load in development
+      document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const productCards = document.querySelectorAll('.product-card');
+        const productCount = document.getElementById('productCount');
+        const emptyState = document.getElementById('emptyState');
+        const productGrid = document.getElementById('productGrid');
+        
+        // Filter functionality
+        const filterToggleBtn = document.getElementById('filterToggleBtn');
+        const advancedFilters = document.getElementById('advancedFilters');
+        const filterBadge = document.getElementById('filterBadge');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        
+        // Check if essential elements exist
+        if (!searchInput || !productCards.length || !productGrid) {
+          console.log('Product page elements not found, skipping initialization');
+          return;
+        }
+        
+        console.log('Product page initialized with', productCards.length, 'products');
+      
+      // Search input handler
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase().trim();
+          
+          if (searchTerm.length > 0 && clearSearchBtn) {
+            clearSearchBtn.style.display = 'flex';
+          } else if (clearSearchBtn) {
+            clearSearchBtn.style.display = 'none';
+          }
+          
+          filterProducts();
+        });
+      }
+      
+      // Clear search
+      if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function() {
+          if (searchInput) searchInput.value = '';
+          clearSearchBtn.style.display = 'none';
+          filterProducts();
+        });
+      }
+      
+      // Filter toggle
+      if (filterToggleBtn && advancedFilters) {
+        filterToggleBtn.addEventListener('click', function() {
+          const isExpanded = advancedFilters.style.display !== 'none';
+          advancedFilters.style.display = isExpanded ? 'none' : 'block';
+          this.setAttribute('aria-expanded', !isExpanded);
+          const arrow = this.querySelector('span[aria-hidden="true"]:last-child');
+          if (arrow) arrow.textContent = isExpanded ? '▼' : '▲';
+        });
+      }
+      
+      // Filter inputs
+      const filterInputs = document.querySelectorAll('.advanced-filters input');
+      filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+          updateFilterBadge();
+          filterProducts();
+        });
+      });
+      
+      // Clear all filters
+      if (clearFiltersBtn) {
+        clearFiltersBtn.addEventListener('click', function() {
+          filterInputs.forEach(input => {
+            input.checked = false;
+          });
+          // Reset sort to newest
+          const newestSort = document.querySelector('input[name="sortBy"][value="newest"]');
+          if (newestSort) newestSort.checked = true;
+          updateFilterBadge();
+          filterProducts();
+        });
+      }
+      
+      // Clear all filters and search
+      window.clearAllFiltersAndSearch = function() {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        filterInputs.forEach(input => {
+          input.checked = false;
+        });
+        document.querySelector('input[name="sortBy"][value="newest"]').checked = true;
+        updateFilterBadge();
+        filterProducts();
+      }
+      
+      // Update filter badge count
+      function updateFilterBadge() {
+        const checkedFilters = document.querySelectorAll('.advanced-filters input:checked').length;
+        // Don't count sort selection since it always has one selected
+        const sortChecked = document.querySelectorAll('input[name="sortBy"]:checked').length;
+        const activeFilters = checkedFilters - sortChecked;
+        
+        if (activeFilters > 0) {
+          filterBadge.textContent = activeFilters;
+          filterBadge.style.display = 'block';
+        } else {
+          filterBadge.style.display = 'none';
+        }
+      }
+      
+      // Filter and search products
+      function filterProducts() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
+        const selectedLocations = Array.from(document.querySelectorAll('input[name="location"]:checked')).map(cb => cb.value);
+        const selectedPriceRange = document.querySelector('input[name="priceRange"]:checked')?.value;
+        const selectedSort = document.querySelector('input[name="sortBy"]:checked')?.value || 'newest';
+        
+        let visibleCount = 0;
+        let filteredProducts = [];
+        
+        productCards.forEach(card => {
+          const title = card.querySelector('.product-title').textContent.toLowerCase();
+          const category = card.dataset.category;
+          const location = card.dataset.location;
+          const price = parseInt(card.dataset.price);
+          
+          // Search filter
+          const matchesSearch = searchTerm === '' || title.includes(searchTerm);
+          
+          // Category filter
+          const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);
+          
+          // Location filter
+          const matchesLocation = selectedLocations.length === 0 || selectedLocations.includes(location);
+          
+          // Price filter
+          let matchesPrice = true;
+          if (selectedPriceRange) {
+            if (selectedPriceRange === '5000000+') {
+              matchesPrice = price >= 5000000;
+            } else {
+              const [min, max] = selectedPriceRange.split('-').map(p => parseInt(p));
+              matchesPrice = price >= min && price <= max;
+            }
+          }
+          
+          const isVisible = matchesSearch && matchesCategory && matchesLocation && matchesPrice;
+          
+          if (isVisible) {
+            visibleCount++;
+            filteredProducts.push({
+              element: card,
+              title: title,
+              price: price,
+              rating: parseFloat(card.querySelector('.rating-number').textContent.replace(/[()]/g, '')) || 0
+            });
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        
+        // Sort products
+        filteredProducts.sort((a, b) => {
+          switch (selectedSort) {
+            case 'price-low-high':
+              return a.price - b.price;
+            case 'price-high-low':
+              return b.price - a.price;
+            case 'rating':
+              return b.rating - a.rating;
+            case 'popular':
+              return b.rating - a.rating; // Using rating as popularity proxy
+            case 'newest':
+            default:
+              return 0; // Keep original order for newest
+          }
+        });
+        
+        // Reorder DOM elements
+        filteredProducts.forEach((product, index) => {
+          productGrid.appendChild(product.element);
+        });
+        
+        // Update count and empty state
+        productCount.textContent = `(${visibleCount} produk ditemukan)`;
+        
+        if (visibleCount === 0) {
+          emptyState.style.display = 'flex';
+          productGrid.style.display = 'none';
+        } else {
+          emptyState.style.display = 'none';
+          productGrid.style.display = 'grid';
+        }
+      }
+      
+      // Scroll to top functionality
+      window.scrollToTop = function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      
+      // Show/hide scroll to top button
+      window.addEventListener('scroll', function() {
+        if (scrollToTopBtn && window.pageYOffset > 300) {
+          scrollToTopBtn.style.display = 'flex';
+        } else if (scrollToTopBtn) {
+          scrollToTopBtn.style.display = 'none';
+        }
+      });
+        
+        // Initialize
+        updateFilterBadge();
+      });
+    </script>
+    
+    <!-- React App Loading for Development Only -->
+    <script>
+      // Detect if we're in true development mode
+      function isDevelopmentMode() {
+        // Check if this is Vite dev server (port 5173) and src files are available
+        return window.location.hostname === 'localhost' && 
+               window.location.port === '5173' &&
+               !window.location.pathname.startsWith('/dist/');
+      }
+      
+      // Only load React in true development mode
+      if (isDevelopmentMode()) {
+        // This is the Vite dev server, safe to load main.tsx
         const script = document.createElement('script');
         script.type = 'module';
         script.src = '/src/main.tsx';
+        script.onload = function() {
+          console.log('React app loaded, hiding static HTML');
+          // Hide static HTML when React loads
+          document.querySelector('.product-page').style.display = 'none';
+          document.getElementById('root').classList.remove('hidden');
+        };
+        script.onerror = function() {
+          console.log('Development React app not available, using static HTML');
+        };
         document.head.appendChild(script);
+      } else {
+        // Production/preview mode - static HTML only
+        console.log('Production/Preview mode: using static HTML for SEO');
+        // Ensure static HTML is visible and React root is hidden
+        document.querySelector('.product-page').style.display = 'block';
+        document.getElementById('root').style.display = 'none';
       }
     </script>
   </body>

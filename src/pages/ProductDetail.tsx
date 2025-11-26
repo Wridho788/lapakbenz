@@ -628,7 +628,7 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="product-detail-page">
       <SEO 
-        title={`${productData.title} - ${formatPrice(productData.price)} | lapakBenz`}
+        title={`${productData.title} - ${productData.category} - Harga & Spesifikasi | LapakBenz - Platform Komunitas & Event Indonesia`}
         description={truncateText(stripHtml(productData.description), 155)}
         keywords={`${productData.title.toLowerCase()}, ${productData.category.toLowerCase()}, produk lapakbenz, beli ${productData.title.toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
         image={productData.image}

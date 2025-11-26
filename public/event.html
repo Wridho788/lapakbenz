@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <!-- Primary Meta Tags -->
-    <title>Event lapakBenz - Bergabung dengan Event Komunitas Terbaik Indonesia</title>
+    <title>Event • Jakarta, Bandung, Surabaya, Medan, Yogyakarta, Makassar | LapakBenz - Platform Komunitas & Event Indonesia</title>
     <meta name="description" content="Bergabunglah dengan event-event menarik dari komunitas UMKM dan otomotif di seluruh Indonesia. Workshop, gathering, networking, dan seminar untuk pengembangan bisnis." />
     <meta name="keywords" content="event lapakbenz, event komunitas indonesia, event umkm, event otomotif, workshop indonesia, gathering komunitas, networking bisnis, seminar entrepreneur" />
     <meta name="author" content="lapakBenz" />
@@ -15,7 +15,7 @@
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Event lapakBenz - Bergabung dengan Event Komunitas Terbaik Indonesia" />
+    <meta property="og:title" content="Event • Jakarta, Bandung, Surabaya, Medan, Yogyakarta, Makassar | LapakBenz - Platform Komunitas & Event Indonesia" />
     <meta property="og:description" content="Bergabunglah dengan event-event menarik dari komunitas UMKM dan otomotif di seluruh Indonesia. Workshop, gathering, networking, dan seminar untuk pengembangan bisnis." />
     <meta property="og:image" content="https://lapakbenz.com/lapakbenz.png" />
     <meta property="og:url" content="https://lapakbenz.com/event" />
@@ -24,7 +24,7 @@
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Event lapakBenz - Bergabung dengan Event Komunitas Terbaik Indonesia" />
+    <meta name="twitter:title" content="Event • Jakarta, Bandung, Surabaya, Medan, Yogyakarta, Makassar | LapakBenz - Platform Komunitas & Event Indonesia" />
     <meta name="twitter:description" content="Bergabunglah dengan event-event menarik dari komunitas UMKM dan otomotif di seluruh Indonesia. Workshop, gathering, networking, dan seminar untuk pengembangan bisnis." />
     <meta name="twitter:image" content="https://lapakbenz.com/lapakbenz.png" />
     <meta name="twitter:site" content="@lapakbenz" />
@@ -118,6 +118,12 @@
         line-height: 1.6;
       }
       .hidden { display: none !important; }
+      
+      /* Mode Management */
+      body.react-mode #static-event-page { display: none !important; }
+      body.react-mode #root { display: block !important; }
+      body.static-mode #static-event-page { display: block !important; }
+      body.static-mode #root { display: none !important; }
       
       /* Event Page Container */
       .event-page {
@@ -445,20 +451,29 @@
       }
     </style>
   </head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJ4K0EPQGJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZJ4K0EPQGJ');
+</script>
   <body>
-    <noscript>
-      <div class="event-page">
-        <!-- AppbarDefault Component -->
-        <div class="appbar-default">
-          <a href="/dashboard" class="appbar-back-btn">
-            ←
-          </a>
-          <div class="appbar-title">Events</div>
-          <a href="/cart" class="appbar-cart-btn">
-            🛒
-            <span class="cart-badge">2</span>
-          </a>
-        </div>
+    <!-- Event Page Content - Available to both bots and users -->
+    <div class="event-page" id="static-event-page">
+      <!-- AppbarDefault Component -->
+      <div class="appbar-default">
+        <a href="/dashboard" class="appbar-back-btn">
+          ←
+        </a>
+        <div class="appbar-title">Events</div>
+        <a href="/cart" class="appbar-cart-btn">
+          🛒
+          <span class="cart-badge">2</span>
+        </a>
+      </div>
         
         <!-- Chapter Filter Component -->
         <div class="chapter-filter">
@@ -592,11 +607,49 @@
           </div>
         </div>
       </div>
-    </noscript>
+    </div>
     
     <!-- React App Root (hidden dari crawler) -->
     <div id="root" class="hidden"></div>
     
+    <!-- Mode Detection and Content Management -->
+    <script>
+      // Set initial mode
+      (function() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const searchBots = [
+          'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
+          'yandexbot', 'facebookexternalhit', 'twitterbot', 'rogerbot',
+          'linkedinbot', 'embedly', 'quora link preview', 'showyoubot',
+          'outbrain', 'pinterest/0.', 'developers.google.com/+/web/snippet',
+          'slackbot', 'vkshare', 'w3c_validator', 'redditbot', 'applebot',
+          'whatsapp', 'flipboard', 'tumblr', 'bitlybot', 'skypeuripreview',
+          'nuzzel', 'discordbot', 'google page speed', 'qwantbot', 'pinterestbot',
+          'bitrix link preview', 'xing-contenttabreceiver', 'chrome-lighthouse',
+          'telegrambot'
+        ];
+        
+        const isBotOrCrawler = searchBots.some(bot => userAgent.includes(bot)) ||
+                              userAgent.includes('bot') || 
+                              userAgent.includes('crawler') || 
+                              userAgent.includes('spider') ||
+                              userAgent.includes('scraper');
+        
+        // Set mode based on detection
+        if (isBotOrCrawler) {
+          document.body.className = 'static-mode';
+        } else {
+          // Default to static mode, will switch to react mode when React loads
+          document.body.className = 'static-mode';
+        }
+        
+        // Listen for React app initialization
+        window.addEventListener('react-loaded', function() {
+          document.body.className = 'react-mode';
+        });
+      })();
+    </script>
+
     <!-- Interactive JavaScript for layout toggle and tabs -->
     <script>
       // Layout toggle functionality
@@ -605,6 +658,14 @@
         const eventGrid = document.getElementById('eventGrid');
         const eventList = document.getElementById('eventList');
         const tabButtons = document.querySelectorAll('.event-tabs button');
+        
+        // Only initialize if elements exist (static mode)
+        if (!layoutBtns.length || !eventGrid || !eventList) {
+          console.log('Event page elements not found, skipping initialization');
+          return;
+        }
+        
+        console.log('Initializing event page JavaScript functionality');
         
         // Layout toggle
         layoutBtns.forEach((btn, index) => {
@@ -653,12 +714,40 @@
     
     <!-- Vite HMR untuk development -->
     <script>
-      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Enhanced environment detection for React loading
+      function shouldLoadReact() {
+        // Check if we're in development environment
+        const isDev = window.location.hostname === 'localhost' || 
+                     window.location.hostname === '127.0.0.1';
+        
+        // Check if we're in Vite dev server (usually runs on port 5173)
+        const isViteDevServer = window.location.port === '5173';
+        
+        // Only load React in development or Vite dev server
+        return isDev && (isViteDevServer || window.location.port !== '4173');
+      }
+
+      if (shouldLoadReact()) {
         // Only load in development
         const script = document.createElement('script');
         script.type = 'module';
         script.src = '/src/main.tsx';
+        script.onload = function() {
+          // Wait a bit for React to initialize, then trigger switch
+          setTimeout(() => {
+            console.log('React loaded, switching to React mode');
+            window.dispatchEvent(new CustomEvent('react-loaded'));
+          }, 1000);
+        };
+        script.onerror = function() {
+          console.log('React app not available, using static HTML');
+          document.body.className = 'static-mode';
+        };
         document.head.appendChild(script);
+      } else {
+        // In production or when React shouldn't load, use static mode
+        console.log('Using static HTML mode for event page');
+        document.body.className = 'static-mode';
       }
     </script>
   </body>

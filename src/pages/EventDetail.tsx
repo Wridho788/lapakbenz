@@ -199,7 +199,7 @@ const EventDetail: React.FC = () => {
   return (
     <div className="event-detail-page">
       <SEO 
-        title={`${eventContent.name} - ${eventContent.chapter} | Event lapakBenz`}
+        title={`${eventContent.name} • ${eventContent.chapter} / ${eventContent.dates} - ${eventContent.type_desc} | LapakBenz - Platform Komunitas & Event Indonesia`}
         description={truncateText(stripHtml(eventContent.desc), 155) + ` Event ${eventContent.chapter} pada ${eventContent.dates} - ${eventContent.time}. ${eventContent.fee > 0 ? `Biaya kontribusi: ${formatPrice(eventContent.fee)}` : 'Gratis'}. Daftar sekarang di lapakBenz!`}
         keywords={`${eventContent.name.toLowerCase()}, event ${eventContent.chapter.toLowerCase()}, ${eventContent.type_desc.toLowerCase()}, event lapakbenz, event komunitas indonesia, ${eventContent.dates}, ${eventContent.chapter}`}
         image={eventContent.image}
