@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useBlocker } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useAuthStore } from '../stores/authStore';
 import SEO from '../components/SEO';
@@ -42,6 +42,37 @@ const Dashboard: React.FC = () => {
     updatePoints,
     logout,
   } = useAuthStore();
+
+  // Prevent back navigation on dashboard
+  useEffect(() => {
+    const preventBack = () => {
+      // Push current state again to prevent going back
+      window.history.pushState(null, '', window.location.pathname);
+    };
+
+    // Add initial state to history
+    window.history.pushState(null, '', window.location.pathname);
+    
+    // Listen for back button press
+    window.addEventListener('popstate', preventBack);
+
+    return () => {
+      window.removeEventListener('popstate', preventBack);
+    };
+  }, []);
+
+  // Block navigation away from dashboard using React Router
+  useBlocker(({ currentLocation, nextLocation }) => {
+    // Allow navigation if it's to the same page or specific allowed routes
+    const allowedRoutes = ['/dashboard', '/profile', '/notifications', '/cart', '/orders'];
+    const isAllowedNavigation = allowedRoutes.some(route => 
+      nextLocation.pathname.startsWith(route) || 
+      currentLocation.pathname === nextLocation.pathname
+    );
+    
+    // Block navigation if trying to go back to previous pages
+    return !isAllowedNavigation && currentLocation.pathname === '/dashboard';
+  });
 
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();

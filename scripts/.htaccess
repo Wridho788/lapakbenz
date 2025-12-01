@@ -1,0 +1,18 @@
+
+# Apache configuration untuk LapakBenz SPA
+RewriteEngine On
+
+# Handle static files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Handle product detail routes for bots
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot) [NC]
+RewriteRule ^product/([^/]+)/?$ /product-detail.html [L]
+
+# Handle event detail routes for bots
+RewriteCond %{HTTP_USER_AGENT} (bot|crawler|spider|scraper|facebookexternalhit|twitterbot|linkedinbot) [NC]
+RewriteRule ^event/([^/]+)/?$ /event-detail.html [L]
+
+# Handle all other routes (SPA)
+RewriteRule ^.*$ /index.html [L]

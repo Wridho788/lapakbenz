@@ -430,7 +430,7 @@ const ProductDetail: React.FC = () => {
         title: apiProduct.name || dummyData.title,
         price: apiProduct.price || dummyData.price,
         image: apiProduct.image || dummyData.image,
-        category: 'Product', // API doesn't provide category, use default
+        category: apiProduct.category || apiProduct.categoryName || apiProduct.kategori || dummyData.category, // Check multiple possible category fields from API
         rating: parseFloat(apiProduct.rating) || dummyData.rating,
         description: apiProduct.description || apiProduct.shortdesc || dummyData.description,
         specifications: specifications.length > 0 ? specifications : dummyData.specifications,

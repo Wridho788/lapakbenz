@@ -11,16 +11,16 @@
 
     <!-- Primary Meta Tags -->
     <title>
-      Workshop Digital Marketing UMKM • Jakarta / 15 Februari 2024 - Workshop | LapakBenz - Platform
+      {{EVENT_NAME}} • {{EVENT_CITY}} / {{EVENT_DATE}} - {{EVENT_CATEGORY}} | LapakBenz - Platform
       Komunitas & Event Indonesia
     </title>
     <meta
       name="description"
-      content="Bergabunglah dengan Workshop Digital Marketing UMKM di Jakarta Chapter pada 15 Februari 2024 - 09:00 WIB. Event gratis untuk member komunitas lapakBenz. Daftar sekarang!"
+      content="Bergabunglah dengan {{EVENT_NAME}} di {{EVENT_CITY}} pada {{EVENT_DATE}} - {{EVENT_TIME}}. {{EVENT_DESCRIPTION}} {{EVENT_FEE_TEXT}}. Daftar sekarang!"
     />
     <meta
       name="keywords"
-      content="workshop digital marketing umkm, event jakarta chapter, workshop lapakbenz, event komunitas indonesia, digital marketing, umkm indonesia, 15 februari 2024, jakarta"
+      content="{{EVENT_NAME_LOWER}}, event {{EVENT_CITY_LOWER}}, {{EVENT_CATEGORY_LOWER}} lapakbenz, event komunitas indonesia, {{EVENT_DATE_FORMATTED}}, {{EVENT_CITY_LOWER}}"
     />
     <meta name="author" content="lapakBenz" />
     <link rel="canonical" href="https://lapakbenz.com/event-detail" />
@@ -29,11 +29,11 @@
     <meta property="og:type" content="event" />
     <meta
       property="og:title"
-      content="Workshop Digital Marketing UMKM • Jakarta / 15 Februari 2024 - Workshop | LapakBenz - Platform Komunitas & Event Indonesia"
+      content="{{EVENT_NAME}} • {{EVENT_CITY}} / {{EVENT_DATE}} - {{EVENT_CATEGORY}} | LapakBenz - Platform Komunitas & Event Indonesia"
     />
     <meta
       property="og:description"
-      content="Bergabunglah dengan Workshop Digital Marketing UMKM di Jakarta Chapter pada 15 Februari 2024 - 09:00 WIB. Event gratis untuk member komunitas lapakBenz."
+      content="Bergabunglah dengan {{EVENT_NAME}} di {{EVENT_CITY}} pada {{EVENT_DATE}} - {{EVENT_TIME}}. {{EVENT_DESCRIPTION}}"
     />
     <meta property="og:image" content="https://lapakbenz.com/bea2x.jpg" />
     <meta property="og:url" content="https://lapakbenz.com/event-detail" />
@@ -44,11 +44,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
-      content="Workshop Digital Marketing UMKM • Jakarta / 15 Februari 2024 - Workshop | LapakBenz - Platform Komunitas & Event Indonesia"
+      content="{{EVENT_NAME}} • {{EVENT_CITY}} / {{EVENT_DATE}} - {{EVENT_CATEGORY}} | LapakBenz - Platform Komunitas & Event Indonesia"
     />
     <meta
       name="twitter:description"
-      content="Bergabunglah dengan Workshop Digital Marketing UMKM di Jakarta Chapter pada 15 Februari 2024 - 09:00 WIB."
+      content="Bergabunglah dengan {{EVENT_NAME}} di {{EVENT_CITY}} pada {{EVENT_DATE}} - {{EVENT_TIME}}."
     />
     <meta name="twitter:image" content="https://lapakbenz.com/bea2x.jpg" />
     <meta name="twitter:site" content="@lapakbenz" />
@@ -65,20 +65,20 @@
       {
         "@context": "https://schema.org",
         "@type": "Event",
-        "name": "Workshop Digital Marketing UMKM",
-        "description": "Workshop Digital Marketing khusus untuk UMKM di Jakarta Chapter. Pelajari strategi digital marketing terbaru untuk mengembangkan bisnis UMKM Anda.",
-        "image": "https://lapakbenz.com/bea2x.jpg",
-        "startDate": "2024-02-15T09:00:00+07:00",
-        "endDate": "2024-02-15T17:00:00+07:00",
+        "name": "{{EVENT_NAME}}",
+        "description": "{{EVENT_DESCRIPTION}}",
+        "image": "{{EVENT_IMAGE}}",
+        "startDate": "{{EVENT_START_DATE}}",
+        "endDate": "{{EVENT_END_DATE}}",
         "eventStatus": "https://schema.org/EventScheduled",
         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
         "location": {
           "@type": "Place",
-          "name": "Jakarta Chapter lapakBenz",
+          "name": "{{EVENT_CITY}} lapakBenz",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Jakarta",
-            "addressLocality": "Jakarta",
+            "streetAddress": "{{EVENT_CITY}}",
+            "addressLocality": "{{EVENT_CITY}}",
             "addressCountry": "ID"
           }
         },
@@ -89,7 +89,7 @@
         },
         "offers": {
           "@type": "Offer",
-          "price": "0",
+          "price": "{{EVENT_PRICE_NUMBER}}",
           "priceCurrency": "IDR",
           "availability": "https://schema.org/InStock"
         }
@@ -117,7 +117,7 @@
           {
             "@type": "ListItem",
             "position": 3,
-            "name": "Workshop Digital Marketing UMKM",
+            "name": "{{EVENT_NAME}}",
             "item": "https://lapakbenz.com/event-detail"
           }
         ]
@@ -537,37 +537,34 @@
 
       <div class="event-detail-content">
         <!-- Event Image -->
-        <img src="/bea2x.jpg" alt="Workshop Digital Marketing UMKM" class="event-detail-image" />
+        <img src="{{EVENT_IMAGE}}" alt="{{EVENT_NAME}}" class="event-detail-image" />
 
         <div class="event-detail-body">
           <!-- Event Title -->
-          <h3 class="event-detail-title">Workshop Digital Marketing UMKM</h3>
+          <h3 class="event-detail-title">{{EVENT_NAME}}</h3>
 
           <!-- Event Information Grid -->
           <div class="event-detail-info">
             <div class="event-detail-column">
               <div class="event-info-item">
                 <b>Tanggal Event:</b>
-                <div class="event-info-value">15 Februari 2024 - 09:00 WIB</div>
+                <div class="event-info-value">{{EVENT_DATE}} - {{EVENT_TIME}}</div>
               </div>
 
               <div class="event-info-item">
                 <b>Chapter:</b>
-                <div class="event-info-value">Jakarta Chapter</div>
+                <div class="event-info-value">{{EVENT_CITY}} Chapter</div>
               </div>
 
               <div class="event-info-item">
                 <b>Tipe:</b>
-                <div class="event-info-value">Workshop</div>
+                <div class="event-info-value">{{EVENT_CATEGORY}}</div>
               </div>
 
               <div class="event-info-item">
                 <b>Deskripsi:</b>
                 <div class="event-info-value">
-                  Workshop digital marketing khusus untuk pelaku UMKM. Pelajari strategi pemasaran
-                  digital terbaru, teknik SEO, social media marketing, dan cara meningkatkan
-                  penjualan online. Dipandu oleh praktisi berpengalaman di bidang digital marketing
-                  dengan studi kasus real bisnis UMKM yang berhasil.
+                  {{EVENT_DESCRIPTION}}
                 </div>
               </div>
             </div>
@@ -575,17 +572,17 @@
             <div class="event-detail-column">
               <div class="event-info-item">
                 <b>Minimal Peserta:</b>
-                <div class="event-info-value">20 orang</div>
+                <div class="event-info-value">{{EVENT_MIN_PARTICIPANTS}} orang</div>
               </div>
 
               <div class="event-info-item">
                 <b>Biaya Kontribusi:</b>
-                <div class="event-info-value">Gratis untuk member</div>
+                <div class="event-info-value">{{EVENT_FEE_TEXT}}</div>
               </div>
 
               <div class="event-info-item">
                 <b>Status:</b>
-                <div class="event-info-value">Akan Datang</div>
+                <div class="event-info-value">{{EVENT_STATUS}}</div>
               </div>
             </div>
           </div>

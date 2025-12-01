@@ -11,11 +11,14 @@
     "integrate-seo": "node scripts/integrate-seo.mjs",
     "seo:setup": "npm run integrate-seo && npm run generate-static",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "node scripts/server.mjs",
+    "setup-routing": "node scripts/setup-routing.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.85.5",
     "axios": "^1.11.0",
+    "express": "4.21.1",
     "multiselect-react-dropdown": "^2.0.25",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -28,6 +31,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/node": "^22.10.5",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
@@ -40,7 +44,6 @@
     "prettier": "^3.6.2",
     "puppeteer": "^24.31.0",
     "tailwindcss": "^4.1.12",
-    "@types/node": "^22.10.5",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2",
