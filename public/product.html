@@ -94,15 +94,15 @@
                               userAgent.includes('spider') ||
                               userAgent.includes('scraper');
         
-        // If not a bot, redirect to React app
+        // If bot/crawler, show static HTML. Otherwise, hide it and show React app
         if (!isBotOrCrawler && typeof window !== 'undefined') {
-          // Small delay to allow any crawlers that might not be detected to read content
-          setTimeout(() => {
-            const targetPath = '/product';
-            if (window.location.pathname !== targetPath) {
-              window.location.replace(targetPath);
-            }
-          }, 200);
+          // Hide static content immediately and show React app
+          document.addEventListener('DOMContentLoaded', function() {
+            const staticPage = document.querySelector('.product-page');
+            const reactRoot = document.getElementById('root');
+            if (staticPage) staticPage.style.display = 'none';
+            if (reactRoot) reactRoot.classList.remove('hidden');
+          });
         }
       })();
     </script>
@@ -1627,38 +1627,81 @@
       });
     </script>
     
-    <!-- React App Loading for Development Only -->
+    <!-- React App Loading Script -->
     <script>
-      // Detect if we're in true development mode
-      function isDevelopmentMode() {
-        // Check if this is Vite dev server (port 5173) and src files are available
-        return window.location.hostname === 'localhost' && 
-               window.location.port === '5173' &&
-               !window.location.pathname.startsWith('/dist/');
+      // Detect if we're in localhost (dev/preview mode)
+      function isLocalMode() {
+        return window.location.hostname === 'localhost' || 
+               window.location.hostname === '127.0.0.1';
       }
       
-      // Only load React in true development mode
-      if (isDevelopmentMode()) {
-        // This is the Vite dev server, safe to load main.tsx
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = '/src/main.tsx';
-        script.onload = function() {
-          console.log('React app loaded, hiding static HTML');
-          // Hide static HTML when React loads
-          document.querySelector('.product-page').style.display = 'none';
-          document.getElementById('root').classList.remove('hidden');
-        };
-        script.onerror = function() {
-          console.log('Development React app not available, using static HTML');
-        };
-        document.head.appendChild(script);
+      // Function to load React app by injecting script tags from index.html
+      function loadReactApp() {
+        console.log('Loading React app from built assets');
+        
+        // In preview mode, we need to manually load the built React app
+        // Find and inject the main JS bundle
+        fetch('/index.html')
+          .then(response => response.text())
+          .then(html => {
+            // Extract script tag with main bundle
+            const scriptMatch = html.match(/<script[^>]*src="([^"]*main[^"]*\.js)"[^>]*>/);
+            const cssMatch = html.match(/<link[^>]*href="([^"]*main[^"]*\.css)"[^>]*>/);
+            
+            if (scriptMatch && scriptMatch[1]) {
+              // Load CSS first
+              if (cssMatch && cssMatch[1]) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = cssMatch[1];
+                document.head.appendChild(link);
+              }
+              
+              // Then load JS
+              const script = document.createElement('script');
+              script.type = 'module';
+              script.src = scriptMatch[1];
+              script.onload = function() {
+                console.log('React app loaded successfully');
+              };
+              script.onerror = function() {
+                console.error('Failed to load React app');
+              };
+              document.head.appendChild(script);
+            }
+          })
+          .catch(err => {
+            console.error('Failed to fetch index.html:', err);
+          });
+      }
+      
+      // Execute based on environment
+      if (isLocalMode()) {
+        // Local/Preview mode - hide static HTML and load React app
+        console.log('Local/Preview mode: loading React app');
+        
+        // Hide static HTML immediately
+        const staticPage = document.querySelector('.product-page');
+        if (staticPage) {
+          staticPage.style.display = 'none';
+        }
+        
+        // Show React root
+        const reactRoot = document.getElementById('root');
+        if (reactRoot) {
+          reactRoot.classList.remove('hidden');
+          reactRoot.style.display = 'block';
+        }
+        
+        // Load React app
+        loadReactApp();
       } else {
-        // Production/preview mode - static HTML only
-        console.log('Production/Preview mode: using static HTML for SEO');
-        // Ensure static HTML is visible and React root is hidden
-        document.querySelector('.product-page').style.display = 'block';
-        document.getElementById('root').style.display = 'none';
+        // Production mode - static HTML only for SEO
+        console.log('Production mode: using static HTML for SEO');
+        const staticPage = document.querySelector('.product-page');
+        const reactRoot = document.getElementById('root');
+        if (staticPage) staticPage.style.display = 'block';
+        if (reactRoot) reactRoot.style.display = 'none';
       }
     </script>
   </body>

@@ -71,7 +71,7 @@
   }
 }</script>
     
-    <!-- Bot Detection & Redirect Script -->
+    <!-- Bot Detection Script -->
     <script>
       (function() {
         // Detect if visitor is a bot/crawler
@@ -94,15 +94,15 @@
                               userAgent.includes('spider') ||
                               userAgent.includes('scraper');
         
-        // If not a bot, redirect to React app
+        // If bot/crawler, show static HTML. Otherwise, hide it and show React app
         if (!isBotOrCrawler && typeof window !== 'undefined') {
-          // Small delay to allow any crawlers that might not be detected to read content
-          setTimeout(() => {
-            const targetPath = '/event';
-            if (window.location.pathname !== targetPath) {
-              window.location.replace(targetPath);
-            }
-          }, 200);
+          // Hide static content immediately and show React app
+          document.addEventListener('DOMContentLoaded', function() {
+            const staticPage = document.getElementById('static-event-page');
+            const reactRoot = document.getElementById('root');
+            if (staticPage) staticPage.style.display = 'none';
+            if (reactRoot) reactRoot.classList.remove('hidden');
+          });
         }
       })();
     </script>
@@ -612,44 +612,6 @@
     <!-- React App Root (hidden dari crawler) -->
     <div id="root" class="hidden"></div>
     
-    <!-- Mode Detection and Content Management -->
-    <script>
-      // Set initial mode
-      (function() {
-        const userAgent = navigator.userAgent.toLowerCase();
-        const searchBots = [
-          'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
-          'yandexbot', 'facebookexternalhit', 'twitterbot', 'rogerbot',
-          'linkedinbot', 'embedly', 'quora link preview', 'showyoubot',
-          'outbrain', 'pinterest/0.', 'developers.google.com/+/web/snippet',
-          'slackbot', 'vkshare', 'w3c_validator', 'redditbot', 'applebot',
-          'whatsapp', 'flipboard', 'tumblr', 'bitlybot', 'skypeuripreview',
-          'nuzzel', 'discordbot', 'google page speed', 'qwantbot', 'pinterestbot',
-          'bitrix link preview', 'xing-contenttabreceiver', 'chrome-lighthouse',
-          'telegrambot'
-        ];
-        
-        const isBotOrCrawler = searchBots.some(bot => userAgent.includes(bot)) ||
-                              userAgent.includes('bot') || 
-                              userAgent.includes('crawler') || 
-                              userAgent.includes('spider') ||
-                              userAgent.includes('scraper');
-        
-        // Set mode based on detection
-        if (isBotOrCrawler) {
-          document.body.className = 'static-mode';
-        } else {
-          // Default to static mode, will switch to react mode when React loads
-          document.body.className = 'static-mode';
-        }
-        
-        // Listen for React app initialization
-        window.addEventListener('react-loaded', function() {
-          document.body.className = 'react-mode';
-        });
-      })();
-    </script>
-
     <!-- Interactive JavaScript for layout toggle and tabs -->
     <script>
       // Layout toggle functionality
@@ -712,42 +674,81 @@
       });
     </script>
     
-    <!-- Vite HMR untuk development -->
+    <!-- React App Loading Script -->
     <script>
-      // Enhanced environment detection for React loading
-      function shouldLoadReact() {
-        // Check if we're in development environment
-        const isDev = window.location.hostname === 'localhost' || 
-                     window.location.hostname === '127.0.0.1';
-        
-        // Check if we're in Vite dev server (usually runs on port 5173)
-        const isViteDevServer = window.location.port === '5173';
-        
-        // Only load React in development or Vite dev server
-        return isDev && (isViteDevServer || window.location.port !== '4173');
+      // Detect if we're in localhost (dev/preview mode)
+      function isLocalMode() {
+        return window.location.hostname === 'localhost' || 
+               window.location.hostname === '127.0.0.1';
       }
-
-      if (shouldLoadReact()) {
-        // Only load in development
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = '/src/main.tsx';
-        script.onload = function() {
-          // Wait a bit for React to initialize, then trigger switch
-          setTimeout(() => {
-            console.log('React loaded, switching to React mode');
-            window.dispatchEvent(new CustomEvent('react-loaded'));
-          }, 1000);
-        };
-        script.onerror = function() {
-          console.log('React app not available, using static HTML');
-          document.body.className = 'static-mode';
-        };
-        document.head.appendChild(script);
+      
+      // Function to load React app by injecting script tags from index.html
+      function loadReactApp() {
+        console.log('Loading React app from built assets');
+        
+        // In preview mode, we need to manually load the built React app
+        // Find and inject the main JS bundle
+        fetch('/index.html')
+          .then(response => response.text())
+          .then(html => {
+            // Extract script tag with main bundle
+            const scriptMatch = html.match(/<script[^>]*src="([^"]*main[^"]*\.js)"[^>]*>/);
+            const cssMatch = html.match(/<link[^>]*href="([^"]*main[^"]*\.css)"[^>]*>/);
+            
+            if (scriptMatch && scriptMatch[1]) {
+              // Load CSS first
+              if (cssMatch && cssMatch[1]) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = cssMatch[1];
+                document.head.appendChild(link);
+              }
+              
+              // Then load JS
+              const script = document.createElement('script');
+              script.type = 'module';
+              script.src = scriptMatch[1];
+              script.onload = function() {
+                console.log('React app loaded successfully');
+              };
+              script.onerror = function() {
+                console.error('Failed to load React app');
+              };
+              document.head.appendChild(script);
+            }
+          })
+          .catch(err => {
+            console.error('Failed to fetch index.html:', err);
+          });
+      }
+      
+      // Execute based on environment
+      if (isLocalMode()) {
+        // Local/Preview mode - hide static HTML and load React app
+        console.log('Local/Preview mode: loading React app');
+        
+        // Hide static HTML immediately
+        const staticPage = document.getElementById('static-event-page');
+        if (staticPage) {
+          staticPage.style.display = 'none';
+        }
+        
+        // Show React root
+        const reactRoot = document.getElementById('root');
+        if (reactRoot) {
+          reactRoot.classList.remove('hidden');
+          reactRoot.style.display = 'block';
+        }
+        
+        // Load React app
+        loadReactApp();
       } else {
-        // In production or when React shouldn't load, use static mode
-        console.log('Using static HTML mode for event page');
-        document.body.className = 'static-mode';
+        // Production mode - static HTML only for SEO
+        console.log('Production mode: using static HTML for SEO');
+        const staticPage = document.getElementById('static-event-page');
+        const reactRoot = document.getElementById('root');
+        if (staticPage) staticPage.style.display = 'block';
+        if (reactRoot) reactRoot.style.display = 'none';
       }
     </script>
   </body>
