@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { useNavigate, useBlocker } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useAuthStore } from '../stores/authStore';
 import SEO from '../components/SEO';
@@ -289,17 +289,6 @@ const Dashboard: React.FC = () => {
     };
   }, []);
 
-   useBlocker(({ currentLocation, nextLocation }) => {
-    // Allow navigation if it's to the same page or specific allowed routes
-    const allowedRoutes = ['/dashboard', '/profile', '/notifications', '/cart', '/orders'];
-    const isAllowedNavigation = allowedRoutes.some(route => 
-      nextLocation.pathname.startsWith(route) || 
-      currentLocation.pathname === nextLocation.pathname
-    );
-    
-    // Block navigation if trying to go back to previous pages
-    return !isAllowedNavigation && currentLocation.pathname === '/dashboard';
-  });
   // Cleanup on unmount
   useEffect(() => {
     return () => {
