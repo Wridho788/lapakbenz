@@ -3,6 +3,7 @@ import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/authStore';
 import {
   postEvent,
+  postFrontEvent,
   postArticle,
   getEventById,
   getEventsByCustomer,
@@ -18,6 +19,18 @@ export function usePostEvent(): UseMutationResult<any, Error, any> {
     mutationFn: async (data: any) => {
       try {
         return await postEvent(data);
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+}
+
+export function usePostFrontEvent(): UseMutationResult<any, Error, any> {
+  return useMutation({
+    mutationFn: async (data: any) => {
+      try {
+        return await postFrontEvent(data);
       } catch (error) {
         throw error;
       }

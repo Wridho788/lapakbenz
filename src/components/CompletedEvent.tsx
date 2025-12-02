@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EventCard } from './EventCard';
 import './CompletedEvent.css';
-import { usePostEvent } from '../api/hooks/index';
+import { usePostFrontEvent } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
 
 interface EventItem {
@@ -31,11 +31,11 @@ interface CompletedEventProps {
 
 export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => {
   // Move ALL hooks to the top, before any conditional logic
-  const eventMutation = usePostEvent();
+  const eventMutation = usePostFrontEvent();
   const navigate = useNavigate();
 
   useEffect(() => {
-    eventMutation.mutate({ status: '0', limit: 10, offset: 0, chapter: '' }); // Fetch completed events (status "0")
+    eventMutation.mutate({ limit: 10, offset: 0 }); // Fetch front events with only limit and offset
   }, []);
 
 

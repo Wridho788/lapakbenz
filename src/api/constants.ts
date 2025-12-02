@@ -47,6 +47,7 @@ export const ENDPOINT_RECON_CITY = 'city/recon_city';
 export const ENDPOINT_CITY = 'city/get_city'
 // event
 export const ENDPOINT_EVENT = 'event';
+export const ENDPOINT_EVENT_FRONT = 'event/front';
 export const ENDPOINT_EVENT_BY_ID = 'event/get_by_id/';
 export const ENDPOINT_EVENT_GET_BY_CUSTOMER = 'event/get_by_customer/';
 export const ENDPOINT_EVENT_REGISTER = 'event/register';

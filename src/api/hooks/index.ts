@@ -23,6 +23,7 @@ export {
 // Event & Chapter Management Hooks
 export {
   usePostEvent,
+  usePostFrontEvent,
   useEventById,
   useEventsByCustomer,
   usePostArticle,

@@ -5,6 +5,7 @@ import {
   ENDPOINT_SLIDER,
   ENDPOINT_SPLASH,
   ENDPOINT_EVENT,
+  ENDPOINT_EVENT_FRONT,
   ENDPOINT_ARTICLE,
   ENDPOINT_EVENT_BY_ID,
   ENDPOINT_CITY_GET_CITY,
@@ -49,6 +50,16 @@ export const postEvent = async (data?: any) => {
   };
   const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
   const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT}`, payload);
+  return response.data;
+};
+
+export const postFrontEvent = async (data?: any) => {
+  const defaultPayload = {
+    limit: 10,
+    offset: 0,
+  };
+  const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
+  const response = await axios.post(`${BASE_URL}${ENDPOINT_EVENT_FRONT}`, payload);
   return response.data;
 };
 
