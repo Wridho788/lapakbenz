@@ -41,15 +41,55 @@
       "destination": "/index.html"
     },
     {
-      "source": "/product/:id/:slug",
+      "source": "/forgot-password",
       "destination": "/index.html"
     },
     {
-      "source": "/event/:id/:slug",
+      "source": "/verify-otp",
       "destination": "/index.html"
     },
     {
-      "source": "/order/:id",
+      "source": "/checkout",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/invoice/:invoiceId",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/payment-confirmation",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/change-password",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/live-chat",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/product/:productId",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/event/:eventId",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/merchant-registration/:eventId",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/public-registration/:eventId",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profile/:tab",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/order/:orderId",
       "destination": "/index.html"
     }
   ],
