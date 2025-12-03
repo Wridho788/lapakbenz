@@ -1,7 +1,55 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/event",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/product",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/cart",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/myprofile",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/notifications",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/orders",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/register",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/product/:id/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/event/:id/:slug",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/order/:id",
       "destination": "/index.html"
     }
   ],
