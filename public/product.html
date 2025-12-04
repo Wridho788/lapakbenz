@@ -1675,10 +1675,14 @@
           });
       }
       
-      // Execute based on environment
-      if (isLocalMode()) {
-        // Local/Preview mode - hide static HTML and load React app
-        console.log('Local/Preview mode: loading React app');
+      // Check if this is a direct access to static HTML file (for bots) or a React route
+      const isStaticHTMLAccess = window.location.pathname === '/product.html';
+      const isBot = /bot|crawler|spider|crawling/i.test(navigator.userAgent);
+      
+      // Execute based on environment and access type
+      if (isLocalMode() || (!isStaticHTMLAccess && !isBot)) {
+        // Local/Preview mode OR React route access in production - load React app
+        console.log('Loading React app');
         
         // Hide static HTML immediately
         const staticPage = document.querySelector('.product-page');
@@ -1696,8 +1700,8 @@
         // Load React app
         loadReactApp();
       } else {
-        // Production mode - static HTML only for SEO
-        console.log('Production mode: using static HTML for SEO');
+        // Bot accessing static HTML - show static content
+        console.log('Bot detected: using static HTML for SEO');
         const staticPage = document.querySelector('.product-page');
         const reactRoot = document.getElementById('root');
         if (staticPage) staticPage.style.display = 'block';
