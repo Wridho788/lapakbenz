@@ -1,1240 +1,1311 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" href="/lapakbenz.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/lapakbenz.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
-    <!-- Primary Meta Tags -->
-    <title>lapakBenz - Platform Komunitas & Event Indonesia</title>
-    <meta name="description" content="LapakBenz, platform komunitas dan event terdepan untuk UMKM, otomotif, dan berbagai komunitas Indonesia. Temukan event menarik, marketplace terpercaya, dan peluang networking baru." />
-    <meta name="keywords" content="lapakbenz, platform komunitas indonesia, platform event, event umkm, event otomotif, komunitas otomotif indonesia, marketplace komunitas, aplikasi komunitas, aplikasi event, aplikasi umkm, event indonesia, komunitas indonesia, umkm indonesia, networking bisnis" />
-    <meta name="author" content="lapakBenz" />
-    <link rel="canonical" href="https://lapakbenz.com" />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="lapakBenz - Platform Komunitas & Event Indonesia" />
-    <meta property="og:description" content="Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia. Temukan event menarik dan peluang networking baru." />
-    <meta property="og:image" content="https://lapakbenz.com/lapakbenz.png" />
-    <meta property="og:url" content="https://lapakbenz.com" />
-    <meta property="og:site_name" content="lapakBenz" />
-    <meta property="og:locale" content="id_ID" />
-    
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="lapakBenz - Platform Komunitas & Event Indonesia" />
-    <meta name="twitter:description" content="Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia." />
-    <meta name="twitter:image" content="https://lapakbenz.com/lapakbenz.png" />
-    <meta name="twitter:site" content="@lapakbenz" />
-    
-    <!-- Additional SEO Meta Tags -->
-    <meta name="theme-color" content="#161129" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
-    <meta name="bingbot" content="index, follow" />
-    <meta name="revisit-after" content="7 days" />
-    <meta name="rating" content="general" />
-    <meta name="distribution" content="global" />
-    <meta name="language" content="Indonesian" />
-    <meta name="geo.region" content="ID" />
-    <meta name="geo.country" content="Indonesia" />
-    
-    <!-- App Links -->
-    <meta property="al:web:url" content="https://lapakbenz.com" />
-    
-    <!-- Manifest and Icons -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet" />
-    
-    <!-- Performance Optimization -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "lapakBenz",
-      "description": "Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia",
-      "url": "https://lapakbenz.com",
-      "logo": "https://lapakbenz.com/lapakbenz.png",
-      "foundingDate": "2024",
-      "sameAs": [
-        "https://lapakbenz.com"
-      ],
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "ID"
-      },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "Customer Service",
-        "availableLanguage": ["Indonesian", "Bahasa Indonesia"]
-      },
-      "areaServed": {
-        "@type": "Country",
-        "name": "Indonesia"
-      },
-      "knowsAbout": [
-        "Komunitas UMKM",
-        "Komunitas Otomotif", 
-        "Event Management",
-        "Marketplace",
-        "Networking Bisnis"
-      ]
-    }
-    </script>
-    
-    <!-- WebSite Schema for Search -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "lapakBenz",
-      "url": "https://lapakbenz.com",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-          "@type": "EntryPoint",
-          "urlTemplate": "https://lapakbenz.com/product?search={search_term_string}"
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="/lapakbenz.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/lapakbenz.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- Primary Meta Tags -->
+  <title>lapakBenz - Platform Komunitas & Event Indonesia</title>
+  <meta name="description"
+    content="LapakBenz, platform komunitas dan event terdepan untuk UMKM, otomotif, dan berbagai komunitas Indonesia. Temukan event menarik, marketplace terpercaya, dan peluang networking baru." />
+  <meta name="keywords"
+    content="lapakbenz, platform komunitas indonesia, platform event, event umkm, event otomotif, komunitas otomotif indonesia, marketplace komunitas, aplikasi komunitas, aplikasi event, aplikasi umkm, event indonesia, komunitas indonesia, umkm indonesia, networking bisnis" />
+  <meta name="author" content="lapakBenz" />
+  <link rel="canonical" href="https://lapakbenz.com" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="lapakBenz - Platform Komunitas & Event Indonesia" />
+  <meta property="og:description"
+    content="Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia. Temukan event menarik dan peluang networking baru." />
+  <meta property="og:image" content="https://lapakbenz.com/lapakbenz.png" />
+  <meta property="og:url" content="https://lapakbenz.com" />
+  <meta property="og:site_name" content="lapakBenz" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="lapakBenz - Platform Komunitas & Event Indonesia" />
+  <meta name="twitter:description"
+    content="Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia." />
+  <meta name="twitter:image" content="https://lapakbenz.com/lapakbenz.png" />
+  <meta name="twitter:site" content="@lapakbenz" />
+
+  <!-- Additional SEO Meta Tags -->
+  <meta name="theme-color" content="#161129" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+  <meta name="bingbot" content="index, follow" />
+  <meta name="revisit-after" content="7 days" />
+  <meta name="rating" content="general" />
+  <meta name="distribution" content="global" />
+  <meta name="language" content="Indonesian" />
+  <meta name="geo.region" content="ID" />
+  <meta name="geo.country" content="Indonesia" />
+
+  <!-- App Links -->
+  <meta property="al:web:url" content="https://lapakbenz.com" />
+
+  <!-- Manifest and Icons -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Preconnect for Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Performance Optimization -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "lapakBenz",
+        "description": "Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia",
+        "url": "https://lapakbenz.com",
+        "logo": "https://lapakbenz.com/lapakbenz.png",
+        "foundingDate": "2024",
+        "sameAs": ["https://lapakbenz.com"],
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "ID"
         },
-        "query-input": "required name=search_term_string"
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "Customer Service",
+          "availableLanguage": ["Indonesian", "Bahasa Indonesia"]
+        },
+        "areaServed": {
+          "@type": "Country",
+          "name": "Indonesia"
+        },
+        "knowsAbout": [
+          "Komunitas UMKM",
+          "Komunitas Otomotif",
+          "Event Management",
+          "Marketplace",
+          "Networking Bisnis"
+        ]
       }
+    </script>
+
+  <!-- WebSite Schema for Search -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "lapakBenz",
+        "url": "https://lapakbenz.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://lapakbenz.com/product?search={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJ4K0EPQGJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
     }
-    </script>
-    
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZJ4K0EPQGJ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+    gtag('js', new Date());
 
-      gtag('config', 'G-ZJ4K0EPQGJ');
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    
-    <!-- Fallback content untuk SEO crawlers -->
-    <noscript>
-      <div class="seo-fallback">
-        <header>
-          <h1>lapakBenz - Platform Komunitas & Event Indonesia</h1>
-          <p>Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia. Temukan event menarik, marketplace terpercaya, dan peluang networking baru.</p>
-        </header>
-        
-        <main>
-          <!-- User Dashboard Section - matching UserCard component -->
-          <section class="user-dashboard">
-            <div class="user-card">
-              <!-- Point Section -->
-              <div class="user-card-points">
-                <div class="point-text">
-                  <h3 class="point-label">My Point</h3>
-                  <p class="point-value">125</p>
-                </div>
-                <div class="point-image">
-                  <img src="/lapakbenz.png" alt="Merci Points" width="110" />
-                </div>
+    gtag('config', 'G-ZJ4K0EPQGJ');
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <!-- Fallback content untuk SEO crawlers -->
+  <noscript>
+    <div class="seo-fallback">
+      <header>
+        <h1>lapakBenz - Platform Komunitas & Event Indonesia</h1>
+        <p>
+          Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia.
+          Temukan event menarik, marketplace terpercaya, dan peluang networking baru.
+        </p>
+      </header>
+
+      <main>
+        <!-- User Dashboard Section - matching UserCard component -->
+        <section class="user-dashboard">
+          <div class="user-card">
+            <!-- Point Section -->
+            <div class="user-card-points">
+              <div class="point-text">
+                <h3 class="point-label">My Point</h3>
+                <p class="point-value">125</p>
               </div>
+              <div class="point-image">
+                <img src="/lapakbenz.png" alt="Merci Points" width="110" />
+              </div>
+            </div>
 
-              <!-- Divider -->
-              <div class="user-card-divider"></div>
+            <!-- Divider -->
+            <div class="user-card-divider"></div>
 
-              <!-- Button Grid Section -->
-              <div class="user-card-buttons">
-                <div class="user-card-button">
-                  <div class="button-icon">👤</div>
-                  <span class="button-label">Profil</span>
+            <!-- Button Grid Section -->
+            <div class="user-card-buttons">
+              <div class="user-card-button">
+                <div class="button-icon">👤</div>
+                <span class="button-label">Profil</span>
+              </div>
+              <div class="user-card-button">
+                <div class="button-icon">📅</div>
+                <span class="button-label">Riwayat Event</span>
+              </div>
+              <div class="user-card-button">
+                <div class="button-icon">💳</div>
+                <span class="button-label">Transaksi</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Partnership Slider Section -->
+        <section class="partnership-section">
+          <h2>Partnership</h2>
+          <div class="partnership">
+            <div class="partnership-slider">
+              <div class="partnership-slides">
+                <div class="partnership-slide">
+                  <img src="/lapakbenz.png" alt="Partner 1" class="sponsor-image" />
                 </div>
-                <div class="user-card-button">
-                  <div class="button-icon">📅</div>
-                  <span class="button-label">Riwayat Event</span>
+                <div class="partnership-slide">
+                  <img src="/lapakbenz.png" alt="Partner 2" class="sponsor-image" />
                 </div>
-                <div class="user-card-button">
-                  <div class="button-icon">💳</div>
-                  <span class="button-label">Transaksi</span>
+                <div class="partnership-slide">
+                  <img src="/lapakbenz.png" alt="Partner 3" class="sponsor-image" />
                 </div>
               </div>
             </div>
-          </section>
-
-          <!-- 2. Partnership Slider Section -->
-          <section class="partnership-section">
-            <h2>Partnership</h2>
-            <div class="partnership">
-              <div class="partnership-slider">
-                <div class="partnership-slides">
-                  <div class="partnership-slide">
-                    <img src="/lapakbenz.png" alt="Partner 1" class="sponsor-image" />
-                  </div>
-                  <div class="partnership-slide">
-                    <img src="/lapakbenz.png" alt="Partner 2" class="sponsor-image" />
-                  </div>
-                  <div class="partnership-slide">
-                    <img src="/lapakbenz.png" alt="Partner 3" class="sponsor-image" />
-                  </div>
-                </div>
-              </div>
-              <div class="slider-dots">
-                <div class="slider-dot active"></div>
-                <div class="slider-dot"></div>
-                <div class="slider-dot"></div>
-              </div>
+            <div class="slider-dots">
+              <div class="slider-dot active"></div>
+              <div class="slider-dot"></div>
+              <div class="slider-dot"></div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <!-- 3. Upcoming Events Section -->
-          <section class="upcoming-events">
-            <h2>Upcoming Events</h2>
-            <div class="upcoming-news">
-              <div class="news-scroll-container">
-                <div class="news-item">
-                  <div class="news-image-container">
-                    <img src="/lapakbenz.png" alt="Go Tourism Fest" class="news-image" />
-                  </div>
-                  <div class="news-content">
-                    <h3 class="news-title">Go Tourism Fest</h3>
-                    <div class="news-date-info">
-                      <span class="news-icon">📅</span>
-                      <span class="news-date">15 December 2024</span>
-                    </div>
-                    <div class="news-time-info">
-                      <span class="news-icon">🕐</span>
-                      <span class="news-time">09:00 WIB</span>
-                    </div>
-                  </div>
+        <!-- 3. Upcoming Events Section -->
+        <section class="upcoming-events">
+          <h2>Upcoming Events</h2>
+          <div class="upcoming-news">
+            <div class="news-scroll-container">
+              <div class="news-item">
+                <div class="news-image-container">
+                  <img src="/lapakbenz.png" alt="Go Tourism Fest" class="news-image" />
                 </div>
-                <div class="news-item">
-                  <div class="news-image-container">
-                    <img src="/lapakbenz.png" alt="Deevali 2025" class="news-image" />
-                  </div>
-                  <div class="news-content">
-                    <h3 class="news-title">Deevali 2025</h3>
-                    <div class="news-date-info">
-                      <span class="news-icon">📅</span>
-                      <span class="news-date">20 January 2025</span>
-                    </div>
-                    <div class="news-time-info">
-                      <span class="news-icon">🕐</span>
-                      <span class="news-time">14:00 WIB</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="news-item">
-                  <div class="news-image-container">
-                    <img src="/lapakbenz.png" alt="Menuju Kopdarnas" class="news-image" />
-                  </div>
-                  <div class="news-content">
-                    <h3 class="news-title">Menuju Kopdarnas</h3>
-                    <div class="news-date-info">
-                      <span class="news-icon">📅</span>
-                      <span class="news-date">25 February 2025</span>
-                    </div>
-                    <div class="news-time-info">
-                      <span class="news-icon">🕐</span>
-                      <span class="news-time">13:00 WIB</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Our Products Section - matching ProductTabs component -->
-          <section class="product-categories">
-            <h2>Our Products</h2>
-            <div class="product-tabs">
-              <!-- Tab Headers -->
-              <div class="tab-headers">
-                <button class="tab-header active">Latest Products</button>
-                <button class="tab-header">Best Seller</button>
-              </div>
-
-              <!-- Tab Content -->
-              <div class="tab-content">
-                <div class="products-grid">
-                  <div class="product-card">
-                    <div class="product-card-image">
-                      <img src="/lapakbenz.png" alt="Kacamata Polarized Mercedes-Benz" />
-                    </div>
-                    <div class="product-card-content">
-                      <div class="product-card-rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star half">★</span>
-                        <span class="rating-number">4.8</span>
-                      </div>
-                      <h3 class="product-card-name">Kacamata Polarized Mercedes-Benz</h3>
-                      <p class="product-card-price">Rp 850.000</p>
-                    </div>
-                  </div>
-                  <div class="product-card">
-                    <div class="product-card-image">
-                      <img src="/lapakbenz.png" alt="Dompet Kulit Mercedes-Benz" />
-                    </div>
-                    <div class="product-card-content">
-                      <div class="product-card-rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="rating-number">4.9</span>
-                      </div>
-                      <h3 class="product-card-name">Dompet Kulit Mercedes-Benz</h3>
-                      <p class="product-card-price">Rp 1.250.000</p>
-                    </div>
-                  </div>
-                  <div class="product-card">
-                    <div class="product-card-image">
-                      <img src="/lapakbenz.png" alt="Velg Mercedes-Benz AMG" />
-                    </div>
-                    <div class="product-card-content">
-                      <div class="product-card-rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star">★</span>
-                        <span class="rating-number">4.7</span>
-                      </div>
-                      <h3 class="product-card-name">Velg Mercedes-Benz AMG</h3>
-                      <p class="product-card-price">Rp 15.500.000</p>
-                    </div>
-                  </div>
-                  <div class="product-card">
-                    <div class="product-card-image">
-                      <img src="/lapakbenz.png" alt="Oli Lupromax Premium" />
-                    </div>
-                    <div class="product-card-content">
-                      <div class="product-card-rating">
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star filled">★</span>
-                        <span class="star">★</span>
-                        <span class="rating-number">4.6</span>
-                      </div>
-                      <h3 class="product-card-name">Oli Lupromax Premium</h3>
-                      <p class="product-card-price">Rp 385.000</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Chapter Information Section -->
-          <section class="chapter-info">
-            <h2>Chapter & Komunitas</h2>
-            <div class="chapter-grid">
-              <div class="chapter-card">
-                <h3>🏙️ Jakarta Chapter</h3>
-                <p>Komunitas terbesar dengan 2,500+ anggota aktif</p>
-                <div class="chapter-stats">
-                  <span>2,500+ Members</span>
-                  <span>45 Events/bulan</span>
-                </div>
-              </div>
-              <div class="chapter-card">
-                <h3>🌄 Bandung Chapter</h3>
-                <p>Hub kreatif UMKM dan startup teknologi</p>
-                <div class="chapter-stats">
-                  <span>1,200+ Members</span>
-                  <span>25 Events/bulan</span>
-                </div>
-              </div>
-              <div class="chapter-card">
-                <h3>🏭 Surabaya Chapter</h3>
-                <p>Pusat komunitas industri dan manufaktur</p>
-                <div class="chapter-stats">
-                  <span>1,800+ Members</span>
-                  <span>35 Events/bulan</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Latest News Section -->
-          <section class="latest-news">
-            <h2>Berita Terkini</h2>
-            <div class="news-grid">
-              <article class="news-card">
-                <div class="news-image">📰</div>
                 <div class="news-content">
-                  <h3>lapakBenz Raih Penghargaan Platform Terbaik 2024</h3>
-                  <p>Platform komunitas lapakBenz berhasil meraih penghargaan sebagai platform komunitas terbaik...</p>
-                  <div class="news-meta">
-                    <span>12 Februari 2024</span>
-                    <span>Admin lapakBenz</span>
+                  <h3 class="news-title">Go Tourism Fest</h3>
+                  <div class="news-date-info">
+                    <span class="news-icon">📅</span>
+                    <span class="news-date">15 December 2024</span>
+                  </div>
+                  <div class="news-time-info">
+                    <span class="news-icon">🕐</span>
+                    <span class="news-time">09:00 WIB</span>
                   </div>
                 </div>
-              </article>
-              <article class="news-card">
-                <div class="news-image">🎯</div>
+              </div>
+              <div class="news-item">
+                <div class="news-image-container">
+                  <img src="/lapakbenz.png" alt="Deevali 2025" class="news-image" />
+                </div>
                 <div class="news-content">
-                  <h3>Program UMKM Go Digital Diluncurkan</h3>
-                  <p>Memberikan pelatihan digital marketing gratis untuk seluruh member UMKM di platform...</p>
-                  <div class="news-meta">
-                    <span>10 Februari 2024</span>
-                    <span>Tim Editorial</span>
+                  <h3 class="news-title">Deevali 2025</h3>
+                  <div class="news-date-info">
+                    <span class="news-icon">📅</span>
+                    <span class="news-date">20 January 2025</span>
+                  </div>
+                  <div class="news-time-info">
+                    <span class="news-icon">🕐</span>
+                    <span class="news-time">14:00 WIB</span>
                   </div>
                 </div>
-              </article>
-            </div>
-          </section>
-
-          <!-- Call to Action Section -->
-          <section class="cta-section">
-            <div class="cta-content">
-              <h2>Bergabung dengan lapakBenz Sekarang!</h2>
-              <p>Dapatkan akses ke ribuan event, marketplace terpercaya, dan jaringan komunitas terbesar di Indonesia.</p>
-              <div class="cta-buttons">
-                <a href="/register" class="cta-primary">Daftar Gratis</a>
-                <a href="/about" class="cta-secondary">Pelajari Lebih Lanjut</a>
+              </div>
+              <div class="news-item">
+                <div class="news-image-container">
+                  <img src="/lapakbenz.png" alt="Menuju Kopdarnas" class="news-image" />
+                </div>
+                <div class="news-content">
+                  <h3 class="news-title">Menuju Kopdarnas</h3>
+                  <div class="news-date-info">
+                    <span class="news-icon">📅</span>
+                    <span class="news-date">25 February 2025</span>
+                  </div>
+                  <div class="news-time-info">
+                    <span class="news-icon">🕐</span>
+                    <span class="news-time">13:00 WIB</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </section>
-        </main>
-        
-        <footer>
-          <p>&copy; 2024 lapakBenz - Platform Komunitas Indonesia</p>
-        </footer>
-      </div>
-    </noscript>
-    
-    <style>
-      .seo-fallback {
-        font-family: 'Lato', sans-serif;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        line-height: 1.6;
-        color: #333;
-      }
-      .seo-fallback h1 {
-        color: #161129;
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        text-align: center;
-      }
-      .seo-fallback h2 {
-        color: #161129;
-        font-size: 1.8rem;
-        margin: 3rem 0 1.5rem 0;
-        border-bottom: 3px solid #007bff;
-        padding-bottom: 0.5rem;
-      }
-      .seo-fallback h3 {
-        color: #333;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-      }
-      .seo-fallback section {
-        margin-bottom: 3rem;
-      }
-      
-      /* User Dashboard */
-      .user-dashboard {
-        margin-bottom: 2rem;
-      }
-      
-      /* User Card Component Styles - matching UserCard.css */
+          </div>
+        </section>
+
+        <!-- Our Products Section - matching ProductTabs component -->
+        <section class="product-categories">
+          <h2>Our Products</h2>
+          <div class="product-tabs">
+            <!-- Tab Headers -->
+            <div class="tab-headers">
+              <button class="tab-header active">Latest Products</button>
+              <button class="tab-header">Best Seller</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+              <div class="products-grid">
+                <div class="product-card">
+                  <div class="product-card-image">
+                    <img src="/lapakbenz.png" alt="Kacamata Polarized Mercedes-Benz" />
+                  </div>
+                  <div class="product-card-content">
+                    <div class="product-card-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star half">★</span>
+                      <span class="rating-number">4.8</span>
+                    </div>
+                    <h3 class="product-card-name">Kacamata Polarized Mercedes-Benz</h3>
+                    <p class="product-card-price">Rp 850.000</p>
+                  </div>
+                </div>
+                <div class="product-card">
+                  <div class="product-card-image">
+                    <img src="/lapakbenz.png" alt="Dompet Kulit Mercedes-Benz" />
+                  </div>
+                  <div class="product-card-content">
+                    <div class="product-card-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="rating-number">4.9</span>
+                    </div>
+                    <h3 class="product-card-name">Dompet Kulit Mercedes-Benz</h3>
+                    <p class="product-card-price">Rp 1.250.000</p>
+                  </div>
+                </div>
+                <div class="product-card">
+                  <div class="product-card-image">
+                    <img src="/lapakbenz.png" alt="Velg Mercedes-Benz AMG" />
+                  </div>
+                  <div class="product-card-content">
+                    <div class="product-card-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star">★</span>
+                      <span class="rating-number">4.7</span>
+                    </div>
+                    <h3 class="product-card-name">Velg Mercedes-Benz AMG</h3>
+                    <p class="product-card-price">Rp 15.500.000</p>
+                  </div>
+                </div>
+                <div class="product-card">
+                  <div class="product-card-image">
+                    <img src="/lapakbenz.png" alt="Oli Lupromax Premium" />
+                  </div>
+                  <div class="product-card-content">
+                    <div class="product-card-rating">
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star filled">★</span>
+                      <span class="star">★</span>
+                      <span class="rating-number">4.6</span>
+                    </div>
+                    <h3 class="product-card-name">Oli Lupromax Premium</h3>
+                    <p class="product-card-price">Rp 385.000</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Chapter Information Section -->
+        <section class="chapter-info">
+          <h2>Chapter & Komunitas</h2>
+          <div class="chapter-grid">
+            <div class="chapter-card">
+              <h3>🏙️ Jakarta Chapter</h3>
+              <p>Komunitas terbesar dengan 2,500+ anggota aktif</p>
+              <div class="chapter-stats">
+                <span>2,500+ Members</span>
+                <span>45 Events/bulan</span>
+              </div>
+            </div>
+            <div class="chapter-card">
+              <h3>🌄 Bandung Chapter</h3>
+              <p>Hub kreatif UMKM dan startup teknologi</p>
+              <div class="chapter-stats">
+                <span>1,200+ Members</span>
+                <span>25 Events/bulan</span>
+              </div>
+            </div>
+            <div class="chapter-card">
+              <h3>🏭 Surabaya Chapter</h3>
+              <p>Pusat komunitas industri dan manufaktur</p>
+              <div class="chapter-stats">
+                <span>1,800+ Members</span>
+                <span>35 Events/bulan</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Latest News Section -->
+        <section class="latest-news">
+          <h2>Berita Terkini</h2>
+          <div class="news-grid">
+            <article class="news-card">
+              <div class="news-image">📰</div>
+              <div class="news-content">
+                <h3>lapakBenz Raih Penghargaan Platform Terbaik 2024</h3>
+                <p>
+                  Platform komunitas lapakBenz berhasil meraih penghargaan sebagai platform
+                  komunitas terbaik...
+                </p>
+                <div class="news-meta">
+                  <span>12 Februari 2024</span>
+                  <span>Admin lapakBenz</span>
+                </div>
+              </div>
+            </article>
+            <article class="news-card">
+              <div class="news-image">🎯</div>
+              <div class="news-content">
+                <h3>Program UMKM Go Digital Diluncurkan</h3>
+                <p>
+                  Memberikan pelatihan digital marketing gratis untuk seluruh member UMKM di
+                  platform...
+                </p>
+                <div class="news-meta">
+                  <span>10 Februari 2024</span>
+                  <span>Tim Editorial</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="cta-section">
+          <div class="cta-content">
+            <h2>Bergabung dengan lapakBenz Sekarang!</h2>
+            <p>
+              Dapatkan akses ke ribuan event, marketplace terpercaya, dan jaringan komunitas
+              terbesar di Indonesia.
+            </p>
+            <div class="cta-buttons">
+              <a href="/register" class="cta-primary">Daftar Gratis</a>
+              <a href="/about" class="cta-secondary">Pelajari Lebih Lanjut</a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>&copy; 2024 lapakBenz - Platform Komunitas Indonesia</p>
+      </footer>
+    </div>
+  </noscript>
+
+  <style>
+    .seo-fallback {
+      font-family: 'Lato', sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .seo-fallback h1 {
+      color: #161129;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .seo-fallback h2 {
+      color: #161129;
+      font-size: 1.8rem;
+      margin: 3rem 0 1.5rem 0;
+      border-bottom: 3px solid #007bff;
+      padding-bottom: 0.5rem;
+    }
+
+    .seo-fallback h3 {
+      color: #333;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .seo-fallback section {
+      margin-bottom: 3rem;
+    }
+
+    /* User Dashboard */
+    .user-dashboard {
+      margin-bottom: 2rem;
+    }
+
+    /* User Card Component Styles - matching UserCard.css */
+    .user-card {
+      background: #161129;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .user-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Point Section */
+    .user-card-points {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .point-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      color: white;
+    }
+
+    .point-label {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .point-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+      line-height: 1;
+      letter-spacing: -0.5px;
+      transition: all 0.3s ease;
+    }
+
+    .point-image {
+      flex-shrink: 0;
+      width: 110px;
+      height: 11vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .point-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Divider */
+    .user-card-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Button Grid Section */
+    .user-card-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .user-card-button {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 80px;
+    }
+
+    .user-card-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .user-card-button:active {
+      transform: translateY(0);
+    }
+
+    .button-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.15) 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .user-card-button:hover .button-icon {
+      background: linear-gradient(135deg,
+          rgba(255, 255, 255, 0.15) 0%,
+          rgba(255, 255, 255, 0.2) 100%);
+      transform: scale(1.05);
+    }
+
+    .button-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: white;
+      text-align: center;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    /* Legacy user avatar and stats for compatibility */
+    .user-avatar {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+
+    .user-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .user-stats span {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      padding: 0.2rem 0.8rem;
+      border-radius: 15px;
+      font-size: 0.85rem;
+    }
+
+    /* Partnership Component Styles - matching Partnership.css */
+    .partnership-section {
+      margin-bottom: 2rem;
+    }
+
+    .partnership {
+      width: 100%;
+      margin: -1rem 0 0 0;
+      /* Stretch beyond container margins */
+    }
+
+    .partnership-slider {
+      position: relative;
+      height: 240px;
+      width: 100%;
+      /* Full viewport width */
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .partnership-slides {
+      display: flex;
+      width: 100%;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .partnership-slide {
+      min-width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sponsor-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Changed from contain to cover for full stretch */
+    }
+
+    /* Dots Indicator */
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: -2rem;
+    }
+
+    .slider-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 100%;
+      border: none;
+      background: #d1d5db;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .slider-dot.active {
+      background: #161129;
+      transform: scale(1.3);
+      box-shadow:
+        0 0 0 3px rgba(22, 17, 41, 0.2),
+        0 2px 8px rgba(22, 17, 41, 0.3);
+    }
+
+    .slider-dot:hover:not(.active) {
+      background: #9ca3af;
+      transform: scale(1.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Upcoming News - matching UpcomingNews.css */
+    .upcoming-news {
+      margin-bottom: 2rem;
+    }
+
+    .news-scroll-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 0 4px 12px 4px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .news-scroll-container::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .news-scroll-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .news-scroll-container::-webkit-scrollbar-thumb {
+      background: #161129;
+      border-radius: 3px;
+    }
+
+    .news-item {
+      flex: 0 0 280px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+      scroll-snap-align: start;
+    }
+
+    .news-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .news-image-container {
+      width: 100%;
+      height: 140px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .news-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .news-content {
+      padding: 16px;
+    }
+
+    .news-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 12px 0;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .news-date-info,
+    .news-time-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .news-icon {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .news-date,
+    .news-time {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Product Tabs - matching ProductTabs.css */
+    .product-tabs {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-headers {
+      display: flex;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .tab-header {
+      flex: 1;
+      padding: 16px 12px;
+      background: none;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6c757d;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .tab-header.active {
+      color: #161129;
+      background: white;
+    }
+
+    .tab-header.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #161129;
+    }
+
+    .tab-content {
+      padding: 20px 16px;
+      min-height: 280px;
+      background: white;
+      position: relative;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      max-width: 100%;
+      padding: 0;
+      align-items: start;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid #f0f0f0;
+      height: auto;
+      min-height: 200px;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-card-image {
+      width: 100%;
+      height: 120px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      background: #f8f8f8;
+    }
+
+    .product-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .product-card-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+
+    .product-card-rating .star {
+      font-size: 12px;
+      color: #ddd;
+    }
+
+    .product-card-rating .star.filled {
+      color: #ffd700;
+    }
+
+    .product-card-rating .star.half {
+      color: #ffd700;
+    }
+
+    .product-card-rating .rating-number {
+      font-size: 10px;
+      color: #666;
+      margin-left: 2px;
+    }
+
+    .product-card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 2.6em;
+    }
+
+    .product-card-price {
+      font-size: 14px;
+      font-weight: 700;
+      color: #161129;
+      margin-top: 4px;
+    }
+
+    /* Chapters */
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .chapter-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .chapter-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .chapter-stats span {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    /* News */
+    .news-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .news-card {
+      display: flex;
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .news-image {
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+
+    .news-meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    /* CTA */
+    .cta-section {
+      background: linear-gradient(135deg, #161129 0%, #667eea 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 3rem;
+      text-align: center;
+      margin: 3rem 0;
+    }
+
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      padding: 1rem 2rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s ease;
+    }
+
+    .cta-primary {
+      background: white;
+      color: #161129;
+    }
+
+    .cta-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .cta-primary:hover,
+    .cta-secondary:hover {
+      transform: translateY(-3px);
+    }
+
+    /* General */
+    .seo-fallback a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .seo-fallback a:hover {
+      text-decoration: underline;
+    }
+
+    .seo-fallback footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #666;
+      border-top: 1px solid #eee;
+      padding-top: 2rem;
+    }
+
+    /* UserCard Responsive - matching UserCard.css */
+    @media (max-width: 430px) {
       .user-card {
-        background: #161129;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.2s ease;
+        padding: 1.25rem;
       }
 
-      .user-card:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-      }
-
-      /* Point Section */
       .user-card-points {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      .point-text {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        color: white;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
       }
 
       .point-label {
-        font-size: 16px;
-        font-weight: 400;
-        color: white;
-        margin: 0;
-        line-height: 1.2;
+        font-size: 0.9rem;
       }
 
       .point-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: white;
-        margin: 0;
-        line-height: 1;
-        letter-spacing: -0.5px;
-        transition: all 0.3s ease;
+        font-size: 1.75rem;
       }
 
       .point-image {
-        flex-shrink: 0;
         width: 110px;
-        height: 11vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        height: 10vh;
       }
 
-      .point-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-
-      /* Divider */
       .user-card-divider {
-        height: 1px;
-        background: rgba(255, 255, 255, 0.1);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
       }
 
-      /* Button Grid Section */
       .user-card-buttons {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
+        gap: 0.5rem;
       }
 
       .user-card-button {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 1rem 0.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        padding: 0.75rem 0.25rem;
+        min-height: 70px;
+      }
+
+      .button-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+      }
+
+      .button-label {
+        font-size: 0.65rem;
+      }
+    }
+
+    /* Alternative layout for very small screens */
+    @media (max-width: 320px) {
+      .user-card-buttons {
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
+      }
+
+      .user-card-button {
+        padding: 1rem 0.5rem;
         min-height: 80px;
-      }
-
-      .user-card-button:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-
-      .user-card-button:active {
-        transform: translateY(0);
       }
 
       .button-icon {
         width: 32px;
         height: 32px;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.15) 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #ffffff;
         font-size: 1.2rem;
-        transition: all 0.2s ease;
-      }
-
-      .user-card-button:hover .button-icon {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.2) 100%);
-        transform: scale(1.05);
       }
 
       .button-label {
         font-size: 0.75rem;
-        font-weight: 500;
-        color: white;
-        text-align: center;
-        line-height: 1.2;
-        margin: 0;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+
+      .user-card,
+      .user-card-button,
+      .button-icon,
+      .point-value {
+        transition: none;
       }
 
-      /* Legacy user avatar and stats for compatibility */
-      .user-avatar {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-        color: white;
+      .user-card:hover,
+      .user-card-button:hover {
+        transform: none;
       }
-      .user-stats {
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.5rem;
+
+      .user-card-button:hover .button-icon {
+        transform: none;
       }
-      .user-stats span {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        padding: 0.2rem 0.8rem;
-        border-radius: 15px;
-        font-size: 0.85rem;
-      }
-      
-      /* Partnership Component Styles - matching Partnership.css */
-      .partnership-section {
-        margin-bottom: 2rem;
-      }
-      
+    }
+
+    /* Focus states for keyboard navigation */
+    .user-card-button:focus {
+      outline: 2px solid rgba(255, 255, 255, 0.5);
+      outline-offset: 2px;
+    }
+
+    .user-card-button:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    /* Partnership Responsive - matching Partnership.css */
+    @media (max-width: 430px) {
       .partnership {
-        width: 100%;
-        margin: -1rem 0 0 0; /* Stretch beyond container margins */
+        padding-bottom: 0.1rem;
       }
 
       .partnership-slider {
-        position: relative;
-        height: 240px;
-        width: 100%; /* Full viewport width */
-        margin: 0;
-        overflow: hidden;
-      }
-
-      .partnership-slides {
-        display: flex;
-        width: 100%;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 95%;
+        height: 140px;
       }
 
       .partnership-slide {
-        min-width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        padding: 1px;
       }
 
-      .sponsor-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* Changed from contain to cover for full stretch */
-      }
-
-      /* Dots Indicator */
       .slider-dots {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        margin-top: -2rem;
+        gap: 6px;
+        margin-top: 1rem;
       }
 
       .slider-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 100%;
-        border: none;
-        background: #D1D5DB;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        width: 8px;
+        height: 8px;
       }
 
       .slider-dot.active {
-        background: #161129;
-        transform: scale(1.3);
-        box-shadow: 0 0 0 3px rgba(22, 17, 41, 0.2), 0 2px 8px rgba(22, 17, 41, 0.3);
+        transform: scale(1.4);
+        box-shadow:
+          0 0 0 2px rgba(22, 17, 41, 0.2),
+          0 2px 6px rgba(22, 17, 41, 0.3);
+      }
+    }
+
+    @media (max-width: 320px) {
+      .partnership-slider {
+        width: 98%;
+        height: 120px;
       }
 
-      .slider-dot:hover:not(.active) {
-        background: #9CA3AF;
-        transform: scale(1.1);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      }
-      
-      /* Upcoming News - matching UpcomingNews.css */
-      .upcoming-news {
-        margin-bottom: 2rem;
+      .partnership-slide {
+        padding: 1px;
       }
 
-      .news-scroll-container {
-        display: flex;
-        overflow-x: auto;
-        gap: 16px;
-        padding: 0 4px 12px 4px;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
+      .slider-dots {
+        gap: 5px;
       }
 
-      .news-scroll-container::-webkit-scrollbar {
+      .slider-dot {
+        width: 6px;
         height: 6px;
       }
+    }
 
-      .news-scroll-container::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 3px;
+    /* Partnership Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      .partnership-slides {
+        transition: none;
       }
 
-      .news-scroll-container::-webkit-scrollbar-thumb {
-        background: #161129;
-        border-radius: 3px;
+      .slider-dot,
+      .slider-dot.active,
+      .slider-dot:hover {
+        transition: none;
+        transform: none;
       }
+    }
 
-      .news-item {
-        flex: 0 0 280px;
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        scroll-snap-align: start;
-      }
+    /* Partnership Focus states */
+    .slider-dot:focus {
+      outline: 2px solid #161129;
+      outline-offset: 4px;
+    }
 
-      .news-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      }
+    .slider-dot:focus:not(:focus-visible) {
+      outline: none;
+    }
 
-      .news-image-container {
-        width: 100%;
-        height: 140px;
-        overflow: hidden;
-        background: #f8f9fa;
-      }
-
-      .news-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .news-content {
-        padding: 16px;
-      }
-
-      .news-title {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-        margin: 0 0 12px 0;
-        line-height: 1.4;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      .news-date-info,
-      .news-time-info {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 8px;
-      }
-
-      .news-icon {
-        font-size: 12px;
-        color: #666;
-      }
-
-      .news-date,
-      .news-time {
-        font-size: 12px;
-        color: #666;
-      }
-      
-      /* Product Tabs - matching ProductTabs.css */
-      .product-tabs {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .tab-headers {
-        display: flex;
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-      }
-
+    /* Product Tabs Responsive */
+    @media (max-width: 480px) {
       .tab-header {
-        flex: 1;
-        padding: 16px 12px;
-        background: none;
-        border: none;
-        font-size: 14px;
-        font-weight: 600;
-        color: #6c757d;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        position: relative;
-      }
-
-      .tab-header.active {
-        color: #161129;
-        background: white;
-      }
-
-      .tab-header.active::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: #161129;
+        padding: 14px 8px;
+        font-size: 13px;
       }
 
       .tab-content {
-        padding: 20px 16px;
-        min-height: 280px;
-        background: white;
-        position: relative;
+        padding: 16px 12px;
+        min-height: 260px;
       }
 
       .products-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-        max-width: 100%;
-        padding: 0;
-        align-items: start;
-      }
-
-      .product-card {
-        background: white;
-        border-radius: 12px;
-        padding: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid #f0f0f0;
-        height: auto;
-        min-height: 200px;
-      }
-
-      .product-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        gap: 12px;
       }
 
       .product-card-image {
-        width: 100%;
-        height: 120px;
-        border-radius: 8px;
-        overflow: hidden;
-        margin-bottom: 8px;
-        background: #f8f8f8;
-      }
-
-      .product-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .product-card-content {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .product-card-rating {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        margin-bottom: 2px;
-      }
-
-      .product-card-rating .star {
-        font-size: 12px;
-        color: #ddd;
-      }
-
-      .product-card-rating .star.filled {
-        color: #ffd700;
-      }
-
-      .product-card-rating .star.half {
-        color: #ffd700;
-      }
-
-      .product-card-rating .rating-number {
-        font-size: 10px;
-        color: #666;
-        margin-left: 2px;
+        height: 100px;
       }
 
       .product-card-name {
-        font-size: 13px;
-        font-weight: 600;
-        color: #333;
-        margin: 0;
-        line-height: 1.3;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        height: 2.6em;
+        font-size: 12px;
       }
 
       .product-card-price {
-        font-size: 14px;
-        font-weight: 700;
-        color: #161129;
-        margin-top: 4px;
+        font-size: 13px;
       }
-      
-      /* Chapters */
+    }
+
+    @media (max-width: 320px) {
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .seo-fallback {
+        padding: 1rem;
+      }
+
+      .partnership-grid {
+        grid-template-columns: 1fr;
+      }
+
       .chapter-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: 1fr;
       }
-      .chapter-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        text-align: center;
-      }
-      .chapter-stats {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-      .chapter-stats span {
-        background: rgba(255,255,255,0.2);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-      }
-      
-      /* News */
-      .news-grid {
-        display: grid;
-        gap: 1.5rem;
-      }
-      .news-card {
-        display: flex;
-        background: white;
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      }
-      .news-image {
-        font-size: 2rem;
-        margin-right: 1rem;
-      }
-      .news-meta {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
-        font-size: 0.9rem;
-        color: #666;
-      }
-      
-      /* CTA */
-      .cta-section {
-        background: linear-gradient(135deg, #161129 0%, #667eea 100%);
-        color: white;
-        border-radius: 15px;
-        padding: 3rem;
-        text-align: center;
-        margin: 3rem 0;
-      }
+
       .cta-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        margin-top: 2rem;
+        flex-direction: column;
+        align-items: center;
       }
-      .cta-primary, .cta-secondary {
-        padding: 1rem 2rem;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: transform 0.3s ease;
-      }
-      .cta-primary {
-        background: white;
-        color: #161129;
-      }
-      .cta-secondary {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-      }
-      .cta-primary:hover, .cta-secondary:hover {
-        transform: translateY(-3px);
-      }
-      
-      /* General */
-      .seo-fallback a {
-        color: #007bff;
-        text-decoration: none;
-      }
-      .seo-fallback a:hover {
-        text-decoration: underline;
-      }
-      .seo-fallback footer {
-        margin-top: 3rem;
-        text-align: center;
-        color: #666;
-        border-top: 1px solid #eee;
-        padding-top: 2rem;
-      }
-      
-      /* UserCard Responsive - matching UserCard.css */
-      @media (max-width: 430px) {
-        .user-card {
-          padding: 1.25rem;
-        }
-        
-        .user-card-points {
-          gap: 0.75rem;
-          margin-bottom: 1.25rem;
-        }
-        
-        .point-label {
-          font-size: 0.9rem;
-        }
-        
-        .point-value {
-          font-size: 1.75rem;
-        }
-        
-        .point-image {
-          width: 110px;
-          height: 10vh;
-        }
-        
-        .user-card-divider {
-          margin-bottom: 1.25rem;
-        }
-        
-        .user-card-buttons {
-          gap: 0.5rem;
-        }
-        
-        .user-card-button {
-          padding: 0.75rem 0.25rem;
-          min-height: 70px;
-        }
-        
-        .button-icon {
-          width: 28px;
-          height: 28px;
-          font-size: 1rem;
-        }
-        
-        .button-label {
-          font-size: 0.65rem;
-        }
-      }
+    }
+  </style>
 
-      /* Alternative layout for very small screens */
-      @media (max-width: 320px) {
-        .user-card-buttons {
-          grid-template-columns: repeat(2, 1fr);
-          gap: 0.5rem;
-        }
-        
-        .user-card-button {
-          padding: 1rem 0.5rem;
-          min-height: 80px;
-        }
-        
-        .button-icon {
-          width: 32px;
-          height: 32px;
-          font-size: 1.2rem;
-        }
-        
-        .button-label {
-          font-size: 0.75rem;
-        }
-      }
+  <script type="module" src="/src/main.tsx"></script>
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function (OneSignal) {
+      await OneSignal.init({
+        appId: 'e97b9d55-bdde-4fa9-8b00-b5d8c72cd466',
+        safari_web_id: 'web.onesignal.auto.01d22b73-bccb-4a84-9633-69c73285f3f4',
+        notifyButton: {
+          enable: true,
+        },
+      });
+    });
+  </script>
+</body>
 
-      /* Accessibility */
-      @media (prefers-reduced-motion: reduce) {
-        .user-card,
-        .user-card-button,
-        .button-icon,
-        .point-value {
-          transition: none;
-        }
-        
-        .user-card:hover,
-        .user-card-button:hover {
-          transform: none;
-        }
-        
-        .user-card-button:hover .button-icon {
-          transform: none;
-        }
-      }
-
-      /* Focus states for keyboard navigation */
-      .user-card-button:focus {
-        outline: 2px solid rgba(255, 255, 255, 0.5);
-        outline-offset: 2px;
-      }
-
-      .user-card-button:focus:not(:focus-visible) {
-        outline: none;
-      }
-
-      /* Partnership Responsive - matching Partnership.css */
-      @media (max-width: 430px) {
-        .partnership {
-          padding-bottom: 0.1rem;
-        }
-        
-        .partnership-slider {
-          width: 95%;
-          height: 140px;
-        }
-        
-        .partnership-slide {
-          padding: 1px;
-        }
-        
-        .slider-dots {
-          gap: 6px;
-          margin-top: 1rem;
-        }
-        
-        .slider-dot {
-          width: 8px;
-          height: 8px;
-        }
-        
-        .slider-dot.active {
-          transform: scale(1.4);
-          box-shadow: 0 0 0 2px rgba(22, 17, 41, 0.2), 0 2px 6px rgba(22, 17, 41, 0.3);
-        }
-      }
-
-      @media (max-width: 320px) {
-        .partnership-slider {
-          width: 98%;
-          height: 120px;
-        }
-        
-        .partnership-slide {
-          padding: 1px;
-        }
-        
-        .slider-dots {
-          gap: 5px;
-        }
-        
-        .slider-dot {
-          width: 6px;
-          height: 6px;
-        }
-      }
-
-      /* Partnership Accessibility */
-      @media (prefers-reduced-motion: reduce) {
-        .partnership-slides {
-          transition: none;
-        }
-        
-        .slider-dot,
-        .slider-dot.active,
-        .slider-dot:hover {
-          transition: none;
-          transform: none;
-        }
-      }
-
-      /* Partnership Focus states */
-      .slider-dot:focus {
-        outline: 2px solid #161129;
-        outline-offset: 4px;
-      }
-
-      .slider-dot:focus:not(:focus-visible) {
-        outline: none;
-      }
-
-      /* Product Tabs Responsive */
-      @media (max-width: 480px) {
-        .tab-header {
-          padding: 14px 8px;
-          font-size: 13px;
-        }
-        
-        .tab-content {
-          padding: 16px 12px;
-          min-height: 260px;
-        }
-
-        .products-grid {
-          gap: 12px;
-        }
-
-        .product-card-image {
-          height: 100px;
-        }
-        
-        .product-card-name {
-          font-size: 12px;
-        }
-        
-        .product-card-price {
-          font-size: 13px;
-        }
-      }
-
-      @media (max-width: 320px) {
-        .products-grid {
-          grid-template-columns: 1fr;
-          gap: 10px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .seo-fallback {
-          padding: 1rem;
-        }
-        .partnership-grid {
-          grid-template-columns: 1fr;
-        }
-        .chapter-grid {
-          grid-template-columns: 1fr;
-        }
-        .cta-buttons {
-          flex-direction: column;
-          align-items: center;
-        }
-      }
-    </style>
-    
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
 </html>

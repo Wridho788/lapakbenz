@@ -8,10 +8,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['OneSignalSDKWorker.js', 'OneSignalSDKUpdaterWorker.js'],
       manifest: {
         name: 'lapakBenz - Platform Komunitas & Event Indonesia',
         short_name: 'lapakBenz',
-        description: 'Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia.',
+        description:
+          'Platform komunitas terdepan untuk UMKM, otomotif, dan berbagai komunitas di Indonesia.',
         start_url: '/',
         display: 'standalone',
         background_color: '#161129',
@@ -33,8 +35,8 @@ export default defineConfig({
         product: './public/product.html',
         event: './public/event.html',
         productDetail: './public/product-detail.html',
-        eventDetail: './public/event-detail.html'
-      }
-    }
-  }
+        eventDetail: './public/event-detail.html',
+      },
+    },
+  },
 });

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdLogin, MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import OneSignal from 'react-onesignal';
 import { AppbarAuth } from '../components/AppbarAuth';
 import { useLogin } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
@@ -123,6 +124,17 @@ const Login: React.FC = () => {
         login(token, userData);
 
         console.log('💾 Auth data saved to Zustand store');
+        
+        // Set OneSignal External User ID untuk targeting notifikasi
+        if (userData.id) {
+          try {
+            await OneSignal.login(userData.id);
+            console.log('🔔 OneSignal External User ID set:', userData.id);
+          } catch (err) {
+            console.error('❌ Failed to set OneSignal user ID:', err);
+          }
+        }
+        
         console.log('🎉 Login successful! Redirecting to dashboard...');
 
         // Navigate to dashboard
