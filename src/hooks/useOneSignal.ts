@@ -23,10 +23,8 @@ export const useOneSignal = () => {
           appId: "e97b9d55-bdde-4fa9-8b00-b5d8c72cd466",
           allowLocalhostAsSecureOrigin: true,
           
-          // Explicit service worker configuration
-          serviceWorkerPath: '/OneSignalSDKWorker.js',
-          serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
-          serviceWorkerParam: { scope: '/' },
+          // OneSignal v16 handles service worker automatically
+          // No need to specify paths - SDK will manage it
           
           notifyButton: {
             enable: true,
