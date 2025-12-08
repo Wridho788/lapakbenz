@@ -9,7 +9,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       // Exclude OneSignal workers from PWA - let OneSignal manage them
-      includeAssets: ['lapakbenz.png', 'manifest.json'],
+      includeAssets: [
+        'lapakbenz.png', 
+        'manifest.json',
+        'OneSignalSDKWorker.js',
+        'OneSignalSDKUpdaterWorker.js'
+      ],
       workbox: {
         // Don't cache OneSignal service workers
         navigateFallbackDenylist: [/^\/OneSignal/],
