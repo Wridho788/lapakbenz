@@ -78,19 +78,7 @@
         }
       }
     </script>
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function (OneSignal) {
-      await OneSignal.init({
-        appId: "e97b9d55-bdde-4fa9-8b00-b5d8c72cd466",
-        safari_web_id: "web.onesignal.auto.01d22b73-bccb-4a84-9633-69c73285f3f4",
-        notifyButton: {
-          enable: true,
-        },
-      });
-    });
-  </script>
+  <!-- OneSignal is initialized via React hook in src/hooks/useOneSignal.ts -->
   <!-- Breadcrumb Schema -->
   <script type="application/ld+json">
       {
