@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { HelmetProvider } from 'react-helmet-async';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { CartProvider } from './contexts/CartContext';
+import { useOneSignal } from './hooks/useOneSignal';
 import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Event from './pages/Event';
@@ -29,10 +30,14 @@ import LiveChat from './pages/LiveChat';
 import MerchantRegistration from './pages/MerchantRegistration';
 import PublicRegistration from './pages/PublicRegistration';
 import VerifyOtp from './pages/VerifyOtp';
+import OneSignalDebug from './pages/OneSignalDebug';
 import './App.css';
 import EventDetail from './pages/EventDetail';
 
 function App() {
+  // Initialize OneSignal once at app level
+  useOneSignal();
+
   return (
     <HelmetProvider>
       <NotificationProvider>
@@ -66,6 +71,7 @@ function App() {
               <Route path="/merchant-registration/:eventId" element={<MerchantRegistration />} />
               <Route path="/public-registration/:eventId" element={<PublicRegistration />} />
               <Route path="/verify" element={<VerifyOtp />} />
+              <Route path="/onesignal-debug" element={<OneSignalDebug />} />
             </Routes>
           </MainLayout>
         </Router>

@@ -8,7 +8,25 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['OneSignalSDKWorker.js', 'OneSignalSDKUpdaterWorker.js'],
+      // Exclude OneSignal workers from PWA - let OneSignal manage them
+      includeAssets: ['lapakbenz.png', 'manifest.json'],
+      workbox: {
+        // Don't cache OneSignal service workers
+        navigateFallbackDenylist: [/^\/OneSignal/],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/cdn\.onesignal\.com\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'onesignal-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              }
+            }
+          }
+        ]
+      },
       manifest: {
         name: 'lapakBenz - Platform Komunitas & Event Indonesia',
         short_name: 'lapakBenz',
