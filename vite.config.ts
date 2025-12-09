@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt', // Don't auto-register, let OneSignal handle it
+      injectRegister: null, // Disable auto service worker registration
       // Include OneSignal workers in assets
       includeAssets: [
         'lapakbenz.png', 
@@ -17,8 +18,10 @@ export default defineConfig({
         'OneSignalSDK.sw.js'
       ],
       workbox: {
-        // Don't cache OneSignal service workers
+        // Exclude OneSignal service workers from Workbox management
         navigateFallbackDenylist: [/^\/OneSignal/],
+        // Don't precache OneSignal workers - they need to be handled separately
+        globIgnores: ['**/OneSignal*.js'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/cdn\.onesignal\.com\/.*/i,
