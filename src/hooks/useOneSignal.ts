@@ -20,39 +20,39 @@ export const useOneSignal = () => {
         console.log('🔔 Initializing OneSignal...');
 
         await OneSignal.init({
-          appId: "e97b9d55-bdde-4fa9-8b00-b5d8c72cd466",
+          appId: 'e97b9d55-bdde-4fa9-8b00-b5d8c72cd466',
           allowLocalhostAsSecureOrigin: true,
-           serviceWorkerPath: '/OneSignalSDKWorker.js',
+          serviceWorkerPath: '/OneSignalSDKWorker.js',
           serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
           serviceWorkerParam: { scope: '/' },
           // OneSignal v16 handles service worker automatically
           // No need to specify paths - SDK will manage it
-          
+
           notifyButton: {
-            enable: true,
+            enable: false, // Disable default notify button
             prenotify: true,
             showCredit: false,
             position: 'bottom-right',
             offset: {
               bottom: '80px',
               left: '0px',
-              right: '20px'
+              right: '20px',
             },
             text: {
               'tip.state.unsubscribed': 'Subscribe to notifications',
               'tip.state.subscribed': "You're subscribed to notifications",
               'tip.state.blocked': "You've blocked notifications",
               'message.prenotify': 'Click to subscribe to notifications',
-              'message.action.subscribed': "Thanks for subscribing!",
-              'message.action.subscribing': "Subscribing...",
+              'message.action.subscribed': 'Thanks for subscribing!',
+              'message.action.subscribing': 'Subscribing...',
               'message.action.resubscribed': "You're subscribed to notifications",
               'message.action.unsubscribed': "You won't receive notifications again",
               'dialog.main.title': 'Manage Site Notifications',
               'dialog.main.button.subscribe': 'SUBSCRIBE',
               'dialog.main.button.unsubscribe': 'UNSUBSCRIBE',
               'dialog.blocked.title': 'Unblock Notifications',
-              'dialog.blocked.message': "Follow these instructions to allow notifications:"
-            }
+              'dialog.blocked.message': 'Follow these instructions to allow notifications:',
+            },
           },
         });
 
@@ -89,10 +89,9 @@ export const useOneSignal = () => {
             window.location.href = data.url;
           }
         });
-
       } catch (error: any) {
         console.error('❌ OneSignal initialization failed:', error);
-        
+
         // Handle specific error cases
         if (error.message?.includes('already initialized')) {
           console.log('⚠️ OneSignal was already initialized elsewhere');
