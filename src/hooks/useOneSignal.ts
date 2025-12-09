@@ -63,7 +63,12 @@ export const useOneSignal = () => {
           const registrations = await navigator.serviceWorker.getRegistrations();
           console.log('🔧 Service Workers registered:', registrations.length);
           registrations.forEach((reg, index) => {
-            console.log(`  SW ${index + 1}:`, reg.scope, reg.active?.state);
+            const scriptURL = reg.active?.scriptURL || 'none';
+            const isOneSignal = scriptURL.includes('OneSignal');
+            console.log(`  SW ${index + 1}:`, reg.scope);
+            console.log(`    - Script: ${scriptURL}`);
+            console.log(`    - State: ${reg.active?.state}`);
+            console.log(`    - OneSignal: ${isOneSignal ? '✅ YES' : '❌ NO'}`);
           });
         }
 
@@ -97,12 +102,28 @@ export const useOneSignal = () => {
           console.log('🔄 Subscription changed:', event);
         });
 
+        // Listen for notification received (foreground)
+        OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
+          console.log('🔔 Notification received (foreground):', event.notification);
+          // Don't prevent default - let notification show
+        });
+
         // Listen for notification clicks
         OneSignal.Notifications.addEventListener('click', (event) => {
-          console.log('🖱️ Notification clicked:', event.notification);
-          const data = event.notification.additionalData as any;
-          if (data?.url) {
-            window.location.href = data.url;
+          console.log('🖱️ Notification clicked:', event);
+          try {
+            const notification = event.notification;
+            if (notification) {
+              console.log('  - Title:', notification.title);
+              console.log('  - Body:', notification.body);
+              const data = notification.additionalData as any;
+              if (data?.url) {
+                console.log('  - Opening URL:', data.url);
+                window.location.href = data.url;
+              }
+            }
+          } catch (err) {
+            console.error('Error handling notification click:', err);
           }
         });
       } catch (error: any) {
