@@ -22,12 +22,11 @@ export const useOneSignal = () => {
         await OneSignal.init({
           appId: 'e97b9d55-bdde-4fa9-8b00-b5d8c72cd466',
           allowLocalhostAsSecureOrigin: true,
-          serviceWorkerPath: '/OneSignalSDKWorker.js',
-          serviceWorkerUpdaterPath: '/OneSignalSDKUpdaterWorker.js',
-          serviceWorkerParam: { scope: '/' },
-          // OneSignal v16 handles service worker automatically
-          // No need to specify paths - SDK will manage it
-
+          
+          // Use custom service worker files in /public folder
+          serviceWorkerPath: 'OneSignalSDKWorker.js',
+          serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
+          
           notifyButton: {
             enable: false, // Disable default notify button
             prenotify: true,
