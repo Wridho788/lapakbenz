@@ -23,9 +23,8 @@ export const useOneSignal = () => {
           appId: 'e97b9d55-bdde-4fa9-8b00-b5d8c72cd466',
           allowLocalhostAsSecureOrigin: true,
           
-          // Use custom service worker files in /public folder
-          serviceWorkerPath: 'OneSignalSDKWorker.js',
-          serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
+          // Disable service worker for now - use SDK defaults
+          // Service worker registration will be handled by OneSignal CDN
           
           notifyButton: {
             enable: false, // Disable default notify button

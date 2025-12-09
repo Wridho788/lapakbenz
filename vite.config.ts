@@ -13,7 +13,8 @@ export default defineConfig({
         'lapakbenz.png', 
         'manifest.json',
         'OneSignalSDKWorker.js',
-        'OneSignalSDKUpdaterWorker.js'
+        'OneSignalSDKUpdaterWorker.js',
+        'OneSignalSDK.sw.js'
       ],
       workbox: {
         // Don't cache OneSignal service workers
