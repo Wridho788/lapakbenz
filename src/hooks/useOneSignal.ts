@@ -58,6 +58,15 @@ export const useOneSignal = () => {
         initialized.current = true;
         console.log('✅ OneSignal initialized successfully');
 
+        // Check service worker registration
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          console.log('🔧 Service Workers registered:', registrations.length);
+          registrations.forEach((reg, index) => {
+            console.log(`  SW ${index + 1}:`, reg.scope, reg.active?.state);
+          });
+        }
+
         // Check permission status
         const permission = String(await OneSignal.Notifications.permission);
         console.log('🔐 Notification permission:', permission);
@@ -73,6 +82,15 @@ export const useOneSignal = () => {
         // Log subscription status
         const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
         console.log('📱 Push subscription status:', isSubscribed);
+
+        if (isSubscribed) {
+          const pushToken = await OneSignal.User.PushSubscription.token;
+          const subscriptionId = await OneSignal.User.PushSubscription.id;
+          console.log('🔑 Push Token:', pushToken);
+          console.log('🆔 Subscription ID:', subscriptionId);
+        } else {
+          console.warn('⚠️ User not subscribed - notifications will not be received');
+        }
 
         // Listen for subscription changes
         OneSignal.User.PushSubscription.addEventListener('change', (event) => {
