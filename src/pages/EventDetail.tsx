@@ -32,8 +32,6 @@ const EventDetail: React.FC = () => {
   useEffect(() => {
     if (eventRegisterQuery.data && triggerRegistration) {
       const result = eventRegisterQuery.data;
-      console.log('🎫 Event Registration Response:', result);
-
       if (result.status === 200 && result.content) {
         toast.success('🎉 Registration Successful! Your event registration has been completed successfully.', {
           position: 'bottom-right',
@@ -52,14 +50,11 @@ const EventDetail: React.FC = () => {
     }
 
     if (eventRegisterQuery.error && triggerRegistration) {
-      console.error('❌ Event Registration Error:', eventRegisterQuery.error);
-      
       // Safely extract error message from Axios error or fallback to generic message
       let errorMessage = 'An unexpected error occurred during registration.';
       if (eventRegisterQuery.error && typeof eventRegisterQuery.error === 'object' && 'response' in eventRegisterQuery.error) {
         const axiosError = eventRegisterQuery.error as any;
         errorMessage = axiosError.response?.data?.error || axiosError.message || errorMessage;
-        console.log(errorMessage)
       } else if (eventRegisterQuery.error.message) {
         errorMessage = eventRegisterQuery.error.message;
       }
@@ -80,13 +75,11 @@ const EventDetail: React.FC = () => {
         // Validate token format and presence
         const isValidToken = validateToken();
         if (!isValidToken) {
-          console.log('❌ Invalid token detected, logging out');
           // Auto logout if token is invalid
           useAuthStore.getState().logout();
           setIsAuthValidated(false);
         } else {
           setIsAuthValidated(true);
-          console.log('✅ Authentication validated for event registration');
         }
       } else {
         setIsAuthValidated(false);
@@ -128,7 +121,6 @@ const EventDetail: React.FC = () => {
 
     // Validate event ID format
     if (!eventId.match(/^\d+$/)) {
-      console.error('❌ Invalid event ID format:', eventId);
       toast.error('Event ID format is invalid.', {
         position: 'bottom-right',
         autoClose: 1500,
@@ -136,16 +128,11 @@ const EventDetail: React.FC = () => {
       });
       return;
     }
-
-    console.log('🎫 Starting event registration for eventId:', eventId);
-    console.log('🔐 Using token:', token ? token.substring(0, 20) + '...' : 'No token');
-    
     // Trigger the registration query
     setTriggerRegistration(true);
   };
 
   const handleMerchantRegistration = () => {
-    console.log('🏪 Merchant Registration clicked for event:', eventId);
     if (eventId) {
       navigate(`/merchant-registration/${eventId}`);
     } else {
@@ -154,7 +141,6 @@ const EventDetail: React.FC = () => {
   };
 
   const handlePublicRegistration = () => {
-    console.log('👤 Public Registration clicked for event:', eventId);
     if (eventId) {
       navigate(`/public-registration/${eventId}`);
     } else {

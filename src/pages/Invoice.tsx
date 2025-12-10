@@ -23,8 +23,6 @@ const Invoice: React.FC = () => {
 
   // Get invoice data from navigation state
   const invoiceData = location.state as InvoiceState;
-  console.log(invoiceData?.orderPayment, 'order payment');
-
   // Use OrderDetail hook for polling payment status
   const { data: orderDetail, refetch } = useOrderDetail(
     invoiceData?.orderPayment || '',
@@ -36,15 +34,9 @@ const Invoice: React.FC = () => {
       navigate('/cart');
       return;
     }
-
-    console.log('📄 Invoice page loaded with data:', invoiceData);
-    console.log('🔗 Full invoice URL:', getFullUrl(invoiceData.invoiceUrl));
-
     // Auto-open payment page in browser
     const autoOpenTimer = setTimeout(() => {
       setIsLoading(false);
-      console.log('🚀 Auto-opening payment page in browser');
-
       const fullUrl = getFullUrl(invoiceData.invoiceUrl);
       window.open(fullUrl, '_blank');
     }, 2000); // 2 seconds delay to show the page first
@@ -58,18 +50,13 @@ const Invoice: React.FC = () => {
     if (!invoiceData?.orderPayment || !isAuthenticated) {
       return;
     }
-
-    console.log('🔄 Starting payment status polling for order:', invoiceData.orderPayment);
-
     // Polling setiap 3 detik
     intervalRef.current = setInterval(() => {
-      console.log('📊 Polling payment status...');
       refetch();
     }, 3000);
 
     return () => {
       if (intervalRef.current) {
-        console.log('⏹️ Stopping payment status polling');
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
@@ -79,8 +66,6 @@ const Invoice: React.FC = () => {
   // Effect untuk mengecek status pembayaran dan navigasi
   useEffect(() => {
     if (orderDetail?.content?.status === 'SUCCESSFUL') {
-      console.log('✅ Payment successful! Navigating to order detail page');
-      
       // Hentikan polling
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

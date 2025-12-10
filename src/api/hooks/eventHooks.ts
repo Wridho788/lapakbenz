@@ -195,11 +195,8 @@ export function useMerchantRegistration(): UseMutationResult<
         formData.append('email', payload.email);
         formData.append('menu', payload.menu);
         formData.append('qty', payload.qty);
-
-        console.log('🏪 Merchant Registration Payload:', payload);
         return await registerMerchant(token!, formData);
       } catch (error) {
-        console.error('❌ Merchant Registration Error:', error);
         throw error;
       }
     },
@@ -234,11 +231,8 @@ export function usePublicRegistration(): UseMutationResult<
         formData.append('phone', payload.phone);
         formData.append('email', payload.email);
         formData.append('notes', payload.notes);
-
-        console.log('👤 Public Registration Payload:', payload);
         return await registerPublic(token!, formData);
       } catch (error) {
-        console.error('❌ Public Registration Error:', error);
         throw error;
       }
     },

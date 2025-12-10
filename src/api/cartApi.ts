@@ -56,7 +56,6 @@ export const cartApi = {
         timeout: 30000
       });
 
-      console.log('🛒 Cart API response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Cart API error:', error);
@@ -93,8 +92,6 @@ export const cartApi = {
         },
         timeout: 30000
       });
-
-      console.log('✅ Add to cart API response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Add to cart API error:', error);
@@ -104,7 +101,6 @@ export const cartApi = {
         
         // For error 307 (shipping address required), preserve the original error structure
         if (isShippingAddressRequiredError(error)) {
-          console.log('🚚 Cart API: Error 307 detected, preserving error structure');
           throw error; // Throw the original axios error to preserve all error details
         }
         
@@ -123,8 +119,6 @@ export const cartApi = {
         },
         timeout: 30000
       });
-
-      console.log('✅ Remove from cart API response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Remove from cart API error:', error);
@@ -144,8 +138,6 @@ export const cartApi = {
         },
         timeout: 30000
       });
-
-      console.log('✅ Set pickup API response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Set pickup API error:', error);

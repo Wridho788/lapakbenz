@@ -59,7 +59,6 @@ const EventModal: React.FC<EventModalProps> = ({
   const navigate = useNavigate();
 
   const handleMerchantRegistration = () => {
-    console.log('🏪 Merchant Registration clicked for event:', selectedEventId);
     if (selectedEventId) {
       navigate(`/merchant-registration/${selectedEventId}`);
     } else {
@@ -68,7 +67,6 @@ const EventModal: React.FC<EventModalProps> = ({
   };
 
   const handlePublicRegistration = () => {
-    console.log('👤 Public Registration clicked for event:', selectedEventId);
     if (selectedEventId) {
       navigate(`/public-registration/${selectedEventId}`);
     } else {

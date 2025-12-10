@@ -317,7 +317,6 @@ export function useLogout(): UseMutationResult<LogoutResponse, Error, string> {
       localStorage.removeItem('authToken');
       localStorage.removeItem('userId');
       localStorage.removeItem('userLog');
-      console.log('🗑️ Logout successful, localStorage cleared');
     },
   });
 }

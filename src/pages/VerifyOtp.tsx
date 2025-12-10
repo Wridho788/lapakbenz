@@ -125,8 +125,6 @@ const VerifyOtp: React.FC = () => {
         otp: otp.trim(),
       });
 
-      console.log('✅ OTP Verification Success:', result);
-
       // Tampilkan success message
       toast.success('Kode OTP Anda telah diverifikasi!', {
         position: 'bottom-right',

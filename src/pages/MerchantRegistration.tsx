@@ -109,9 +109,6 @@ const MerchantRegistration: React.FC = () => {
       };
 
       const result = await merchantRegistration.mutateAsync(payload);
-      
-      console.log('✅ Merchant Registration Success:', result);
-      
       // Check if registration was successful based on status code and content presence
       if (result.status === 200 && result.content) {
         const hasInvoice = result.content.invoice_url;

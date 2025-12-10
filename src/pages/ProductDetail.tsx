@@ -67,9 +67,6 @@ const ProductDetail: React.FC = () => {
 
   // Log when productParam changes and scroll to top
   useEffect(() => {
-    console.log('📦 ProductDetail page loaded with productParam:', productParam);
-    console.log('📦 Extracted productId:', productId);
-    
     // Scroll to top when productParam changes (for navigation between products)
     if (productParam && productId) {
       window.scrollTo({
@@ -93,19 +90,11 @@ const ProductDetail: React.FC = () => {
   // Log the response to console
   useEffect(() => {
     if (productDetailData) {
-      console.log('✅ Product Detail API Response:', productDetailData);
       if (productDetailData.content) {
-        console.log('📋 Product Detail Raw Data:', productDetailData.content);
       }
     }
   }, [productDetailData]);
 
-  // Log loading state
-  useEffect(() => {
-    if (productLoading) {
-      console.log('⏳ Loading product detail...');
-    }
-  }, [productLoading]);
 
   // Log errors
   useEffect(() => {
@@ -117,10 +106,6 @@ const ProductDetail: React.FC = () => {
   // Log cart API data
   useEffect(() => {
     if (apiCartData) {
-      console.log('🛒 Cart API Response:', apiCartData);
-      console.log('🛒 Cart Items:', apiCartData?.content?.result);
-      console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
-      console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
     }
   }, [apiCartData]);
 
@@ -135,7 +120,6 @@ const ProductDetail: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    console.log('Cart clicked - Navigate to cart page');
     // Small delay to ensure any pending cart operations complete
     setTimeout(() => {
       navigate('/cart', { 
@@ -185,7 +169,6 @@ const ProductDetail: React.FC = () => {
     e.stopPropagation();
     setZoomLevel((prev) => {
       const newZoom = Math.min(prev + 0.5, 3);
-      console.log('Zoom In - New level:', newZoom);
       return newZoom;
     });
   };
@@ -194,7 +177,6 @@ const ProductDetail: React.FC = () => {
     e.stopPropagation();
     setZoomLevel((prev) => {
       const newZoom = Math.max(prev - 0.5, 1);
-      console.log('Zoom Out - New level:', newZoom);
       if (newZoom === 1) {
         setImagePosition({ x: 0, y: 0 });
       }
@@ -204,7 +186,6 @@ const ProductDetail: React.FC = () => {
 
   const handleResetZoom = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Reset Zoom to 1x');
     setZoomLevel(1);
     setImagePosition({ x: 0, y: 0 });
   };
@@ -445,11 +426,6 @@ const ProductDetail: React.FC = () => {
 
   const productData = getProductData();
 
-  // Log processed product data
-  useEffect(() => {
-    console.log('📄 Processed Product Data for UI:', productData);
-  }, [productData]);
-
   // Log zoom level changes
   useEffect(() => {
     console.log('🔍 Zoom Level Changed:', zoomLevel);
@@ -458,7 +434,6 @@ const ProductDetail: React.FC = () => {
   // Log image position changes
   useEffect(() => {
     if (zoomLevel > 1) {
-      console.log('📍 Image Position:', imagePosition);
     }
   }, [imagePosition, zoomLevel]);
 
@@ -474,8 +449,6 @@ const ProductDetail: React.FC = () => {
     const isTokenValid = validateToken();
 
     if (!isAuthenticated || !token || !isTokenValid) {
-      console.log('🔒 Authentication required for adding to cart');
-
       toast.warning('Please login to add items to cart', {
         position: 'bottom-right',
         autoClose: 1500,
@@ -497,8 +470,6 @@ const ProductDetail: React.FC = () => {
     }
 
     try {
-      console.log(`Adding ${quantity} items to cart:`, productData.title);
-
       // Get the SKU from the API data or use the product ID as fallback
       const productSku = productDetailData?.content?.sku || productData.id;
 
@@ -535,9 +506,6 @@ const ProductDetail: React.FC = () => {
 
       // Reset quantity to 1 after adding to cart
       setQuantity(1);
-
-      // Optional: You can also trigger a cart refetch here if needed
-      console.log('✅ Item added to cart successfully');
     } catch (error: any) {
       console.error('Failed to add to cart:', error);
       
@@ -546,7 +514,6 @@ const ProductDetail: React.FC = () => {
 
       // Check if error is 307 - Shipping address required
       if (isShippingAddressRequiredError(error)) {
-        console.log('🚚 Error 307 detected: Shipping address required, opening shipping modal');
         toast.warning('Please set your shipping address first', {
           position: 'bottom-right',
           autoClose: 1500,

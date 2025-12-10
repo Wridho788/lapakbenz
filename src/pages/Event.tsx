@@ -149,7 +149,6 @@ const Event: React.FC = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMoreData && !isLoadingMore && !refreshing) {
-          console.log('📽 User has scrolled to the end of the list!');
           setIsLoadingMore(true);
           
           if (activeTab === 0 || activeTab === 1) {

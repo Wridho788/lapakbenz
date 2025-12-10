@@ -91,8 +91,6 @@ const Checkout: React.FC = () => {
         // Show webview to open invoice URL
         setShowWebview(true);
         setOrderCompleted(true);
-        
-        console.log('Order confirmed:', data);
       } else {
         throw new Error('Failed to process order');
       }

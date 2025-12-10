@@ -80,23 +80,16 @@ const OrderDetail: React.FC = () => {
 
   // Get tracking information from order items
   const getTrackingInfo = () => {
-    console.log('order tracking items:', orderDetail?.content?.items);
     if (!orderDetail?.content?.items?.length) return null;
 
     // Find first item with tracking info - check for either awb or last_digit
     const itemWithTracking = orderDetail.content.items.find(
       (item) => (item.awb && item.awb !== null) || (item.last_digit && item.last_digit !== null),
     );
-
-    console.log('item with tracking found:', itemWithTracking);
-
     if (itemWithTracking) {
       // Handle cases where awb might be null but last_digit exists
       const awb = itemWithTracking.awb || '';
       const lastDigit = itemWithTracking.last_digit || '';
-
-      console.log('tracking data - awb:', awb, 'lastDigit:', lastDigit);
-
       // If we have at least one of them, create tracking info
       if (awb || lastDigit) {
         return {
@@ -110,8 +103,6 @@ const OrderDetail: React.FC = () => {
         };
       }
     }
-
-    console.log('no valid tracking info found');
     return null;
   };
 

@@ -60,20 +60,14 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
   // CHANGED: Handle single selection toggle
   const handleChapterToggle = (chapterId: string) => {
     if (disabled) return;
-
-    console.log('🔍 Chapter toggle clicked:', chapterId);
-    console.log('📋 Current selection:', selectedChapters);
-    
     const isCurrentlySelected = selectedChapters.includes(chapterId);
     
     if (isCurrentlySelected) {
       // If already selected, deselect it (empty array for single selection)
       onSelectionChange([]);
-      console.log('🔄 Deselected chapter:', chapterId);
     } else {
       // Select this chapter only (single selection - replace any existing)
       onSelectionChange([chapterId]);
-      console.log('✅ Selected single chapter:', chapterId);
     }
   };
 
@@ -81,7 +75,6 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
   const handleClearSelection = () => {
     if (disabled) return;
     onSelectionChange([]);
-    console.log('🧹 Cleared chapter selection');
   };
 
   // CHANGED: Updated display text for single selection

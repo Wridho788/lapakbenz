@@ -229,11 +229,8 @@ export const orderApi = {
         },
         timeout: 10000
       });
-
-      console.log('📋 Order list API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Order list API error:', error);
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || error.message || 'Failed to get orders');
       }
@@ -254,11 +251,8 @@ export const orderApi = {
         },
         timeout: 10000
       });
-
-      console.log('✅ Add order API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Add order API error:', error);
       if (axios.isAxiosError(error)) {
         throw new Error(error.response?.data?.message || error.message || 'Failed to add order');
       }
@@ -288,11 +282,8 @@ export const orderApi = {
         },
         timeout: 10000
       });
-
-      console.log('📦 Add item to order API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Add item to order API error:', error);
       if (axios.isAxiosError(error)) {
         // Handle specific 404 error
         if (error.response?.status === 404) {
@@ -313,11 +304,8 @@ export const orderApi = {
         },
         timeout: 10000
       });
-
-      console.log('💳 Order checkout API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Order checkout API error:', error);
       if (axios.isAxiosError(error)) {
         // Handle specific 403 error
         if (error.response?.status === 403) {
@@ -339,11 +327,8 @@ export const orderApi = {
         },
         timeout: 30000
       });
-
-      console.log('📋 Order detail API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Order detail API error:', error);
       if (axios.isAxiosError(error)) {
         // Handle specific error codes
         if (error.response?.status === 404) {
@@ -382,11 +367,8 @@ export const orderApi = {
         },
         timeout: 30000
       });
-
-      console.log('📦 Order tracking API response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Order tracking API error:', error);
       if (axios.isAxiosError(error)) {
         // Handle specific error codes
         if (error.response?.status === 404) {

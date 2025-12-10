@@ -62,8 +62,6 @@ export const chapterApi = {
   // Get chapters list with pagination
   getChapters: async (payload: ChapterListRequest): Promise<ChapterListResponse> => {
     try {
-      console.log('📚 Fetching chapters with payload:', payload);
-      
       const response = await chapterApiClient.post(
         ENDPOINT_CHAPTER,
         payload,
@@ -73,8 +71,6 @@ export const chapterApi = {
           },
         }
       );
-
-      console.log('✅ Chapters fetched successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching chapters:', error);
@@ -88,8 +84,6 @@ export const chapterApi = {
   // Get chapter by ID
   getChapterById: async (chapterId: string, authToken: string): Promise<ChapterDetailResponse> => {
     try {
-      console.log('📖 Fetching chapter by ID:', chapterId);
-      
       const response = await chapterApiClient.get(
         `${ENDPOINT_CHAPTER_BY_ID}${chapterId}`,
         {
@@ -99,8 +93,6 @@ export const chapterApi = {
           },
         }
       );
-
-      console.log('✅ Chapter detail fetched successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching chapter detail:', error);
@@ -114,8 +106,6 @@ export const chapterApi = {
   // Get chapters by customer ID
   getChaptersByCustomer: async (customerId: string, authToken: string): Promise<ChapterByCustomerResponse> => {
     try {
-      console.log('👤 Fetching chapters by customer ID:', customerId);
-      
       const response = await chapterApiClient.get(
         `${ENDPOINT_CHAPTER_GET_BY_CUSTOMER}${customerId}`,
         {
@@ -125,8 +115,6 @@ export const chapterApi = {
           },
         }
       );
-
-      console.log('✅ Customer chapters fetched successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching customer chapters:', error);
@@ -140,8 +128,6 @@ export const chapterApi = {
   // Get front chapters
   getFrontChapters: async (payload: ChapterListRequest): Promise<ChapterListResponse> => {
     try {
-      console.log('🏠 Fetching front chapters with payload:', payload);
-      
       const response = await chapterApiClient.post(
         ENDPOINT_GET_FRONT,
         payload,
@@ -151,8 +137,6 @@ export const chapterApi = {
           },
         }
       );
-
-      console.log('✅ Front chapters fetched successfully:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Error fetching front chapters:', error);

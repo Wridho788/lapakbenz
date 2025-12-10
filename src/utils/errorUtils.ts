@@ -51,21 +51,6 @@ export const isShippingAddressRequiredError = (error: any): boolean => {
 
   // Return true if any check passes
   const result = checks.some(check => check === true);
-  
-  // Log detailed check results for debugging
-  console.log('🔍 isShippingAddressRequiredError checks:', {
-    'response.status === 307': error?.response?.status === 307,
-    'status === 307': error?.status === 307,
-    'code === 307': error?.code === 307,
-    'message includes 307': error?.message?.includes('307'),
-    'response.data.status === 307': error?.response?.data?.status === 307,
-    'response.data.message includes shipping': error?.response?.data?.message && 
-      error.response.data.message.toLowerCase().includes('shipping'),
-    'message includes shipping address': error?.message && 
-      error.message.toLowerCase().includes('shipping address'),
-    'result': result
-  });
-  
   return result;
 };
 
@@ -100,11 +85,5 @@ export const isAuthenticationError = (error: any): boolean => {
 export const logErrorDetails = (error: any, context: string = '') => {
   console.group(`🔍 Error Details${context ? ` - ${context}` : ''}`);
   console.log('Full error object:', error);
-  console.log('Response:', error?.response);
-  console.log('Status:', error?.response?.status || error?.status);
-  console.log('Data:', error?.response?.data);
-  console.log('Message:', error?.message);
-  console.log('Code:', error?.code);
-  console.log('Name:', error?.name);
   console.groupEnd();
 };

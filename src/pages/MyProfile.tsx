@@ -56,16 +56,6 @@ const MyProfile: React.FC = () => {
     data: apiCartData,
     refetch: cartRefetch,
   } = useCart();
-  // Debug cityData structure
-  useEffect(() => {
-    if (cityData) {
-      console.log('🏙️ City Data Structure:', cityData);
-      console.log('🏙️ City Data Content Result:', cityData.content?.result);
-      console.log('🏙️ Is Content.Result Array?', Array.isArray(cityData.content?.result));
-      console.log('🏙️ Cities Count:', cityData.content?.result?.length);
-    }
-  }, [cityData]);
-
   // Populate form data when profile data is loaded
   useEffect(() => {
     if (profileData?.content?.result) {
@@ -84,16 +74,6 @@ const MyProfile: React.FC = () => {
       });
     }
   }, [profileData]);
-
-  useEffect(() => {
-    if (apiCartData) {
-      console.log('🛒 Cart API Response:', apiCartData);
-      console.log('🛒 Cart Items:', apiCartData?.content?.result);
-      console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
-      console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
-    }
-  }, [apiCartData]);
-
    const getApiCartCount = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
   };
@@ -147,8 +127,6 @@ const MyProfile: React.FC = () => {
     if (isRefreshing) return;
 
     setIsRefreshing(true);
-    console.log('🔄 Pull to refresh triggered on MyProfile');
-
     try {
       // Refresh profile and city data in parallel
       const refreshPromises = [];
@@ -164,8 +142,6 @@ const MyProfile: React.FC = () => {
 
       // Wait for all refreshes to complete
       await Promise.allSettled(refreshPromises);
-
-      console.log('✅ Pull to refresh completed on MyProfile');
     } catch (error) {
       console.error('❌ Pull to refresh error on MyProfile:', error);
     } finally {
@@ -246,7 +222,6 @@ const MyProfile: React.FC = () => {
     }
 
     try {
-      console.log('🖼️ Uploading image:', file.name);
       await uploadImageMutation.mutateAsync({ file, authToken });
       toast.success('Profile image updated successfully!', {
         position: 'bottom-right',
@@ -254,17 +229,13 @@ const MyProfile: React.FC = () => {
         theme: 'dark',
       });
 
-      // Auto-refresh profile data to get updated image URL
-      console.log('🔄 Auto-refreshing profile after image upload...');
       setIsRefreshing(true);
       try {
         await refetchProfile();
-        console.log('✅ Profile auto-refresh completed after image upload');
       } finally {
         setTimeout(() => setIsRefreshing(false), 300);
       }
     } catch (error) {
-      console.error('Upload error:', error);
       toast.error('Failed to upload image', {
         position: 'bottom-right',
         autoClose: 1500,
@@ -321,9 +292,6 @@ const MyProfile: React.FC = () => {
         tdob: formData.tdob,
         ccity: formData.ccity,
       };
-
-      console.log('📤 Update Profile Payload:', payload);
-
       await updateProfileMutation.mutateAsync({
         data: payload,
       });
@@ -333,12 +301,9 @@ const MyProfile: React.FC = () => {
         theme: 'dark',
       });
 
-      // Auto-refresh profile data to get updated information
-      console.log('🔄 Auto-refreshing profile after update...');
       setIsRefreshing(true);
       try {
         await refetchProfile();
-        console.log('✅ Profile auto-refresh completed after update');
       } finally {
         setTimeout(() => setIsRefreshing(false), 300);
       }
@@ -357,8 +322,7 @@ const MyProfile: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    console.log('Cart clicked');
-  };
+navigate('/cart');  };
 
   const handleNotificationClick = () => {
     navigate('/notifications');

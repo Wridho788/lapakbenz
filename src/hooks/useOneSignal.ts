@@ -63,12 +63,7 @@ export const useOneSignal = () => {
           const registrations = await navigator.serviceWorker.getRegistrations();
           console.log('🔧 Service Workers registered:', registrations.length);
           registrations.forEach((reg, index) => {
-            const scriptURL = reg.active?.scriptURL || 'none';
-            const isOneSignal = scriptURL.includes('OneSignal');
-            console.log(`  SW ${index + 1}:`, reg.scope);
-            console.log(`    - Script: ${scriptURL}`);
-            console.log(`    - State: ${reg.active?.state}`);
-            console.log(`    - OneSignal: ${isOneSignal ? '✅ YES' : '❌ NO'}`);
+            console.log(`  SW ${index + 1}:`, reg.scope, reg.active?.state);
           });
         }
 
@@ -105,7 +100,8 @@ export const useOneSignal = () => {
         // Listen for notification received (foreground)
         OneSignal.Notifications.addEventListener('foregroundWillDisplay', (event) => {
           console.log('🔔 Notification received (foreground):', event.notification);
-          // Don't prevent default - let notification show
+          // Allow the notification to be displayed
+          // Don't call preventDefault() - let it show naturally
         });
 
         // Listen for notification clicks

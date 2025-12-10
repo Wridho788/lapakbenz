@@ -77,7 +77,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
   // Transform API data to local format with error handling
   const apiNotifications: NotificationItem[] = React.useMemo(() => {
     if (!notificationData?.content || !Array.isArray(notificationData.content)) {
-      console.log('📋 No notification data or invalid format:', notificationData);
       return [];
     }
     
@@ -100,7 +99,6 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
       // Count notifications where reading === "0"
       return unreadData.content.filter(notification => notification.reading === "0").length;
     }
-    console.log('📋 No unread data or invalid format:', unreadData);
     return 0;
   }, [unreadData]);
 

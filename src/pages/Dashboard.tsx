@@ -140,8 +140,6 @@ const Dashboard: React.FC = () => {
   // Panggil useFrontChapters hook
   const {
     data: frontChaptersData,
-    isLoading: frontChaptersLoading,
-    error: frontChaptersError,
     refetch: frontChaptersRefetch,
   } = useFrontChapters({ limit: 100, offset: 0 });
 
@@ -216,7 +214,6 @@ const Dashboard: React.FC = () => {
     if (isRefreshing) return;
 
     setIsRefreshing(true);
-    console.log('🔄 Pull to refresh triggered');
 
     try {
       // Refresh all data sources in parallel
@@ -249,8 +246,6 @@ const Dashboard: React.FC = () => {
 
       // Wait for all refreshes to complete
       await Promise.allSettled(refreshPromises);
-
-      console.log('✅ Pull to refresh completed');
     } catch (error) {
       console.error('❌ Pull to refresh error:', error);
     } finally {
@@ -305,37 +300,26 @@ const Dashboard: React.FC = () => {
 
   // Log ledger response and update points in Zustand store
   useEffect(() => {
-    console.log('🔍 Auth Token Status:', {
-      authToken: authToken ? authToken.substring(0, 10) + '...' : null,
-      hasToken: !!authToken,
-      isAuthenticated,
-    });
+  
 
     // Log decode token data
     if (decodeTokenData) {
-      console.log('✅ Decode Token API Response:', decodeTokenData);
     }
     if (decodeTokenError) {
-      console.error('❌ Decode Token API Error:', decodeTokenError);
       localStorage.removeItem('authToken');
       return;
     }
 
     // Log profile data
     if (profileData) {
-      console.log('✅ Profile API Response:', profileData);
-      console.log('🖼️ User Image URL:', profileData.content?.result?.image_url);
     }
     if (profileError) {
-      console.error('❌ Profile API Error:', profileError);
     }
 
     if (ledgerData) {
-      console.log('✅ Ledger API Response:', ledgerData);
 
       // Check if response indicates invalid token
       if (ledgerData.error && ledgerData.error.includes('Invalid Token')) {
-        console.log('❌ Token is invalid or expired, logging out');
         logout();
         navigate('/login');
         return;
@@ -346,16 +330,10 @@ const Dashboard: React.FC = () => {
         // API returns points directly in content.point
         const points = ledgerData.content.point || 0;
         updatePoints(points);
-        console.log('💰 User Points from API:', points);
-        console.log('📊 Additional ledger info:', {
-          userId: ledgerData.content.userid,
-          balance: ledgerData.content.balance,
-          record: ledgerData.content.record,
-        });
+       
       } else {
         // Jika tidak ada content, set points ke 0
         updatePoints(0);
-        console.log('⚠️ No ledger content available, points set to 0');
       }
     }
 
@@ -364,9 +342,6 @@ const Dashboard: React.FC = () => {
       updatePoints(0); // Set points ke 0 jika ada error
     }
 
-    if (ledgerLoading) {
-      console.log('⏳ Ledger API Loading...');
-    }
   }, [
     authToken,
     ledgerData,
@@ -385,8 +360,6 @@ const Dashboard: React.FC = () => {
   // Log response ke console dan handle splash screen Tokopedia-style
   useEffect(() => {
     if (splashData) {
-      console.log('Splash API Response:', splashData);
-
       // Extract image dari response
       if (splashData.content && splashData.content.result && splashData.content.result.length > 0) {
         const firstSlide = splashData.content.result[0];
@@ -410,63 +383,42 @@ const Dashboard: React.FC = () => {
     if (splashError) {
       console.error('Splash API Error:', splashError);
     }
-    if (splashLoading) {
-      console.log('Splash API Loading...');
-    }
+  
   }, [splashData, splashError, splashLoading, hasShownSplash]);
 
   // Log cart API data
   useEffect(() => {
     if (apiCartData) {
-      console.log('🛒 Cart API Response:', apiCartData);
-      console.log('🛒 Cart Items:', apiCartData?.content?.result);
-      console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
-      console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
     }
   }, [apiCartData]);
 
   // Log front chapters API data
-  useEffect(() => {
-    if (frontChaptersData) {
-      console.log('🏠 Front Chapters API Response:', frontChaptersData);
-      console.log('🏠 Front Chapters Result:', frontChaptersData?.content?.result);
-      console.log('🏠 Front Chapters Total:', frontChaptersData?.content?.total);
-    }
-    if (frontChaptersError) {
-      console.error('❌ Front Chapters API Error:', frontChaptersError);
-    }
-    if (frontChaptersLoading) {
-      console.log('⏳ Front Chapters API Loading...');
-    }
-  }, [frontChaptersData, frontChaptersError, frontChaptersLoading]);
+  // useEffect(() => {
+  //   if (frontChaptersData) {
+  //   }
+  //   if (frontChaptersError) {
+  //   }
+  //   if (frontChaptersLoading) {
+  //   }
+  // }, [frontChaptersData, frontChaptersError, frontChaptersLoading]);
 
   // Log latest products API data
   useEffect(() => {
     if (latestProductsData) {
-      console.log('🆕 Latest Products API Response:', latestProductsData);
-      console.log('🆕 Latest Products Result:', latestProductsData?.content?.result);
-      console.log('🆕 Latest Products Total:', latestProductsData?.content?.total);
     }
     if (latestProductsError) {
-      console.error('❌ Latest Products API Error:', latestProductsError);
     }
     if (latestProductsLoading) {
-      console.log('⏳ Latest Products API Loading...');
     }
   }, [latestProductsData, latestProductsError, latestProductsLoading]);
 
   // Log best seller products API data
   useEffect(() => {
     if (bestSellerProductsData) {
-      console.log('🔥 Best Seller Products API Response:', bestSellerProductsData);
-      console.log('🔥 Best Seller Products Result:', bestSellerProductsData?.content?.result);
-      console.log('🔥 Best Seller Products Total:', bestSellerProductsData?.content?.total);
     }
     if (bestSellerProductsError) {
-      console.error('❌ Best Seller Products API Error:', bestSellerProductsError);
     }
     if (bestSellerProductsLoading) {
-      console.log('⏳ Best Seller Products API Loading...');
     }
   }, [bestSellerProductsData, bestSellerProductsError, bestSellerProductsLoading]);
   const getApiCartCount = () => {

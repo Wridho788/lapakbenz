@@ -15,7 +15,7 @@ import {
   ENDPOINT_DECODE_TOKEN,
   ENDPOINT_UPLOAD_IMAGE,
   ENDPOINT_VERIFY,
-  ENDPOINT_SET_SHIPPING
+  ENDPOINT_SET_SHIPPING,
 } from './constants';
 import type {
   LoginRequest,
@@ -49,7 +49,7 @@ const apiClient = axios.create({
 // Utility function to convert object to URLSearchParams
 const createFormData = (data: Record<string, any>): URLSearchParams => {
   const formData = new URLSearchParams();
-  Object.keys(data).forEach(key => {
+  Object.keys(data).forEach((key) => {
     if (data[key] !== undefined && data[key] !== null) {
       formData.append(key, data[key].toString());
     }
@@ -64,23 +64,11 @@ export const customerApi = {
    */
   login: async (payload: LoginRequest): Promise<LoginResponse> => {
     try {
-      console.log('📤 Login API Request:', {
-        url: `${BASE_URL}${ENDPOINT_LOGIN}`,
-        payload: JSON.stringify(payload, null, 2),
-        headers: { 'Content-Type': 'application/json' }
+      const response = await apiClient.post(ENDPOINT_LOGIN, JSON.stringify(payload), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      
-      const response = await apiClient.post(
-        ENDPOINT_LOGIN,
-        JSON.stringify(payload),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      
-      console.log('📥 Login API Response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Login API Error:', error);
@@ -97,37 +85,28 @@ export const customerApi = {
    */
   forgotPassword: async (payload: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
     try {
-      const response = await apiClient.post(
-        ENDPOINT_FORGOT,
-        JSON.stringify(payload),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await apiClient.post(ENDPOINT_FORGOT, JSON.stringify(payload), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Forgot Password API Error:', error);
       throw error;
     }
   },
-  
 
   /**
    * Request OTP
    */
   requestOTP: async (payload: RequestOTPRequest): Promise<RequestOTPResponse> => {
     try {
-      const response = await apiClient.post(
-        ENDPOINT_REQ_OTP,
-        JSON.stringify(payload),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await apiClient.post(ENDPOINT_REQ_OTP, JSON.stringify(payload), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Request OTP API Error:', error);
@@ -140,19 +119,15 @@ export const customerApi = {
    */
   updateProfile: async (
     payload: UpdateProfileRequest,
-    authToken: string
+    authToken: string,
   ): Promise<UpdateProfileResponse> => {
     try {
-      const response = await apiClient.post(
-        ENDPOINT_UPDATE,
-        createFormData(payload),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-auth-token': authToken,
-          },
-        }
-      );
+      const response = await apiClient.post(ENDPOINT_UPDATE, createFormData(payload), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-auth-token': authToken,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Update Profile API Error:', error);
@@ -165,15 +140,11 @@ export const customerApi = {
    */
   register: async (payload: RegisterRequest): Promise<RegisterResponse> => {
     try {
-      const response = await apiClient.post(
-        ENDPOINT_REGISTER,
-        createFormData(payload),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      );
+      const response = await apiClient.post(ENDPOINT_REGISTER, createFormData(payload), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Register API Error:', error);
@@ -186,19 +157,15 @@ export const customerApi = {
    */
   changePassword: async (
     payload: ChangePasswordRequest,
-    authToken: string
+    authToken: string,
   ): Promise<ChangePasswordResponse> => {
     try {
-      const response = await apiClient.post(
-        ENDPOINT_CHANGE_PASSWORD,
-        createFormData(payload),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-auth-token': authToken,
-          },
-        }
-      );
+      const response = await apiClient.post(ENDPOINT_CHANGE_PASSWORD, createFormData(payload), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-auth-token': authToken,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('Change Password API Error:', error);
@@ -211,27 +178,15 @@ export const customerApi = {
    */
   getProfile: async (authToken: string): Promise<GetProfileResponse> => {
     try {
-      console.log('📤 Get Profile API Request:', {
-        url: `${BASE_URL}${ENDPOINT_GET_PROFILE}`,
-        headers: { 'X-auth-token': authToken }
+      const response = await apiClient.get(ENDPOINT_GET_PROFILE, {
+        headers: {
+          'X-auth-token': authToken,
+        },
       });
 
-      const response = await apiClient.get(
-        ENDPOINT_GET_PROFILE,
-        {
-          headers: {
-            'X-auth-token': authToken,
-          },
-        }
-      );
-
-      console.log('📥 Get Profile API Response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Get Profile API Error:', error);
       if (axios.isAxiosError(error)) {
-        console.error('📥 Error Response:', error.response?.data);
-        console.error('📊 Error Status:', error.response?.status);
         if (error.response?.status === 401) {
           try {
             const { useAuthStore } = await import('../stores/authStore');
@@ -250,27 +205,15 @@ export const customerApi = {
    */
   getCustomerById: async (customerId: string, authToken: string): Promise<GetProfileResponse> => {
     try {
-      console.log('📤 Get Customer By ID API Request:', {
-        url: `${BASE_URL}${ENDPOINT_GET_BY_ID}${customerId}`,
-        customerId,
-        headers: { 'X-auth-token': authToken }
+      const response = await apiClient.get(`${ENDPOINT_GET_BY_ID}${customerId}`, {
+        headers: {
+          'X-auth-token': authToken,
+        },
       });
-      
-      const response = await apiClient.get(
-        `${ENDPOINT_GET_BY_ID}${customerId}`,
-        {
-          headers: {
-            'X-auth-token': authToken,
-          },
-        }
-      );
-      
-      console.log('📥 Get Customer By ID API Response:', response.data);
+
       return response.data;
     } catch (error) {
-      console.error('❌ Get Customer By ID API Error:', error);
       if (axios.isAxiosError(error)) {
-        console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
       }
       throw error;
@@ -280,39 +223,31 @@ export const customerApi = {
   /**
    * Get notifications with dynamic payload
    */
-  getNotifications: async (authToken: string, payload?: NotificationPayload): Promise<NotificationResponse> => {
+  getNotifications: async (
+    authToken: string,
+    payload?: NotificationPayload,
+  ): Promise<NotificationResponse> => {
     try {
       // Default payload - get all notifications (read + unread)
       const defaultPayload: NotificationPayload = {
-        type: "",
-        campaign: "",
-        read: "", // Empty string to get all (both read and unread)
-        limit: "50",
-        offset: "0"
+        type: '',
+        campaign: '',
+        read: '', // Empty string to get all (both read and unread)
+        limit: '50',
+        offset: '0',
       };
 
       // Merge with provided payload
       const finalPayload = { ...defaultPayload, ...payload };
-      
-      console.log('📤 Get Notifications API Request:', {
-        url: `${BASE_URL}${ENDPOINT_NOTIF}`,
-        payload: finalPayload,
-        headers: { 'X-auth-token': authToken.substring(0, 10) + '...' }
-      });
-      
+
       // Use JSON payload like other APIs (postEvent, postArticle, login)
-      const response = await apiClient.post(
-        ENDPOINT_NOTIF,
-        JSON.stringify(finalPayload),
-        {
-          headers: {
-            'X-auth-token': authToken,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      
-      console.log('📥 Get Notifications API Response:', response.data);
+      const response = await apiClient.post(ENDPOINT_NOTIF, JSON.stringify(finalPayload), {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'application/json',
+        },
+      });
+
       return response.data;
     } catch (error) {
       console.error('❌ Get Notifications API Error:', error);
@@ -324,7 +259,7 @@ export const customerApi = {
           url: error.config?.url,
           method: error.config?.method,
           headers: error.config?.headers,
-          data: error.config?.data
+          data: error.config?.data,
         });
       }
       throw error;
@@ -334,7 +269,11 @@ export const customerApi = {
   /**
    * Get notification detail
    */
-  getNotificationDetail: async (notificationId: string, authToken: string, payload?: NotificationPayload): Promise<NotificationDetailResponse> => {
+  getNotificationDetail: async (
+    notificationId: string,
+    authToken: string,
+    payload?: NotificationPayload,
+  ): Promise<NotificationDetailResponse> => {
     try {
       // Default body payload as requested
       const defaultPayload: NotificationPayload = {
@@ -342,17 +281,9 @@ export const customerApi = {
         campaign: '',
         read: '0',
         limit: '2',
-        offset: '0'
+        offset: '0',
       };
       const finalPayload = { ...defaultPayload, ...payload };
-
-      console.log('📤 Get Notification Detail API Request:', {
-        url: `${BASE_URL}${ENDPOINT_NOTIF_DETAIL}${notificationId}`,
-        notificationId,
-        body: finalPayload,
-        headers: { 'X-auth-token': authToken }
-      });
-
       // Switch to POST to allow body payload (requirement)
       const response = await apiClient.post(
         `${ENDPOINT_NOTIF_DETAIL}${notificationId}`,
@@ -360,12 +291,10 @@ export const customerApi = {
         {
           headers: {
             'X-auth-token': authToken,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-        }
+        },
       );
-
-      console.log('📥 Get Notification Detail API Response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Get Notification Detail API Error:', error);
@@ -382,61 +311,37 @@ export const customerApi = {
    */
   decodeToken: async (authToken: string): Promise<DecodeTokenResponse> => {
     try {
-      console.log('📤 Decode Token API Request:', {
-        url: `${BASE_URL}${ENDPOINT_DECODE_TOKEN}`,
-        headers: { 'X-auth-token': authToken }
+      const response = await apiClient.get(ENDPOINT_DECODE_TOKEN, {
+        headers: {
+          'X-auth-token': authToken,
+        },
       });
-      
-      const response = await apiClient.get(
-        ENDPOINT_DECODE_TOKEN,
-        {
-          headers: {
-            'X-auth-token': authToken,
-          },
-        }
-      );
-      
-      console.log('📥 Decode Token API Response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Decode Token API Error:', error);
       if (axios.isAxiosError(error)) {
-        console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
       }
       throw error;
     }
   },
 
-  
-/**
- * Verify OTP
- * @param id_customer string - Customer ID
- * @param otp string - OTP code
- */
-verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
-  try {
-    const url = `${ENDPOINT_VERIFY}${id_customer}/${otp}`;
-    
-    console.log('📤 Verify OTP API Request:', {
-      url: `${BASE_URL}${url}`,
-      id_customer,
-      otp: '***' // Hide OTP in logs for security
-    });
-    
-    const response = await apiClient.get(url);
-    
-    console.log('📥 Verify OTP API Response:', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('❌ Verify OTP API Error:', error);
-    if (axios.isAxiosError(error)) {
-      console.error('📥 Error Response:', error.response?.data);
-      console.error('📊 Error Status:', error.response?.status);
+  /**
+   * Verify OTP
+   * @param id_customer string - Customer ID
+   * @param otp string - OTP code
+   */
+  verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
+    try {
+      const url = `${ENDPOINT_VERIFY}${id_customer}/${otp}`;
+      const response = await apiClient.get(url);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('📊 Error Status:', error.response?.status);
+      }
+      throw error;
     }
-    throw error;
-  }
-},
+  },
 
   /**
    * Upload image
@@ -445,31 +350,15 @@ verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
     try {
       const formData = new FormData();
       formData.append('userfile', file);
-
-      console.log('📤 Upload Image API Request:', {
-        url: `${BASE_URL}${ENDPOINT_UPLOAD_IMAGE}`,
-        fileName: file.name,
-        fileSize: file.size,
-        headers: { 'X-auth-token': authToken }
+      const response = await apiClient.post(ENDPOINT_UPLOAD_IMAGE, formData, {
+        headers: {
+          'X-auth-token': authToken,
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      
-      const response = await apiClient.post(
-        ENDPOINT_UPLOAD_IMAGE,
-        formData,
-        {
-          headers: {
-            'X-auth-token': authToken,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
-      
-      console.log('📥 Upload Image API Response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Upload Image API Error:', error);
       if (axios.isAxiosError(error)) {
-        console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
       }
       throw error;
@@ -481,32 +370,18 @@ verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
    */
   setShipping: async (
     payload: SetShippingRequest,
-    authToken: string
+    authToken: string,
   ): Promise<SetShippingResponse> => {
     try {
-      console.log('📤 Set Shipping API Request:', {
-        url: `${BASE_URL}${ENDPOINT_SET_SHIPPING}`,
-        payload,
-        headers: { 'X-auth-token': authToken }
+      const response = await apiClient.post(ENDPOINT_SET_SHIPPING, createFormData(payload), {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-auth-token': authToken,
+        },
       });
-      
-      const response = await apiClient.post(
-        ENDPOINT_SET_SHIPPING,
-        createFormData(payload),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-auth-token': authToken,
-          },
-        }
-      );
-      
-      console.log('📥 Set Shipping API Response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Set Shipping API Error:', error);
       if (axios.isAxiosError(error)) {
-        console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
       }
       throw error;
@@ -518,11 +393,6 @@ verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
    */
   logout: async (authToken: string): Promise<LogoutResponse> => {
     try {
-      console.log('📤 Logout API Request:', {
-        url: `${BASE_URL}${ENDPOINT_LOGOUT}`,
-        headers: { 'X-auth-token': authToken }
-      });
-      
       const response = await apiClient.post(
         ENDPOINT_LOGOUT,
         {},
@@ -530,15 +400,11 @@ verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
           headers: {
             'X-auth-token': authToken,
           },
-        }
+        },
       );
-      
-      console.log('📥 Logout API Response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Logout API Error:', error);
       if (axios.isAxiosError(error)) {
-        console.error('📥 Error Response:', error.response?.data);
         console.error('📊 Error Status:', error.response?.status);
       }
       throw error;

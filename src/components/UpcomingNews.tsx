@@ -28,15 +28,6 @@ export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
   useEffect(() => {
     articleMutation.mutate({}); // payload default
   }, []);
-  // Logging response/error
-  useEffect(() => {
-    if (articleMutation.data) {
-      console.log('Article API response:', articleMutation.data);
-    }
-    if (articleMutation.error) {
-      console.error('Article API error:', articleMutation.error);
-    }
-  }, [articleMutation.data, articleMutation.error]);
   // Ambil hasil articleMutation.data.content.result sebagai upcomingNews
   const upcomingNews: NewsItem[] = articleMutation.data?.content?.result ?? [];
 
@@ -49,9 +40,7 @@ export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
     const news = upcomingNews.find(item => item.id === newsId);
     if (news && news.text) {
       window.open(news.text, '_blank');
-    } else {
-      console.log('News clicked:', newsId);
-    }
+    } 
   };
 
   return (

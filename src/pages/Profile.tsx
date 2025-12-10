@@ -30,7 +30,6 @@ const Profile: React.FC = () => {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!isAuthenticated) {
-      console.log('🚫 Not authenticated, redirecting to login');
       navigate('/login', { replace: true });
     }
   }, [isAuthenticated, navigate]);
@@ -150,38 +149,6 @@ const Profile: React.FC = () => {
   };
 
   const userData = getUserData();
-
-  // Debug information (remove in production)
-  useEffect(() => {
-    console.log('=== Profile Debug Info ===');
-    console.log('Authentication Status:', isAuthenticated ? 'Authenticated' : 'Not authenticated');
-    console.log('Profile Data:', profileData);
-    console.log('Ledger Data:', ledgerData);
-    console.log('Profile Loading:', profileLoading);
-    console.log('Ledger Loading:', ledgerLoading);
-    console.log('Profile Error:', profileError);
-    console.log('Ledger Error:', ledgerError);
-    
-    if (profileData?.content?.result) {
-      const profile = profileData.content.result;
-      console.log('Extracted Profile Fields:');
-      console.log('- First Name:', profile.first_name);
-      console.log('- Last Name:', profile.last_name);
-      console.log('- Type (Membership):', profile.type);
-      console.log('- Expired:', profile.expired);
-      console.log('- Expired Format:', profile.expired_format);
-      console.log('- Premium:', profile.premium);
-      console.log('- Member No:', profile.member_no);
-    }
-    
-    if (ledgerData?.content?.point !== undefined) {
-      console.log('Extracted Points:', ledgerData.content.point);
-    }
-    
-    console.log('Processed User Data:', userData);
-    console.log('========================');
-  }, [profileData, ledgerData, profileLoading, ledgerLoading, profileError, ledgerError, userData]);
-
   // Handle logout with confirmation
   const handleLogout = async () => {
     // Show confirmation toast with custom buttons
@@ -207,8 +174,6 @@ const Profile: React.FC = () => {
 
     try {
       await authLogout();
-      console.log('✅ Logout successful');
-      
       toast.dismiss(loadingToast);
       toast.success('Anda berhasil keluar', {
         position: 'bottom-right',
@@ -219,7 +184,6 @@ const Profile: React.FC = () => {
         }
       });
     } catch (error) {
-      console.error('❌ Logout failed:', error);
       
       toast.dismiss(loadingToast);
       toast.warning('Sesi telah dihapus secara lokal', {
@@ -248,8 +212,6 @@ const Profile: React.FC = () => {
   ];
 
   const handleMenuClick = (menuId: string) => {
-    console.log(`Clicked menu: ${menuId}`);
-    
     switch (menuId) {
       case 'profile':
         navigate('/profile/my-profile');
@@ -282,10 +244,6 @@ const Profile: React.FC = () => {
 
     useEffect(() => {
       if (apiCartData) {
-        console.log('🛒 Cart API Response:', apiCartData);
-        console.log('🛒 Cart Items:', apiCartData?.content?.result);
-        console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
-        console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
       }
     }, [apiCartData]);
   
@@ -301,7 +259,6 @@ const Profile: React.FC = () => {
 
   const handleRefresh = () => {
     // Force refresh data - Zustand handles token management
-    console.log('🔄 Profile data refreshed');
     toast.info('Memuat ulang data...', { 
       position: 'bottom-right',
       autoClose: 1500,

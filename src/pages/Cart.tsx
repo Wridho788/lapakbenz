@@ -55,8 +55,6 @@ const Cart: React.FC = () => {
   const getBackDestination = () => {
     // Priority 1: Check location state for explicit 'from' parameter
     if (location.state?.from) {
-      console.log('📍 Cart back destination from state:', location.state.from);
-      
       // Validate the path to ensure it's not blank or invalid
       const fromPath = location.state.from;
       if (fromPath && fromPath !== '' && fromPath !== '/') {
@@ -70,9 +68,6 @@ const Cart: React.FC = () => {
       try {
         const referrerUrl = new URL(referrer);
         const referrerPath = referrerUrl.pathname;
-
-        console.log('📍 Cart back destination from referrer:', referrerPath);
-
         // Map referrer paths to appropriate back destinations
         if (referrerPath.includes('/product-detail')) {
           // Ensure we return the full product detail path
@@ -102,12 +97,10 @@ const Cart: React.FC = () => {
 
     // Priority 3: Check if we have product info in location state
     if (location.state?.productId) {
-      console.log('📍 Found productId in state, returning to product detail');
       return `/product-detail/${location.state.productId}`;
     }
 
     // Priority 4: Default fallback - use product page instead of dashboard for better UX
-    console.log('📍 Cart back destination using default: /product');
     return '/product';
   };
 
@@ -153,7 +146,6 @@ const Cart: React.FC = () => {
   // Refetch cart data when component mounts to ensure fresh data
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('🔄 Cart component mounted - refetching cart data');
       refetchCart();
     }
   }, [isAuthenticated, refetchCart]);
@@ -162,7 +154,6 @@ const Cart: React.FC = () => {
   useEffect(() => {
     const handleFocus = () => {
       if (isAuthenticated && document.visibilityState === 'visible') {
-        console.log('🔄 Window focused - refetching cart data');
         refetchCart();
       }
     };
@@ -179,7 +170,6 @@ const Cart: React.FC = () => {
   // Refetch cart data when location changes (navigating to cart)
   useEffect(() => {
     if (isAuthenticated && location.pathname === '/cart') {
-      console.log('🔄 Navigated to cart - refetching cart data');
       // Small delay to ensure any pending operations complete
       const timer = setTimeout(() => {
         refetchCart();
@@ -207,8 +197,6 @@ const Cart: React.FC = () => {
     }
 
     try {
-      console.log('🔄 Updating quantity for item:', item.sku, 'to:', newQuantity);
-
       await addToCartMutation.mutateAsync({
         data: {
           sku: item.sku,
@@ -218,7 +206,6 @@ const Cart: React.FC = () => {
 
       refetchCart();
     } catch (error: any) {
-      console.error('❌ Failed to update quantity:', error);
       toast.error('Gagal memperbarui jumlah item. Silakan coba lagi.', {
         position: 'bottom-right',
         autoClose: 1500,
@@ -226,31 +213,6 @@ const Cart: React.FC = () => {
       });
     }
   };
-
-  // Log cart API data
-  useEffect(() => {
-    if (apiCartData) {
-      console.log('🛒 Cart API Response:', apiCartData);
-      console.log('🛒 Cart Items:', apiCartData?.content?.result);
-      console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
-      console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
-    }
-  }, [apiCartData]);
-
-  // Log decode token data
-  useEffect(() => {
-    if (decodeTokenData) {
-      console.log('🔍 Decode Token Data in Cart:', decodeTokenData);
-      console.log('💰 Cost from Token:', decodeTokenData?.content?.cost);
-    }
-  }, [decodeTokenData]);
-
-  // Log cart errors
-  useEffect(() => {
-    if (cartError) {
-      console.error('❌ Cart API Error:', cartError);
-    }
-  }, [cartError]);
 
   const handleBackClick = () => {
     // Navigate to the determined back destination
@@ -277,8 +239,6 @@ const Cart: React.FC = () => {
     }
 
     try {
-      console.log('🗑️ Removing specific item from cart:', itemId);
-      
       // Find the item to get its details for the success message
       const itemToRemove = apiCartData?.content?.result?.find(item => item.id === itemId);
       const itemName = itemToRemove?.name || 'Item';
@@ -336,9 +296,6 @@ const Cart: React.FC = () => {
     }
 
     try {
-      console.log(`📦 ${isPickup ? 'Setting' : 'Removing'} pickup for all ${cartItems.length} items`);
-      
-      // Set pickup for all items
       const promises = cartItems.map(item => 
         setPickupMutation.mutateAsync(item.id)
       );
@@ -436,8 +393,6 @@ const Cart: React.FC = () => {
 
   const performRemoveAll = async () => {
     try {
-      console.log('🗑️ Removing all items from cart...');
-
       // Get current cart items
       const cartItems = apiCartData?.content?.result || [];
       
@@ -565,13 +520,8 @@ const Cart: React.FC = () => {
       totalItems: cartItems.length,
     });
 
-    console.log('🚀 Starting order process...');
-    console.log('📦 Cart items to process:', cartItems);
-    console.log('💰 Total payment:', totalPayment);
-
     try {
       // Step 1: Create Order (useAddOrder)
-      console.log('📝 Step 1: Creating new order...');
       const orderResponse = await addOrderMutation.mutateAsync(authToken!);
 
       if (!orderResponse?.content?.id) {
@@ -579,9 +529,6 @@ const Cart: React.FC = () => {
       }
 
       const orderId = orderResponse.content.id;
-      console.log('✅ Step 1 completed: Order created with ID:', orderId);
-      console.log('📋 Order details:', orderResponse.content);
-
       // Step 2: Add Items to Order (useAddItemToOrder)
       setOrderingStatus((prev) => ({
         ...prev,
@@ -589,19 +536,9 @@ const Cart: React.FC = () => {
         currentStepNumber: 2,
       }));
 
-      console.log('📦 Step 2: Adding items to order...');
-      console.log(`🔄 Processing ${cartItems.length} items...`);
 
       for (let i = 0; i < cartItems.length; i++) {
         const item = cartItems[i];
-
-        console.log(`📦 Processing item ${i + 1}/${cartItems.length}:`, {
-          sku: item.sku,
-          name: item.name,
-          quantity: item.qty,
-          price: item.price,
-        });
-
         // Update status for each item
         setOrderingStatus((prev) => ({
           ...prev,
@@ -617,7 +554,6 @@ const Cart: React.FC = () => {
           tshipping: item.pickup === "1" ? '0' : item.shipping.toString(),
         };
 
-        console.log(`📤 Sending item payload:`, itemPayload);
 
         try {
           const itemResponse = await addItemToOrderMutation.mutateAsync({
@@ -626,14 +562,10 @@ const Cart: React.FC = () => {
             authToken: authToken!,
           });
 
-          console.log(`✅ Item ${i + 1} added successfully:`, itemResponse);
         } catch (itemError: any) {
-          console.error(`❌ Failed to add item ${i + 1}:`, itemError);
           throw new Error(`Failed to add item "${item.name}" to order: ${itemError.message}`);
         }
       }
-
-      console.log('✅ Step 2 completed: All items added to order');
 
       // Update status for final processed items
       setOrderingStatus((prev) => ({
@@ -647,16 +579,10 @@ const Cart: React.FC = () => {
         currentStep: 'Processing Checkout...',
         currentStepNumber: 3,
       }));
-
-      console.log('💳 Step 3: Processing checkout for order:', orderId);
       const checkoutResponse = await checkoutOrderMutation.mutateAsync({
         orderId,
         authToken: authToken!,
       });
-
-      console.log('✅ Step 3 completed: Checkout processed successfully');
-      console.log('🎉 Final checkout response:', checkoutResponse);
-
       // Reset ordering status
       setOrderingStatus({
         isOrdering: false,
@@ -669,8 +595,6 @@ const Cart: React.FC = () => {
 
       // Check if we have an invoice_url in the response
       if (checkoutResponse?.content?.invoice_url) {
-        console.log('📄 Invoice URL found:', checkoutResponse.content.invoice_url);
-
         // Clear cart after successful order
         await removeAllFromCartMutation.mutateAsync(authToken!);
         refetchCart();
@@ -693,9 +617,6 @@ const Cart: React.FC = () => {
         autoClose: 1500,
         theme: 'dark',
       });
-
-      console.log('🎊 Order process completed successfully!');
-
       // Clear cart after successful order
       await removeAllFromCartMutation.mutateAsync(authToken!);
       refetchCart();

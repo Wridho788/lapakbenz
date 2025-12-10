@@ -44,8 +44,6 @@ const useAuthStore = create<AuthState>()(
 
       // Login action
       login: (token: string, userData?: Partial<User>) => {
-        console.log('🔐 Auth Store: Logging in with token:', token.substring(0, 20) + '...');
-        
         set({
           token,
           isAuthenticated: true,
@@ -59,14 +57,10 @@ const useAuthStore = create<AuthState>()(
             points: userData.points || 0
           } : null
         });
-
-        console.log('✅ Auth Store: Login successful');
       },
 
       // Logout action
       logout: () => {
-        console.log('🔒 Auth Store: Logging out');
-        
         // Clear localStorage items
         localStorage.removeItem('authToken');
         localStorage.removeItem('userId');
@@ -79,7 +73,6 @@ const useAuthStore = create<AuthState>()(
           isLoading: false
         });
 
-        console.log('✅ Auth Store: Logout successful');
       },
 
       // Update user data
@@ -89,8 +82,6 @@ const useAuthStore = create<AuthState>()(
         set({
           user: currentUser ? { ...currentUser, ...userData } : null
         });
-
-        console.log('👤 Auth Store: User data updated:', userData);
       },
 
       // Update user points
@@ -100,8 +91,6 @@ const useAuthStore = create<AuthState>()(
         set({
           user: currentUser ? { ...currentUser, points } : null
         });
-
-        console.log('💰 Auth Store: Points updated to:', points);
       },
 
       // Set loading state
@@ -114,7 +103,6 @@ const useAuthStore = create<AuthState>()(
         const { token } = get();
         
         if (!token) {
-          console.warn('⚠️ Auth Store: No token available for headers');
           return {} as Record<string, string>;
         }
 
@@ -129,17 +117,13 @@ const useAuthStore = create<AuthState>()(
         const { token, isAuthenticated, isLoading } = get();
         
         if (isLoading) {
-          console.log(`⏳ Auth Store: Token still loading for ${actionName}`);
           return false;
         }
 
         if (!token || !isAuthenticated) {
-          console.log(`🔒 Auth Store: Authentication required to ${actionName}`);
           // Note: Navigation should be handled by the component calling this
           return false;
         }
-
-        console.log(`✅ Auth Store: Authentication verified for ${actionName}`);
         callback();
         return true;
       },
@@ -149,7 +133,6 @@ const useAuthStore = create<AuthState>()(
         const { token } = get();
         
         if (!token) {
-          console.log('❌ Auth Store: No token to validate');
           return false;
         }
 
@@ -157,14 +140,10 @@ const useAuthStore = create<AuthState>()(
         try {
           // Check if token is not empty and has reasonable length
           if (token.length < 10) {
-            console.log('❌ Auth Store: Token too short');
             return false;
           }
-
-          console.log('✅ Auth Store: Token validation passed');
           return true;
         } catch (error) {
-          console.error('❌ Auth Store: Token validation error:', error);
           return false;
         }
       },
@@ -189,16 +168,8 @@ const useAuthStore = create<AuthState>()(
       // Rehydration callback
       onRehydrateStorage: () => (state) => {
         if (state) {
-          console.log('🔄 Auth Store: Rehydrated from localStorage');
-          console.log('🔍 Auth Store: Current state:', {
-            hasToken: !!state.token,
-            isAuthenticated: state.isAuthenticated,
-            userId: state.user?.id
-          });
-          
           // Validate token on rehydration
           if (state.token && !state.validateToken()) {
-            console.log('❌ Auth Store: Invalid token on rehydration, logging out');
             state.logout();
           }
         }

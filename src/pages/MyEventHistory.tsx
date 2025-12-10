@@ -39,24 +39,12 @@ const MyEventHistory: React.FC = () => {
   });
 
   // Log the response to console
-  useEffect(() => {
-    if (eventsResponse) {
-      console.log('🎉 Events by Customer API Response:', eventsResponse);
-      if (eventsResponse.content) {
-        console.log('📋 Events Data:', eventsResponse.content);
-      }
-    }
-    if (eventsError) {
-      console.error('❌ Events API Error:', eventsError);
-    }
-  }, [eventsResponse, eventsError]);
-
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const handleCartClick = () => {
-    console.log('Cart clicked');
+    navigate('/cart');
   };
 
   const handleNotificationClick = () => {

@@ -188,7 +188,6 @@ function integrateSEOToFile(filePath, config) {
   
   // Check if file exists
   if (!fs.existsSync(fullPath)) {
-    console.log(`⚠️  File not found: ${filePath}`);
     return false;
   }
   
@@ -197,7 +196,6 @@ function integrateSEOToFile(filePath, config) {
     
     // Skip jika sudah ada SEO integration
     if (content.includes('<SEO ') || content.includes('MetaTagsService.updateMetaTags')) {
-      console.log(`⏭️  SEO already integrated: ${filePath}`);
       return true;
     }
     
@@ -213,7 +211,6 @@ function integrateSEOToFile(filePath, config) {
     // Write back to file
     fs.writeFileSync(fullPath, content, 'utf8');
     
-    console.log(`✅ SEO integrated: ${filePath}`);
     return true;
   } catch (error) {
     console.error(`❌ Error integrating SEO to ${filePath}:`, error.message);
@@ -222,7 +219,6 @@ function integrateSEOToFile(filePath, config) {
 }
 
 function integrateAllSEO() {
-  console.log('🚀 Starting SEO integration to existing pages...\n');
   
   let successCount = 0;
   let totalFiles = seoIntegrations.length;
@@ -232,13 +228,6 @@ function integrateAllSEO() {
       successCount++;
     }
   });
-  
-  console.log(`\n🎉 SEO Integration complete! ${successCount}/${totalFiles} files processed.`);
-  console.log(`\n📋 Next steps:`);
-  console.log(`   1. Review the integrated files for accuracy`);
-  console.log(`   2. Test dynamic meta tags in browser`);
-  console.log(`   3. Run 'pnpm run build' to verify no TypeScript errors`);
-  console.log(`   4. Test with SEO tools and social media debuggers\n`);
 }
 
 // Generate template untuk new pages

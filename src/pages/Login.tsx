@@ -25,7 +25,6 @@ const Login: React.FC = () => {
   const fillTestCredentials = () => {
     setEmailOrPhone('08211239608');
     setPassword('123456');
-    console.log('🧪 Test credentials filled (from API example)');
   };
 
   // Add to window for debugging (development only)
@@ -60,26 +59,8 @@ const Login: React.FC = () => {
       password: password,
       device: '', // Default device type for web
     };
-
-    console.log('🔐 Attempting login with:', {
-      username: emailOrPhone,
-      passwordLength: password.length,
-      device: '',
-    });
-    console.log('📤 Exact JSON payload:', JSON.stringify(loginData, null, 2));
-
     try {
       const response = await loginMutation.mutateAsync(loginData);
-
-      console.log('✅ Login response:', response);
-      console.log('🔍 Response structure analysis:', {
-        hasSuccess: 'success' in response,
-        hasToken: 'token' in response,
-        hasContent: 'content' in response,
-        hasContentToken: response.content?.token ? true : false,
-        contentStatus: response.content?.status,
-      });
-
       // Check if login was successful - handle different response formats
       let isSuccess = false;
       let token = '';
@@ -91,24 +72,20 @@ const Login: React.FC = () => {
         isSuccess = true;
         token = response.token || response.data?.token || '';
         message = response.message || 'Login successful';
-        console.log('📋 Using standard success format');
       } else if (response.content && response.content.token) {
         // API format: { content: { token, status, userid } }
         isSuccess = response.content.status === 1; // status 1 = success
         token = response.content.token;
         message = isSuccess ? 'Login successful' : 'Login failed';
-        console.log('� Using content format - Status:', response.content.status);
       } else if (response.token) {
         // Direct token format
         isSuccess = true;
         token = response.token;
         message = response.message || 'Login successful';
-        console.log('📋 Using direct token format');
       } else {
         // Error format
         isSuccess = false;
         message = response.message || 'Login failed';
-        console.log('📋 No valid token found in response');
       }
 
       if (isSuccess && token) {
@@ -120,31 +97,22 @@ const Login: React.FC = () => {
               log: response.content.log,
             }
           : { username: emailOrPhone };
-
         login(token, userData);
-
-        console.log('💾 Auth data saved to Zustand store');
         
         // Set OneSignal External User ID untuk targeting notifikasi
         if (userData.id) {
           try {
             await OneSignal.login(userData.id);
-            console.log('🔔 OneSignal External User ID set:', userData.id);
           } catch (err) {
             console.error('❌ Failed to set OneSignal user ID:', err);
           }
         }
-        
-        console.log('🎉 Login successful! Redirecting to dashboard...');
-
         // Navigate to dashboard
         navigate('/dashboard');
       } else {
         // Handle API error response
         setLoginError(message);
         setLoading(false);
-        console.error('❌ Login failed:', message);
-        console.error('🔍 Full response for debugging:', response);
       }
     } catch (error: any) {
       // Handle network or other errors
@@ -160,7 +128,6 @@ const Login: React.FC = () => {
 
       setLoginError(errorMessage);
       setLoading(false);
-      console.error('❌ Login error:', error);
     }
   };
 

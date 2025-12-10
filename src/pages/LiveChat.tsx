@@ -33,7 +33,7 @@ const LiveChat: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    console.log('Cart clicked');
+   navigate('/cart');
   };
 
   const handleNotificationClick = () => {

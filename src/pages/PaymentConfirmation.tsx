@@ -12,8 +12,7 @@ const PaymentConfirmation: React.FC = () => {
   };
 
   const handleCartClick = () => {
-    console.log('Cart clicked');
-  };
+navigate('/cart');  };
 
   const handleNotificationClick = () => {
     navigate('/notifications');
@@ -63,7 +62,6 @@ const PaymentConfirmation: React.FC = () => {
 
   const handleSubmitPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Payment submitted');
     // Handle payment submission logic here
   };
 

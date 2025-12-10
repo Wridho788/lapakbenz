@@ -161,8 +161,6 @@ export const registerEvent = async (authToken: string, eventId: string) => {
       },
     });
 
-    console.log('✅ Event registration API response:', response.data);
-
     // Return both data and status code
     return {
       ...response.data,

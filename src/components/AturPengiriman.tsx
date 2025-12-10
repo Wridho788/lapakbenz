@@ -53,37 +53,17 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
   
   const setShippingMutation = useSetShipping();
 
-  // Log API responses for debugging
-  React.useEffect(() => {
-    if (provinceData) {
-      console.log('📍 Province API Response:', provinceData);
-    }
-  }, [provinceData]);
-
-  React.useEffect(() => {
-    if (cityData) {
-      console.log('🏙️ City API Response:', cityData);
-    }
-  }, [cityData]);
-
-  React.useEffect(() => {
-    if (districtData) {
-      console.log('🏘️ District API Response:', districtData);
-    }
-  }, [districtData]);
 
   // Note: Reset logic handled in change handlers to avoid infinite re-renders
 
   const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const provinceId = e.target.value;
-    console.log('🔄 Province selected:', provinceId);
     
     if (provinceId && provinceData?.content) {
       // Find province by ID (convert string ID to number for comparison)
       const province = provinceData.content.find((p: any) => p.id.toString() === provinceId);
       
       if (province) {
-        console.log('✅ Province found:', province);
         setFormData(prev => ({
           ...prev,
           selectedProvince: {
@@ -107,14 +87,11 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const cityId = e.target.value;
-    console.log('🔄 City selected:', cityId);
-    
     if (cityId && cityData?.content) {
       // Find city by ID (convert string ID to number for comparison)
       const city = cityData.content.find((c: any) => c.id.toString() === cityId);
       
       if (city) {
-        console.log('✅ City found:', city);
         setFormData(prev => ({
           ...prev,
           selectedCity: {
@@ -137,14 +114,11 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
 
   const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const districtId = e.target.value;
-    console.log('🔄 District selected:', districtId);
-    
     if (districtId && districtData?.content) {
       // Find district by ID (convert string ID to number for comparison)
       const district = districtData.content.find((d: any) => d.id.toString() === districtId);
       
       if (district) {
-        console.log('✅ District found:', district);
         setFormData(prev => ({
           ...prev,
           selectedDistrict: {
@@ -188,8 +162,6 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
       address: formData.address.trim() || '', // Address is optional, use empty string if not provided
       ccity: formData.selectedCity.id,
     };
-
-    console.log('📤 Submitting shipping data:', payload);
 
     try {
       await setShippingMutation.mutateAsync(payload);

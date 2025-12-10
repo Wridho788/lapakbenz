@@ -149,11 +149,7 @@ const PublicRegistration: React.FC = () => {
       };
 
       const result = await publicRegistration.mutateAsync(payload);
-      
-      console.log('✅ Public Registration Success:', result);
-      
       toast.dismiss(loadingToast);
-      
       // Check if registration was successful
       if (result.status === 200 && result.content) {
         setRegistrationResult(result);
@@ -172,7 +168,6 @@ const PublicRegistration: React.FC = () => {
         });
       }
     } catch (error: any) {
-      console.error('❌ Registration failed:', error);
       toast.dismiss(loadingToast);
       toast.error(error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.', {
         position: 'bottom-right',

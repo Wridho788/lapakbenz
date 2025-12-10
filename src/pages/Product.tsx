@@ -141,10 +141,8 @@ const Product: React.FC = () => {
   // Monitor offset changes for infinite scroll and trigger refetch if needed
   useEffect(() => {
     if (offset > 0 && isLoadingMore && !productsLoading) {
-      console.log('📦 Offset changed for infinite scroll, triggering refetch:', { offset, isLoadingMore, productsLoading });
       // Small delay to ensure state is updated
       setTimeout(() => {
-        console.log('📦 Executing refetch for infinite scroll');
         refetchProducts();
       }, 50);
     }
@@ -152,44 +150,32 @@ const Product: React.FC = () => {
 
   // Handle products data accumulation for infinite scroll
   useEffect(() => {
-    console.log('📦 Products data effect triggered:', {
-      hasData: !!productsData?.content?.result,
-      dataLength: productsData?.content?.result?.length || 0,
-      offset,
-      currentProductsCount: allProducts.length,
-      isLoading: productsLoading
-    });
-    
+  
     // Only process if not currently loading
     if (!productsLoading && productsData) {
       if (productsData?.content?.result && Array.isArray(productsData.content.result)) {
         const newProducts = productsData.content.result;
-        console.log('📦 Processing products:', { newCount: newProducts.length, offset });
         
         setHasDataBeenFetched(true);
         setIsLoadingMore(false);
         
         if (offset === 0) {
           // First load or filter change - replace all products
-          console.log('📦 First load/filter change: setting', newProducts.length, 'products');
           setAllProducts(newProducts);
         } else {
           // Subsequent loads - append to existing products
           setAllProducts(prev => {
             const existingIds = new Set(prev.map(p => p.id));
             const uniqueNewProducts = newProducts.filter((p: any) => !existingIds.has(p.id));
-            console.log('📦 Infinite scroll: adding', uniqueNewProducts.length, 'new products');
             return [...prev, ...uniqueNewProducts];
           });
         }
         
         // Update hasMore based on whether we got a full page of results
         const hasMoreData = newProducts.length === 10;
-        console.log('📦 Setting hasMore:', hasMoreData, 'based on newProducts.length:', newProducts.length);
         setHasMore(hasMoreData);
       } else {
         // Handle empty results
-        console.log('📦 Empty products data');
         setHasDataBeenFetched(true);
         setIsLoadingMore(false);
         if (offset === 0) {
@@ -230,7 +216,6 @@ const Product: React.FC = () => {
           !productSearchMutation.data &&
           isInitialized &&
           !productsData) {
-        console.log('🔄 Fallback: No products detected after timeout, forcing refresh');
         setOffset(0);
         refetchProducts();
       }
@@ -246,10 +231,7 @@ const Product: React.FC = () => {
     // If we have search results from API, don't apply additional category filtering
     // because search should show all relevant products regardless of category filter
     if (productSearchMutation.data?.content && searchQuery.trim()) {
-      // console.log('🔍 Using search results without category filtering');
-      // console.log('🔍 Search query:', searchQuery);
-      // console.log('🔍 Selected category:', selectedCategoryId);
-      // console.log('🔍 Search results count:', filtered.length);
+    
       return filtered; // Return search results as-is
     }
 
@@ -306,7 +288,6 @@ const Product: React.FC = () => {
     const handleScroll = () => {
       // Skip if searching, loading, no more data, or already loading more
       if (searchQuery.trim() || isLoadingMore || !hasMore || productsLoading) {
-        console.log('🚫 Scroll blocked:', { searchQuery: !!searchQuery.trim(), isLoadingMore, hasMore, productsLoading });
         return;
       }
 
@@ -318,24 +299,19 @@ const Product: React.FC = () => {
       const nearBottom = scrollTop + windowHeight >= documentHeight - 150;
       
       if (nearBottom) {
-        console.log('📦 Infinite scroll triggered - loading more products');
-        console.log('📦 Current state:', { offset, allProductsLength: allProducts.length, hasMore });
         setIsLoadingMore(true);
         setOffset(prev => {
           const newOffset = prev + 10;
-          console.log('📦 Setting new offset:', newOffset);
           return newOffset;
         });
       }
     };
 
     // Add scroll listener
-    console.log('📦 Adding scroll listener');
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Cleanup
     return () => {
-      console.log('📦 Removing scroll listener');
       window.removeEventListener('scroll', handleScroll);
     };
   }, [searchQuery, isLoadingMore, hasMore, productsLoading, offset, allProducts.length]);
@@ -343,28 +319,22 @@ const Product: React.FC = () => {
   // Handle filter changes by updating offset and refetching (without clearing products)
   useEffect(() => {
     if (isInitialized && !isFirstInit && !searchQuery.trim()) {
-      console.log('🔄 Filters changed, refetching with new filters');
       setOffset(0); // Reset to first page
       setHasMore(true);
       setIsLoadingMore(false);
       
       // Refetch without clearing existing products first
       setTimeout(() => {
-        console.log('🔄 Refetching with updated filters');
         refetchProducts();
       }, 100);
     } else if (isInitialized && isFirstInit) {
-      console.log('🔄 First init complete - filters now active');
       setIsFirstInit(false);
     }
   }, [selectedCategoryId, priceOrder, selectedCondition, selectedLocations, searchQuery.trim(), isInitialized, isFirstInit, refetchProducts]);
 
   // Force fresh API call on component mount (only once)
   useEffect(() => {
-    console.log('🔄 Component mounted - triggering fresh data fetch');
-    
     const timer = setTimeout(() => {
-      console.log('🔄 Executing refetch on mount');
       refetchProducts();
     }, 50);
     
@@ -374,8 +344,6 @@ const Product: React.FC = () => {
   // Initialize component state once
   useEffect(() => {
     if (!isInitialized) {
-      console.log('🔄 Component initializing');
-      
       // Clear any existing search state
       if (productSearchMutation.data) {
         productSearchMutation.reset();
@@ -385,9 +353,6 @@ const Product: React.FC = () => {
       if (allProducts.length === 0) {
         setHasDataBeenFetched(false);
       }
-      
-      // Set initialized immediately to prevent blocking
-      console.log('🔄 Setting initialized immediately');
       setIsInitialized(true);
     }
   }, [isInitialized, productSearchMutation, allProducts.length]);
@@ -396,7 +361,6 @@ const Product: React.FC = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden && !searchQuery.trim() && allProducts.length === 0) {
-        console.log('🔄 Page visible with no products - refreshing');
         setTimeout(() => refetchProducts(), 100);
       }
     };
@@ -408,10 +372,6 @@ const Product: React.FC = () => {
 // Log cart API data
   useEffect(() => {
     if (apiCartData) {
-      // console.log('🛒 Cart API Response:', apiCartData);
-      // console.log('🛒 Cart Items:', apiCartData?.content?.result);
-      // console.log('🛒 Cart Balance:', apiCartData?.content?.balance);
-      // console.log('🛒 Cart Record Count:', apiCartData?.content?.record);
     }
   }, [apiCartData]);
 
@@ -423,7 +383,6 @@ const Product: React.FC = () => {
   const handleProductClick = (product: any) => {
     const productName = product.title || product.name || product.sku || product.id;
     const productUrl = createProductUrl(product.id, productName);
-    // console.log('� Product clicked, navigating to:', productUrl);
     navigate(productUrl);
   };
 
@@ -433,7 +392,6 @@ const Product: React.FC = () => {
   };
 
   const handleClearSearch = () => {
-    // console.log('🔍 Clearing search query');
     setSearchQuery('');
     if (productSearchMutation.data) {
       productSearchMutation.reset();
@@ -711,17 +669,6 @@ const Product: React.FC = () => {
             !isLoading && 
             !hasError && 
             filteredProducts.length > 0;
-            
-          console.log('📦 Product catalog render check:', {
-            shouldShowCatalog,
-            isInitialized,
-            shouldShowLoading,
-            isLoading,
-            hasError,
-            filteredProductsLength: filteredProducts.length,
-            allProductsLength: allProducts.length,
-            hasDataBeenFetched
-          });
           return shouldShowCatalog;
         })() && (
           <div className="product-catalog">
@@ -795,7 +742,6 @@ const Product: React.FC = () => {
             {(() => {
               const showLoadingMore = isLoadingMore && !searchQuery.trim();
               if (showLoadingMore) {
-                console.log('📦 Showing loading more indicator');
               }
               return showLoadingMore;
             })() && (
@@ -840,24 +786,16 @@ const Product: React.FC = () => {
             {/* Load more button (fallback) */}
             {(() => {
               const showLoadMore = !searchQuery.trim() && hasMore && !isLoadingMore && filteredProducts.length >= 10;
-              console.log('📦 Load more button visibility:', {
-                showLoadMore,
-                searchQuery: !!searchQuery.trim(),
-                hasMore,
-                isLoadingMore,
-                filteredProductsLength: filteredProducts.length
-              });
+             
               return showLoadMore;
             })() && (
               <div className="load-more-section">
                 <button 
                   className="load-more-btn"
                   onClick={() => {
-                    console.log('📦 Manual load more clicked');
                     setIsLoadingMore(true);
                     setOffset(prev => {
                       const newOffset = prev + 10;
-                      console.log('📦 Manual load - setting offset:', newOffset);
                       return newOffset;
                     });
                   }}
@@ -886,17 +824,6 @@ const Product: React.FC = () => {
                 !shouldShowLoading;
               
               if (showEmpty) {
-                console.log('🔄 Showing empty state with conditions:', {
-                  filteredProductsLength: filteredProducts.length,
-                  productsLoading,
-                  isLoadingMore,
-                  isInitialized,
-                  hasDataBeenFetched,
-                  isPending: productSearchMutation.isPending,
-                  shouldShowLoading,
-                  productsData: !!productsData,
-                  allProductsLength: allProducts.length
-                });
               }
               
               return showEmpty;

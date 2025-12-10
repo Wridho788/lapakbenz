@@ -158,18 +158,3 @@ if (!fs.existsSync(scriptsDir)) {
 fs.writeFileSync(path.join(scriptsDir, 'nginx.conf'), nginxConfig);
 fs.writeFileSync(path.join(scriptsDir, '.htaccess'), htaccessConfig);
 fs.writeFileSync(path.join(scriptsDir, 'server.js'), expressServerConfig);
-
-console.log('✅ Server routing configuration files created:');
-console.log('   - scripts/nginx.conf (Nginx configuration)');
-console.log('   - scripts/.htaccess (Apache configuration)');
-console.log('   - scripts/server.js (Express server)');
-console.log('');
-console.log('📚 Usage:');
-console.log('   1. For Express server: npm run serve');
-console.log('   2. For Apache: Copy .htaccess to your web root');
-console.log('   3. For Nginx: Use nginx.conf as reference');
-console.log('');
-console.log('💡 The configurations handle:');
-console.log('   - Bot detection for SEO');
-console.log('   - SPA routing fallback');
-console.log('   - Static file serving');

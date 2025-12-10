@@ -16,7 +16,6 @@ const RegistrationSuccess: React.FC<RegistrationSuccessProps> = ({
   registrationData,
   onOpenInvoice,
 }) => {
-  console.log('✅ Registration successful with data:', registrationData);
   const hasCompleteData =
     registrationData.transid && registrationData.ordercode && registrationData.invoice_url;
   return (

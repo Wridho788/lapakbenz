@@ -631,7 +631,6 @@ function generateStaticPage(config) {
 
 // Main function
 function generateAllStaticPages() {
-  console.log('🚀 Generating static HTML files for SEO...\n');
   
   const publicDir = path.join(process.cwd(), 'public');
   
@@ -667,25 +666,11 @@ function generateAllStaticPages() {
       
       fs.writeFileSync(outputPath, html, 'utf8');
       
-      console.log(`✅ Generated: ${filename}`);
-      console.log(`   📄 Title: ${config.title}`);  
-      console.log(`   📝 Description: ${config.description.substring(0, 80)}...`);
-      console.log(`   🎯 Keywords: ${config.keywords.split(',').slice(0, 3).join(', ')}...`);
-      console.log(`   📊 File size: ${(Buffer.byteLength(html, 'utf8') / 1024).toFixed(2)} KB\n`);
-      
       successCount++;
     } catch (error) {
       console.error(`❌ Failed to generate ${config.path}: ${error.message}`);
     }
   });
-  
-  console.log(`🎉 Generation complete! ${successCount}/${totalPages} files generated successfully.`);
-  console.log(`📁 Files location: ${publicDir}`);
-  console.log(`\n📋 Next steps:`);
-  console.log(`   1. Run 'npm run build' to build the application`);
-  console.log(`   2. Test the static files by visiting /product.html and /event.html`);
-  console.log(`   3. Submit sitemap.xml to Google Search Console`);
-  console.log(`   4. Monitor indexing status in Google Search Console\n`);
 }
 
 // Run if executed directly

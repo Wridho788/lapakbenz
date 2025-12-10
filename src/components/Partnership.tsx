@@ -15,15 +15,6 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
   const [dragOffset, setDragOffset] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (sliderData) {
-      console.log('Slider API data:', sliderData);
-    }
-    if (error) {
-      console.error('Slider API error:', error);
-    }
-  }, [sliderData, error]);
-
   // Check if sliderData has valid result
   const hasValidData =
     sliderData?.content?.result &&
