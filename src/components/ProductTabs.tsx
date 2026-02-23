@@ -10,8 +10,8 @@ export const ProductTabs: React.FC = () => {
   const navigate = useNavigate();
 
   // API hooks
-  const { data: latestProductsData, isLoading: latestLoading, error: latestError } = useLatestProducts();
-  const { data: bestSellerProductsData, isLoading: bestSellerLoading, error: bestSellerError } = useBestSellerProducts();
+  const { data: latestProductsData, isLoading: latestLoading } = useLatestProducts();
+  const { data: bestSellerProductsData, isLoading: bestSellerLoading } = useBestSellerProducts();
   
   const handleProductClick = (product: any) => {
     const productName = product.name || product.title || product.sku || product.id;

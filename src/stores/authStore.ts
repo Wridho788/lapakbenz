@@ -113,7 +113,7 @@ const useAuthStore = create<AuthState>()(
       },
 
       // Require authentication with automatic redirect
-      requireAuth: (callback: () => void, actionName: string = 'access this feature') => {
+      requireAuth: (callback: () => void, _actionName: string = 'access this feature') => {
         const { token, isAuthenticated, isLoading } = get();
         
         if (isLoading) {

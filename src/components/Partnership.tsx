@@ -7,7 +7,7 @@ interface PartnershipProps {
 }
 
 export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
-  const { data: sliderData, error } = useSlider();
+  const { data: sliderData } = useSlider();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);

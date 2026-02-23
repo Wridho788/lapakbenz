@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
 import './VerifyOtp.css';
-import { useSimpleRequestOTP, useVerifyOTP } from '../api/hooks/index'; // Tambahkan import ini
+import { useSimpleRequestOTP } from '../api/hooks/index'; // Tambahkan import ini
 
 const OTP_LENGTH = 4;
 const OTP_EXPIRE_SECONDS = 120;
@@ -32,7 +32,7 @@ const VerifyOtp: React.FC = () => {
       : '';
 
   // Panggil hooks OTP saat masuk halaman
-  const verifyOTPMutation = useVerifyOTP();
+  // const verifyOTPMutation = useVerifyOTP();
 
   const { requestOTP, canRequest } = useSimpleRequestOTP(username, {
     onSuccess: () => {
@@ -120,10 +120,10 @@ const VerifyOtp: React.FC = () => {
 
     try {
       // Panggil API verify OTP
-      const result = await verifyOTPMutation.mutateAsync({
-        id_customer: idCustomer,
-        otp: otp.trim(),
-      });
+      // const result = await verifyOTPMutation.mutateAsync({
+      //   id_customer: idCustomer,
+      //   otp: otp.trim(),
+      // });
 
       // Tampilkan success message
       toast.success('Kode OTP Anda telah diverifikasi!', {

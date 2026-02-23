@@ -15,7 +15,7 @@ import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
 import { useCart, useRemoveFromCart, useAddToCart, useSetPickup } from '../api/hooks/index';
-import { useAddOrder, useAddItemToOrder, useCheckoutOrder } from '../api/ordersApi';
+import { useAddOrder, useCheckoutOrder } from '../api/ordersApi';
 import { useDecodeToken } from '../api/hooks/authHooks';
 import { toast } from 'react-toastify';
 import './Cart.css';
@@ -137,7 +137,7 @@ const Cart: React.FC = () => {
 
   // Order API hooks
   const addOrderMutation = useAddOrder();
-  const addItemToOrderMutation = useAddItemToOrder();
+  // const addItemToOrderMutation = useAddItemToOrder();
   const checkoutOrderMutation = useCheckoutOrder();
 
   // Decode token hook untuk mendapatkan cost data
@@ -546,25 +546,25 @@ const Cart: React.FC = () => {
           currentStep: `Adding Item ${i + 1}/${cartItems.length}: ${item.name}...`,
         }));
 
-        const itemPayload = {
-          cproduct: item.sku,
-          ctax: '0',
-          tqty: item.qty.toString(),
-          tdiscount: '0',
-          tshipping: item.pickup === "1" ? '0' : item.shipping.toString(),
-        };
+        // const itemPayload = {
+        //   cproduct: item.sku,
+        //   ctax: '0',
+        //   tqty: item.qty.toString(),
+        //   tdiscount: '0',
+        //   tshipping: item.pickup === "1" ? '0' : item.shipping.toString(),
+        // };
 
 
-        try {
-          const itemResponse = await addItemToOrderMutation.mutateAsync({
-            orderId,
-            data: itemPayload,
-            authToken: authToken!,
-          });
+        // try {
+        //   // const itemResponse = await addItemToOrderMutation.mutateAsync({
+        //   //   orderId,
+        //   //   data: itemPayload,
+        //   //   authToken: authToken!,
+        //   // });
 
-        } catch (itemError: any) {
-          throw new Error(`Failed to add item "${item.name}" to order: ${itemError.message}`);
-        }
+        // } catch (itemError: any) {
+        //   throw new Error(`Failed to add item "${item.name}" to order: ${itemError.message}`);
+        // }
       }
 
       // Update status for final processed items
