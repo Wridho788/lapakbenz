@@ -177,15 +177,17 @@ const MerchantRegistration: React.FC = () => {
         });
       }
     } catch (error: any) {
-      console.error('❌ Registration failed:', error.response?.data?.error);
-      toast.error(
-        error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.',
-        {
-          position: 'bottom-right',
-          autoClose: 1500,
-          theme: 'dark',
-        }
-      );
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.';
+      console.error('❌ Registration failed:', errorMessage);
+      toast.error(errorMessage, {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     } finally {
       setIsSubmitting(false);
     }
