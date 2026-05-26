@@ -99,11 +99,9 @@ export function useMerchantRegistration(): UseMutationResult<
 > {
   return useMutation({
     mutationFn: (payload: MerchantRegistrationPayload) => {
-      const token = getAuthToken();
-      if (!token) throw new Error('Auth token required');
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
-      return eventApi.registerMerchant(token, formData);
+      return eventApi.registerMerchant(formData);
     },
   });
 }
