@@ -108,9 +108,6 @@ const Dashboard: React.FC = () => {
 
   // Check if Partnership should be displayed
   const shouldShowPartnership = sliderData?.result;
-  // &&
-  // Array.isArray(sliderData.result) &&
-  // sliderData.content.result.length > 0;
 
   // Check if UpcomingNews should be displayed
   const shouldShowUpcomingNews =

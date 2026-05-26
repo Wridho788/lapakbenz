@@ -9,7 +9,9 @@
       "mcp__ide__getDiagnostics",
       "Bash(Select-String *)",
       "Bash(Get-Content *)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

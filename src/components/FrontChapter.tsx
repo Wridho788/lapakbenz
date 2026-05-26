@@ -56,7 +56,7 @@ export const FrontChapter: React.FC<FrontChapterProps> = ({ className, chapterId
 
   // Get events from the API response
   const chapterEvents: EventItem[] = eventMutation.data?.result ?? [];
-
+  console.log('test')
   const handleEventClick = (event: EventItem) => {
     console.log('test')
     const eventUrl = createEventUrl(String(event.ID), event.Code);
