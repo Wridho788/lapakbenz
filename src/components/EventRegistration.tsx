@@ -15,7 +15,6 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
 }) => {
   const { token, validateToken } = useAuthStore();
 
-  // Double-check authentication with token validation
   const isValidAuthentication = isAuthenticated && token && validateToken();
 
   if (!isValidAuthentication) {

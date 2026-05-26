@@ -44,6 +44,19 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
+.appbar-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #161129;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
 .appbar-name {
   font-weight: 600;
   font-size: 1.1rem;
@@ -210,8 +223,9 @@
     padding: 0.9rem 1.25rem;
     min-height: 60px;
   }
-  
-  .appbar-avatar {
+
+  .appbar-avatar,
+  .appbar-avatar-placeholder {
     width: 44px;
     height: 44px;
   }
@@ -237,8 +251,9 @@
     padding: 0.8rem 1.1rem;
     min-height: 58px;
   }
-  
-  .appbar-avatar {
+
+  .appbar-avatar,
+  .appbar-avatar-placeholder {
     width: 42px;
     height: 42px;
   }

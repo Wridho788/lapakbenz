@@ -35,8 +35,15 @@ const ForgotPassword: React.FC = () => {
         },
         onError: (err: any) => {
           let msg = 'Gagal mengirim OTP.';
-          if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
-            msg = err.message;
+          if (err && typeof err === 'object') {
+            // Handle axios error with response body
+            if ('response' in err && err.response?.data?.error) {
+              msg = err.response.data.error;
+            } else if ('response' in err && err.response?.data?.message) {
+              msg = err.response.data.message;
+            } else if ('message' in err && typeof err.message === 'string' && err.message) {
+              msg = err.message;
+            }
           }
           toast.error(msg, {
             position: 'bottom-right',
@@ -47,7 +54,6 @@ const ForgotPassword: React.FC = () => {
       }
     );
   };
-
 
   const handleAppbarBack = () => {
     navigate('/login');
@@ -84,8 +90,15 @@ const ForgotPassword: React.FC = () => {
         },
         onError: (err: any) => {
           let msg = 'Gagal mengubah password.';
-          if (err && typeof err === 'object' && 'message' in err && typeof err.message === 'string') {
-            msg = err.message;
+          if (err && typeof err === 'object') {
+            // Handle axios error with structured response (400 Invalid request body)
+            if ('response' in err && err.response?.data?.error) {
+              msg = err.response.data.error;
+            } else if ('response' in err && err.response?.data?.message) {
+              msg = err.response.data.message;
+            } else if ('message' in err && typeof err.message === 'string' && err.message) {
+              msg = err.message;
+            }
           }
           toast.error(msg, {
             position: 'bottom-right',

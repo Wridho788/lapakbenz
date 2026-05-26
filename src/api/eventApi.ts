@@ -82,9 +82,15 @@ export const eventApi = {
         } else if (error.response?.status === 404) {
           throw new Error('Event not found. Please check the event ID.');
         } else if (error.response?.status === 400) {
+          const serverMsg = error.response?.data?.error || error.response?.data?.message;
           throw new Error(
-            error.response?.data?.message || 'Invalid request. Please check your data.',
+            serverMsg || 'Invalid request. Please check your data.',
           );
+        }
+        // Handle duplicate registration
+        const serverError = error.response?.data?.error || error.response?.data?.message;
+        if (serverError) {
+          throw new Error(serverError);
         }
         throw new Error(error.response?.data?.error || 'Registration failed');
       }

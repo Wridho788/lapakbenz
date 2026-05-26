@@ -97,6 +97,12 @@ export const customerApi = {
       return response.data;
     } catch (error) {
       console.error('Forgot Password API Error:', error);
+      if (axios.isAxiosError(error)) {
+        const serverMessage = error.response?.data?.error || error.response?.data?.message;
+        if (serverMessage) {
+          throw new Error(serverMessage);
+        }
+      }
       throw error;
     }
   },

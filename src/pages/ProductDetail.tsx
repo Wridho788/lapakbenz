@@ -52,7 +52,6 @@ const ProductDetail: React.FC = () => {
   const { addToCart } = useCartContext();
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();
-
   // Extract actual product ID from URL parameter (handles both old ID format and new SEO format)
   const productId = productParam ? extractIdFromParam(productParam) : null;
 
@@ -84,7 +83,7 @@ const ProductDetail: React.FC = () => {
     isLoading: productLoading,
     error: productError,
   } = useProductDetail(productId || '');
-  console.log('Product Detail API Response:', productDetailData?.result?.id);
+  console.log('Product Detail API Response:', productDetailData);
 
   // Wishlist hooks
   const { data: wishlistStatus, isLoading: isWishlistLoading } = useIsWishlist(productDetailData?.result?.id);
@@ -389,24 +388,30 @@ const ProductDetail: React.FC = () => {
       images: ['/bea2x.jpg', '/bea2x.jpg', '/bea2x.jpg'],
     };
 
-    // If we have API data, use it
-    if (productDetailData?.content) {
-      const apiProduct = productDetailData.content;
+    // Extract apiProduct from result (productDetailData.result) for image_url + result.image construction
+    const apiProduct = productDetailData?.result;
+    const apiBaseUrl = productDetailData?.image_url ?? '';
 
-      // Create images array from available URLs
-      const productImages = [];
-      if (apiProduct.image) productImages.push(apiProduct.image);
-      if (apiProduct.url1) productImages.push(apiProduct.url1);
-      if (apiProduct.url2) productImages.push(apiProduct.url2);
-      if (apiProduct.url3) productImages.push(apiProduct.url3);
-      if (apiProduct.url4) productImages.push(apiProduct.url4);
-      if (apiProduct.url5) productImages.push(apiProduct.url5);
-      if (apiProduct.url6) productImages.push(apiProduct.url6);
+    const buildUrl = (filename: string | null | undefined): string => {
+      if (!filename) return '';
+      if (filename.startsWith('http')) return filename;
+      return `${apiBaseUrl}${filename}`;
+    };
 
-      // Remove duplicates
+    if (apiProduct) {
+      console.log(apiProduct, 'API Product Data');
+      // Build full image URLs from image_url + filename
+      const productImages: string[] = [];
+      if (apiProduct.image) productImages.push(buildUrl(apiProduct.image));
+      if (apiProduct.url1) productImages.push(buildUrl(apiProduct.url1));
+      if (apiProduct.url2) productImages.push(buildUrl(apiProduct.url2));
+      if (apiProduct.url3) productImages.push(buildUrl(apiProduct.url3));
+      if (apiProduct.url4) productImages.push(buildUrl(apiProduct.url4));
+      if (apiProduct.url5) productImages.push(buildUrl(apiProduct.url5));
+      if (apiProduct.url6) productImages.push(buildUrl(apiProduct.url6));
+
       const uniqueImages = [...new Set(productImages)];
 
-      // Create specifications array from available data
       const specifications = [];
       if (apiProduct.sku) specifications.push(`SKU: ${apiProduct.sku}`);
       if (apiProduct.weight) specifications.push(`Weight: ${apiProduct.weight}g`);
@@ -414,18 +419,18 @@ const ProductDetail: React.FC = () => {
       if (apiProduct.restricted)
         specifications.push(`Restricted: ${apiProduct.restricted === 'Y' ? 'Yes' : 'No'}`);
       if (apiProduct.status)
-        specifications.push(`Status: ${apiProduct.status === 1 ? 'Active' : 'Inactive'}`);
+        specifications.push(`Status: ${apiProduct.status === 1 ? 'Active' : 'InActive'}`);
 
       return {
         id: apiProduct.id?.toString() || productId || '1',
         title: apiProduct.name || dummyData.title,
         price: apiProduct.price || dummyData.price,
-        image: apiProduct.image || dummyData.image,
-        category: apiProduct.category || apiProduct.categoryName || apiProduct.kategori || dummyData.category, // Check multiple possible category fields from API
+        image: buildUrl(apiProduct.image) || dummyData.image,
+        category: apiProduct.category || apiProduct.categoryName || apiProduct.kategori || dummyData.category,
         rating: parseFloat(apiProduct.rating) || dummyData.rating,
         description: apiProduct.description || apiProduct.shortdesc || dummyData.description,
         specifications: specifications.length > 0 ? specifications : dummyData.specifications,
-        stock: 25, // API doesn't provide stock info, use default
+        stock: 25,
         images: uniqueImages.length > 0 ? uniqueImages : dummyData.images,
       };
     }

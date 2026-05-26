@@ -58,9 +58,8 @@ export const FrontChapter: React.FC<FrontChapterProps> = ({ className, chapterId
   const chapterEvents: EventItem[] = eventMutation.data?.result ?? [];
   console.log('test')
   const handleEventClick = (event: EventItem) => {
-    console.log('test')
+    if (!event.ID) return;
     const eventUrl = createEventUrl(String(event.ID), event.Code);
-    console.log('Navigating to event URL:', eventUrl);
     navigate(eventUrl);
   };
 

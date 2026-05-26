@@ -24,7 +24,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   className
 }) => {
   const handleClick = () => {
-    if (onClick && event) {
+    if (onClick) {
       onClick(event);
     }
   };

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdNotifications, MdShoppingCart } from 'react-icons/md';
+import { MdNotifications, MdShoppingCart, MdPerson } from 'react-icons/md';
 import './AppbarHomepage.css';
 
 export type AppbarHomepageProps = {
@@ -12,15 +12,21 @@ export type AppbarHomepageProps = {
   cartCount?: number;
 };
 
-export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({ 
-  avatar, 
-  name, 
+export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
+  avatar,
+  name,
   onNotificationClick,
   notificationCount = 0,
   onCartClick,
   cartCount = 0
 }) => {
   const navigate = useNavigate();
+  const [avatarError, setAvatarError] = useState(false);
+
+  const handleAvatarError = () => setAvatarError(true);
+  const handleAvatarLoad = () => setAvatarError(false);
+
+  const showDefaultIcon = avatarError || !avatar;
 
   const handleNotificationClick = () => {
     if (onNotificationClick) {
@@ -40,8 +46,20 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
   return (
     <header className="appbar-homepage">
       <div className="appbar-user-info">
-        <img src={avatar} alt="avatar" className="appbar-avatar" />
-        <span className="appbar-name">Hi, {name} !</span>
+        {showDefaultIcon ? (
+          <div className="appbar-avatar-placeholder">
+            <MdPerson size={20} />
+          </div>
+        ) : (
+          <img
+            src={avatar}
+            alt="avatar"
+            className="appbar-avatar"
+            onError={handleAvatarError}
+            onLoad={handleAvatarLoad}
+          />
+        )}
+        <span className="appbar-name">Hi, {name || 'User'} !</span>
       </div>
       <div className="appbar-actions">
         <button
