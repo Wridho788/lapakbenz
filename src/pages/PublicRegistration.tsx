@@ -28,7 +28,7 @@ const PublicRegistration: React.FC = () => {
   // Updated vehicle types - only motorcycle and car
   const vehicleTypes = [
     { value: '', label: 'Pilih Jenis Kendaraan' },
-    { value: 'motorcycle', label: '🏍️ Motor' },
+    { value: 'moto', label: '🏍️ Motor' },
     { value: 'car', label: '🚗 Mobil' }
   ];
 
@@ -48,17 +48,6 @@ const PublicRegistration: React.FC = () => {
         [name]: ''
       }));
     }
-  };
-
-  // Helper function to ensure URL has https protocol
-  const getFullUrl = (url: string): string => {
-    if (!url) return '';
-    
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    
-    return `https://${url}`;
   };
 
   const validateForm = (): boolean => {
@@ -90,13 +79,6 @@ const PublicRegistration: React.FC = () => {
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleViewInvoice = () => {
-    if (registrationResult?.content?.invoice_url) {
-      const fullUrl = getFullUrl(registrationResult.content.invoice_url);
-      window.open(fullUrl, '_blank');
-    }
   };
 
   const handleCloseSuccessModal = () => {
@@ -350,51 +332,81 @@ const PublicRegistration: React.FC = () => {
 
       {/* Success Modal */}
       {showSuccessModal && registrationResult && (
-        <div className="modal-overlay" onClick={handleCloseSuccessModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>🎉 Pendaftaran Berhasil!</h2>
-            </div>
-            <div className="modal-body">
-              <p>Pendaftaran Anda berhasil dikirim.</p>
-              <div className="registration-details">
-                <h3>📋 Detail Pendaftaran:</h3>
-                <div className="detail-item">
-                  <strong>Kode Order:</strong>
-                  <span>{registrationResult.ordercode || 'N/A'}</span>
-                </div>
-                <div className="detail-item">
-                  <strong>ID Transaksi:</strong>
-                  <span>{registrationResult.transid || 'N/A'}</span>
-                </div>
-                {/* <div className="detail-item">
-                  <strong>Jumlah Tenant:</strong>
-                  <span>{formData.tenantCount} Tenant</span>
-                </div> */}
-                {!registrationResult.invoice_url && (
-                  <div className="detail-item free-registration">
-                    <strong>Biaya pendaftaran:</strong>
-                    <span className="free-badge">GRATIS</span>
-                  </div>
-                )}
+        <div className="success-modal-overlay" onClick={handleCloseSuccessModal}>
+          <div className="success-modal-content" onClick={(e) => e.stopPropagation()}>
+            {/* Animated Success Icon */}
+            <div className="success-icon-wrapper">
+              <div className="success-icon-ring"></div>
+              <div className="success-icon-ring delay-1"></div>
+              <div className="success-icon-ring delay-2"></div>
+              <div className="success-checkmark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
               </div>
             </div>
-            <div className="modal-actions">
-              {registrationResult.invoice_url && (
-                <button
-                  type="button"
-                  onClick={handleViewInvoice}
-                  className="btn-secondary"
-                >
-                  💳 Lihat Invoice
-                </button>
-              )}
+
+            {/* Header */}
+            <div className="success-header">
+              <h2>Pendaftaran Berhasil!</h2>
+              <p>Terima kasih telah mendaftar. Data Anda telah kami terima.</p>
+            </div>
+
+            {/* Registration Details Card */}
+            <div className="success-details-card">
+              <div className="success-detail-header">
+                <span className="detail-icon">📋</span>
+                <span>Detail Pendaftaran</span>
+              </div>
+              <div className="success-detail-list">
+                <div className="success-detail-item">
+                  <span className="detail-label">Nama</span>
+                  <span className="detail-value">{formData.name}</span>
+                </div>
+                <div className="success-detail-item">
+                  <span className="detail-label">Kendaraan</span>
+                  <span className="detail-value">{formData.type === 'moto' ? '🏍️ Motor' : '🚗 Mobil'}</span>
+                </div>
+                <div className="success-detail-item">
+                  <span className="detail-label">No. Polisi</span>
+                  <span className="detail-value">{formData.policeno}</span>
+                </div>
+                <div className="success-detail-item">
+                  <span className="detail-label">Kontak</span>
+                  <span className="detail-value">{formData.phone}</span>
+                </div>
+              </div>
+
+              {/* Free Badge */}
+              <div className="success-free-badge">
+                <div className="free-badge-content">
+                  <span className="free-badge-icon">🎉</span>
+                  <div className="free-badge-text">
+                    <span className="free-badge-title">GRATIS!</span>
+                    <span className="free-badge-subtitle">Tidak ada biaya pendaftaran</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Info Message */}
+            <div className="success-info-message">
+              <span className="info-icon">💬</span>
+              <p>Anda akan menerima notifikasi terkait event ini melalui email dan nomor telepon yang telah didaftarkan.</p>
+            </div>
+
+            {/* Action Button */}
+            <div className="success-actions">
               <button
                 type="button"
                 onClick={handleCloseSuccessModal}
-                className="btn-primary"
+                className="btn-success-action"
               >
-                {registrationResult.invoice_url ? 'Lanjut' : 'Kembali ke Detail Event'}
+                Lihat Detail Event
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
               </button>
             </div>
           </div>

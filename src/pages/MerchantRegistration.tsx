@@ -40,19 +40,6 @@ const MerchantRegistration: React.FC = () => {
     }
   };
 
-  // Helper function to ensure URL has https protocol (like Invoice page)
-  const getFullUrl = (url: string): string => {
-    if (!url) return '';
-    
-    // If URL already has protocol, return as is
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    
-    // If URL doesn't have protocol, add https://
-    return `https://${url}`;
-  };
-
   const validateForm = (): boolean => {
     const newErrors: {[key: string]: string} = {};
 
@@ -111,16 +98,16 @@ const MerchantRegistration: React.FC = () => {
       const result = await merchantRegistration.mutateAsync(payload);
       // Check if registration was successful (status 200, or success flag, or has content)
       if (result.status === 200 || result.success === true || result.content) {
-        const hasInvoice = result.content.invoice_url;
-        const invoiceUrl = result.content.invoice_url;
+        // const hasInvoice = result.content.invoice_url;
+        // const invoiceUrl = result.content.invoice_url;
         
-        if (!hasInvoice) {
+        // if (!hasInvoice) {
           toast.success(
             <div>
               <strong>🎉 Pendaftaran Berhasil!</strong>
               <div style={{ marginTop: '8px', fontSize: '14px' }}>
-                <p><strong>Kode Order:</strong> {result.content.ordercode || 'N/A'}</p>
-                <p><strong>ID Transaksi:</strong> {result.content.transid || 'N/A'}</p>
+                {/* <p><strong>Kode Order:</strong> {result.content.ordercode || 'N/A'}</p> */}
+                {/* <p><strong>ID Transaksi:</strong> {result.content.transid || 'N/A'}</p> */}
                 <p style={{ color: '#10b981', marginTop: '8px' }}>
                   <strong>Biaya pembuatan merchant: GRATIS</strong>
                 </p>
@@ -133,42 +120,42 @@ const MerchantRegistration: React.FC = () => {
               onClose: () => navigate(`/event/${eventId}`)
             }
           );
-        } else {
-          toast.success(
-            <div>
-              <strong>🎉 Pendaftaran Berhasil!</strong>
-              <div style={{ marginTop: '8px', fontSize: '14px' }}>
-                <p><strong>Kode Order:</strong> {result.content.ordercode || 'N/A'}</p>
-                <p><strong>ID Transaksi:</strong> {result.content.transid || 'N/A'}</p>
-                <button
-                  onClick={() => {
-                    const fullUrl = getFullUrl(invoiceUrl);
-                    window.open(fullUrl, '_blank');
-                  }}
-                  style={{
-                    marginTop: '12px',
-                    padding: '8px 16px',
-                    backgroundColor: '#3b82f6',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                  }}
-                >
-                  💳 Lihat Invoice
-                </button>
-              </div>
-            </div>,
-            {
-              position: 'bottom-right',
-              autoClose: 1500,
-              theme: 'dark',
-              onClose: () => navigate(`/event/${eventId}`)
-            }
-          );
-        }
+        // } else {
+        //   toast.success(
+        //     <div>
+        //       <strong>🎉 Pendaftaran Berhasil!</strong>
+        //       <div style={{ marginTop: '8px', fontSize: '14px' }}>
+        //         <p><strong>Kode Order:</strong> {result.content.ordercode || 'N/A'}</p>
+        //         <p><strong>ID Transaksi:</strong> {result.content.transid || 'N/A'}</p>
+        //         <button
+        //           onClick={() => {
+        //             const fullUrl = getFullUrl(invoiceUrl);
+        //             window.open(fullUrl, '_blank');
+        //           }}
+        //           style={{
+        //             marginTop: '12px',
+        //             padding: '8px 16px',
+        //             backgroundColor: '#3b82f6',
+        //             color: 'white',
+        //             border: 'none',
+        //             borderRadius: '6px',
+        //             cursor: 'pointer',
+        //             fontSize: '14px',
+        //             fontWeight: '500'
+        //           }}
+        //         >
+        //           💳 Lihat Invoice
+        //         </button>
+        //       </div>
+        //     </div>,
+        //     {
+        //       position: 'bottom-right',
+        //       autoClose: 1500,
+        //       theme: 'dark',
+        //       onClose: () => navigate(`/event/${eventId}`)
+        //     }
+        //   );
+        // }
       } else {
         toast.error(result.message || 'Pendaftaran gagal. Silakan coba lagi.', {
           position: 'bottom-right',

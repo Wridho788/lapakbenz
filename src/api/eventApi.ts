@@ -107,12 +107,10 @@ export const eventApi = {
   },
 
   registerPublic: async (
-    authToken: string,
     formData: FormData,
   ): Promise<EventRegisterResponse & { status: number }> => {
     const response = await apiClient.post(ENDPOINT_EVENT_REGISTER_PUBLIC, formData, {
       headers: {
-        'Authorization': `Bearer ${authToken}`,
         'Content-Type': 'multipart/form-data',
       },
     });

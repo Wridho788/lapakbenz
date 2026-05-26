@@ -186,27 +186,335 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Mobile responsive */
+/* ============================================
+   SUCCESS MODAL STYLES
+   ============================================ */
+
+.success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.12) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.success-modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 40px 32px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(16, 185, 129, 0.1);
+  animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animated Success Icon */
+.success-icon-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+}
+
+.success-icon-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border: 3px solid #10b981;
+  border-radius: 50%;
+  animation: ringPulse 1.5s ease-out infinite;
+}
+
+.success-icon-ring.delay-1 {
+  animation-delay: 0.3s;
+}
+
+.success-icon-ring.delay-2 {
+  animation-delay: 0.6s;
+}
+
+@keyframes ringPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+.success-checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  animation: checkmarkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+.success-checkmark svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: drawCheck 0.4s ease-out 0.5s forwards;
+}
+
+@keyframes checkmarkPop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  70% { transform: translate(-50%, -50%) scale(1.1); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Header */
+.success-header {
+  margin-bottom: 24px;
+}
+
+.success-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: -0.025em;
+}
+
+.success-header p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Details Card */
+.success-details-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #d1fae5;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.success-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #a7f3d0;
+  font-weight: 600;
+  font-size: 14px;
+  color: #065f46;
+}
+
+.detail-icon {
+  font-size: 18px;
+}
+
+.success-detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.success-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.success-detail-item .detail-label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.success-detail-item .detail-value {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Free Badge */
+.success-free-badge {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 12px;
+  animation: badgeSlide 0.5s ease-out 0.6s both;
+}
+
+@keyframes badgeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.free-badge-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: white;
+}
+
+.free-badge-icon {
+  font-size: 28px;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.free-badge-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.free-badge-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.free-badge-subtitle {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Info Message */
+.success-info-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.success-info-message .info-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.success-info-message p {
+  margin: 0;
+  font-size: 13px;
+  color: #92400e;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Action Button */
+.success-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-success-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+  transition: all 0.3s ease;
+}
+
+.btn-success-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px 0 rgba(16, 185, 129, 0.5);
+}
+
+.btn-success-action svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.btn-success-action:hover svg {
+  transform: translateX(4px);
+}
+
+/* Mobile Responsive */
 @media (max-width: 480px) {
-  .public-registration-content {
+  .success-modal-content {
+    padding: 32px 24px;
+    border-radius: 20px;
+    margin: 16px;
+  }
+
+  .success-header h2 {
+    font-size: 22px;
+  }
+
+  .success-details-card {
     padding: 16px;
   }
-  
-  .registration-header {
-    padding: 20px;
-    margin-bottom: 24px;
-  }
-  
-  .registration-form {
-    padding: 24px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
+
+  .btn-success-action {
     width: 100%;
   }
 }

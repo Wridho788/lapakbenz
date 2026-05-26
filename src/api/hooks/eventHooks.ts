@@ -123,11 +123,9 @@ export function usePublicRegistration(): UseMutationResult<
 > {
   return useMutation({
     mutationFn: (payload: PublicRegistrationPayload) => {
-      const token = getAuthToken();
-      if (!token) throw new Error('Auth token required');
       const formData = new FormData();
       Object.entries(payload).forEach(([key, value]) => formData.append(key, value));
-      return eventApi.registerPublic(token, formData);
+      return eventApi.registerPublic(formData);
     },
   });
 }
