@@ -8,21 +8,37 @@ export interface EventListRequest {
 }
 
 export interface EventItem {
+  id?: number;
   ID: number;
   ClubID?: number;
+  chapter_id?: number;
+  chapter?: string;
   Code?: string;
+  code?: string;
   Name: string;
+  name: string;
   Dates: string;
+  dates: string;
+  time?: string;
   Desc?: string;
+  desc?: string;
+  description?: string;
   Image?: string;
+  image?: string;
   Fee?: number;
+  fee?: number;
   MerchantCost?: number;
   MerchantQuota?: number;
   Cost1?: number;
   Cost2?: number;
   Type?: number;
+  type?: number;
+  type_desc?: string;
   MinimumParticipant?: number;
+  minimum_participants?: number;
   Done?: number;
+  done?: number;
+  done_desc?: string;
   Point?: number;
   AllowMerchant?: number;
   AllowPublic?: number;
@@ -33,6 +49,7 @@ export interface EventItem {
   chapter_code?: string;
   type_label?: string;
   done_label?: string;
+  [key: string]: any;
 }
 
 export interface EventListResponse {
