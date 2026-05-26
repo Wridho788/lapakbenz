@@ -7,8 +7,11 @@ import { useAuthStore } from '../stores/authStore';
 import './Invoice.css';
 
 interface InvoiceState {
-  invoiceUrl: string;
-  orderId: string;
+  orderCode?: string;
+  linkUrl?: string;
+  orderId?: string;
+  // Legacy support
+  invoiceUrl?: string;
   transId?: number;
   orderPayment?: string;
 }
@@ -19,35 +22,40 @@ const Invoice: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error] = useState<string | null>(null);
   const { isAuthenticated } = useAuthStore();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Get invoice data from navigation state
   const invoiceData = location.state as InvoiceState;
+
+  // Prioritize new link_url format, fallback to legacy invoiceUrl
+  const paymentUrl = invoiceData?.linkUrl || invoiceData?.invoiceUrl;
+  const displayOrderCode = invoiceData?.orderCode || invoiceData?.orderId || invoiceData?.orderPayment;
+
   // Use OrderDetail hook for polling payment status
   const { data: orderDetail, refetch } = useOrderDetail(
-    invoiceData?.orderPayment || '',
+    invoiceData?.orderCode || invoiceData?.orderPayment || '',
   );
   useEffect(() => {
-    // Redirect to cart if no invoice data is provided
-    if (!invoiceData?.invoiceUrl) {
-      console.error('❌ No invoice URL provided');
+    // Redirect to cart if no payment URL is provided
+    if (!paymentUrl) {
+      console.error('❌ No payment URL provided');
       navigate('/cart');
       return;
     }
     // Auto-open payment page in browser
     const autoOpenTimer = setTimeout(() => {
       setIsLoading(false);
-      const fullUrl = getFullUrl(invoiceData.invoiceUrl);
+      const fullUrl = getFullUrl(paymentUrl);
       window.open(fullUrl, '_blank');
     }, 2000); // 2 seconds delay to show the page first
 
     return () => clearTimeout(autoOpenTimer);
-  }, [invoiceData?.invoiceUrl, navigate]);
+  }, [paymentUrl, navigate]);
 
   // Polling effect untuk mengecek status pembayaran
   useEffect(() => {
-    // Hanya lakukan polling jika ada orderPayment dan user sudah authenticated
-    if (!invoiceData?.orderPayment || !isAuthenticated) {
+    // Hanya lakukan polling jika ada orderCode dan user sudah authenticated
+    if (!invoiceData?.orderCode || !isAuthenticated) {
       return;
     }
     // Polling setiap 3 detik
@@ -61,7 +69,7 @@ const Invoice: React.FC = () => {
         intervalRef.current = null;
       }
     };
-  }, [invoiceData?.orderPayment, isAuthenticated, refetch]);
+  }, [invoiceData?.orderCode, isAuthenticated, refetch]);
 
   // Effect untuk mengecek status pembayaran dan navigasi
   useEffect(() => {
@@ -71,11 +79,11 @@ const Invoice: React.FC = () => {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      
+
       // Navigasi ke halaman order detail
-      navigate(`/orders/${invoiceData?.orderPayment}`);
+      navigate(`/orders/${invoiceData?.orderCode}`);
     }
-  }, [orderDetail?.content?.status, navigate, invoiceData?.orderPayment]);
+  }, [orderDetail?.content?.status, navigate, invoiceData?.orderCode]);
 
   useEffect(() => {
     // Memastikan class dark mode diterapkan dengan benar
@@ -112,8 +120,8 @@ const Invoice: React.FC = () => {
   // };
 
   const handleOpenInNewTab = () => {
-    if (invoiceData?.invoiceUrl) {
-      const fullUrl = getFullUrl(invoiceData.invoiceUrl);
+    if (paymentUrl) {
+      const fullUrl = getFullUrl(paymentUrl);
       window.open(fullUrl, '_blank');
     }
   };
@@ -131,13 +139,13 @@ const Invoice: React.FC = () => {
     return `https://${url}`;
   };
 
-  if (!invoiceData?.invoiceUrl) {
+  if (!paymentUrl) {
     return (
       <div className="invoice-page">
-        <AppbarDefault title="Faktur" onBack={handleBackClick} />
+        <AppbarDefault title="Order" onBack={handleBackClick} />
         <div className="invoice-error">
-          <h3>Faktur Tidak Ditemukan</h3>
-          <p>Tidak dapat memuat faktur. Silakan coba lagi.</p>
+          <h3>Order Tidak Ditemukan</h3>
+          <p>Tidak dapat memuat Order. Silakan coba lagi.</p>
           <button
             onClick={() => navigate('/cart', { state: { from: '/invoice' } })}
             className="back-to-cart-btn"
@@ -151,15 +159,15 @@ const Invoice: React.FC = () => {
 
   return (
     <div className="invoice-page">
-      <AppbarDefault title={`Faktur - ${invoiceData.orderId}`} onBack={handleBackClick} />
+      <AppbarDefault title={`Faktur - ${displayOrderCode}`} onBack={handleBackClick} />
 
       <div className="invoice-content">
         {/* Invoice Header */}
         <div className="invoice-header">
           <div className="invoice-info">
             <h3>Tagihan Pembayaran</h3>
-            <p>ID Pesanan: {invoiceData.orderId}</p>
-            {invoiceData.transId && <p>ID Transaksi: {invoiceData.transId}</p>}
+            {displayOrderCode && <p>Kode Pesanan: <strong>{displayOrderCode}</strong></p>}
+            {invoiceData?.transId && <p>ID Transaksi: {invoiceData.transId}</p>}
           </div>
 
           <div className="invoice-actions">

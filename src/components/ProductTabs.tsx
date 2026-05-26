@@ -15,11 +15,11 @@ export const ProductTabs: React.FC = () => {
   
   const handleProductClick = (product: any) => {
     const productName = product.name || product.title || product.sku || product.id;
-    const productUrl = createProductUrl(product.id, productName);
+    const productUrl = createProductUrl(product.sku, productName);
     navigate(productUrl);
   };
 
-  const renderProductGrid = (products: any[]) => {
+  const renderProductGrid = (products: any[], imageUrl?: string) => {
     if (!products || products.length === 0) {
       return (
         <div className="products-empty">
@@ -27,13 +27,13 @@ export const ProductTabs: React.FC = () => {
         </div>
       );
     }
-    
+
     return (
       <div className="products-grid">
         {products.slice(0, 4).map((product) => (
           <ProductCard
             key={product.id}
-            image={product.image}
+            image={imageUrl ? imageUrl + product.image : product.image}
             name={product.name}
             price={product.price}
             rating={product.rating}
@@ -53,7 +53,10 @@ export const ProductTabs: React.FC = () => {
           </div>
         );
       }
-      return renderProductGrid(latestProductsData?.content?.result || []);
+      return renderProductGrid(
+        latestProductsData?.result || [],
+        latestProductsData?.image_url
+      );
     }
 
     if (activeTab === 'bestseller') {
@@ -64,7 +67,10 @@ export const ProductTabs: React.FC = () => {
           </div>
         );
       }
-      return renderProductGrid(bestSellerProductsData?.content?.result || []);
+      return renderProductGrid(
+        bestSellerProductsData?.result || [],
+        bestSellerProductsData?.image_url
+      );
     }
 
     return null;

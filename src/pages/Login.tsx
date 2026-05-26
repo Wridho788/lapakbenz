@@ -70,7 +70,7 @@ const Login: React.FC = () => {
       if (response.success === true) {
         // Standard success format
         isSuccess = true;
-        token = response.token || response.data?.token || '';
+        token = response.token || '';
         message = response.message || 'Login successful';
       } else if (response.content && response.content.token) {
         // API format: { content: { token, status, userid } }

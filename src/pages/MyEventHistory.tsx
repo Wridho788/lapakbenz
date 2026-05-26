@@ -8,7 +8,7 @@ import './AccountPages.css';
 interface EventItem {
   id: string;
   chapter_id?: string;
-  chapter: string;
+  chapter?: string;
   code?: string;
   name: string;
   dates?: string;
@@ -22,7 +22,8 @@ interface EventItem {
   type_desc?: string;
   done?: number;
   done_desc?: string;
-  status?: string;
+status?: string;
+  [key: string]: any;
 }
 
 const MyEventHistory: React.FC = () => {
@@ -34,8 +35,8 @@ const MyEventHistory: React.FC = () => {
     isLoading: eventsLoading,
     error: eventsError,
   } = useEventsByCustomer({
-    limit: 30,
-    offset: 0,
+    limit: '30',
+    offset: '0',
   });
 
   // Log the response to console

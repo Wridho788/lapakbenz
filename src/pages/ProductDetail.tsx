@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   MdShoppingCart,
   MdStar,
@@ -10,17 +10,18 @@ import {
   MdArrowBackIos,
   MdArrowForwardIos,
   MdRestore,
+  MdFavorite,
+  MdFavoriteBorder,
 } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import SEO from '../components/SEO';
 import { generateBreadcrumbs, formatPrice, truncateText, stripHtml } from '../utils/seoUtils';
 import { useCart as useCartContext } from '../contexts/CartContext';
-import { useProductDetail, useAddToCart, useCart } from '../api/hooks/index';
+import { useProductDetail, useAddToCart, useCart, useIsWishlist, useToggleWishlist } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import { extractIdFromParam } from '../api/codeMapping';
 import { toast } from 'react-toastify';
-import AturPengiriman from '../components/AturPengiriman';
 import { isShippingAddressRequiredError, logErrorDetails, getErrorMessage, isAuthenticationError } from '../utils/errorUtils';
 import './ProductDetail.css';
 
@@ -48,7 +49,6 @@ const ProductDetail: React.FC = () => {
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
   const { addToCart } = useCartContext();
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();
@@ -58,6 +58,7 @@ const ProductDetail: React.FC = () => {
 
   // Auth state - get all needed auth properties
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
+  const location = useLocation();
 
   // Scroll to top on component mount
   useEffect(() => {
@@ -83,6 +84,15 @@ const ProductDetail: React.FC = () => {
     isLoading: productLoading,
     error: productError,
   } = useProductDetail(productId || '');
+  console.log('Product Detail API Response:', productDetailData?.result?.id);
+
+  // Wishlist hooks
+  const { data: wishlistStatus, isLoading: isWishlistLoading } = useIsWishlist(productDetailData?.result?.id);
+  const isWishlisted = wishlistStatus?.result === true || wishlistStatus?.content === true || wishlistStatus?.status === true;
+  const toggleWishlistMutation = useToggleWishlist();
+
+  // Debug log
+  console.log('Wishlist status:', wishlistStatus, 'isWishlisted:', isWishlisted);
 
   // Add to cart mutation hook
   const addToCartMutation = useAddToCart();
@@ -443,10 +453,12 @@ const ProductDetail: React.FC = () => {
       setQuantity(newQuantity);
     }
   };
+      console.log('Product SKU for cart:', productDetailData);
 
   const handleAddToCart = async () => {
     // Enhanced authentication check using authStore methods
     const isTokenValid = validateToken();
+    
 
     if (!isAuthenticated || !token || !isTokenValid) {
       toast.warning('Please login to add items to cart', {
@@ -471,7 +483,7 @@ const ProductDetail: React.FC = () => {
 
     try {
       // Get the SKU from the API data or use the product ID as fallback
-      const productSku = productDetailData?.content?.sku || productData.id;
+      const productSku = productDetailData?.result.id;
 
       // Check if item already exists in cart
       const existingItem = apiCartData?.content?.result?.find(item => item.sku === productSku);
@@ -480,8 +492,8 @@ const ProductDetail: React.FC = () => {
       // Add to cart using API with cumulative quantity
       await addToCartMutation.mutateAsync({
         data: {
-          sku: productSku,
-          qty: newQuantity.toString(),
+          product_id: Number(productId),
+          qty: newQuantity,
         },
       });
 
@@ -514,12 +526,12 @@ const ProductDetail: React.FC = () => {
 
       // Check if error is 307 - Shipping address required
       if (isShippingAddressRequiredError(error)) {
-        toast.warning('Please set your shipping address first', {
+        toast.warning('Silakan atur alamat pengiriman terlebih dahulu', {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
         });
-        setIsShippingModalOpen(true);
+        navigate('/set-shipping', { state: { from: location.pathname } });
         return;
       }
 
@@ -588,8 +600,67 @@ const ProductDetail: React.FC = () => {
     return stars;
   };
 
-  const handleShippingModalClose = () => {
-    setIsShippingModalOpen(false);
+  // Wishlist toggle handler
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated || !token) {
+      toast.warning('Please login to add to wishlist', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      navigate('/login');
+      return;
+    }
+
+    const currentProductId = productDetailData?.result?.id;
+    if (!currentProductId) {
+      toast.error('Product ID not found', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      return;
+    }
+
+    try {
+      await toggleWishlistMutation.mutateAsync({
+        productId: currentProductId,
+        isWishlisted,
+      });
+
+      if (isWishlisted) {
+        toast.success(
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MdFavoriteBorder style={{ color: '#ff4757', fontSize: '20px' }} />
+            <span>Removed from wishlist</span>
+          </div>,
+          {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          }
+        );
+      } else {
+        toast.success(
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <MdFavorite style={{ color: '#ff4757', fontSize: '20px' }} />
+            <span>Added to wishlist</span>
+          </div>,
+          {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          }
+        );
+      }
+    } catch (error) {
+      console.error('Wishlist toggle error:', error);
+      toast.error('Failed to update wishlist', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+    }
   };
 
   return (
@@ -868,7 +939,23 @@ const ProductDetail: React.FC = () => {
           {/* Product Info */}
           <div className="product-info-section">
             <div className="product-header">
-              <span className="product-category">{productData.category}</span>
+              <div className="product-header-row">
+                <span className="product-category">{productData.category}</span>
+                <button
+                  className="wishlist-toggle-btn"
+                  onClick={handleWishlistToggle}
+                  disabled={toggleWishlistMutation.isPending || isWishlistLoading}
+                  aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                >
+                  {toggleWishlistMutation.isPending || isWishlistLoading ? (
+                    <span className="wishlist-loading-spinner" />
+                  ) : isWishlisted ? (
+                    <MdFavorite className="wishlist-icon filled" />
+                  ) : (
+                    <MdFavoriteBorder className="wishlist-icon" />
+                  )}
+                </button>
+              </div>
               <h1 className="product-title">{productData.title.toUpperCase()}</h1>
 
               <div className="product-rating-section">
@@ -960,23 +1047,6 @@ const ProductDetail: React.FC = () => {
       )}
 
       {/* Shipping Address Modal */}
-      {isShippingModalOpen && (
-        <div className="shipping-modal-overlay" onClick={handleShippingModalClose}>
-          <div className="shipping-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="shipping-modal-header">
-              <button 
-                className="shipping-modal-close"
-                onClick={handleShippingModalClose}
-                aria-label="Tutup"
-              >
-                <MdClose />
-              </button>
-            </div>
-            <AturPengiriman onSuccess={handleShippingModalClose} />
-          </div>
-        </div>
-      )}
-
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>
   );

@@ -2,44 +2,65 @@ import React from 'react';
 import '../pages/Event.css';
 
 interface NewsItem {
-  id: string;
-  image: string;
+  id: number;
   title: string;
   text?: string;
-  content?: string;
+  image?: string | null;
+  dates?: string;
+  shortdesc?: string | null;
+  islink?: number;
+  ytlink?: string | null;
+  permalink?: string;
 }
 
 interface NewsCardProps {
   news: NewsItem;
   onClick?: () => void;
   isGrid?: boolean;
+  imageUrl?: string;
 }
 
-const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, isGrid = false }) => {
+const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, isGrid = false, imageUrl }) => {
+  const getImageSrc = () => {
+    if (!news.image) return '/bea2x.jpg';
+    if (news.image.startsWith('http')) return news.image;
+    return `${imageUrl || ''}${news.image}`;
+  };
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.target as HTMLImageElement;
-    target.src = '/bea2x.jpg';
+    (e.target as HTMLImageElement).src = '/bea2x.jpg';
+  };
+
+  const getClickableUrl = () => {
+    if (news.ytlink) return news.ytlink;
+    if (news.text && news.text.startsWith('http')) return news.text;
+    return null;
   };
 
   const handleClick = () => {
     if (onClick) {
       onClick();
-    } else if (news.text) {
-      window.open(news.text, '_blank');
+      return;
+    }
+    const url = getClickableUrl();
+    if (url) {
+      window.open(url, '_blank');
     }
   };
+
+  const hasLink = !!getClickableUrl();
 
   if (isGrid) {
     return (
       <div
         className="custom-event-card grid-card"
         onClick={handleClick}
-        style={{ cursor: news.text ? 'pointer' : 'default' }}
+        style={{ cursor: hasLink ? 'pointer' : 'default' }}
       >
         <div className="event-grid-layout">
           <div className="event-img-grid">
             <img
-              src={news.image || '/bea2x.jpg'}
+              src={getImageSrc()}
               alt={news.title || 'News'}
               className="grid-event-image"
               onError={handleImageError}
@@ -51,7 +72,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, isGrid = false }) =>
               <p className="grid-event-name">{news.title}</p>
             </div>
             <div className="event-meta-grid">
-              <span className="grid-news-content">{news.content}</span>
+              <span className="grid-news-content">{news.shortdesc}</span>
             </div>
           </div>
         </div>
@@ -63,12 +84,12 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, isGrid = false }) =>
     <div
       className="custom-event-card"
       onClick={handleClick}
-      style={{ cursor: news.text ? 'pointer' : 'default' }}
+      style={{ cursor: hasLink ? 'pointer' : 'default' }}
     >
       <div className="event-row">
         <div className="event-img-col">
           <img
-            src={news.image || '/bea2x.jpg'}
+            src={getImageSrc()}
             alt={news.title || 'News'}
             style={{
               maxWidth: '70px',
@@ -84,7 +105,7 @@ const NewsCard: React.FC<NewsCardProps> = ({ news, onClick, isGrid = false }) =>
             <h3 className="event-title">{news.title}</h3>
           </div>
           <div className="event-date-row">
-            <span className="event-date">{news.content}</span>
+            <span className="event-date">{news.shortdesc}</span>
           </div>
         </div>
       </div>

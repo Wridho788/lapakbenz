@@ -3,116 +3,231 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f6f8fa;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  padding: 20px;
 }
 
 .verify-otp-container {
   background: #fff;
-  padding: 32px 24px;
-  border-radius: 12px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-  max-width: 350px;
+  padding: 36px 28px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.12);
+  max-width: 380px;
   width: 100%;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.verify-otp-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
 }
 
 .verify-otp-container h2 {
-  margin-bottom: 12px;
-  color: #222;
+  margin-bottom: 8px;
+  color: #1a1a2e;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .verify-otp-container p {
-  color: #666;
-  font-size: 15px;
-  margin-bottom: 24px;
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 28px;
+  line-height: 1.5;
 }
 
 .verify-otp-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
 }
 
+/* OTP Input - Main Styles */
 .otp-input {
-  font-size: 20px;
-  letter-spacing: 6px;
+  width: 180px;
+  max-width: 100%;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.6em;
   text-align: center;
-  padding: 12px 0;
-  border: 1.5px solid #d1d5db;
-  border-radius: 8px;
+  padding: 14px 0 14px 8px;
+  border: 2.5px solid #d1d5db;
+  border-radius: 14px;
   outline: none;
   background: #fff !important;
-  transition: border 0.2s;
   color: #111 !important;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.08);
+  caret-color: #3b82f6;
   -webkit-text-fill-color: #111 !important;
-  caret-color: #111;
 }
-/* Force light style for OTP input in dark mode */
-@media (prefers-color-scheme: dark) {
-  .otp-input {
-    background: #fff !important;
-    color: #111 !important;
-    -webkit-text-fill-color: #111 !important;
-    caret-color: #111;
-    border: 1.5px solid #d1d5db;
-  }
-}
+
 .otp-input:focus {
   border-color: #3b82f6;
-  background: #fff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), 0 4px 16px rgba(59, 130, 246, 0.1);
+  background: #f0f7ff !important;
 }
+
 .otp-input.otp-error {
   border-color: #ef4444;
-  background: #fff0f0;
+  background: #fff5f5 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
 }
+
+.otp-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error Text */
 .otp-error-text {
   color: #ef4444;
   font-size: 13px;
-  margin-top: -8px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Expired Text */
+.otp-expired-text {
+  color: #f97316;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 2px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Timer Text */
+.otp-timer-text {
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.otp-timer-text strong {
+  color: #3b82f6;
+  font-size: 14px;
+}
+
+/* Primary Button */
+.btn-primary {
+  width: 100%;
+  max-width: 240px;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  background: linear-gradient(135deg, #9ca3af, #c4c9d4);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Resend Section */
+.resend-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.resend-label {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
   margin-bottom: 8px;
 }
+
 .btn-link.resend-otp-btn {
   background: none;
   border: none;
   color: #3b82f6;
-  font-size: 15px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
+
+.btn-link.resend-otp-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.08);
+  color: #2563eb;
+}
+
 .btn-link.resend-otp-btn:disabled {
-  color: #bbb;
+  color: #9ca3af;
   cursor: not-allowed;
 }
-.otp-input {
-  width: 140px;
-  max-width: 100%;
-  font-size: 2.1rem;
-  letter-spacing: 0.5em;
-  text-align: center;
-  padding: 12px 0 12px 0;
-  border: 2.5px solid #d1d5db;
-  border-radius: 12px;
-  outline: none;
-  background: #fff !important;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  color: #111 !important;
-  font-weight: 700;
-  box-shadow: 0 2px 12px 0 rgba(59,130,246,0.06);
-  margin: 0 auto 8px auto;
-  display: block;
-  -webkit-text-fill-color: #111 !important;
-  caret-color: #3b82f6;
+
+/* OTP Spinner */
+.otp-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
-.otp-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px #3b82f633;
-  background: #f0f7ff;
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
-.btn-primary:disabled {
-  background: #a5b4fc;
-  cursor: not-allowed;
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .verify-otp-container {
+    padding: 28px 20px;
+  }
+
+  .verify-otp-container h2 {
+    font-size: 20px;
+  }
+
+  .otp-input {
+    width: 160px;
+    font-size: 1.8rem;
+  }
+
+  .btn-primary {
+    max-width: 100%;
+  }
 }

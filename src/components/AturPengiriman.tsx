@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import './AturPengiriman.css';
 import { useProvince, useCityByProvince, useDistrictByCity, useSetShipping } from '../api/hooks/shippingHooks';
 
@@ -51,6 +52,10 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
     formData.selectedCity?.id || null
   );
   
+  const provinces = provinceData?.content || provinceData?.result?.data || [];
+  const cities = cityData?.content || cityData?.result?.data || [];
+  const districts = districtData?.content || districtData?.result?.data || [];
+  
   const setShippingMutation = useSetShipping();
 
 
@@ -59,9 +64,8 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
   const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const provinceId = e.target.value;
     
-    if (provinceId && provinceData?.content) {
-      // Find province by ID (convert string ID to number for comparison)
-      const province = provinceData.content.find((p: any) => p.id.toString() === provinceId);
+    if (provinceId && provinces.length > 0) {
+      const province = provinces.find((p: any) => p.id.toString() === provinceId);
       
       if (province) {
         setFormData(prev => ({
@@ -87,9 +91,8 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const cityId = e.target.value;
-    if (cityId && cityData?.content) {
-      // Find city by ID (convert string ID to number for comparison)
-      const city = cityData.content.find((c: any) => c.id.toString() === cityId);
+    if (cityId && cities.length > 0) {
+      const city = cities.find((c: any) => c.id.toString() === cityId);
       
       if (city) {
         setFormData(prev => ({
@@ -114,9 +117,8 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
 
   const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const districtId = e.target.value;
-    if (districtId && districtData?.content) {
-      // Find district by ID (convert string ID to number for comparison)
-      const district = districtData.content.find((d: any) => d.id.toString() === districtId);
+    if (districtId && districts.length > 0) {
+      const district = districts.find((d: any) => d.id.toString() === districtId);
       
       if (district) {
         setFormData(prev => ({
@@ -148,7 +150,11 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
 
     // Validation - only province, city, and district are required
     if (!formData.selectedProvince || !formData.selectedCity || !formData.selectedDistrict) {
-      alert('Mohon pilih Provinsi, Kota/Kabupaten, dan Kecamatan');
+      toast.warning('Mohon pilih Provinsi, Kota/Kabupaten, dan Kecamatan', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
@@ -165,7 +171,11 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
 
     try {
       await setShippingMutation.mutateAsync(payload);
-      alert('Alamat pengiriman berhasil disimpan!');
+      toast.success('Alamat pengiriman berhasil disimpan!', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       
       // Reset form
       setFormData({
@@ -175,23 +185,26 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
         address: '',
       });
 
-      // Call onSuccess callback if provided (to close modal)
       if (onSuccess) {
         onSuccess();
       }
     } catch (error) {
       console.error('Error setting shipping:', error);
-      alert('Gagal menyimpan alamat pengiriman. Silakan coba lagi.');
+      toast.error('Gagal menyimpan alamat pengiriman. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
     }
   };
 
   // Helper functions to determine element states
   const isCityDropdownEnabled = () => {
-    return !cityLoading && formData.selectedProvince && cityData?.content;
+    return !cityLoading && formData.selectedProvince && cities.length > 0;
   };
 
   const isDistrictDropdownEnabled = () => {
-    return !districtLoading && formData.selectedCity && districtData?.content;
+    return !districtLoading && formData.selectedCity && districts.length > 0;
   };
 
   const isTextAreaEnabled = () => {
@@ -224,7 +237,7 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
               <option value="">
                 {provinceLoading ? 'Memuat provinsi...' : 'Pilih Provinsi'}
               </option>
-              {provinceData?.content?.map((province: any) => (
+              {provinces.map((province: any) => (
                 <option key={province.id} value={province.id}>
                   {province.name}
                 </option>
@@ -250,11 +263,11 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
                   ? 'Pilih provinsi terlebih dahulu'
                   : cityLoading
                   ? 'Memuat kota/kabupaten...'
-                  : !cityData?.content
+                  : cities.length === 0
                   ? 'Tidak ada data kota'
                   : 'Pilih Kota/Kabupaten'}
               </option>
-              {cityData?.content?.map((city: any) => (
+              {cities.map((city: any) => (
                 <option key={city.id} value={city.id}>
                   {city.name}
                 </option>
@@ -280,11 +293,11 @@ const AturPengiriman: React.FC<AturPengirimanProps> = ({ onSuccess }) => {
                   ? 'Pilih kota/kabupaten terlebih dahulu'
                   : districtLoading
                   ? 'Memuat kecamatan...'
-                  : !districtData?.content
+                  : districts.length === 0
                   ? 'Tidak ada data kecamatan'
                   : 'Pilih Kecamatan'}
               </option>
-              {districtData?.content?.map((district: any) => (
+              {districts.map((district: any) => (
                 <option key={district.id} value={district.id}>
                   {district.name}
                 </option>

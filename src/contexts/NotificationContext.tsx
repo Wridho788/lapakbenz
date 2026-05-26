@@ -76,12 +76,13 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   // Transform API data to local format with error handling
   const apiNotifications: NotificationItem[] = React.useMemo(() => {
-    if (!notificationData?.content || !Array.isArray(notificationData.content)) {
+    const content = notificationData?.result?.content;
+    if (!content || !Array.isArray(content)) {
       return [];
     }
-    
+
     try {
-      return notificationData.content.map(transformApiNotification);
+      return content.map(transformApiNotification);
     } catch (error) {
       console.error('📋 Error transforming notifications:', error);
       return [];
@@ -95,9 +96,9 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   // Calculate unread count from API data with error handling
   const apiUnreadCount = React.useMemo(() => {
-    if (unreadData?.content && Array.isArray(unreadData.content)) {
-      // Count notifications where reading === "0"
-      return unreadData.content.filter(notification => notification.reading === "0").length;
+    const content = unreadData?.result?.content;
+    if (content && Array.isArray(content)) {
+      return content.filter((notification: any) => notification.reading === "0").length;
     }
     return 0;
   }, [unreadData]);

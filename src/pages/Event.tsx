@@ -10,36 +10,32 @@ import { generateBreadcrumbs } from '../utils/seoUtils';
 import { useCart } from '../contexts/CartContext';
 import { usePostEvent, usePostArticle } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
+import type { EventItem } from '../api/types/eventTypes';
 import './Event.css';
 import '../components/FABPositioning.css';
 
-// Interface sesuai dengan API response
-interface EventItem {
-  id: string;
-  chapter_id: string;
-  chapter: string;
-  code: string;
-  name: string;
-  dates: string;
-  time: string;
-  desc: string;
-  image: string;
-  fee: number;
-  minimum_participants: string;
-  type: number;
-  type_desc: string;
-  done: number;
-  done_desc: string;
-  allow_merchant?: number;
-  allow_public?: number;
-}
-
 interface ArticleItem {
-  id: string;
+  id: number;
+  club_id?: number;
+  category_id?: number;
+  user?: string;
+  lang?: string;
+  permalink?: string;
   title: string;
-  text: string;
-  image: string;
-  created_at: string;
+  text?: string;
+  image?: string | null;
+  dates?: string;
+  time?: string;
+  counter?: number;
+  comment?: number;
+  front?: number;
+  type?: number;
+  islink?: number;
+  shortdesc?: string | null;
+  ytlink?: string | null;
+  publish?: number;
+  created?: string;
+  updated?: string;
 }
 
 const tabs = ['Akan Datang', 'Selesai', 'Berita'];
@@ -55,6 +51,8 @@ const Event: React.FC = () => {
   const [allArticles, setAllArticles] = useState<ArticleItem[]>([]);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [eventImageUrl, setEventImageUrl] = useState('');
+  const [articleImageUrl, setArticleImageUrl] = useState('');
   
   const pullRef = useRef<HTMLDivElement | null>(null);
   const startY = useRef<number | null>(null);
@@ -91,22 +89,27 @@ const Event: React.FC = () => {
 
   // Akumulasi data dari API response untuk events
   useEffect(() => {
-    if (eventMutation.data?.content?.result) {
-      const newEvents = eventMutation.data.content.result;
-      
-      if (eventMutation.variables?.offset === 0) {
+    if (eventMutation.data?.result) {
+      const newEvents = eventMutation.data.result;
+      const imageUrl = eventMutation.data.image_url || '';
+
+      if (eventImageUrl === '' && imageUrl) {
+        setEventImageUrl(imageUrl);
+      }
+
+      if (eventMutation.variables?.offset === '0' || eventMutation.variables?.offset === undefined) {
         // Initial load atau refresh
         setAllEvents(newEvents);
       } else {
         // Infinite scroll - append data
         setAllEvents(prev => {
           // Prevent duplicates
-          const existingIds = new Set(prev.map(e => e.id));
-          const uniqueNewEvents = newEvents.filter((e: EventItem) => !existingIds.has(e.id));
+          const existingIds = new Set(prev.map(e => e.ID));
+          const uniqueNewEvents = newEvents.filter((e: EventItem) => !existingIds.has(e.ID));
           return [...prev, ...uniqueNewEvents];
         });
       }
-      
+
       // Check if there's more data
       if (newEvents.length < 10) {
         setHasMoreData(false);
@@ -117,10 +120,15 @@ const Event: React.FC = () => {
 
   // Akumulasi data dari API response untuk articles
   useEffect(() => {
-    if (articleMutation.data?.content?.result) {
-      const newArticles = articleMutation.data.content.result;
-      
-      if (articleMutation.variables?.offset === 0 || !articleMutation.variables?.offset) {
+    if (articleMutation.data?.result) {
+      const newArticles = articleMutation.data.result;
+      const imageUrl = articleMutation.data.image_url || '';
+
+      if (articleImageUrl === '' && imageUrl) {
+        setArticleImageUrl(imageUrl);
+      }
+
+      if (articleMutation.variables?.offset === '0' || !articleMutation.variables?.offset) {
         // Initial load atau refresh
         setAllArticles(newArticles);
       } else {
@@ -132,7 +140,7 @@ const Event: React.FC = () => {
           return [...prev, ...uniqueNewArticles];
         });
       }
-      
+
       // Check if there's more data
       if (newArticles.length < 10) {
         setHasMoreData(false);
@@ -154,15 +162,15 @@ const Event: React.FC = () => {
           if (activeTab === 0 || activeTab === 1) {
             // Infinite scroll event
             const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
-            const offset = allEvents.length;
+            const offset = String(allEvents.length);
             const payload = activeTab === 0
-              ? { status: '0', limit: 9, offset, chapter: chapterParam }
-              : { status: '1', limit: 9, offset, chapter: chapterParam };
+              ? { status: '0', limit: '9', offset, chapter: chapterParam }
+              : { status: '1', limit: '9', offset, chapter: chapterParam };
             eventMutation.mutate(payload);
           } else if (activeTab === 2) {
             // Infinite scroll article
-            const offset = allArticles.length;
-            articleMutation.mutate({ limit: 9, offset });
+            const offset = String(allArticles.length);
+            articleMutation.mutate({ limit: '9', offset });
           }
         }
       },
@@ -229,11 +237,11 @@ const Event: React.FC = () => {
         const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
         const payload =
           activeTab === 0
-            ? { status: '0', limit: 10, offset: 0, chapter: chapterParam }
-            : { status: '1', limit: 10, offset: 0, chapter: chapterParam };
+            ? { status: '0', limit: '10', offset: '0', chapter: chapterParam }
+            : { status: '1', limit: '10', offset: '0', chapter: chapterParam };
         await eventMutation.mutateAsync(payload);
       } else if (activeTab === 2) {
-        await articleMutation.mutateAsync({ limit: 10, offset: 0 });
+        await articleMutation.mutateAsync({ limit: '10', offset: '0' });
       }
     } catch (error) {
       console.error('Refresh failed:', error);
@@ -253,12 +261,12 @@ const Event: React.FC = () => {
       const chapterParam = selectedChapters.length > 0 ? selectedChapters.join(',') : '';
       const payload =
         activeTab === 0
-          ? { status: '0', limit: 10, offset: 0, chapter: chapterParam }
-          : { status: '1', limit: 10, offset: 0, chapter: chapterParam };
+          ? { status: '0', limit: '10', offset: '0', chapter: chapterParam }
+          : { status: '1', limit: '10', offset: '0', chapter: chapterParam };
       eventMutation.mutate(payload);
     } else if (activeTab === 2) {
       // Fetch articles for news
-      articleMutation.mutate({ limit: 10, offset: 0 });
+      articleMutation.mutate({ limit: '10', offset: '0' });
     }
   }, [activeTab, selectedChapters]);
 
@@ -280,23 +288,18 @@ const Event: React.FC = () => {
   };
 
   const handleEventClick = (event: EventItem) => {
-    // Create SEO-friendly URL with ID and code slug
-    const eventUrl = createEventUrl(event.id, event.code);
+    const eventUrl = createEventUrl(String(event.ID), event.Code || '');
     navigate(eventUrl);
   };
 
   const getFilteredData = () => {
     if (activeTab === 2) {
-      // News data from accumulated articles
       return allArticles;
     } else {
-      // Event data from accumulated events
       if (activeTab === 0) {
-        // Upcoming: done = 0
-        return allEvents.filter((event) => event.done === 0);
+        return allEvents.filter((event) => event.Done === 0);
       } else {
-        // Completed: done = 1
-        return allEvents.filter((event) => event.done === 1);
+        return allEvents.filter((event) => event.Done === 1);
       }
     }
   };
@@ -322,9 +325,9 @@ const Event: React.FC = () => {
         overscrollBehavior: 'contain',
       }}
     >
-      <SEO 
+      <SEO
         title={`Event lapakBenz - ${tabs[activeTab]} | Platform Event Komunitas Indonesia`}
-        description={`Temukan event menarik di lapakBenz. ${activeTab === 0 ? `${allEvents.filter(e => e.done === 0).length} event akan datang` : activeTab === 1 ? `${allEvents.filter(e => e.done === 1).length} event selesai` : `${allArticles.length} berita terbaru`} dari berbagai komunitas UMKM dan otomotif di Indonesia. Bergabunglah sekarang!`}
+        description={`Temukan event menarik di lapakBenz. ${activeTab === 0 ? `${allEvents.filter(e => e.Done === 0).length} event akan datang` : activeTab === 1 ? `${allEvents.filter(e => e.Done === 1).length} event selesai` : `${allArticles.length} berita terbaru`} dari berbagai komunitas UMKM dan otomotif di Indonesia. Bergabunglah sekarang!`}
         keywords={`event lapakbenz, ${tabs[activeTab].toLowerCase()}, event komunitas indonesia, event umkm, event otomotif, ${selectedChapters.length > 0 ? selectedChapters.join(', ') + ', ' : ''}komunitas indonesia, acara komunitas`}
         schemaType="WebPage"
         breadcrumbs={generateBreadcrumbs('event')}
@@ -408,23 +411,27 @@ const Event: React.FC = () => {
             </div>
           ) : (
             <>
-              {getFilteredData().map((item: any) =>
-                tabs[activeTab] === 'Berita' ? (
-                  <NewsCard
-                    key={item.id}
-                    news={item}
-                    onClick={() => item.text && window.open(item.text, '_blank')}
-                    isGrid={layoutMode === 'grid'}
-                  />
-                ) : (
+              {getFilteredData().map((item) => {
+                if (activeTab === 2) {
+                  return (
+                    <NewsCard
+                      key={(item as ArticleItem).id}
+                      news={item as ArticleItem}
+                      isGrid={layoutMode === 'grid'}
+                      imageUrl={articleImageUrl}
+                    />
+                  );
+                }
+                return (
                   <EventListCard
-                    key={item.id}
-                    event={item}
-                    onClick={() => handleEventClick(item)}
+                    key={(item as EventItem).ID}
+                    event={item as EventItem}
+                    onClick={handleEventClick}
                     isGrid={layoutMode === 'grid'}
+                    imageUrl={eventImageUrl}
                   />
-                ),
-              )}
+                );
+              })}
               
               {/* Loading indicator untuk infinite scroll */}
               {isLoadingMore && (

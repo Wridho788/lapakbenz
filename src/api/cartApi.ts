@@ -1,150 +1,195 @@
-import axios from 'axios';
-import { BASE_URL, ENDPOINT_CART, ENDPOINT_CART_ADD, ENDPOINT_CART_CLEAN, ENDPOINT_CART_SET_PICKUP } from './constants';
-import { isShippingAddressRequiredError, logErrorDetails } from '../utils/errorUtils';
+import axios, { AxiosError } from 'axios';
+import {
+  BASE_URL,
+  ENDPOINT_CART,
+  ENDPOINT_CART_ADD,
+  ENDPOINT_CART_CLEAN,
+  ENDPOINT_CART_SET_NOTE,
+  ENDPOINT_CART_SET_PICKUP,
+  ENDPOINT_CART_SET_PUBLISH,
+  ENDPOINT_ORDER_CHECKOUT,
+} from './constants';
+import type {
+  CartResponse,
+  AddToCartRequest,
+  AddToCartResponse,
+  RemoveFromCartResponse,
+  SetPickupResponse,
+} from './types';
+import { useAuthStore } from '../stores/authStore';
 
-// TypeScript interfaces for Cart API
-export interface CartItem {
-  id: string;
-  sku: string;
-  name: string;
-  image: string;
-  qty: number;
-  price: number;
-  shipping: number;
-  amount: number;
-  total: number;
-  pickup: string;
-  created: string;
-  updated: string | null;
-}
-
-export interface CartResponse {
-  content: {
-    balance: number;
-    record: number;
-    result: CartItem[];
+// Types
+interface CheckoutResponse {
+  order_code?: string;
+  link_url?: string;
+  content?: {
+    orderid?: string | number;
+    invoice_url?: string;
+    transid?: number;
+    [key: string]: unknown;
   };
+  error?: string;
+  message?: string;
 }
 
-export interface AddToCartRequest {
-  sku: string;
-  qty: string;
+export interface ApiError {
+  status: number;
+  message: string;
+  code?: string;
+  error?: string;
+  data?: any;
 }
 
-export interface AddToCartResponse {
-  content: null;
-}
+// Centralized axios instance
+const createApiClient = () => {
+  const client = axios.create({
+    baseURL: BASE_URL,
+    timeout: 30000,
+  });
 
-export interface RemoveFromCartResponse {
-  content: null;
-}
+  client.interceptors.request.use(
+    (config) => {
+      const token = useAuthStore.getState().token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
 
-export interface SetPickupResponse {
-  content: null;
-}
+  client.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError<ApiError>) => {
+      const status = error.response?.status ?? 0;
+      const data = error.response?.data;
+      const serverMessage = data?.message ?? data?.error;
 
-// Cart API functions
-export const cartApi = {
-  // Get Cart - GET method
-  async getCart(authToken: string): Promise<CartResponse> {
-    try {
-      const response = await axios.get(`${BASE_URL}${ENDPOINT_CART}`, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
-      });
+      const apiError: ApiError = {
+        status,
+        message: typeof serverMessage === 'string' ? serverMessage : error.message ?? 'Unknown error occurred',
+        code: data?.code,
+        error: typeof data?.error === 'string' ? data.error : undefined,
+        data,
+      };
 
-      return response.data;
-    } catch (error) {
-      console.error('❌ Cart API error:', error);
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401) {
-            // Set isAuthenticated to false and navigate to login
-            try {
-              const { useAuthStore } = await import('../stores/authStore');
-              useAuthStore.getState().logout();
-            } catch (e) {
-              console.error('Failed to logout on 401:', e);
-            }
-            // Optionally, you can throw a custom error to be handled in the component
-            throw new Error('401 Unauthorized: Please login again');
-          }
-          throw new Error(error.response?.data?.message || error.message || 'Failed to get cart');
+      if (status === 401) {
+        try {
+          useAuthStore.getState().logout();
+        } catch (e) {
+          console.error('Failed to logout on 401:', e);
         }
-        throw error;
-    }
-  },
-
-  // Add to Cart - POST method with FormData
-  async addToCart(payload: AddToCartRequest, authToken: string): Promise<AddToCartResponse> {
-    try {
-      // Create FormData
-      const formData = new FormData();
-      formData.append('sku', payload.sku);
-      formData.append('qty', payload.qty);
-
-      const response = await axios.post(`${BASE_URL}${ENDPOINT_CART_ADD}`, formData, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        timeout: 30000
-      });
-      return response.data;
-    } catch (error) {
-      console.error('❌ Add to cart API error:', error);
-      if (axios.isAxiosError(error)) {
-        // Enhanced error logging for debugging
-        logErrorDetails(error, 'Cart API - Add to Cart');
-        
-        // For error 307 (shipping address required), preserve the original error structure
-        if (isShippingAddressRequiredError(error)) {
-          throw error; // Throw the original axios error to preserve all error details
-        }
-        
-        throw new Error(error.response?.data?.message || error.message || 'Failed to add item to cart');
       }
-      throw error;
-    }
-  },
 
-  // Remove from Cart - GET method (clean cart)
-  async removeFromCart(authToken: string): Promise<RemoveFromCartResponse> {
-    try {
-      const response = await axios.get(`${BASE_URL}${ENDPOINT_CART_CLEAN}`, {
-        headers: {
-          'X-auth-token': authToken
-        },
-        timeout: 30000
-      });
-      return response.data;
-    } catch (error) {
-      console.error('❌ Remove from cart API error:', error);
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || error.message || 'Failed to remove items from cart');
-      }
-      throw error;
+      console.error(`API Error [${status}]:`, apiError.message);
+      return Promise.reject(apiError);
     }
-  },
+  );
 
-  // Set Pickup - GET method
-  async setPickup(cartId: string, authToken: string): Promise<SetPickupResponse> {
-    try {
-      const response = await axios.get(`${BASE_URL}${ENDPOINT_CART_SET_PICKUP}${cartId}`, {
-        headers: {
-          'X-auth-token': authToken
-        },
-        timeout: 30000
-      });
-      return response.data;
-    } catch (error) {
-      console.error('❌ Set pickup API error:', error);
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || error.message || 'Failed to set pickup option');
-      }
-      throw error;
-    }
+  return client;
+};
+
+const apiClient = createApiClient();
+
+// Helper function to check for errors in response
+const checkResponseError = (data: any, context: string) => {
+  if (data?.error || (data?.success === false)) {
+    throw new Error(data?.error || data?.message || `Error in ${context}`);
   }
 };
+
+export const cartApi = {
+  async getCart(): Promise<CartResponse> {
+    const res = await apiClient.get(ENDPOINT_CART);
+    checkResponseError(res.data, 'getCart');
+
+    const data = res.data;
+
+    if (data?.content?.result) {
+      return data;
+    }
+
+    if (Array.isArray(data?.result)) {
+      const normalizedResult = data.result.map((item: any) => ({
+        id: String(item.id ?? item.product_id ?? ''),
+        sku: item.sku || item.product_sku || '',
+        name: item.name || item.product_name || '',
+        image:
+          item.image ||
+          (item.product_image
+            ? `${data.image_url || ''}${item.product_image}`
+            : '/nodata.png'),
+        qty: Number(item.qty) || 0,
+        price: Number(item.price) || 0,
+        shipping: Number(item.shipping) || 0,
+        amount: Number(item.amount) || 0,
+        total: Number(item.total) || 0,
+        pickup: String(item.pickup ?? '0'),
+        publish: String(item.publish ?? '0'),
+        note: item.note || '',
+        created: item.created || '',
+        updated: item.updated ?? null,
+      }));
+
+      return {
+        content: {
+          balance: Number(data.total) || 0,
+          record: normalizedResult.length,
+          result: normalizedResult,
+        },
+      };
+    }
+
+    return data;
+  },
+
+  async addToCart(payload: AddToCartRequest): Promise<AddToCartResponse> {
+    const res = await apiClient.post(ENDPOINT_CART_ADD, {
+      product_id: payload.product_id,
+      qty: payload.qty,
+    });
+    checkResponseError(res.data, 'addToCart');
+    return res.data;
+  },
+
+  async removeFromCart(): Promise<RemoveFromCartResponse> {
+    const res = await apiClient.delete(ENDPOINT_CART_CLEAN);
+    checkResponseError(res.data, 'removeFromCart');
+    return res.data;
+  },
+
+  async setPickup(cartId: string): Promise<SetPickupResponse> {
+    if (!cartId?.trim()) throw new Error('Cart ID is required');
+    const res = await apiClient.put(`${ENDPOINT_CART_SET_PICKUP}${cartId}`, null);
+    checkResponseError(res.data, 'setPickup');
+    return res.data;
+  },
+
+  async setPublish(cartId: string): Promise<SetPickupResponse> {
+    if (!cartId?.trim()) throw new Error('Cart ID is required');
+    const res = await apiClient.put(`${ENDPOINT_CART_SET_PUBLISH}${cartId}`, null);
+    checkResponseError(res.data, 'setPublish');
+    return res.data;
+  },
+
+  async setNotes(cartId: string, notes: string): Promise<SetPickupResponse> {
+    if (!cartId?.trim()) throw new Error('Cart ID is required');
+    const res = await apiClient.put(`${ENDPOINT_CART_SET_NOTE}${cartId}`, { notes });
+    checkResponseError(res.data, 'setNotes');
+    return res.data;
+  },
+
+  async deleteItemCart(cartId: string): Promise<void> {
+    if (!cartId?.trim()) throw new Error('Cart ID is required');
+    const res = await apiClient.delete(`${ENDPOINT_CART}/${cartId}`);
+    checkResponseError(res.data, 'deleteItemCart');
+  },
+
+  async checkoutOrder(): Promise<CheckoutResponse> {
+    const res = await apiClient.get(ENDPOINT_ORDER_CHECKOUT);
+    checkResponseError(res.data, 'checkoutOrder');
+    return res.data;
+  },
+};
+
+export default cartApi;

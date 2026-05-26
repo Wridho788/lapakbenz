@@ -9,31 +9,19 @@ import {
   MdShoppingCart,
   MdAdd,
   MdRemove,
+  MdNotes,
+  MdLocalShipping,
+  MdCheck,
 } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useCart, useRemoveFromCart, useAddToCart, useSetPickup } from '../api/hooks/index';
-import { useAddOrder, useCheckoutOrder } from '../api/ordersApi';
+import { useCart, useRemoveFromCart, useAddToCart, useSetPickup, useCheckoutOrder, useVoucherList, useSetVoucher, useSetPublish, useSetNotes, useDeleteItemCart } from '../api/hooks/index';
 import { useDecodeToken } from '../api/hooks/authHooks';
+import type { VoucherItem } from '../api/types';
 import { toast } from 'react-toastify';
 import './Cart.css';
-
-// interface ShippingAddress {
-//   name: string;
-//   phone: string;
-//   address: string;
-//   city: string;
-//   zipCode: string;
-// }
-
-// interface PaymentMethod {
-//   id: string;
-//   name: string;
-//   type: 'bank' | 'ewallet' | 'cod';
-//   fee: number;
-// }
 
 interface OrderingStatus {
   isOrdering: boolean;
@@ -49,7 +37,7 @@ const Cart: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { cartCount, removeFromCart } = useCartContext();
-  const { isAuthenticated, token: authToken, requireAuth } = useAuthStore();
+  const { isAuthenticated, requireAuth } = useAuthStore();
 
   // Get the referring page from location state or referrer
   const getBackDestination = () => {
@@ -134,11 +122,30 @@ const Cart: React.FC = () => {
   const removeAllFromCartMutation = useRemoveFromCart();
   const addToCartMutation = useAddToCart();
   const setPickupMutation = useSetPickup();
+  const setPublishMutation = useSetPublish();
+  const setNotesMutation = useSetNotes();
+  const deleteItemCartMutation = useDeleteItemCart();
 
   // Order API hooks
-  const addOrderMutation = useAddOrder();
-  // const addItemToOrderMutation = useAddItemToOrder();
   const checkoutOrderMutation = useCheckoutOrder();
+
+  const {
+    data: voucherData,
+    isLoading: voucherLoading,
+    error: voucherError,
+    refetch: refetchVouchers,
+  } = useVoucherList();
+
+  const setVoucherMutation = useSetVoucher();
+  const [selectedVoucherId, setSelectedVoucherId] = useState<string | null>(null);
+  const [voucherDiscount, setVoucherDiscount] = useState<number>(0);
+
+  // Notes editing state
+  const [editingNotesItemId, setEditingNotesItemId] = useState<string | null>(null);
+  const [notesText, setNotesText] = useState<string>('');
+
+  // Shipping options popup state
+  const [showShippingOptions, setShowShippingOptions] = useState<string | null>(null);
 
   // Decode token hook untuk mendapatkan cost data
   const { data: decodeTokenData } = useDecodeToken();
@@ -147,8 +154,18 @@ const Cart: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       refetchCart();
+      refetchVouchers();
     }
-  }, [isAuthenticated, refetchCart]);
+  }, [isAuthenticated, refetchCart, refetchVouchers]);
+
+  useEffect(() => {
+    const selectedId = voucherData?.content?.selected_voucher?.id;
+    setSelectedVoucherId(selectedId ? String(selectedId) : null);
+  }, [voucherData]);
+
+  const apiSelectedVoucherId = voucherData?.content?.selected_voucher?.id;
+  const currentVoucherId = selectedVoucherId ?? (apiSelectedVoucherId ? String(apiSelectedVoucherId) : null);
+  const selectedVoucher = voucherData?.content?.voucher?.find((voucher) => voucher.id === currentVoucherId) ?? null;
 
   // Refetch cart data when window regains focus (user switches back to tab)
   useEffect(() => {
@@ -165,7 +182,7 @@ const Cart: React.FC = () => {
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleFocus);
     };
-  }, [isAuthenticated, refetchCart]);
+  }, [isAuthenticated, refetchCart, refetchVouchers]);
 
   // Refetch cart data when location changes (navigating to cart)
   useEffect(() => {
@@ -199,8 +216,8 @@ const Cart: React.FC = () => {
     try {
       await addToCartMutation.mutateAsync({
         data: {
-          sku: item.sku,
-          qty: newQuantity.toString(),
+          product_id: Number(item.sku),
+          qty: newQuantity,
         },
       });
 
@@ -242,25 +259,20 @@ const Cart: React.FC = () => {
       // Find the item to get its details for the success message
       const itemToRemove = apiCartData?.content?.result?.find(item => item.id === itemId);
       const itemName = itemToRemove?.name || 'Item';
-      
-      // Use quantity change with 0 to remove specific item via API
-      await addToCartMutation.mutateAsync({
-        data: {
-          sku: itemToRemove?.sku || itemId,
-          qty: '0', // Setting quantity to 0 removes the item
-        },
-      });
-      
+
+      // Use deleteItemCart hook to remove specific item via API
+      await deleteItemCartMutation.mutateAsync(itemId);
+
       // Remove from context cart (for immediate UI update)
       removeFromCart(itemId);
-      
+
       // Show success message with item name
       toast.success(`${itemName.toUpperCase()} telah dihapus dari keranjang`, {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
       });
-      
+
       // Refresh cart data from API
       refetchCart();
     } catch (error: any) {
@@ -273,9 +285,9 @@ const Cart: React.FC = () => {
     }
   };
 
-  const handlePickupToggle = async (isPickup: boolean) => {
-    if (!requireAuth(() => {}, 'change pickup option')) {
-      toast.warning('Silakan login untuk mengubah opsi pengambilan', {
+  const handleSelectVoucher = async (voucher: VoucherItem) => {
+    if (!requireAuth(() => {}, 'gunakan voucher')) {
+      toast.warning('Silakan login untuk menggunakan voucher', {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -284,40 +296,192 @@ const Cart: React.FC = () => {
       return;
     }
 
-    const cartItems = apiCartData?.content?.result || [];
-    
-    if (cartItems.length === 0) {
-      toast.warning('Keranjang kosong', {
+    try {
+      const response = await setVoucherMutation.mutateAsync({
+        data: {
+          id: voucher.id,
+        },
+      });
+
+      setSelectedVoucherId(voucher.id);
+      setVoucherDiscount(response?.discount ?? 0);
+      toast.success(`Voucher "${voucher.name}" berhasil diterapkan`, {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
       });
+      refetchCart();
+      refetchVouchers();
+    } catch (error: any) {
+      console.error('❌ Failed to set voucher:', error);
+      toast.error(error?.message || 'Gagal menerapkan voucher. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+    }
+  };
+
+  // const handlePickupToggle = async (isPickup: boolean) => {
+  //   if (!requireAuth(() => {}, 'change pickup option')) {
+  //     toast.warning('Silakan login untuk mengubah opsi pengambilan', {
+  //       position: 'bottom-right',
+  //       autoClose: 1500,
+  //       theme: 'dark',
+  //     });
+  //     navigate('/login');
+  //     return;
+  //   }
+
+  //   const cartItems = apiCartData?.content?.result || [];
+    
+  //   if (cartItems.length === 0) {
+  //     toast.warning('Keranjang kosong', {
+  //       position: 'bottom-right',
+  //       autoClose: 1500,
+  //       theme: 'dark',
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     const promises = cartItems.map(item =>
+  //       setPickupMutation.mutateAsync(item.id)
+  //     );
+      
+  //     await Promise.all(promises);
+      
+  //     toast.success(
+  //       isPickup 
+  //         ? `Berhasil mengatur pengambilan sendiri untuk ${cartItems.length} produk` 
+  //         : `Berhasil mengatur pengiriman untuk ${cartItems.length} produk`,
+  //       {
+  //         position: 'bottom-right',
+  //         autoClose: 1500,
+  //         theme: 'dark',
+  //       }
+  //     );
+      
+  //     // Refresh cart data to get updated pickup status and shipping costs
+  //     refetchCart();
+  //   } catch (error: any) {
+  //     console.error('❌ Failed to set pickup option:', error);
+  //     toast.error('Gagal mengubah opsi pengambilan. Silakan coba lagi.', {
+  //       position: 'bottom-right',
+  //       autoClose: 1500,
+  //       theme: 'dark',
+  //     });
+  //   }
+  // };
+
+  // Handle publish checkbox toggle for a cart item
+  const handlePublishToggle = async (itemId: string, isPublished: boolean) => {
+    if (!requireAuth(() => {}, 'update publish status')) {
+      toast.warning('Silakan login untuk mengubah status', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      navigate('/login');
       return;
     }
 
     try {
-      const promises = cartItems.map(item => 
-        setPickupMutation.mutateAsync(item.id)
-      );
-      
-      await Promise.all(promises);
-      
+      await setPublishMutation.mutateAsync(itemId);
       toast.success(
-        isPickup 
-          ? `Berhasil mengatur pengambilan sendiri untuk ${cartItems.length} produk` 
-          : `Berhasil mengatur pengiriman untuk ${cartItems.length} produk`,
+        isPublished
+          ? 'Item tidak dipilih'
+          : 'Item dipilih untuk diproses',
         {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
         }
       );
-      
-      // Refresh cart data to get updated pickup status and shipping costs
       refetchCart();
     } catch (error: any) {
-      console.error('❌ Failed to set pickup option:', error);
-      toast.error('Gagal mengubah opsi pengambilan. Silakan coba lagi.', {
+      console.error('❌ Failed to toggle publish:', error);
+      toast.error('Gagal mengubah status. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+    }
+  };
+
+  // Handle add notes button click
+  const handleAddNotes = (itemId: string, currentNote: string) => {
+    setEditingNotesItemId(itemId);
+    setNotesText(currentNote || '');
+  };
+
+  // Handle save notes
+  const handleSaveNotes = async (itemId: string) => {
+    if (!requireAuth(() => {}, 'save notes')) {
+      toast.warning('Silakan login untuk menyimpan catatan', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await setNotesMutation.mutateAsync({ cartId: itemId, notes: notesText });
+      toast.success('Catatan berhasil disimpan', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      setEditingNotesItemId(null);
+      setNotesText('');
+      refetchCart();
+    } catch (error: any) {
+      console.error('❌ Failed to save notes:', error);
+      toast.error('Gagal menyimpan catatan. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+    }
+  };
+
+  // Handle cancel notes editing
+  const handleCancelNotes = () => {
+    setEditingNotesItemId(null);
+    setNotesText('');
+  };
+
+  // Handle per-item shipping option toggle
+  const handleItemShippingToggle = async (itemId: string, isPickup: boolean) => {
+    if (!requireAuth(() => {}, 'change delivery option')) {
+      toast.warning('Silakan login untuk mengubah opsi pengiriman', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await setPickupMutation.mutateAsync(itemId);
+      toast.success(
+        isPickup
+          ? 'Opsi pengambilan sendiri berhasil diterapkan'
+          : 'Opsi pengiriman berhasil diterapkan',
+        {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        }
+      );
+      refetchCart();
+      setShowShippingOptions(null);
+    } catch (error: any) {
+      console.error('❌ Failed to toggle item shipping:', error);
+      toast.error('Gagal mengubah opsi pengiriman. Silakan coba lagi.', {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -393,33 +557,8 @@ const Cart: React.FC = () => {
 
   const performRemoveAll = async () => {
     try {
-      // Get current cart items
-      const cartItems = apiCartData?.content?.result || [];
-      
-      if (cartItems.length === 0) {
-        toast.warning('Keranjang sudah kosong', {
-          position: 'bottom-right',
-          autoClose: 1500,
-          theme: 'dark',
-        });
-        return;
-      }
+      await removeAllFromCartMutation.mutateAsync();
 
-      // Remove each item by setting quantity to 0
-      const removePromises = cartItems.map(item => 
-        addToCartMutation.mutateAsync({
-          data: {
-            sku: item.sku,
-            qty: '0', // Setting quantity to 0 removes the item
-          },
-        })
-      );
-
-      await Promise.all(removePromises);
-      
-      // Clear context cart as well
-      cartItems.forEach(item => removeFromCart(item.id));
-      
       toast.success('Semua item telah dihapus dari keranjang Anda', {
         position: 'bottom-right',
         autoClose: 1500,
@@ -443,7 +582,8 @@ const Cart: React.FC = () => {
     }
   };
 
-  // Calculate total from API cart only
+  console.log(apiCartData, 'Current API Cart Data');
+
   const getApiCartTotal = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + item.amount, 0) || 0;
   };
@@ -465,8 +605,8 @@ const Cart: React.FC = () => {
   const shippingCost = getShippingCost();
   const costFromToken = getCostFromToken();
   const paymentFee = 0;
-  const totalPayment = subtotal + shippingCost + costFromToken + paymentFee;
-
+  const baseTotal = apiCartData?.content?.balance ?? 0;
+  const totalPayment = baseTotal - voucherDiscount;
   // New order flow function
   const handlePlaceOrder = async () => {
     if (!requireAuth(() => {}, 'place order')) {
@@ -478,26 +618,6 @@ const Cart: React.FC = () => {
       navigate('/login');
       return;
     }
-
-    // if (!selectedAddress) {
-    //   await Swal.fire({
-    //     icon: 'warning',
-    //     title: 'Address Required',
-    //     text: 'Please select a shipping address',
-    //     confirmButtonColor: '#f39c12',
-    //   });
-    //   return;
-    // }
-
-    // if (!selectedPayment) {
-    //   await Swal.fire({
-    //     icon: 'warning',
-    //     title: 'Payment Method Required',
-    //     text: 'Please select a payment method',
-    //     confirmButtonColor: '#f39c12',
-    //   });
-    //   return;
-    // }
 
     if (!hasApiCartItems) {
       toast.warning('Keranjang Anda kosong', {
@@ -521,68 +641,26 @@ const Cart: React.FC = () => {
     });
 
     try {
-      // Step 1: Create Order (useAddOrder)
-      const orderResponse = await addOrderMutation.mutateAsync(authToken!);
-
-      if (!orderResponse?.content?.id) {
-        throw new Error('Failed to create order - no order ID returned');
-      }
-
-      const orderId = orderResponse.content.id;
-      // Step 2: Add Items to Order (useAddItemToOrder)
-      setOrderingStatus((prev) => ({
-        ...prev,
-        currentStep: 'Adding Items to Order...',
-        currentStepNumber: 2,
-      }));
-
-
-      for (let i = 0; i < cartItems.length; i++) {
-        const item = cartItems[i];
-        // Update status for each item
-        setOrderingStatus((prev) => ({
-          ...prev,
-          processedItems: i,
-          currentStep: `Adding Item ${i + 1}/${cartItems.length}: ${item.name}...`,
-        }));
-
-        // const itemPayload = {
-        //   cproduct: item.sku,
-        //   ctax: '0',
-        //   tqty: item.qty.toString(),
-        //   tdiscount: '0',
-        //   tshipping: item.pickup === "1" ? '0' : item.shipping.toString(),
-        // };
-
-
-        // try {
-        //   // const itemResponse = await addItemToOrderMutation.mutateAsync({
-        //   //   orderId,
-        //   //   data: itemPayload,
-        //   //   authToken: authToken!,
-        //   // });
-
-        // } catch (itemError: any) {
-        //   throw new Error(`Failed to add item "${item.name}" to order: ${itemError.message}`);
-        // }
-      }
-
-      // Update status for final processed items
-      setOrderingStatus((prev) => ({
-        ...prev,
-        processedItems: cartItems.length,
-      }));
-
-      // Step 3: Checkout Order (useCheckoutOrder)
-      setOrderingStatus((prev) => ({
-        ...prev,
+      // Checkout Order (useCheckoutOrder handles order creation)
+      setOrderingStatus({
+        isOrdering: true,
         currentStep: 'Processing Checkout...',
-        currentStepNumber: 3,
-      }));
-      const checkoutResponse = await checkoutOrderMutation.mutateAsync({
-        orderId,
-        authToken: authToken!,
+        totalSteps: 2,
+        currentStepNumber: 1,
+        processedItems: 0,
+        totalItems: cartItems.length,
       });
+
+      const checkoutResponse = await checkoutOrderMutation.mutateAsync();
+
+      // Handle direct response format: { order_code, link_url }
+      const orderCode = checkoutResponse?.order_code || checkoutResponse?.content?.order_code;
+      const linkUrl = checkoutResponse?.link_url || checkoutResponse?.content?.link_url;
+      const returnedOrderId = checkoutResponse?.content?.orderid;
+
+      console.log('Checkout Response:', checkoutResponse);
+      console.log('Order Code:', orderCode, 'Link URL:', linkUrl);
+
       // Reset ordering status
       setOrderingStatus({
         isOrdering: false,
@@ -593,32 +671,27 @@ const Cart: React.FC = () => {
         totalItems: 0,
       });
 
-      // Check if we have an invoice_url in the response
-      if (checkoutResponse?.content?.invoice_url) {
-        // Clear cart after successful order
-        await removeAllFromCartMutation.mutateAsync(authToken!);
+      // Check if we have order_code and link_url in the response
+      if (orderCode && linkUrl) {
         refetchCart();
 
-        // Navigate to invoice page with the invoice_url
+        // Navigate to invoice page with order_code and link_url
         navigate('/invoice', {
           state: {
-            invoiceUrl: checkoutResponse.content.invoice_url,
-            orderId: checkoutResponse.content.orderid || orderId,
-            transId: checkoutResponse.content.transid,
-            orderPayment: orderId,
+            orderCode: orderCode,
+            linkUrl: linkUrl,
+            orderId: returnedOrderId || orderCode,
           },
         });
         return;
       }
 
-      // Show success message if no invoice_url (fallback)
-      toast.success(`Pesanan #${orderId} telah dibuat dan sedang diproses.`, {
+      // Show success message if no link_url (fallback)
+      toast.success(`Pesanan #${returnedOrderId || orderCode} telah dibuat dan sedang diproses.`, {
         position: 'bottom-right',
-        autoClose: 1500,
+        autoClose: 3000,
         theme: 'dark',
       });
-      // Clear cart after successful order
-      await removeAllFromCartMutation.mutateAsync(authToken!);
       refetchCart();
 
       // Navigate to orders page or home
@@ -858,6 +931,17 @@ const Cart: React.FC = () => {
             {apiCartData?.content?.result?.map((item) => (
               <div key={item.id} className="cart-item">
                 <div className="item-content">
+                  {/* Checkbox for publish status */}
+                  <div
+                    className={`item-checkbox ${item.publish === '1' ? 'checked' : ''}`}
+                    onClick={() => handlePublishToggle(item.id, item.publish === '1')}
+                    role="checkbox"
+                    aria-checked={item.publish === '1'}
+                    title={item.publish === '1' ? 'Klik untuk hapus dari publikasi' : 'Klik untuk publikasikan'}
+                  >
+                    {item.publish === '1' && <MdCheck size={16} />}
+                  </div>
+
                   {/* Left Column - Product Image */}
                   <div className="item-image-column">
                     <img
@@ -879,6 +963,89 @@ const Cart: React.FC = () => {
                       <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
                     </div>
 
+                    {/* Action buttons: Notes & Shipping Options */}
+                    <div className="item-action-buttons">
+                      <button
+                        className={`action-btn notes-btn ${item.note ? 'has-notes' : ''}`}
+                        onClick={() => handleAddNotes(item.id, item.note || '')}
+                        title={item.note ? 'Lihat/Edit Catatan' : 'Tambah Catatan'}
+                      >
+                        <MdNotes size={16} />
+                        <span>{item.note ? 'Catatan' : 'Catatan'}</span>
+                      </button>
+                      <button
+                        className="action-btn shipping-btn"
+                        onClick={() => setShowShippingOptions(showShippingOptions === item.id ? null : item.id)}
+                        title="Opsi Pengiriman"
+                      >
+                        <MdLocalShipping size={16} />
+                        <span>{item.pickup === '1' ? 'Ambil' : 'Kirim'}</span>
+                      </button>
+                    </div>
+
+                    {/* Shipping Options Popup */}
+                    {showShippingOptions === item.id && (
+                      <div className="shipping-options-popup">
+                        <div className="shipping-options-header">Opsi Pengiriman</div>
+                        <button
+                          className={`shipping-option ${item.pickup === '1' ? 'selected' : ''}`}
+                          onClick={() => handleItemShippingToggle(item.id, false)}
+                        >
+                          <MdLocalShipping size={16} />
+                          <span>Kirim (Rp {(item.shipping || 0).toLocaleString('id-ID')})</span>
+                        </button>
+                        <button
+                          className={`shipping-option ${item.pickup === '1' ? 'selected' : ''}`}
+                          onClick={() => handleItemShippingToggle(item.id, true)}
+                        >
+                          <MdHome size={16} />
+                          <span>Ambil Sendiri</span>
+                        </button>
+                        <button
+                          className="shipping-options-close"
+                          onClick={() => setShowShippingOptions(null)}
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Notes Textarea */}
+                    {editingNotesItemId === item.id && (
+                      <div className="notes-editor">
+                        <textarea
+                          className="notes-textarea"
+                          placeholder="Tambahkan catatan untuk item ini..."
+                          value={notesText}
+                          onChange={(e) => setNotesText(e.target.value)}
+                          rows={3}
+                        />
+                        <div className="notes-actions">
+                          <button
+                            className="notes-cancel-btn"
+                            onClick={handleCancelNotes}
+                          >
+                            Batal
+                          </button>
+                          <button
+                            className="notes-save-btn"
+                            onClick={() => handleSaveNotes(item.id)}
+                            disabled={setNotesMutation.isPending}
+                          >
+                            {setNotesMutation.isPending ? 'Menyimpan...' : 'Simpan'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Show existing note if not editing */}
+                    {item.note && editingNotesItemId !== item.id && (
+                      <div className="item-note-preview">
+                        <MdNotes size={14} />
+                        <span>{item.note}</span>
+                      </div>
+                    )}
+
                     <div className="quantity-and-remove-section">
                       <div className="quantity-section">
                         <div
@@ -899,7 +1066,7 @@ const Cart: React.FC = () => {
                           <MdAdd />
                         </div>
                       </div>
-                      
+
                       <div
                         className="remove-btn-inline"
                         onClick={() => handleRemoveItem(item.id)}
@@ -921,10 +1088,9 @@ const Cart: React.FC = () => {
           </div>
 
           {/* Pickup Options Section */}
-          <div className="pickup-options-section">
+          {/* <div className="pickup-options-section">
             <h3>Opsi Pengiriman</h3>
             
-            {/* Global Pickup Options */}
             <div className="pickup-global-options">
               <div className="pickup-radio-group">
                 <label className="pickup-radio-option">
@@ -955,7 +1121,6 @@ const Cart: React.FC = () => {
               </div>
             </div>
 
-            {/* Product List */}
             <div className="pickup-items-list">
               <h4>Produk dalam keranjang:</h4>
               <div className="pickup-items">
@@ -975,8 +1140,8 @@ const Cart: React.FC = () => {
                         <h4 className="pickup-item-name">{item.name.toUpperCase()}</h4>
                         <p className="pickup-item-qty">Qty: {item.qty}</p>
                         <p className="pickup-item-status">
-                          Status: {item.pickup === "1" ? 
-                            <span className="status-pickup">📦 Ambil Sendiri</span> : 
+                          Status: {item.pickup === "1" ?
+                            <span className="status-pickup">📦 Ambil Sendiri</span> :
                             <span className="status-shipping">🚚 Kirim (Rp {item.shipping.toLocaleString('id-ID')})</span>
                           }
                         </p>
@@ -986,6 +1151,90 @@ const Cart: React.FC = () => {
                 ))}
               </div>
             </div>
+          </div> */}
+
+          {/* Voucher Selection Section */}
+          <div className="voucher-section">
+            <h3>Pilih Voucher</h3>
+
+            {voucherLoading && (
+              <div className="voucher-loading">
+                <p>Memuat voucher...</p>
+              </div>
+            )}
+
+            {voucherError && (
+              <div className="cart-error">
+                <p style={{ color: '#e74c3c', marginBottom: '1rem' }}>
+                  Gagal memuat voucher. Silakan coba lagi.
+                </p>
+                <button
+                  onClick={() => refetchVouchers()}
+                  style={{
+                    background: '#161129',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Muat Ulang Voucher
+                </button>
+              </div>
+            )}
+
+            {voucherData?.content?.voucher?.length ? (
+              <div className="voucher-grid">
+                {voucherData.content.voucher.map((voucher) => {
+                  const isSelected = voucher.id === currentVoucherId;
+
+                  return (
+                    <button
+                      key={voucher.id}
+                      type="button"
+                      className={`voucher-card ${isSelected ? 'selected' : ''}`}
+                      onClick={() => handleSelectVoucher(voucher)}
+                      disabled={setVoucherMutation.isPending}
+                    >
+                      <div className="voucher-image">
+                        <img
+                          src={voucher.image || '/nodata.png'}
+                          alt={voucher.name}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/nodata.png';
+                          }}
+                        />
+                      </div>
+                      <div className="voucher-details">
+                        <div className="voucher-name">{voucher.name}</div>
+                        {voucher.description ? (
+                          <div className="voucher-description">{voucher.description}</div>
+                        ) : null}
+                        <div className="voucher-meta">
+                          {voucher.code ? <span className="voucher-code">{voucher.code}</span> : null}
+                          {voucher.value ? (
+                            <span className="voucher-value">
+                              {voucher.type === 'percent'
+                                ? `${voucher.value}%`
+                                : `Rp ${voucher.value.toLocaleString('id-ID')}`}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      {isSelected && <span className="voucher-badge">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              !voucherLoading && (
+                <p style={{ margin: 0, color: '#666' }}>
+                  Tidak ada voucher tersedia saat ini.
+                </p>
+              )
+            )}
           </div>
 
           {/* Order Summary */}
@@ -1009,6 +1258,13 @@ const Cart: React.FC = () => {
                 <div className="summary-row">
                   <span>Biaya Layanan</span>
                   <span>Rp {costFromToken.toLocaleString('id-ID')}</span>
+                </div>
+              )}
+
+              {selectedVoucher && (
+                <div className="summary-row discount">
+                  <span>Voucher: {selectedVoucher.name}</span>
+                  <span>- Rp {voucherDiscount.toLocaleString('id-ID')}</span>
                 </div>
               )}
 

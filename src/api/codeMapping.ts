@@ -22,8 +22,8 @@ export const createSlug = (text: string): string => {
  * @param code - Event code for SEO slug
  * @returns SEO-friendly URL like "/event/12-21-th-mercedes-benz-club-indonesia"
  */
-export const createEventUrl = (id: string, code: string): string => {
-  const slug = createSlug(code);
+export const createEventUrl = (id: string, code?: string): string => {
+  const slug = createSlug(code || '');
   return `/event/${id}-${slug}`;
 };
 

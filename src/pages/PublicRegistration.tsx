@@ -16,7 +16,6 @@ const PublicRegistration: React.FC = () => {
     phone: '',
     email: '',
     notes: '',
-    tenantCount: '' // New field for tenant count
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -82,9 +81,6 @@ const PublicRegistration: React.FC = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Masukkan email yang valid';
     }
-    if (!formData.tenantCount.trim()) {
-      newErrors.tenantCount = 'Jumlah tenant wajib dipilih';
-    }
 
     // Validation: Phone number and police number cannot be the same
     if (formData.phone.trim() && formData.policeno.trim() && 
@@ -92,7 +88,6 @@ const PublicRegistration: React.FC = () => {
       newErrors.phone = 'Nomor telepon tidak boleh sama dengan nomor polisi';
       newErrors.policeno = 'Nomor polisi tidak boleh sama dengan nomor telepon';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -111,31 +106,39 @@ const PublicRegistration: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      toast.error('Mohon lengkapi semua field yang wajib diisi', {
-        position: 'bottom-right',
-        autoClose: 1500,
-        theme: 'dark',
-      });
+
+    // Prevent double submission
+    if (isSubmitting) {
       return;
     }
-
-    if (!eventId) {
-      toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.', {
-        position: 'bottom-right',
-        autoClose: 1500,
-        theme: 'dark',
-      });
-      return;
-    }
-
     setIsSubmitting(true);
     const loadingToast = toast.loading('Mengirim pendaftaran...', {
       position: 'bottom-right',
       theme: 'dark',
     });
-    
+
+    if (!validateForm()) {
+      toast.dismiss(loadingToast);
+      toast.error('Mohon lengkapi semua field yang wajib diisi', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!eventId) {
+      toast.dismiss(loadingToast);
+      toast.error('ID event tidak ditemukan. Silakan coba lagi dari halaman event.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const payload = {
         eventid: eventId,
@@ -145,13 +148,13 @@ const PublicRegistration: React.FC = () => {
         phone: formData.phone,
         email: formData.email,
         notes: formData.notes,
-        tenantCount: formData.tenantCount
       };
 
       const result = await publicRegistration.mutateAsync(payload);
+      console.log('Registration Result:', result);
       toast.dismiss(loadingToast);
       // Check if registration was successful
-      if (result.status === 200 && result.content) {
+      if (result.status === 200) {
         setRegistrationResult(result);
         setShowSuccessModal(true);
         
@@ -169,7 +172,16 @@ const PublicRegistration: React.FC = () => {
       }
     } catch (error: any) {
       toast.dismiss(loadingToast);
-      toast.error(error.response?.data?.error || 'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.', {
+      console.error('Registration Error:', error);
+
+      // Try multiple error message sources
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        'Pendaftaran gagal. Silakan periksa data Anda dan coba lagi.';
+
+      toast.error(errorMessage, {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -349,17 +361,17 @@ const PublicRegistration: React.FC = () => {
                 <h3>📋 Detail Pendaftaran:</h3>
                 <div className="detail-item">
                   <strong>Kode Order:</strong>
-                  <span>{registrationResult.content.ordercode || 'N/A'}</span>
+                  <span>{registrationResult.ordercode || 'N/A'}</span>
                 </div>
                 <div className="detail-item">
                   <strong>ID Transaksi:</strong>
-                  <span>{registrationResult.content.transid || 'N/A'}</span>
+                  <span>{registrationResult.transid || 'N/A'}</span>
                 </div>
-                <div className="detail-item">
+                {/* <div className="detail-item">
                   <strong>Jumlah Tenant:</strong>
                   <span>{formData.tenantCount} Tenant</span>
-                </div>
-                {!registrationResult.content.invoice_url && (
+                </div> */}
+                {!registrationResult.invoice_url && (
                   <div className="detail-item free-registration">
                     <strong>Biaya pendaftaran:</strong>
                     <span className="free-badge">GRATIS</span>
@@ -368,7 +380,7 @@ const PublicRegistration: React.FC = () => {
               </div>
             </div>
             <div className="modal-actions">
-              {registrationResult.content.invoice_url && (
+              {registrationResult.invoice_url && (
                 <button
                   type="button"
                   onClick={handleViewInvoice}
@@ -382,7 +394,7 @@ const PublicRegistration: React.FC = () => {
                 onClick={handleCloseSuccessModal}
                 className="btn-primary"
               >
-                {registrationResult.content.invoice_url ? 'Lanjut' : 'Kembali ke Detail Event'}
+                {registrationResult.invoice_url ? 'Lanjut' : 'Kembali ke Detail Event'}
               </button>
             </div>
           </div>

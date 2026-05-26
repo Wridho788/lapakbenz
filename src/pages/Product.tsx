@@ -54,24 +54,24 @@ const Product: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   
   // Infinite scroll states
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState("0");
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [hasDataBeenFetched, setHasDataBeenFetched] = useState(false);
   const [isFirstInit, setIsFirstInit] = useState(true);
-  
+
   // API hooks for cart
   const {
     data: apiCartData,
   } = useCart();
-  
+
   // API hooks - now including all filter parameters
   // When search is active, don't send filter parameters to API
   const { data: productsData, isLoading: productsLoading, error: productsError, refetch: refetchProducts } = useProducts({
-    limit: 10,
-    offset: offset,
+    limit: "10",
+    offset: `${offset}`,
     orderby: searchQuery.trim() ? '' : (priceOrder ? 'price' : ''),
     order: searchQuery.trim() ? 'asc' : (priceOrder || 'desc'),
     category: searchQuery.trim() ? '' : selectedCategoryId, // Clear filters when searching
@@ -79,15 +79,17 @@ const Product: React.FC = () => {
     condition: searchQuery.trim() ? '' : selectedCondition, // Clear filters when searching
   });
 
+  // Get base image URL from products data (after hook is declared)
+  const imageUrl = productsData?.image_url || '';
+
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useProductCategories();
   const { data: citiesData, isLoading: citiesLoading, error: citiesError } = useProductCities();
-  
+
   const productSearchMutation = useProductSearch();
 
   // Handle search
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      // console.log('🔍 Searching for:', query);
       // Clear ALL filters when searching to show all search results
       if (selectedCategoryId || priceOrder || selectedCondition || selectedLocations.length > 0) {
         // console.log('🔍 Clearing all filters for search');
@@ -97,11 +99,11 @@ const Product: React.FC = () => {
         setSelectedLocations([]);
       }
       productSearchMutation.mutate(
-        { filter: query.trim() },
+        { filter: query.trim(), limit: '10' },
         {
           onSuccess: (data) => {
             // console.log('✅ Search results:', data);
-            if (data?.content?.result === null) {
+            if (data?.result === null) {
               console.log('🔍 No products found for query:', query);
             }
           },
@@ -116,22 +118,22 @@ const Product: React.FC = () => {
   // Process categories from API - now storing both ID and name
   const categories = useMemo((): Category[] => {
     const baseCategories: Category[] = [{ id: '', name: 'Semua' }]; // Base category with empty ID
-    
-    if (categoriesData?.content?.result) {
-      const apiCategories = categoriesData.content.result.map((cat: any): Category => ({
+
+    if (categoriesData?.result) {
+      const apiCategories = categoriesData.result.map((cat: any): Category => ({
         id: cat.id || cat.category_id || '',
         name: cat.name || cat.category_name || cat.title || 'Kategori Tidak Diketahui'
       }));
       return [...baseCategories, ...apiCategories];
     }
-    
+
     return baseCategories;
   }, [categoriesData]);
 
   // Process cities from API
   const cities = useMemo((): City[] => {
-    if (citiesData?.content?.result && Array.isArray(citiesData.content.result)) {
-      return citiesData.content.result.map((city: any): City => ({
+    if (citiesData?.result && Array.isArray(citiesData.result)) {
+      return citiesData.result.map((city: any): City => ({
         name: city.name || city.city_name || 'Kota Tidak Diketahui'
       }));
     }
@@ -140,7 +142,7 @@ const Product: React.FC = () => {
 
   // Monitor offset changes for infinite scroll and trigger refetch if needed
   useEffect(() => {
-    if (offset > 0 && isLoadingMore && !productsLoading) {
+    if (parseInt(offset || '0', 10) > 0 && isLoadingMore && !productsLoading) {
       // Small delay to ensure state is updated
       setTimeout(() => {
         refetchProducts();
@@ -150,16 +152,16 @@ const Product: React.FC = () => {
 
   // Handle products data accumulation for infinite scroll
   useEffect(() => {
-  
+
     // Only process if not currently loading
     if (!productsLoading && productsData) {
-      if (productsData?.content?.result && Array.isArray(productsData.content.result)) {
-        const newProducts = productsData.content.result;
-        
+      if (productsData?.result && Array.isArray(productsData.result)) {
+        const newProducts = productsData.result;
+
         setHasDataBeenFetched(true);
         setIsLoadingMore(false);
-        
-        if (offset === 0) {
+
+        if (offset === "0") {
           // First load or filter change - replace all products
           setAllProducts(newProducts);
         } else {
@@ -170,7 +172,7 @@ const Product: React.FC = () => {
             return [...prev, ...uniqueNewProducts];
           });
         }
-        
+
         // Update hasMore based on whether we got a full page of results
         const hasMoreData = newProducts.length === 10;
         setHasMore(hasMoreData);
@@ -178,7 +180,7 @@ const Product: React.FC = () => {
         // Handle empty results
         setHasDataBeenFetched(true);
         setIsLoadingMore(false);
-        if (offset === 0) {
+        if (offset === "0") {
           setAllProducts([]);
         }
         setHasMore(false);
@@ -189,17 +191,14 @@ const Product: React.FC = () => {
   // Process products from API
   const products = useMemo(() => {
     // If we have search results (including null results), use them
-    if (productSearchMutation.data?.content) {
+    if (productSearchMutation.data?.result) {
       // Handle case where search returns null results
-      if (productSearchMutation.data.content.result === null || 
-          !Array.isArray(productSearchMutation.data.content.result)) {
-        // console.log('🔍 Search returned no results (null/invalid)');
-        return []; // Return empty array for no results
+      if (!Array.isArray(productSearchMutation.data.result)) {
+        return [];
       }
-      // console.log('🔍 Using search results:', productSearchMutation.data.content.result);
-      return productSearchMutation.data.content.result;
+      return productSearchMutation.data.result;
     }
-    
+
     // Use accumulated products for infinite scroll
     return allProducts;
   }, [allProducts, productSearchMutation.data]);
@@ -209,14 +208,14 @@ const Product: React.FC = () => {
     if (!isInitialized) return;
     
     const timer = setTimeout(() => {
-      if (allProducts.length === 0 && 
-          !productsLoading && 
-          !searchQuery.trim() && 
+      if (allProducts.length === 0 &&
+          !productsLoading &&
+          !searchQuery.trim() &&
           !isLoadingMore &&
           !productSearchMutation.data &&
           isInitialized &&
           !productsData) {
-        setOffset(0);
+        setOffset("0");
         refetchProducts();
       }
     }, 1500);
@@ -230,22 +229,22 @@ const Product: React.FC = () => {
 
     // If we have search results from API, don't apply additional category filtering
     // because search should show all relevant products regardless of category filter
-    if (productSearchMutation.data?.content && searchQuery.trim()) {
-    
+    if (productSearchMutation.data?.result && searchQuery.trim()) {
+
       return filtered; // Return search results as-is
     }
 
     // Only apply category filtering when NOT searching
     if (!searchQuery.trim() && selectedCategoryId && selectedCategoryId !== '') {
       filtered = filtered.filter((product: any) =>
-        (product.category_id || product.categoryId || '') === selectedCategoryId
+        (product.category_id || product.category || '') === selectedCategoryId
       );
     }
 
     // Apply local search filtering only when using main products API (not search API)
-    if (searchQuery.trim() && !productSearchMutation.data?.content) {
+    if (searchQuery.trim() && !productSearchMutation.data?.result) {
       filtered = filtered.filter((product: any) =>
-        (product.title || product.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+        (product.name || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -301,8 +300,8 @@ const Product: React.FC = () => {
       if (nearBottom) {
         setIsLoadingMore(true);
         setOffset(prev => {
-          const newOffset = prev + 10;
-          return newOffset;
+          const newOffset = parseInt(prev || '0', 10) + 10;
+          return String(newOffset);
         });
       }
     };
@@ -319,7 +318,7 @@ const Product: React.FC = () => {
   // Handle filter changes by updating offset and refetching (without clearing products)
   useEffect(() => {
     if (isInitialized && !isFirstInit && !searchQuery.trim()) {
-      setOffset(0); // Reset to first page
+      setOffset("0"); // Reset to first page
       setHasMore(true);
       setIsLoadingMore(false);
       
@@ -381,8 +380,8 @@ const Product: React.FC = () => {
     const apiCartCount = getApiCartCount();
 
   const handleProductClick = (product: any) => {
-    const productName = product.title || product.name || product.sku || product.id;
-    const productUrl = createProductUrl(product.id, productName);
+    const productName = product.name || product.sku || product.id;
+    const productUrl = createProductUrl(String(product.sku), productName);
     navigate(productUrl);
   };
 
@@ -677,18 +676,18 @@ const Product: React.FC = () => {
                 {getCurrentCategoryName()}
                 <span className="product-count">({filteredProducts.length} produk)</span>
               </h3>
-              {productsData?.content?.record && filteredProducts.length > 0 && (
+              {productsData?.record && productsData.record > 0 && filteredProducts.length > 0 && (
                 <div className="progress-indicator">
                   <div className="progress-bar">
-                    <div 
-                      className="progress-fill" 
-                      style={{ 
-                        width: `${Math.min((filteredProducts.length / productsData.content.record) * 100, 100)}%` 
+                    <div
+                      className="progress-fill"
+                      style={{
+                        width: `${Math.min((filteredProducts.length / (productsData.record || 1)) * 100, 100)}%`
                       }}
                     ></div>
                   </div>
                   <span className="progress-text">
-                    {filteredProducts.length} dari {productsData.content.record} produk
+                    {filteredProducts.length} dari {productsData.record} produk
                   </span>
                 </div>
               )}
@@ -707,28 +706,28 @@ const Product: React.FC = () => {
                 >
                   <div className="product-image">
                     <img
-                      src={product.image || product.img || "/bea2x.jpg"}
-                      alt={product.title || product.name}
+                      src={imageUrl + product.image}
+                      alt={product.name}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "/bea2x.jpg";
                       }}
                       loading="lazy"
                     />
-                    {productsLoading && offset === 0 && (
+                    {productsLoading && offset === "0" && (
                       <div className="image-loading-overlay">
                         <div className="image-spinner"></div>
                       </div>
                     )}
                   </div>
                   <div className="product-info">
-                    <h4 className="product-title">{(product.title || product.name).toUpperCase()}</h4>
+                    <h4 className="product-title">{(product.name || '').toUpperCase()}</h4>
                     <div className="product-rating">
                       <div className="rating-stars">
-                        {renderStars(parseFloat(product.rating) || 4.5)}
-                        <span className="rating-number">({product.rating || '4.5'})</span>
+                        {renderStars(product.rating || 0)}
+                        <span className="rating-number">({product.rating || 0})</span>
                       </div>
-                      <span className="product-category">{product.category}</span>
+                      <span className="product-category">{product.city}</span>
                     </div>
                     <div className="product-price">
                       Rp {(product.price || 0).toLocaleString('id-ID')}
@@ -790,13 +789,13 @@ const Product: React.FC = () => {
               return showLoadMore;
             })() && (
               <div className="load-more-section">
-                <button 
+                <button
                   className="load-more-btn"
                   onClick={() => {
                     setIsLoadingMore(true);
                     setOffset(prev => {
-                      const newOffset = prev + 10;
-                      return newOffset;
+                      const newOffset = parseInt(prev || '0', 10) + 10;
+                      return String(newOffset);
                     });
                   }}
                   disabled={isLoadingMore}

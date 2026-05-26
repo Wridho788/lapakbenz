@@ -57,7 +57,7 @@ const MyTransactionHistory: React.FC = () => {
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  const handleOrderClick = (orderId: string) => {
+  const handleOrderClick = (orderId: string | number) => {
     navigate(`/orders/${orderId}`);
   };
 
@@ -68,7 +68,7 @@ navigate('/cart');  };
     navigate('/notifications');
   };
 
-  const getStatusIcon = (paidStatus: string, canceled: string | null) => {
+  const getStatusIcon = (paidStatus: string | number | undefined, canceled: string | null) => {
     if (canceled) {
       return <MdCancel className="status-icon canceled" />;
     }
@@ -83,7 +83,7 @@ navigate('/cart');  };
     }
   };
 
-  const getStatusText = (paidStatus: string, canceled: string | null) => {
+  const getStatusText = (paidStatus: string | number | undefined, canceled: string | null) => {
     if (canceled) {
       return 'Canceled';
     }
@@ -98,7 +98,7 @@ navigate('/cart');  };
     }
   };
 
-  const getStatusClass = (paidStatus: string, canceled: string | null) => {
+  const getStatusClass = (paidStatus: string | number | undefined, canceled: string | null) => {
     if (canceled) {
       return 'canceled';
     }
@@ -145,7 +145,7 @@ navigate('/cart');  };
     );
   }
 
-  const orders = ordersData?.content?.result || [];
+  const orders = (ordersData?.content?.result || (ordersData as any)?.result || []) as OrderItem[];
   const totalRecords = ordersData?.content?.record || 0;
 
   return (

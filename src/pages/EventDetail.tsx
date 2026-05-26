@@ -8,6 +8,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
 import { useEventById, useEventRegister } from '../api/hooks/index';
 import { extractIdFromParam } from '../api/codeMapping';
+import type { EventItem } from '../api/types/eventTypes';
 import { toast } from 'react-toastify';
 import './EventDetail.css';
 
@@ -16,31 +17,30 @@ const EventDetail: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
   const { cartCount } = useCart();
-  
+
   const [isAuthValidated, setIsAuthValidated] = useState(false);
   const [triggerRegistration, setTriggerRegistration] = useState(false);
-  
-  // Extract actual event ID from URL parameter (handles both old ID format and new SEO format)
-  const eventId = eventParam ? extractIdFromParam(eventParam) : null;
-  
-  const eventByIdQuery = useEventById(eventId || '');
-  const eventRegisterQuery = useEventRegister(triggerRegistration && eventId ? eventId : '');
-  
-  const eventContent = eventByIdQuery.data?.content;
 
-  // Handle event registration results
+  const eventId = eventParam ? extractIdFromParam(eventParam) : null;
+
+  const eventByIdQuery = useEventById(eventId || '');
+  const eventRegisterQuery = useEventRegister(eventId || '', token);
+
+  const eventData = eventByIdQuery.data?.result as EventItem | undefined;
+  const imageUrl = eventByIdQuery.data?.image_url || '';
+
   useEffect(() => {
     if (eventRegisterQuery.data && triggerRegistration) {
       const result = eventRegisterQuery.data;
-      if (result.status === 200 && result.content) {
-        toast.success('🎉 Registration Successful! Your event registration has been completed successfully.', {
+      if (result.status === 200) {
+        toast.success('Registration Successful! Your event registration has been completed successfully.', {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
         });
       } else {
         const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        toast.error(`❌ Registration Failed: ${errorMsg}`, {
+        toast.error(`Registration Failed: ${errorMsg}`, {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
@@ -50,16 +50,15 @@ const EventDetail: React.FC = () => {
     }
 
     if (eventRegisterQuery.error && triggerRegistration) {
-      // Safely extract error message from Axios error or fallback to generic message
       let errorMessage = 'An unexpected error occurred during registration.';
       if (eventRegisterQuery.error && typeof eventRegisterQuery.error === 'object' && 'response' in eventRegisterQuery.error) {
-        const axiosError = eventRegisterQuery.error as any;
+        const axiosError = eventRegisterQuery.error as { response?: { data?: { error?: string } }; message?: string };
         errorMessage = axiosError.response?.data?.error || axiosError.message || errorMessage;
       } else if (eventRegisterQuery.error.message) {
         errorMessage = eventRegisterQuery.error.message;
       }
-      
-      toast.error(`❌ Registration Failed: ${errorMessage}`, {
+
+      toast.error(`Registration Failed: ${errorMessage}`, {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -68,14 +67,11 @@ const EventDetail: React.FC = () => {
     }
   }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
 
-  // Validate authentication on component mount and when auth state changes
   useEffect(() => {
     const validateAuth = async () => {
       if (isAuthenticated && token) {
-        // Validate token format and presence
         const isValidToken = validateToken();
         if (!isValidToken) {
-          // Auto logout if token is invalid
           useAuthStore.getState().logout();
           setIsAuthValidated(false);
         } else {
@@ -98,7 +94,6 @@ const EventDetail: React.FC = () => {
   };
 
   const handleEventRegister = async () => {
-    // Enhanced authentication check
     const authSuccess = requireAuth(() => {}, 'register for event');
     if (!authSuccess || !isAuthValidated) {
       toast.warning('Please login first to register for this event.', {
@@ -119,7 +114,6 @@ const EventDetail: React.FC = () => {
       return;
     }
 
-    // Validate event ID format
     if (!eventId.match(/^\d+$/)) {
       toast.error('Event ID format is invalid.', {
         position: 'bottom-right',
@@ -128,24 +122,46 @@ const EventDetail: React.FC = () => {
       });
       return;
     }
-    // Trigger the registration query
     setTriggerRegistration(true);
   };
 
   const handleMerchantRegistration = () => {
     if (eventId) {
       navigate(`/merchant-registration/${eventId}`);
-    } else {
-      console.error('❌ No event ID available for merchant registration');
     }
   };
 
   const handlePublicRegistration = () => {
     if (eventId) {
       navigate(`/public-registration/${eventId}`);
-    } else {
-      console.error('❌ No event ID available for public registration');
     }
+  };
+
+  const getImageSrc = (imagePath?: string) => {
+    if (!imagePath) return '/lapakbenz.png';
+    if (imagePath.startsWith('http')) return imagePath;
+    return `${imageUrl}${imagePath}`;
+  };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      return new Date(dateStr).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getTypeLabel = (type?: number) => {
+    const labels: Record<number, string> = { 0: 'PRIVATE', 1: 'COMBINATED' };
+    return labels[type ?? 0] || 'UNKNOWN';
+  };
+
+  const getStatusLabel = (done?: number) => {
+    return done === 1 ? 'Selesai' : 'Akan Datang';
   };
 
   if (eventByIdQuery.isLoading) {
@@ -165,7 +181,7 @@ const EventDetail: React.FC = () => {
     );
   }
 
-  if (!eventContent) {
+  if (!eventData) {
     return (
       <div className="event-detail-page">
         <AppbarDefault
@@ -184,16 +200,16 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="event-detail-page">
-      <SEO 
-        title={`${eventContent.name} • ${eventContent.chapter} / ${eventContent.dates} - ${eventContent.type_desc} | LapakBenz - Platform Komunitas & Event Indonesia`}
-        description={truncateText(stripHtml(eventContent.desc), 155) + ` Event ${eventContent.chapter} pada ${eventContent.dates} - ${eventContent.time}. ${eventContent.fee > 0 ? `Biaya kontribusi: ${formatPrice(eventContent.fee)}` : 'Gratis'}. Daftar sekarang di lapakBenz!`}
-        keywords={`${eventContent.name.toLowerCase()}, event ${eventContent.chapter.toLowerCase()}, ${eventContent.type_desc.toLowerCase()}, event lapakbenz, event komunitas indonesia, ${eventContent.dates}, ${eventContent.chapter}`}
-        image={eventContent.image}
+      <SEO
+        title={`${eventData.Name} • ${eventData.Dates} - ${getTypeLabel(eventData.Type)} | LapakBenz - Platform Komunitas & Event Indonesia`}
+        description={truncateText(stripHtml(eventData.Desc || ''), 155) + ` Event pada ${eventData.Dates}. ${(eventData.Fee || 0) > 0 ? `Biaya kontribusi: ${formatPrice(eventData.Fee || 0)}` : 'Gratis'}. Daftar sekarang di lapakBenz!`}
+        keywords={`${(eventData.Name || '').toLowerCase()}, event lapakbenz, event komunitas indonesia, ${eventData.Dates}`}
+        image={getImageSrc(eventData.Image)}
         schemaType="Event"
-        publishedTime={formatDateForSchema(eventContent.dates)}
+        publishedTime={formatDateForSchema(eventData.Dates)}
         section="Event"
-        tags={[eventContent.chapter, eventContent.type_desc, 'Event', 'Komunitas']}
-        breadcrumbs={generateBreadcrumbs('event', eventContent.name)}
+        tags={['Event', 'Komunitas']}
+        breadcrumbs={generateBreadcrumbs('event', eventData.Name || '')}
       />
       <AppbarDefault
         title="Detail Event"
@@ -202,58 +218,53 @@ const EventDetail: React.FC = () => {
         cartCount={cartCount}
         defaultBack="/event"
       />
-      
+
       <div className="event-detail-content">
         <img
-          src={eventContent.image}
-          alt={eventContent.name}
+          src={getImageSrc(eventData.Image)}
+          alt={eventData.Name}
           className="event-detail-image"
         />
-        
+
         <div className="event-detail-body">
           <h3 className="event-detail-title">
-            {eventContent.name}
+            {eventData.Name}
           </h3>
-          
+
           <div className="event-detail-info">
             <div className="event-detail-column">
               <div className="event-info-item">
                 <b>Tanggal Event:</b>
                 <br />
-                {eventContent.dates} - {eventContent.time}
-              </div>
-              <div className="event-info-item">
-                <b>Chapter:</b>
-                <br />
-                {eventContent.chapter}
+                {formatDate(eventData.Dates)}
               </div>
               <div className="event-info-item">
                 <b>Tipe:</b>
                 <br />
-                {eventContent.type_desc}
+                {getTypeLabel(eventData.Type)}
               </div>
               <div className="event-info-item">
                 <b>Deskripsi:</b>
                 <br />
-                {eventContent.desc}
+                {eventData.Desc}
               </div>
             </div>
-            
+
             <div className="event-detail-column">
               <div className="event-info-item">
                 <b>Minimal Peserta:</b>
                 <br />
-                {eventContent.minimum_participants}
+                {eventData.MinimumParticipant}
               </div>
               <div className="event-info-item">
                 <b>Biaya Kontribusi:</b>
                 <br />
-                {eventContent.fee}
+                {eventData.Fee === 0 ? 'Gratis' : formatPrice(eventData.Fee || 0)}
               </div>
               <div className="event-info-item">
                 <b>Status:</b>
                 <br />
-                {eventContent.done_desc}
+                {getStatusLabel(eventData.Done)}
               </div>
             </div>
           </div>
@@ -264,10 +275,10 @@ const EventDetail: React.FC = () => {
             onRegister={handleEventRegister}
           />
 
-          {(eventContent.allow_merchant === 1 || eventContent.allow_public === 1) && (
+          {(eventData.AllowMerchant === 1 || eventData.AllowPublic === 1) && (
             <div className="registration-navigation">
               <div className="registration-buttons">
-                {eventContent.allow_merchant === 1 && (
+                {eventData.AllowMerchant === 1 && (
                   <button
                     onClick={handleMerchantRegistration}
                     className="registration-nav-button merchant"
@@ -279,7 +290,7 @@ const EventDetail: React.FC = () => {
                   </button>
                 )}
 
-                {eventContent.allow_public === 1 && (
+                {eventData.AllowPublic === 1 && (
                   <button
                     onClick={handlePublicRegistration}
                     className="registration-nav-button public"

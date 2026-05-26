@@ -1,33 +1,15 @@
 import React from 'react';
 import './EventCard.css';
 
-interface EventItem {
-  id: string;
-  chapter_id: string;
-  chapter: string;
-  code: string;
-  name: string;
-  dates: string;
-  time: string;
-  desc: string;
-  image: string;
-  fee: number;
-  minimum_participants: string;
-  type: number;
-  type_desc: string;
-  done: number;
-  done_desc: string;
-}
-
 interface EventCardProps {
   id: string;
   image: string;
-  title: string; // code
-  date: string; // dates
-  chapter: string;
-  type: string; // type_desc
-  event?: EventItem; // Full event object for onClick
-  onClick?: (event: EventItem) => void;
+  title?: string; // code
+  date?: string; // dates
+  chapter?: string;
+  type?: string; // type_desc
+  event?: any; // Full event object for onClick
+  onClick?: (event: any) => void;
   className?: string;
 }
 

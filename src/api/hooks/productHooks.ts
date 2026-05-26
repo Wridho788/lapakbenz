@@ -1,34 +1,15 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { productAPI } from '../productApi';
+import type { ProductListRequest, ProductSearchRequest } from '../types';
 
-// Product API Hooks
-interface UseProductsPayload {
-  limit?: number;
-  offset?: number;
-  orderby?: string;
-  order?: 'asc' | 'desc';
-  category?: string;
-  location?: string;
-  condition?: string;
-}
-
-export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<any, Error> {
-  const defaultPayload = {
-    limit: 10,
-    offset: 0,
-    orderby: '',
-    order: 'asc' as const,
-    category: '',
-    location: '',
-    condition: '',
-    ...payload,
-  };
-
+export function useProducts(
+  payload: ProductListRequest = { limit: '10', offset: '0', orderby: '', order: 'asc', category: '', location: '', condition: '' },
+): UseQueryResult<any, Error> {
   return useQuery({
-    queryKey: ['products', JSON.stringify(defaultPayload)],
-    queryFn: () => productAPI.getProducts(defaultPayload),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryKey: ['products', JSON.stringify(payload)],
+    queryFn: () => productAPI.getProducts(payload),
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 }
@@ -36,28 +17,19 @@ export function useProducts(payload: UseProductsPayload = {}): UseQueryResult<an
 export function useProductCategories(): UseQueryResult<any, Error> {
   return useQuery({
     queryKey: ['productCategories'],
-    queryFn: async () => {
-      try {
-        return await productAPI.getProductCategories();
-      } catch (error) {
-        throw error;
-      }
-    },
-    staleTime: 1000 * 60 * 10, // 10 minutes (categories don't change often)
+    queryFn: () => productAPI.getProductCategories(),
+    staleTime: 1000 * 60 * 10,
     retry: 2,
   });
 }
 
-interface UseProductSearchPayload {
-  filter: string;
-}
-
-export function useProductSearch(): UseMutationResult<any, Error, UseProductSearchPayload> {
+export function useProductSearch(): UseMutationResult<any, Error, ProductSearchRequest> {
   return useMutation({
-    mutationFn: async (payload: UseProductSearchPayload) => {
+    mutationFn: async (payload: ProductSearchRequest) => {
       try {
         return await productAPI.searchProducts(payload);
       } catch (error) {
+        console.error('Product search error:', error);
         throw error;
       }
     },
@@ -69,33 +41,26 @@ export function useProductDetail(productId: string): UseQueryResult<any, Error> 
     queryKey: ['productDetail', productId],
     queryFn: () => productAPI.getProductDetail(productId),
     enabled: !!productId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 }
 
 export function useProductCities(): UseQueryResult<any, Error> {
-  
   return useQuery({
     queryKey: ['productCities'],
     queryFn: () => productAPI.getProductCities(),
-    staleTime: 1000 * 60 * 10, // 10 minutes (cities don't change often)
+    staleTime: 1000 * 60 * 10,
     retry: 2,
-    enabled: true, // Always fetch since no token is required
+    enabled: true,
   });
 }
 
 export function useLatestProducts(): UseQueryResult<any, Error> {
   return useQuery({
     queryKey: ['latestProducts'],
-    queryFn: async () => {
-      try {
-        return await productAPI.getLatestProducts();
-      } catch (error) {
-        throw error;
-      }
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: () => productAPI.getLatestProducts(0),
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 }
@@ -103,14 +68,8 @@ export function useLatestProducts(): UseQueryResult<any, Error> {
 export function useBestSellerProducts(): UseQueryResult<any, Error> {
   return useQuery({
     queryKey: ['bestSellerProducts'],
-    queryFn: async () => {
-      try {
-        return await productAPI.getBestSellerProducts();
-      } catch (error) {
-        throw error;
-      }
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: () => productAPI.getBestSellerProducts(),
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 }

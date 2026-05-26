@@ -1,13 +1,17 @@
 import React from 'react';
-import { MdStar } from 'react-icons/md';
+import { MdStar, MdFavorite, MdDelete } from 'react-icons/md';
 import './ProductCard.css';
 
 interface ProductCardProps {
   image: string;
   name: string;
   price: number;
-  rating: string;
+  rating: string | number;
   onClick: () => void;
+  // Wishlist props (optional)
+  showWishlistRemove?: boolean;
+  isWishlisted?: boolean;
+  onRemoveWishlist?: () => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -16,13 +20,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   price,
   rating,
   onClick,
+  showWishlistRemove = false,
+  isWishlisted = false,
+  onRemoveWishlist,
 }) => {
   const handleClick = () => {
     onClick();
   };
 
-  const renderStars = (rating: string) => {
-    const ratingNumber = parseFloat(rating) || 0;
+  const handleRemoveWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onRemoveWishlist) {
+      onRemoveWishlist();
+    }
+  };
+
+  const renderStars = (rating: string | number) => {
+    const ratingNumber = typeof rating === 'string' ? parseFloat(rating) : rating;
     const stars = [];
     const fullStars = Math.floor(ratingNumber);
     const hasHalfStar = ratingNumber % 1 !== 0;
@@ -62,11 +76,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             target.src = '/bea2x.jpg';
           }}
         />
+        {showWishlistRemove && (
+          <button
+            className="product-card-wishlist-btn"
+            onClick={handleRemoveWishlist}
+            aria-label="Remove from wishlist"
+          >
+            {isWishlisted ? (
+              <MdFavorite className="wishlist-icon filled" />
+            ) : (
+              <MdDelete className="wishlist-icon" />
+            )}
+          </button>
+        )}
       </div>
       <div className="product-card-content">
         <div className="product-card-rating">
           {renderStars(rating)}
-          <span className="rating-number">({rating})</span>
+          <span className="rating-number">({typeof rating === 'number' ? rating.toFixed(1) : rating})</span>
         </div>
         <h3 className="product-card-name">{name}</h3>
         <div className="product-card-price">

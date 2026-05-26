@@ -36,6 +36,12 @@ export const isShippingAddressRequiredError = (error: any): boolean => {
     error?.response?.data?.message && 
     error.response.data.message.toLowerCase().includes('alamat pengiriman'),
     
+    error?.response?.data?.error && 
+    error.response.data.error.toLowerCase().includes('alamat pengiriman'),
+
+    error?.error && 
+    error.error.toLowerCase().includes('alamat pengiriman'),
+    
     error?.message && 
     error.message.toLowerCase().includes('alamat pengiriman'),
     

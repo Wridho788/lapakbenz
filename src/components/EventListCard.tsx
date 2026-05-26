@@ -1,61 +1,57 @@
 import React from 'react';
+import type { EventItem } from '../api/types/eventTypes';
 import '../pages/Event.css';
-
-interface EventItem {
-  id: string;
-  chapter_id: string;
-  chapter: string;
-  code: string;
-  name: string;
-  dates: string;
-  time: string;
-  desc: string;
-  image: string;
-  fee: number;
-  minimum_participants: string;
-  type: number;
-  type_desc: string;
-  done: number;
-  done_desc: string;
-  allow_merchant?: number;
-  allow_public?: number;
-}
 
 interface EventListCardProps {
   event: EventItem;
-  onClick: (eventId: string) => void;
+  onClick: (event: EventItem) => void;
   isGrid?: boolean;
+  imageUrl?: string;
 }
 
-const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = false }) => {
+const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = false, imageUrl }) => {
+  const getImageSrc = () => {
+    if (!event.Image) return '/bea2x.jpg';
+    if (event.Image.startsWith('http')) return event.Image;
+    return `${imageUrl || ''}${event.Image}`;
+  };
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const target = e.target as HTMLImageElement;
-    target.src = '/bea2x.jpg';
+    (e.target as HTMLImageElement).src = '/bea2x.jpg';
+  };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
   };
 
   if (isGrid) {
     return (
       <div
         className="custom-event-card grid-card"
-        onClick={() => onClick(event.id)}
+        onClick={() => onClick(event)}
         style={{ cursor: 'pointer' }}
       >
         <div className="event-grid-layout">
           <div className="event-img-grid">
             <img
-              src={event.image || '/bea2x.jpg'}
-              alt={event.name || 'Event'}
+              src={getImageSrc()}
+              alt={event.Name || 'Event'}
               className="grid-event-image"
               onError={handleImageError}
             />
           </div>
           <div className="event-info-grid">
             <div className="event-title-grid">
-              <h4 className="grid-event-title">{event.name}</h4>
+              <h4 className="grid-event-title">{event.Name}</h4>
             </div>
             <div className="event-meta-grid">
-              <span className="grid-event-chapter">{event.chapter}</span>
-              <span className="grid-event-date">{event.dates}</span>
+              <span className="grid-event-chapter">{event.chapter_name}</span>
+              <span className="grid-event-date">{formatDate(event.Dates)}</span>
             </div>
           </div>
         </div>
@@ -66,14 +62,14 @@ const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = 
   return (
     <div
       className="custom-event-card"
-      onClick={() => onClick(event.id)}
+      onClick={() => onClick(event)}
       style={{ cursor: 'pointer' }}
     >
       <div className="event-row">
         <div className="event-img-col">
           <img
-            src={event.image || '/bea2x.jpg'}
-            alt={event.name || 'Event'}
+            src={getImageSrc()}
+            alt={event.Name || 'Event'}
             style={{
               maxWidth: '70px',
               height: '50px',
@@ -86,13 +82,13 @@ const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = 
         <div className="event-info-col">
           <div className="event-title-row">
             <h3 className="event-title">
-              {event.name}
+              {event.Name}
             </h3>
-            <span className="event-chapter">{event.chapter}</span>
+            <span className="event-chapter">{event.chapter_name}</span>
           </div>
           <div className="event-date-row">
             <span className="event-date">
-              {event.dates} - {event.time}
+              {formatDate(event.Dates)}
             </span>
           </div>
         </div>

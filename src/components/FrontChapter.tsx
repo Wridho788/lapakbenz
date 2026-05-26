@@ -6,21 +6,32 @@ import { usePostEvent } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
 
 interface EventItem {
-  id: string;
-  chapter_id: string;
-  chapter: string;
-  code: string;
-  name: string;
-  dates: string;
-  time: string;
-  desc: string;
-  image: string;
-  fee: number;
-  minimum_participants: string;
-  type: number;
-  type_desc: string;
-  done: number;
-  done_desc: string;
+  ID?: number;
+  ClubID?: number;
+  Code?: string;
+  Name?: string;
+  Dates?: string;
+  Desc?: string;
+  Image?: string;
+  Fee?: number;
+  MerchantCost?: number;
+  MerchantQuota?: number;
+  Cost1?: number;
+  Cost2?: number;
+  Type?: number;
+  MinimumParticipant?: number;
+  Done?: number;
+  Point?: number;
+  AllowMerchant?: number;
+  AllowPublic?: number;
+  Created?: string;
+  Updated?: string;
+  Deleted?: string | null;
+  chapter_name?: string;
+  chapter_code?: string;
+  type_label?: string;
+  done_label?: string;
+  [key: string]: any;
 }
 
 interface FrontChapterProps {
@@ -37,18 +48,19 @@ export const FrontChapter: React.FC<FrontChapterProps> = ({ className, chapterId
   useEffect(() => {
     eventMutation.mutate({
       status: '',
-      limit: 15,
-      offset: 0,
-      chapter: chapterId
+      limit: '15',
+      offset: '0',
+      chapter: `${chapterId}`
     });
   }, [chapterId]);
 
   // Get events from the API response
-  const chapterEvents: EventItem[] = eventMutation.data?.content?.result ?? [];
+  const chapterEvents: EventItem[] = eventMutation.data?.result ?? [];
 
   const handleEventClick = (event: EventItem) => {
-    // Create SEO-friendly URL with ID and code slug
-    const eventUrl = createEventUrl(event.id, event.code);
+    console.log('test')
+    const eventUrl = createEventUrl(String(event.ID), event.Code);
+    console.log('Navigating to event URL:', eventUrl);
     navigate(eventUrl);
   };
 
@@ -68,7 +80,7 @@ export const FrontChapter: React.FC<FrontChapterProps> = ({ className, chapterId
     return null;
   }
 
-  if (!eventMutation.data?.content?.result || chapterEvents.length === 0) {
+  if (!eventMutation.data?.result || chapterEvents.length === 0) {
     return null;
   }
 
@@ -77,14 +89,14 @@ export const FrontChapter: React.FC<FrontChapterProps> = ({ className, chapterId
       <div className="event-scroll-container">
         {chapterEvents.map((event) => (
           <EventCard
-            key={event.id}
-            id={event.id}
-            image={event.image || '/bea2x.jpg'}
-            title={event.code}
-            date={event.dates}
-            chapter={event.chapter}
-            type={event.type_desc}
-            event={event}
+            key={event.ID}
+            id={String(event.ID)}
+            image={(eventMutation?.data?.image_url ?? '') + (event?.Image ?? '')}
+            title={event.Name}
+            date={event.Dates}
+            chapter={event.chapter_name}
+            type={event.type_label}
+            // event={event}
             onClick={() => handleEventClick(event)}
           />
         ))}

@@ -9,13 +9,11 @@ import {
   ENDPOINT_CHANGE_PASSWORD,
   ENDPOINT_LOGOUT,
   ENDPOINT_GET_PROFILE,
-  ENDPOINT_GET_BY_ID,
   ENDPOINT_NOTIF,
   ENDPOINT_NOTIF_DETAIL,
   ENDPOINT_DECODE_TOKEN,
-  ENDPOINT_UPLOAD_IMAGE,
+  ENDPOINT_IMAGE,
   ENDPOINT_VERIFY,
-  ENDPOINT_SET_SHIPPING,
 } from './constants';
 import type {
   LoginRequest,
@@ -36,8 +34,8 @@ import type {
   NotificationPayload,
   DecodeTokenResponse,
   LogoutResponse,
-  SetShippingRequest,
-  SetShippingResponse,
+  // SetShippingRequest,
+  // SetShippingResponse,
 } from './types';
 
 // Create axios instance with base configuration
@@ -69,7 +67,13 @@ export const customerApi = {
           'Content-Type': 'application/json',
         },
       });
-      return response.data;
+      const data = response.data;
+      return {
+        token: data.token,
+        type: data.type || 'bearer',
+        success: data.success,
+        message: data.message,
+      };
     } catch (error) {
       console.error('❌ Login API Error:', error);
       if (axios.isAxiosError(error)) {
@@ -122,10 +126,10 @@ export const customerApi = {
     authToken: string,
   ): Promise<UpdateProfileResponse> => {
     try {
-      const response = await apiClient.post(ENDPOINT_UPDATE, createFormData(payload), {
+      const response = await apiClient.put(ENDPOINT_UPDATE, createFormData(payload), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'X-auth-token': authToken,
+          'Authorization': `Bearer ${authToken}`,
         },
       });
       return response.data;
@@ -160,10 +164,9 @@ export const customerApi = {
     authToken: string,
   ): Promise<ChangePasswordResponse> => {
     try {
-      const response = await apiClient.post(ENDPOINT_CHANGE_PASSWORD, createFormData(payload), {
+      const response = await apiClient.put(ENDPOINT_CHANGE_PASSWORD, payload, {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-auth-token': authToken,
+          'Authorization': `Bearer ${authToken}`,
         },
       });
       return response.data;
@@ -180,10 +183,9 @@ export const customerApi = {
     try {
       const response = await apiClient.get(ENDPOINT_GET_PROFILE, {
         headers: {
-          'X-auth-token': authToken,
+           'Authorization': `Bearer ${authToken}`,
         },
       });
-
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -200,25 +202,6 @@ export const customerApi = {
     }
   },
 
-  /**
-   * Get customer by ID
-   */
-  getCustomerById: async (customerId: string, authToken: string): Promise<GetProfileResponse> => {
-    try {
-      const response = await apiClient.get(`${ENDPOINT_GET_BY_ID}${customerId}`, {
-        headers: {
-          'X-auth-token': authToken,
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('📊 Error Status:', error.response?.status);
-      }
-      throw error;
-    }
-  },
 
   /**
    * Get notifications with dynamic payload
@@ -230,10 +213,8 @@ export const customerApi = {
     try {
       // Default payload - get all notifications (read + unread)
       const defaultPayload: NotificationPayload = {
-        type: '',
-        campaign: '',
-        read: '', // Empty string to get all (both read and unread)
-        limit: '50',
+        category: '',
+        limit: '10',
         offset: '0',
       };
 
@@ -243,7 +224,7 @@ export const customerApi = {
       // Use JSON payload like other APIs (postEvent, postArticle, login)
       const response = await apiClient.post(ENDPOINT_NOTIF, JSON.stringify(finalPayload), {
         headers: {
-          'X-auth-token': authToken,
+           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
       });
@@ -272,26 +253,13 @@ export const customerApi = {
   getNotificationDetail: async (
     notificationId: string,
     authToken: string,
-    payload?: NotificationPayload,
   ): Promise<NotificationDetailResponse> => {
     try {
-      // Default body payload as requested
-      const defaultPayload: NotificationPayload = {
-        type: '',
-        campaign: '',
-        read: '0',
-        limit: '2',
-        offset: '0',
-      };
-      const finalPayload = { ...defaultPayload, ...payload };
-      // Switch to POST to allow body payload (requirement)
-      const response = await apiClient.post(
+      const response = await apiClient.get(
         `${ENDPOINT_NOTIF_DETAIL}${notificationId}`,
-        JSON.stringify(finalPayload),
         {
           headers: {
-            'X-auth-token': authToken,
-            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`,
           },
         },
       );
@@ -313,7 +281,7 @@ export const customerApi = {
     try {
       const response = await apiClient.get(ENDPOINT_DECODE_TOKEN, {
         headers: {
-          'X-auth-token': authToken,
+            'Authorization': `Bearer ${authToken}`,
         },
       });
       return response.data;
@@ -330,11 +298,15 @@ export const customerApi = {
    * @param id_customer string - Customer ID
    * @param otp string - OTP code
    */
-  verifyOTP: async (id_customer: string, otp: string): Promise<any> => {
+  verifyOTP: async (username: string, otp: string): Promise<any> => {
     try {
-      const url = `${ENDPOINT_VERIFY}${id_customer}/${otp}`;
-      const response = await apiClient.get(url);
+      const response = await apiClient.post(ENDPOINT_VERIFY, JSON.stringify({ username, otp }), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       return response.data;
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('📊 Error Status:', error.response?.status);
@@ -342,6 +314,8 @@ export const customerApi = {
       throw error;
     }
   },
+
+ 
 
   /**
    * Upload image
@@ -349,18 +323,16 @@ export const customerApi = {
   uploadImage: async (file: File, authToken: string): Promise<any> => {
     try {
       const formData = new FormData();
-      formData.append('userfile', file);
-      const response = await apiClient.post(ENDPOINT_UPLOAD_IMAGE, formData, {
+      formData.append('image', file);
+      const response = await apiClient.post(ENDPOINT_IMAGE, formData, {
         headers: {
-          'X-auth-token': authToken,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'multipart/form-data',
         },
       });
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('📊 Error Status:', error.response?.status);
-      }
+      console.error('Upload Image API Error:', error);
       throw error;
     }
   },
@@ -368,37 +340,36 @@ export const customerApi = {
   /**
    * Set shipping address
    */
-  setShipping: async (
-    payload: SetShippingRequest,
-    authToken: string,
-  ): Promise<SetShippingResponse> => {
-    try {
-      const response = await apiClient.post(ENDPOINT_SET_SHIPPING, createFormData(payload), {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-auth-token': authToken,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('📊 Error Status:', error.response?.status);
-      }
-      throw error;
-    }
-  },
+  // setShipping: async (
+  //   payload: SetShippingRequest,
+  //   authToken: string,
+  // ): Promise<SetShippingResponse> => {
+  //   try {
+  //     const response = await apiClient.put(ENDPOINT_SET_SHIPPING, createFormData(payload), {
+  //       headers: {
+  //         'Content-Type': 'application/x-www-form-urlencoded',
+  //         'bearer': 'bearer'+authToken,
+  //       },
+  //     });
+  //     return response.data;
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       console.error('📊 Error Status:', error.response?.status);
+  //     }
+  //     throw error;
+  //   }
+  // },
 
   /**
    * Logout customer
    */
   logout: async (authToken: string): Promise<LogoutResponse> => {
     try {
-      const response = await apiClient.post(
+      const response = await apiClient.get(
         ENDPOINT_LOGOUT,
-        {},
         {
           headers: {
-            'X-auth-token': authToken,
+            'Authorization': `Bearer ${authToken}`,
           },
         },
       );
@@ -421,12 +392,10 @@ export const {
   register,
   changePassword,
   getProfile,
-  getCustomerById,
   getNotifications,
   getNotificationDetail,
   decodeToken,
-  uploadImage,
-  setShipping,
+  // setShipping,
   logout,
 } = customerApi;
 

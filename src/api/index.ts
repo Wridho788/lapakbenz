@@ -1,6 +1,7 @@
 // Export all API modules
 export * from './customerApi';
 export * from './constants';
+export * from './voucherApi';
 export * from './types';
 // export * from './productApi';
 

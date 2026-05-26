@@ -17,9 +17,9 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
 
   // Check if sliderData has valid result
   const hasValidData =
-    sliderData?.content?.result &&
-    Array.isArray(sliderData.content.result) &&
-    sliderData.content.result.length > 0;
+    sliderData?.result &&
+    Array.isArray(sliderData.result) &&
+    sliderData.result.length > 0;
 
   // Don't render if no valid data
   if (sliderData && !hasValidData) {
@@ -32,11 +32,12 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
     name: string;
     image: string;
     url?: string;
+    image_url?: string;
     alt?: string;
   };
   const sponsors: Sponsor[] =
-    sliderData?.content?.result && Array.isArray(sliderData.content.result)
-      ? sliderData.content.result
+    sliderData?.result && Array.isArray(sliderData.result)
+      ? sliderData.result
       : [];
 
   // Auto slide every 5 seconds (pause when dragging)
@@ -172,7 +173,7 @@ export const Partnership: React.FC<PartnershipProps> = ({ className }) => {
               aria-label={sponsor.url ? `Visit ${sponsor.name} website` : undefined}
             >
               <img
-                src={sponsor.image}
+                src={sliderData?.image_url +sponsor.image}
                 alt={sponsor.alt}
                 className="sponsor-image"
                 draggable={false}

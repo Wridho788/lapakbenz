@@ -80,10 +80,11 @@ const OrderDetail: React.FC = () => {
 
   // Get tracking information from order items
   const getTrackingInfo = () => {
-    if (!orderDetail?.content?.items?.length) return null;
+    const items = orderDetail?.content?.items || [];
+    if (!items.length) return null;
 
     // Find first item with tracking info - check for either awb or last_digit
-    const itemWithTracking = orderDetail.content.items.find(
+    const itemWithTracking = items.find(
       (item) => (item.awb && item.awb !== null) || (item.last_digit && item.last_digit !== null),
     );
     if (itemWithTracking) {
@@ -205,8 +206,8 @@ const OrderDetail: React.FC = () => {
     );
   }
 
-  const order = orderDetail.content;
-  const orderItems = orderDetail.content.items;
+  const order = orderDetail.content || {};
+  const orderItems = (orderDetail.content?.items) || [];
 
   return (
     <div className="order-detail-page">
@@ -410,14 +411,30 @@ const OrderDetail: React.FC = () => {
             <div className="summary-items-list">
               {orderItems?.map((item: any) => (
                 <div key={item.id} style={{padding: '1rem', background: '#f8f9fa'}}>
-                  <h5 >{item.product}</h5>
+                  <h5 >{item.product_name || item.product || 'Produk'}</h5>
+                  {item.product_image && (
+                    <img
+                      src={`${orderDetail.content?.imageurl || ''}${item.product_image}`}
+                      alt={item.product_name}
+                      style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px'}}
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/nodata.png'; }}
+                    />
+                  )}
                   <div className="summary-item-grid">
+                    <div className="grid-row">
+                      <span className="grid-label">SKU</span>
+                      <span className="grid-value">{item.product_sku || item.sku || '-'}</span>
+                    </div>
                     <div className="grid-row">
                       <span className="grid-label">Jumlah</span>
                       <span className="grid-value">{item.qty} pcs</span>
                     </div>
                     <div className="grid-row">
-                      <span className="grid-label">Harga</span>
+                      <span className="grid-label">Harga Satuan</span>
+                      <span className="grid-value">{formatCurrency(item.price)}</span>
+                    </div>
+                    <div className="grid-row">
+                      <span className="grid-label">Total</span>
                       <span className="grid-value">{formatCurrency(item.amount)}</span>
                     </div>
                   </div>
@@ -496,7 +513,7 @@ const OrderDetail: React.FC = () => {
             </div>
             <div className="total-row">
               <span className="total-label">Biaya Layanan:</span>
-              <span className="total-value">{formatCurrency(order.costs)}</span>
+              <span className="total-value">{formatCurrency(order.costs ?? 0)}</span>
             </div>
             <div className="total-row final-total">
               <span className="total-label">Total Bayar:</span>

@@ -50,7 +50,7 @@ const MyProfile: React.FC = () => {
   } = useProfile();
   const updateProfileMutation = useUpdateProfile();
   const uploadImageMutation = useUploadImage();
-  const { data: cityData, isLoading: cityLoading, error: cityError } = useCity();
+  const { data: cityData, isLoading: cityLoading, error: cityError } = useCity(undefined);
   // API hooks for cart
   const {
     data: apiCartData,
@@ -58,8 +58,8 @@ const MyProfile: React.FC = () => {
   } = useCart();
   // Populate form data when profile data is loaded
   useEffect(() => {
-    if (profileData?.content?.result) {
-      const profile = profileData.content.result;
+    if (profileData?.result) {
+      const profile = profileData.result;
       setFormData({
         tname: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
         tphone1: profile.phone1 || '',
@@ -222,7 +222,7 @@ const MyProfile: React.FC = () => {
     }
 
     try {
-      await uploadImageMutation.mutateAsync({ file, authToken });
+      await uploadImageMutation.mutateAsync({ file });
       toast.success('Profile image updated successfully!', {
         position: 'bottom-right',
         autoClose: 1500,
@@ -406,10 +406,10 @@ navigate('/cart');  };
               <div style={{ position: 'relative', display: 'inline-block' }}>
                 <img
                   src={
-                    profileData?.content?.result?.image_url &&
-                    profileData.content.result.image_url !==
+                    profileData?.result?.image &&
+                    profileData.result.image !==
                       'http://mbapi.dswip.com/images/customer/'
-                      ? profileData.content.result.image_url
+                      ? profileData.result.image
                       : '/lapakbenz.png'
                   }
                   alt="Profile"
@@ -557,51 +557,21 @@ navigate('/cart');  };
                         Gagal memuat kota
                       </option>
                     )}
-                    {cityData &&
-                      (() => {
-                        // Handle different possible data structures
-                        let cities = [];
-
-                        if (Array.isArray(cityData)) {
-                          cities = cityData;
-                        } else if (
-                          cityData.content?.result &&
-                          Array.isArray(cityData.content.result)
-                        ) {
-                          cities = cityData.content.result;
-                        } else if (Array.isArray(cityData.content)) {
-                          cities = cityData.content;
-                        } else if (cityData.data && Array.isArray(cityData.data)) {
-                          cities = cityData.data;
-                        } else if (cityData.result && Array.isArray(cityData.result)) {
-                          cities = cityData.result;
-                        }
-
-                        if (cities.length === 0) {
-                          return (
-                            <option value="" disabled>
-                              Tidak ada kota tersedia
-                            </option>
-                          );
-                        }
-
-                        return cities.map((city: any, index: number) => {
-                          // Handle different city object structures
-                          const cityId = city.id || city.city_id || city.value || index;
-                          const cityName =
-                            city.name ||
-                            city.city_name ||
-                            city.label ||
-                            city.text ||
-                            `Kota ${index + 1}`;
-
-                          return (
-                            <option key={cityId} value={cityId}>
-                              {cityName}
-                            </option>
-                          );
-                        });
-                      })()}
+                    {cityData?.content && cityData.content.length > 0 ? (
+                      cityData.content.map((city: any, index: number) => {
+                        const cityId = city.id || String(index);
+                        const cityName = city.name || `Kota ${index + 1}`;
+                        return (
+                          <option key={cityId} value={cityId}>
+                            {cityName}
+                          </option>
+                        );
+                      })
+                    ) : (
+                      <option value="" disabled>
+                        Tidak ada kota tersedia
+                      </option>
+                    )}
                   </select>
                 </div>
                 <div className="form-group">

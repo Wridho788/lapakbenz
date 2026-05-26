@@ -3,14 +3,13 @@ import {
   BASE_URL,
   ENDPOINT_CHAPTER,
   ENDPOINT_CHAPTER_BY_ID,
-  ENDPOINT_CHAPTER_GET_BY_CUSTOMER,
   ENDPOINT_GET_FRONT,
 } from './constants';
 
 // Types for Chapter API
 export interface ChapterListRequest {
-  limit: number;
-  offset: number;
+  limit: string;
+  offset: string;
 }
 
 export interface ChapterItem {
@@ -85,7 +84,7 @@ export const chapterApi = {
   getChapterById: async (chapterId: string, authToken: string): Promise<ChapterDetailResponse> => {
     try {
       const response = await chapterApiClient.get(
-        `${ENDPOINT_CHAPTER_BY_ID}${chapterId}`,
+        `${ENDPOINT_CHAPTER_BY_ID}/${chapterId}`,
         {
           headers: {
             'X-auth-token': authToken,
@@ -102,28 +101,7 @@ export const chapterApi = {
       throw error;
     }
   },
-
-  // Get chapters by customer ID
-  getChaptersByCustomer: async (customerId: string, authToken: string): Promise<ChapterByCustomerResponse> => {
-    try {
-      const response = await chapterApiClient.get(
-        `${ENDPOINT_CHAPTER_GET_BY_CUSTOMER}${customerId}`,
-        {
-          headers: {
-            'X-auth-token': authToken,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error('❌ Error fetching customer chapters:', error);
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch customer chapters');
-      }
-      throw error;
-    }
-  },
+  
 
   // Get front chapters
   getFrontChapters: async (payload: ChapterListRequest): Promise<ChapterListResponse> => {

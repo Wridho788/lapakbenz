@@ -4,7 +4,7 @@ import { MdShoppingCart, MdCancel, MdCheckCircle, MdPending, MdFilterList, MdClo
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useAuthStore } from '../stores/authStore';
 import { useOrders } from '../api/hooks/index';
-import type { OrderItem } from '../api/ordersApi';
+import type { OrderItem } from '../api/types/orderTypes';
 import './orders.css';
 
 const Orders: React.FC = () => {
@@ -100,49 +100,34 @@ const Orders: React.FC = () => {
 
 
 
-  const getStatusIcon = (paidStatus: string, canceled: string | null) => {
-    if (canceled) {
+  const getStatusIcon = (order: OrderItem) => {
+    if (order.canceled) {
       return <MdCancel className="status-icon canceled" />;
     }
-
-    switch (paidStatus) {
-      case 'S':
-        return <MdCheckCircle className="status-icon paid" />;
-      case 'C':
-        return <MdPending className="status-icon pending" />;
-      default:
-        return <MdPending className="status-icon pending" />;
+    if (order.paid_date) {
+      return <MdCheckCircle className="status-icon paid" />;
     }
+    return <MdPending className="status-icon pending" />;
   };
 
-  const getStatusText = (paidStatus: string, canceled: string | null) => {
-    if (canceled) {
-      return 'Canceled';
+  const getStatusText = (order: OrderItem) => {
+    if (order.canceled) {
+      return 'Dibatalkan';
     }
-
-    switch (paidStatus) {
-      case 'S':
-        return 'Paid';
-      case 'C':
-        return 'Pending';
-      default:
-        return 'Pending';
+    if (order.paid_date) {
+      return 'Sudah Bayar';
     }
+    return 'Menunggu Pembayaran';
   };
 
-  const getStatusClass = (paidStatus: string, canceled: string | null) => {
-    if (canceled) {
+  const getStatusClass = (order: OrderItem) => {
+    if (order.canceled) {
       return 'canceled';
     }
-
-    switch (paidStatus) {
-      case 'S':
-        return 'paid';
-      case 'C':
-        return 'pending';
-      default:
-        return 'pending';
+    if (order.paid_date) {
+      return 'paid';
     }
+    return 'pending';
   };
 
   const formatCurrency = (amount: number | string) => {
@@ -454,65 +439,74 @@ const Orders: React.FC = () => {
         {!isLoading && orders.length > 0 && (
           <div className="orders-list">
             {orders.map((order: OrderItem) => (
-              <div key={order.id} className="order-card" onClick={() => handleOrderClick(order.id)}>
+              <div key={order.id} className="order-card" onClick={() => handleOrderClick(String(order.id))}>
                 <div className="order-header">
                   <div className="order-code">
                     <h4>#{order.code}</h4>
                   </div>
                   <div
-                    className={`order-status ${getStatusClass(order.paid_status, order.canceled)}`}
+                    className={`order-status ${getStatusClass(order)}`}
                   >
-                    {getStatusIcon(order.paid_status, order.canceled)}
-                    <span>{getStatusText(order.paid_status, order.canceled)}</span>
+                    {getStatusIcon(order)}
+                    <span>{getStatusText(order)}</span>
                   </div>
                 </div>
 
                 <div className="order-details">
                   <div className="order-detail-row">
                     <span className="detail-label">Tanggal:</span>
-                    <span className="detail-value">{order.dates}</span>
+                    <span className="detail-value">{new Date(order.dates).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                   </div>
-                 
-                  <div className="order-detail-row">
-                    <span className="detail-label">Item:</span>
-                    <span className="detail-value">{order.items_count} item</span>
-                  </div>
+
                   <div className="order-detail-row">
                     <span className="detail-label">Pembayaran:</span>
                     <span className="detail-value">{order.payment_type}</span>
                   </div>
-                  <div className="order-detail-row">
-                    <span className="detail-label">Transaksi:</span>
-                    <span className="detail-value">{order.transno}</span>
-                  </div>
+                  {order.shipping > 0 && (
+                    <div className="order-detail-row">
+                      <span className="detail-label">Ongkir:</span>
+                      <span className="detail-value">{formatCurrency(order.shipping)}</span>
+                    </div>
+                  )}
+                  {order.discount > 0 && (
+                    <div className="order-detail-row">
+                      <span className="detail-label">Diskon:</span>
+                      <span className="detail-value">-{formatCurrency(order.discount)}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="order-footer">
-                  {/* <div className="order-service-fee">
-                    <span className="service-fee-label">Biaya Layanan:</span>
-                    <span className="service-fee-value">{formatCurrency(order.cost)}</span>
-                  </div> */}
                   <div className="order-amount">
                     <span className="amount-label">Total:</span>
-                    <span className="amount-value">{formatCurrency(order.amount)}</span>
+                    <span className="amount-value">{formatCurrency(order.total)}</span>
                   </div>
                   <div className="order-dates">
                     <div className="date-info">
                       <span className="date-label">Dibuat:</span>
-                      <span className="date-value">{order.created}</span>
+                      <span className="date-value">{new Date(order.created).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
-                    {order.paid_status === 'S' && order.paid_date !== ' - ' && (
+                    {order.paid_date && (
                       <div className="date-info">
                         <span className="date-label">Dibayar:</span>
-                        <span className="date-value">{order.paid_date}</span>
+                        <span className="date-value">{new Date(order.paid_date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                     )}
                   </div>
                 </div>
 
+                {order.link_url && !order.paid_date && !order.canceled && (
+                  <div className="order-payment-link">
+                    <a href={order.link_url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                      <MdPayment />
+                      Bayar Sekarang
+                    </a>
+                  </div>
+                )}
+
                 {order.canceled && (
                   <div className="order-canceled">
-                    <p>Pesanan dibatalkan pada {order.canceled}</p>
+                    <p>Pesanan dibatalkan: {order.canceled_desc || 'Tanpa keterangan'}</p>
                   </div>
                 )}
               </div>

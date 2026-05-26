@@ -3,7 +3,7 @@ import { useChapters } from '../api/hooks/index';
 import './ChapterFilter.css';
 
 interface Chapter {
-  id: string;
+  id: number;
   name: string;
   code?: string;
 }
@@ -25,8 +25,8 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch chapters data
-  const { data: chaptersData, isLoading, error } = useChapters({ limit: 200, offset: 0 });
-  const chapters: Chapter[] = chaptersData?.content?.result || [];
+  const { data: chaptersData, isLoading, error } = useChapters({ limit: '200', offset: '0' });
+  const chapters: Chapter[] = chaptersData?.result || [];
 
   // Filter chapters based on search query
   const filteredChapters = chapters.filter((chapter) =>
@@ -81,7 +81,7 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
   const getSelectedChapterNames = () => {
     if (selectedChapters.length === 0) return 'All Chapters';
     
-    const selectedChapter = chapters.find(c => c.id === selectedChapters[0]);
+    const selectedChapter = chapters.find(c => String(c.id) === selectedChapters[0]);
     if (selectedChapter) {
       return selectedChapter.code ? 
         `${selectedChapter.name} (${selectedChapter.code})` : 
@@ -182,7 +182,7 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
             )}
 
             {!isLoading && filteredChapters.map((chapter) => {
-              const isSelected = selectedChapters.includes(chapter.id);
+              const isSelected = selectedChapters.includes(String(chapter.id));
               
               return (
                 <label 
@@ -194,7 +194,7 @@ const ChapterFilter: React.FC<ChapterFilterProps> = ({
                     type="radio"
                     name="chapter-selection"
                     checked={isSelected}
-                    onChange={() => handleChapterToggle(chapter.id)}
+                    onChange={() => handleChapterToggle(String(chapter.id))}
                     className="chapter-filter-radio"
                     disabled={disabled}
                   />

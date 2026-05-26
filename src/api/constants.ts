@@ -1,108 +1,86 @@
-export const BASE_URL = 'https://mbapi.dswip.com/';
+// Base URL for API
+export const BASE_URL = 'https://goapi.dswip.com/';
 
-// customer
-export const ENDPOINT_LOGIN = 'customer/login';
-export const ENDPOINT_FORGOT = 'customer/forgot';
-export const ENDPOINT_REGISTER = 'customer/add';
-export const ENDPOINT_REQ_OTP = 'customer/req_otp';
-export const ENDPOINT_UPDATE = 'customer/update';
-export const ENDPOINT_CHANGE_PASSWORD = 'customer/change_password';
-export const ENDPOINT_LEDGER = 'customer/ledger';
-export const ENDPOINT_LOGOUT = 'customer/logout';
-export const ENDPOINT_GET_PROFILE = 'customer/get/';
-export const ENDPOINT_GET_BY_ID = 'customer/get_by_id/';
-export const ENDPOINT_NOTIF = 'customer/notif';
-export const ENDPOINT_NOTIF_DETAIL = 'customer/notif_detail/';
-export const ENDPOINT_PAYMENT_CONFIRMATION = 'customer/payment_confirmation/';
-export const ENDPOINT_TICKET_LIST = 'customer/ticket_list/';
-export const ENDPOINT_GET_TICKET = 'customer/get_ticket/';
-export const ENDPOINT_UPLOAD_IMAGE = 'customer/upload_image';
-export const ENDPOINT_DECODE_TOKEN = 'customer/decode_token';
-export const ENDPOINT_VERIFY = 'customer/verify/';
-export const ENDPOINT_SET_SHIPPING = 'customer/set_shipping/';
-// product
-export const ENDPOINT_PRODUCT = 'product';
-export const ENDPOINT_PRODUCT_SEARCH = 'product/search';
-export const ENDPOINT_PRODUCT_CATEGORY = 'product/category';
-export const ENDPOINT_PRODUCT_WHISHLIST = 'product/whishlist';
-export const ENDPOINT_PRODUCT_DETAIL = 'product/get/';
-export const ENDPOINT_PRODUCT_CEK_RESTRICTED = 'product/cek_restricted';
-export const ENDPOINT_PRODUCT_CITY = 'product/city_product';
-export const ENDPOINT_PRODUCT_LATEST = 'product/front/0'
-export const ENDPOINT_PRODUCT_BEST_SELLER = 'product/front/1';
-// article
-export const ENDPOINT_GET_ARTICLE = 'article/get/';
+// article endpoints
 export const ENDPOINT_ARTICLE = 'article';
-export const ENDPOINT_ARTICLE_CATEGORY = 'article/category';
-export const ENDPOINT_ARTICLE_GET_PERMALINK = 'article/get_by_permalink';
-export const ENDPOINT_ARTICLE_GET_BY_ID = 'article/get_by_id/';
-// city
-export const ENDPOINT_CITY_GET_CITY = 'city/get_city_rj/';
-export const ENDPOINT_CITY_GET_PROVINCE = 'city/get_province_rj/';
-export const ENDPOINT_CITY_GET_DISTRICT = 'city/get_district_rj/';
-export const ENDPOINT_GET_DISTRICT = 'city/get_district/';
-export const ENDPOINT_GET_DISTRICT_BY_ID = 'city/get_district_by_id/';
-export const ENDPOINT_CITY_RECON_PROVINCE = 'city/recon_province';
-export const ENDPOINT_RECON_CITY = 'city/recon_city';
-export const ENDPOINT_CITY = 'city/get_city'
-// event
-export const ENDPOINT_EVENT = 'event';
-export const ENDPOINT_EVENT_FRONT = 'event/front';
-export const ENDPOINT_EVENT_BY_ID = 'event/get_by_id/';
-export const ENDPOINT_EVENT_GET_BY_CUSTOMER = 'event/get_by_customer/';
-export const ENDPOINT_EVENT_REGISTER = 'event/register';
-export const ENDPOINT_EVENT_REGISTER_MERCHANT = 'event/register_merchant';  
-export const ENDPOINT_EVENT_REGISTER_PUBLIC = 'event/register_public';
-// chapter
-export const ENDPOINT_CHAPTER = 'chapter';
-export const ENDPOINT_CHAPTER_BY_ID = 'chapter/get_by_id/';
-export const ENDPOINT_CHAPTER_GET_BY_CUSTOMER = 'chapter/get_by_customer/';
-export const ENDPOINT_GET_FRONT = 'chapter/get_front'
-// redeem
-export const ENDPOINT_REDEEM = 'redeem';
-export const ENDPOINT_REDEEM_ADD = 'redeem/add';
-export const ENDPOINT_RESERVATION_ROOM_CATEGORY = 'reservation/room_category';
-export const ENDPOINT_RESERVATION_ROOM_TABLE = 'reservation/room_table';
-export const ENDPOINT_RESERVATION_ROOM_BY_ID = 'reservation/room_by_id/';
-// order
-export const ENDPOINT_ORDER = 'orders';
-export const ENDPOINT_ORDER_ADD = 'orders/add';
-export const ENDPOINT_ORDER_ADD_ITEM = 'orders/add_item/';
-export const ENDPOINT_ORDER_CHECKOUT = 'orders/checkout/';
-export const ENDPOINT_ORDER_CLEANING = 'orders/cleaning';
-export const ENDPOINT_ORDER_REPORT = 'orders/report';
-export const ENDPOINT_ORDER_UPDATE = 'orders/update';
-export const ENDPOINT_ORDER_CONFIRMATION = 'orders/confirmation/1';
-export const ENDPOINT_ORDER_CALLBACK = 'orders/callback/';
-export const ENDPOINT_ORDER_DELETE = 'orders/delete/';
-export const ENDPOINT_ORDER_DELETE_ITEM = 'orders/delete_item/';
-export const ENDPOINT_ORDER_GET = 'orders/get/';
-export const ENDPOINT_ORDER_TRACKING = 'orders/tracking';
-export const ENDPOINT_ORDER_LIST_BONUS_ORDER = 'orders/list_bonus_order';
-export const ENDPOINT_ORDER_SET_BONUS_ORDER = 'orders/set_bonus_order';
+export const ENDPOINT_ARTICLE_CATEGORY = 'article_category';
+export const ENDPOINT_ARTICLE_GET_PERMALINK = 'article/permalink';
 
-// pos
-export const ENDPOINT_POS = 'pos';
-export const ENDPOINT_POS_GET = 'pos/get/';
-export const ENDPOINT_POS_ADD = 'pos/add/';
-export const ENDPOINT_POS_DELETE_ITEM = 'pos/delete_item/';
-export const ENDPOINT_POS_DELETE = 'pos/delete/';
-export const ENDPOINT_POS_CHECKOUT = 'pos/checkout/';
-export const ENDPOINT_POS_API = 'pos/post_api/';
-// cart
-export const ENDPOINT_CART = 'cart';
-export const ENDPOINT_CART_ADD = 'cart/add/';
-export const ENDPOINT_CART_CLEAN = 'cart/clean/';
-export const ENDPOINT_CART_SET_PICKUP = 'cart/set_pickup/';
-// other
-export const ENDPOINT_MEMBER_TOKEN = 'member/tes_token';
-export const ENDPOINT_BANKLIST = 'banklist';
-export const ENDPOINT_SLIDER = 'slider';
-export const ENDPOINT_SPLASH = 'slider/splash';
-export const ENDPOINT_SLIDER_GET = 'slider/get/';
-export const ENDPOINT_SLIDER_MTYPE = 'slider/mtype';
-export const ENDPOINT_CEK_TOKEN = 'api/cek_token';
-export const ENDPOINT_CONFIGURATION = 'configuration';
-// payment
-export const ENDPOINT_PAYMENT = 'payment';
-export const ENDPOINT_PAYMENT_GET = 'payment/get';
+// authentication endpoints
+export const ENDPOINT_DECODE_TOKEN = 'decode'; // method get parameter: none
+export const ENDPOINT_FORGOT = 'forgot'; // method post parameter: { otp, password, username }
+export const ENDPOINT_LOGIN = 'login'; // method post parameter: { username, password }
+export const ENDPOINT_LOGOUT = 'logout'; // method get parameter: none
+export const ENDPOINT_REQ_OTP = 'otp'; // method post parameter: { username }
+export const ENDPOINT_VERIFY = 'verify'; // method post parameter: { username, otp }
+export const ENDPOINT_OAUTH = 'oauth'; // method post parameter: { id_token }
+
+// user management endpoints
+export const ENDPOINT_IMAGE = 'image'; // method post parameter: { image file }
+export const ENDPOINT_NOTIF = 'notif'; // method post parameter: {limit, offset}
+export const ENDPOINT_NOTIF_DETAIL = 'notif_detail/'; // method get parameter: { notification id }
+export const ENDPOINT_CHANGE_PASSWORD = 'password'; // method put parameter: { new_password, username }
+export const ENDPOINT_REGISTER = 'register'; // method post parameter: { cchapter, tname, taddress, tzip, tphone1, temail, ccity, tpassword, tdob, tnik, tcartype, tpoliceno }
+export const ENDPOINT_UPDATE = 'update'; // method put parameter: {  address,cartype, city, name, vehicleno, zip  }
+export const ENDPOINT_GET_PROFILE = 'user'; // method get parameter: none
+export const ENDPOINT_LEDGER = 'wallet'; // method post parameter: { limit, offset }
+
+// event endpoints
+export const ENDPOINT_EVENT = 'event'; // method post parameter: { chapter,limit, offset, status }
+export const ENDPOINT_EVENT_BY_ID = 'event'; // method get parameter: { event id }
+export const ENDPOINT_EVENT_REGISTER = 'event/register'; // method get parameter: { event id }
+export const ENDPOINT_EVENT_REGISTER_MERCHANT = 'event/merchant'; // method post parameter: { eventid, name, cp, address, email, phone, menu, qty }
+export const ENDPOINT_EVENT_REGISTER_PUBLIC = 'event/public'; // method post parameter: { eventid, name, type, policeno, phone, email, notes }
+
+// general endpoints
+export const ENDPOINT_CITY = 'city'; // method get parameter: none
+
+// Cart endpoints
+export const ENDPOINT_CART = 'cart'; // method get, parameter: none
+export const ENDPOINT_CART_ADD = 'cart'; // method post parameter: { product_id, quantity }
+export const ENDPOINT_CART_CLEAN = 'cart/clean'; // method delete
+export const ENDPOINT_CART_DELETE = 'cart/'; // method delete parameter: { cart id }
+export const ENDPOINT_CART_SET_PICKUP = 'cart/pickup/'; // method put cart id 
+export const ENDPOINT_CART_SET_NOTE = 'cart/notes/'; // method put cart id parameter: { note }
+export const ENDPOINT_CART_SET_PUBLISH = 'cart/publish/'; // method put cart id 
+
+
+// Chapter endpoints
+export const ENDPOINT_CHAPTER = 'chapter'; // method get, parameter: none
+export const ENDPOINT_CHAPTER_BY_ID = 'chapter/'; // method get parameter: { chapter id }
+export const ENDPOINT_GET_FRONT = 'chapter_front'; // method post parameter: { limit, offset }
+
+// Order endpoints
+export const ENDPOINT_ORDER = 'order'; // method post parameter: {confirm, end, limit, offset, paid, start}
+export const ENDPOINT_ORDER_CHECKOUT = 'order/checkout'; // method get parameter: none
+export const ENDPOINT_ORDER_GET = 'order/'; // method get parameter: { order id }
+export const ENDPOINT_ORDER_TRACKING = 'order/tracking/'; // method get parameter: {awb(airway bill number)}
+
+// shipping endpoints
+export const ENDPOINT_SET_SHIPPING = 'set_shipping'; // method put parameter: { address, city, city_name, district, district_name, province, province_name }
+export const ENDPOINT_CITY_SHIPPING = 'city_shipping/'; // method get parameter province id
+export const ENDPOINT_DISTRICT_SHIPPING = 'district_shipping/'; // method get parameter city_id
+export const ENDPOINT_PROVINCE_SHIPPING = 'province_shipping'; // method get parameter: none
+
+// whistlist endpoints
+export const ENDPOINT_WISHLIST = 'wishlist'; // method post parameter: { limit, offset }
+export const ENDPOINT_ISWISHLIST = 'iswishlist/'; // method get parameter: {product_id}
+export const ENDPOINT_GET_WISHLIST = 'wishlist/'; // method get parameter: { product_id }
+
+// Product endpoints
+export const ENDPOINT_PRODUCT = 'product'; // method post parameter: { category, condition, limit, location, order, orderby, offset }
+export const ENDPOINT_PRODUCT_SEARCH = 'product/search'; // method post parameter: { filter, limit }
+export const ENDPOINT_PRODUCT_REFRESH_CACHE = 'product/refresh-cache'; // method post parameter: none
+export const ENDPOINT_PRODUCT_DETAIL = 'product/'; // method get parameter: { sku }
+export const ENDPOINT_PRODUCT_CITY = 'product_city'; // method get parameter: none
+export const ENDPOINT_PRODUCT_LATEST = 'product_front/'; // method post parameter: { product type: 0 for latest, 1 for best seller }
+
+// SLIDER
+export const ENDPOINT_SLIDER = 'slider'; // method post parameter: { limit, offset }
+export const ENDPOINT_SPLASH = 'slider/refresh'; // method get parameter: none
+
+// voucher
+export const ENDPOINT_VOUCHER = 'voucher'; // method get parameter: none
+export const ENDPOINT_REMOVE_VOUCHER = 'voucher'; // method delete parameter: none
+export const ENDPOINT_GET_VOUCHER = 'voucher/get'; // method get parameter: none
+export const ENDPOINT_SET_VOUCHER = 'voucher/set/'; // method post parameter: { voucher id }

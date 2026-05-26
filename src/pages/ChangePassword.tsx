@@ -4,12 +4,13 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import './AccountPages.css';
 import { useChangePassword } from '../api/hooks/index';
+import { useAuthStore } from '../stores/authStore';
 import { toast } from 'react-toastify';
 
 const ChangePassword: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [formData, setFormData] = useState({
-    currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
@@ -47,10 +48,9 @@ const ChangePassword: React.FC = () => {
     changePassword(
       {
         data: {
-          old_pass: formData.currentPassword,
-          new_pass: formData.newPassword,
+          new_password: formData.newPassword,
+          username: user?.username || '',
         },
-        authToken: '', // token diambil dari useAuthStore di hooks
       },
       {
         onSuccess: () => {
@@ -59,7 +59,7 @@ const ChangePassword: React.FC = () => {
             autoClose: 1500,
             theme: 'dark',
           });
-          setFormData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+          setFormData({ newPassword: '', confirmPassword: '' });
         },
         onError: () => {
           toast.error('Gagal mengubah password. Silakan coba lagi.', {
@@ -86,7 +86,7 @@ const ChangePassword: React.FC = () => {
           <h3>Ubah Password Anda</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Password Lama</label>
+              {/* <label>Password Lama</label>
               <input
                 type="password"
                 name="currentPassword"
@@ -94,7 +94,7 @@ const ChangePassword: React.FC = () => {
                 onChange={handleInputChange}
                 required
                 placeholder="Masukkan password lama"
-              />
+              /> */}
             </div>
             <div className="form-group">
               <label>Password Baru</label>

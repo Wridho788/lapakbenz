@@ -2,19 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
-// import { useCart } from '../contexts/CartContext';
 import { useProfile, useLedger, useCart } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import {
   MdPerson,
-  // MdPayment,
   MdHistory,
   MdSwapHoriz,
-  // MdCardGiftcard,
   MdLock,
   MdChat,
   MdLogout,
   MdChevronRight,
+  MdFavorite,
 } from 'react-icons/md';
 import './Profile.css';
 import { FAB } from '../components/FAB';
@@ -88,8 +86,8 @@ const Profile: React.FC = () => {
 
     // Extract points from ledger data
     let points = 0;
-    if (ledgerData?.content?.point !== undefined) {
-      points = ledgerData.content.point;
+    if (ledgerData?.content?.balance !== undefined) {
+      points = ledgerData.content.balance;
     }
 
     // Extract profile data
@@ -98,14 +96,13 @@ const Profile: React.FC = () => {
     let expiry = defaultData.expiry;
     let memberNo = defaultData.memberNo;
 
-    if (profileData?.content?.result) {
-      const profile = profileData.content.result;
-      
+    const profile = profileData?.result;
+    if (profile) {
       // Combine first_name and last_name for full name
       const firstName = profile.first_name || '';
       const lastName = profile.last_name || '';
       name = `${firstName} ${lastName}`.trim() || defaultData.name;
-      
+
       // Get membership from type field
       if (profile.type) {
         membership = profile.type.toUpperCase();
@@ -115,7 +112,7 @@ const Profile: React.FC = () => {
       if (profile.member_no) {
         memberNo = profile.member_no;
       }
-      
+
       // Get expiry from expired field
       if (profile.expired) {
         // Format expiry date if it's a valid date
@@ -126,14 +123,12 @@ const Profile: React.FC = () => {
           } else {
             expiry = profile.expired;
           }
-        } catch (error) {
+        } catch {
           expiry = profile.expired;
         }
-      } else if (profile.expired_format) {
-        expiry = profile.expired_format;
-      } else {
+      }  else {
         // Check if membership has no expiry (like lifetime membership)
-        if (profile.type === 'member' && profile.premium === '0') {
+        if (profile.type === 'member' && profile.premium === 0) {
           expiry = 'No Expiry';
         }
       }
@@ -183,17 +178,6 @@ const Profile: React.FC = () => {
           navigate('/login');
         }
       });
-    } catch (error) {
-      
-      toast.dismiss(loadingToast);
-      toast.warning('Sesi telah dihapus secara lokal', {
-        position: 'bottom-right',
-        autoClose: 1500,
-        theme: 'dark',
-        onClose: () => {
-          navigate('/login');
-        }
-      });
     } finally {
       setIsLoggingOut(false);
     }
@@ -206,6 +190,7 @@ const Profile: React.FC = () => {
     { id: 'event-history', title: 'Riwayat Event Saya', icon: MdHistory },
     { id: 'transaction', title: 'Riwayat Transaksi Saya', icon: MdSwapHoriz },
     // { id: 'redeem', title: 'Riwayat Penukaran Saya', icon: MdCardGiftcard },
+    { id: 'wishlist', title: 'Wishlist Produk', icon: MdFavorite },
     { id: 'password', title: 'Ubah Password', icon: MdLock },
     { id: 'chat', title: 'Live Chat', icon: MdChat },
     { id: 'logout', title: 'Keluar', icon: MdLogout },
@@ -228,6 +213,9 @@ const Profile: React.FC = () => {
       case 'redeem':
         navigate('/profile/redeem-history');
         break;
+      case 'wishlist':
+        navigate('/profile/wishlist');
+        break;
       case 'password':
         navigate('/profile/change-password');
         break;
@@ -242,14 +230,9 @@ const Profile: React.FC = () => {
     }
   };
 
-    useEffect(() => {
-      if (apiCartData) {
-      }
-    }, [apiCartData]);
-  
-     const getApiCartCount = () => {
-      return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
-    };
+  const getApiCartCount = () => {
+    return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
+  };
   
       const apiCartCount = getApiCartCount();
 
@@ -279,7 +262,7 @@ const Profile: React.FC = () => {
           cartCount={apiCartCount}
           defaultBack="/dashboard" 
         />
-        <div className="profile-content">
+        <div className="profile-">
           <div>Loading...</div>
         </div>
       </div>
@@ -295,7 +278,7 @@ const Profile: React.FC = () => {
         cartCount={apiCartCount}
       />
 
-      <div className="profile-content">
+      <div className="profile-">
         <div 
           className={`user-card ${isError ? 'error-state' : ''}`}
           onClick={isError ? handleRefresh : undefined}
@@ -356,8 +339,8 @@ const Profile: React.FC = () => {
             ))}
           </div>
 
-          <div className="membership-content">
-            {/* Content for each membership tier will go here */}
+          <div className="membership-">
+            {/*  for each membership tier will go here */}
             <p>Benefits for {membershipTabs[activeMembershipTab]} membership</p>
           </div>
         </div>

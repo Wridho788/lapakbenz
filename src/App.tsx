@@ -30,6 +30,8 @@ import LiveChat from './pages/LiveChat';
 import MerchantRegistration from './pages/MerchantRegistration';
 import PublicRegistration from './pages/PublicRegistration';
 import VerifyOtp from './pages/VerifyOtp';
+import SetShipping from './pages/SetShipping';
+import ProfileWishlist from './pages/Wishlist'
 import OneSignalDebug from './pages/OneSignalDebug';
 import './App.css';
 import EventDetail from './pages/EventDetail';
@@ -67,11 +69,13 @@ function App() {
               <Route path="/profile/transaction-history" element={<MyTransactionHistory />} />
               <Route path="/profile/redeem-history" element={<MyRedeemHistory />} />
               <Route path="/profile/change-password" element={<ChangePassword />} />
+              <Route path="/set-shipping" element={<SetShipping />} />
               <Route path="/profile/live-chat" element={<LiveChat />} />
               <Route path="/merchant-registration/:eventId" element={<MerchantRegistration />} />
               <Route path="/public-registration/:eventId" element={<PublicRegistration />} />
               <Route path="/verify" element={<VerifyOtp />} />
               <Route path="/onesignal-debug" element={<OneSignalDebug />} />
+              <Route path="/profile/wishlist" element={<ProfileWishlist />} />
             </Routes>
           </MainLayout>
         </Router>

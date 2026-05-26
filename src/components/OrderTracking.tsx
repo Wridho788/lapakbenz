@@ -1,6 +1,6 @@
 import React from 'react';
 import { useOrderTracking } from '../api/hooks/cartHooks';
-import type { TrackingManifest, TrackingSummary } from '../api/ordersApi';
+import type { TrackingManifest, TrackingSummary } from '../api/types';
 import './OrderTracking.css';
 
 interface OrderTrackingProps {

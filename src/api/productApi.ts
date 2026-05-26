@@ -1,29 +1,48 @@
-import axios from 'axios';
-import { 
+import axios, { AxiosError } from 'axios';
+import {
   BASE_URL,
+  ENDPOINT_PRODUCT,
+  ENDPOINT_PRODUCT_DETAIL,
+  ENDPOINT_PRODUCT_SEARCH,
+  ENDPOINT_PRODUCT_CITY,
   ENDPOINT_PRODUCT_LATEST,
-  ENDPOINT_PRODUCT_BEST_SELLER
 } from './constants';
 
-// API Endpoints
-export const ENDPOINT_PRODUCT = 'product';
-export const ENDPOINT_PRODUCT_CATEGORY = 'product/category';
-export const ENDPOINT_PRODUCT_WHISTLIST = 'product/whishlist/';
-export const ENDPOINT_PRODUCT_DETAIL = 'product/get/';
-export const ENDPOINT_PRODUCT_CEK_RESTRICTED = 'product/cek_restricted';
-export const ENDPOINT_PRODUCT_SEARCH = 'product/search';
-export const ENDPOINT_PRODUCT_CITY = 'product/city_product';
+export interface ApiError {
+  status: number;
+  message: string;
+  code?: string;
+}
 
+export interface ProductApiError extends ApiError {
+  endpoint?: string;
+}
 
-// Axios instance
 const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
 });
 
-// Product API Service
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    const axiosError = error as AxiosError<ProductApiError>;
+    const status = error.response?.status ?? 0;
+    const data = axiosError.response?.data;
+
+    const apiError: ProductApiError = {
+      status,
+      message: data?.message ?? error.message ?? 'Unknown error occurred',
+      code: data?.code,
+      endpoint: axiosError.config?.url,
+    };
+
+    console.error(`API Error [${status}] on ${apiError.endpoint}:`, apiError.message);
+    return Promise.reject(apiError);
+  }
+);
+
 export const productAPI = {
-  // GET Product List (POST method)
   getProducts: async (payload = {}) => {
     const defaultPayload = {
       limit: 30,
@@ -33,137 +52,70 @@ export const productAPI = {
       category: '',
       location: '',
       condition: '',
-      ...payload
+      ...payload,
     };
 
     try {
       const response = await apiClient.post(ENDPOINT_PRODUCT, defaultPayload, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching products:', error);
       throw error;
     }
   },
 
-  // GET Product Categories
-  getProductCategories: async () => {
-    try {
-      const response = await apiClient.get(ENDPOINT_PRODUCT_CATEGORY, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching product categories:', error);
-      throw error;
-    }
-  },
-
-  // GET Product Wishlist
-  getProductWishlist: async (authToken = '') => {
-    try {
-      const response = await apiClient.get(ENDPOINT_PRODUCT_WHISTLIST, {
-        headers: {
-          'X-auth-token': authToken
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching product wishlist:', error);
-      throw error;
-    }
-  },
-
-  // GET Product Detail
-  getProductDetail: async (productId: any) => {
+  getProductDetail: async (productId: string) => {
     try {
       const response = await apiClient.get(`${ENDPOINT_PRODUCT_DETAIL}${productId}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching product detail:', error);
       throw error;
     }
   },
 
-  // GET Product Check Restricted
-  checkProductRestricted: async (authToken = '') => {
-    try {
-      const response = await apiClient.get(ENDPOINT_PRODUCT_CEK_RESTRICTED, {
-        headers: {
-          'X-auth-token': authToken
-        }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error checking product restrictions:', error);
-      throw error;
-    }
-  },
-
-  // POST Product Search
   searchProducts: async (searchPayload = {}) => {
     try {
-      const response = await apiClient.post(ENDPOINT_PRODUCT_SEARCH, searchPayload, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiClient.post(ENDPOINT_PRODUCT_SEARCH, searchPayload);
       return response.data;
     } catch (error) {
-      console.error('Error searching products:', error);
       throw error;
     }
   },
 
-  // GET Product Cities
   getProductCities: async () => {
     try {
-      const response = await apiClient.get(ENDPOINT_PRODUCT_CITY, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiClient.get(ENDPOINT_PRODUCT_CITY);
       return response.data;
     } catch (error) {
-      console.error('Error fetching product cities:', error);
       throw error;
     }
   },
 
-  // GET Latest Products
-  getLatestProducts: async () => {
+  getLatestProducts: async (type: 0 | 1 = 0) => {
     try {
-      const response = await apiClient.get(ENDPOINT_PRODUCT_LATEST, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiClient.get(`${ENDPOINT_PRODUCT_LATEST}${type}`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching latest products:', error);
       throw error;
     }
   },
 
-  // GET Best Seller Products
   getBestSellerProducts: async () => {
     try {
-      const response = await apiClient.get(ENDPOINT_PRODUCT_BEST_SELLER, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const response = await apiClient.get(`${ENDPOINT_PRODUCT_LATEST}1`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching best seller products:', error);
       throw error;
     }
-  }
+  },
+
+  getProductCategories: async () => {
+    // TODO: Add actual endpoint if needed
+    return { content: [] };
+  },
 };
 
 export default productAPI;

@@ -1,487 +1,200 @@
-import axios from 'axios';
-import { BASE_URL, ENDPOINT_ORDER, ENDPOINT_ORDER_ADD, ENDPOINT_ORDER_ADD_ITEM, ENDPOINT_ORDER_CHECKOUT, ENDPOINT_ORDER_GET, ENDPOINT_ORDER_TRACKING } from './constants';
-import { type UseQueryResult, useQuery, type UseMutationResult, useMutation } from '@tanstack/react-query';
+import axios, { AxiosError } from 'axios';
+import {
+  BASE_URL,
+  ENDPOINT_ORDER,
+  ENDPOINT_ORDER_GET,
+  ENDPOINT_ORDER_TRACKING,
+} from './constants';
+import type {
+  OrderListRequest,
+  OrderListResponse,
+  OrderDetailResponse,
+  OrderTrackingResponse,
+  OrderItem,
+} from './types';
+import { useAuthStore } from '../stores/authStore';
 
-// TypeScript interfaces for Order API
-export interface OrderListRequest {
-  limit?: string;
-  offset?: string;
-  confirm?: string;
-  paid?: string;
-  start?: string;
-  end?: string;
-}
-
-export interface OrderItem {
-  id: string;
-  club_id: string;
-  club: string;
-  code: string;
-  transcode: string;
-  transno: string;
-  transid: string | null;
-  dates: string;
-  customer: string;
-  amount: string;
-  tax: string;
-  cost: string;
-  discount: string;
-  total: number;
-  payment_type: string;
-  canceled: string | null;
-  canceled_desc: string | null;
-  posted: string;
-  log: string | null;
-  paid_status: string;
-  paid_date: string;
-  items_count: number;
-  created: string;
-  updated: string | null;
-}
-
-export interface OrderListResponse {
-  content: {
-    orderid: number;
-    record: number;
-    result: OrderItem[];
-  };
-}
-
-export interface OrderAddResponse {
-  content: {
-    id: string;
-    club_id: string;
-    code: string;
-    transcode: string;
-    transno: string;
-    transid: string | null;
-    dates: string;
-    customer: string;
-    notes: string | null;
-    amount: string;
-    tax: string;
-    cost: string;
-    discount: string;
-    total: string;
-    payment_type: string;
-    paid_date: string | null;
-    sender_name: string | null;
-    sender_acc: string | null;
-    sender_bank: string | null;
-    sender_amount: string;
-    bank_id: string | null;
-    canceled: string | null;
-    canceled_desc: string | null;
-    approved: string;
-    log: string | null;
-    created: string;
-    updated: string | null;
-    deleted: string | null;
-  };
-}
-
-export interface OrderAddItemRequest {
-  cproduct: string;
-  ctax: string;
-  tqty: string;
-  tdiscount: string;
-  tshipping: string;
-}
-
-export interface OrderAddItemResponse {
-  content: string;
-}
-
-export interface OrderCheckoutResponse {
+// API Error type
+export interface ApiError {
+  status: number;
+  message: string;
+  code?: string;
   error?: string;
-  content?: {
-    invoice_url?: string;
-    transid?: number;
-    orderid?: string;
-    [key: string]: any;
-  };
 }
 
-export interface OrderErrorResponse {
-  error: string;
-}
+// Centralized axios instance
+const createApiClient = () => {
+  const client = axios.create({
+    baseURL: BASE_URL,
+    timeout: 30000,
+  });
 
-// TypeScript interfaces untuk Get Order Detail
-export interface OrderDetailItem {
-  id: string;
-  order_id: string;
-  product_id: string;
-  product_code: string;
-  product_name: string;
-  product_price: string;
-  quantity: string;
-  tax: string;
-  discount: string;
-  subtotal: string;
-  created: string;
-  updated: string | null;
-}
-
-
-export interface OrderDetailResponse {
-  content: {
-    code: string;
-    dates: string;
-    cust: string;
-    customer: string;
-    amount: number;
-    tax: number;
-    costs: number;
-    discount: number;
-    total: number;
-    payment_type: string;
-    transcode: string;
-    transno: string;
-    transid: string;
-    canceled: string | null;
-    canceled_desc: string | null;
-    posted: string;
-    log: string | null;
-    status: string | null;
-    link_url: string;
-    link_expired: string;
-    paid_date: string | null;
-    canceled_date: string | null;
-    tot_amt: number;
-    shipping: number;
-    items: Array<{
-      id: string;
-      order_id: string;
-      product_id: string;
-      product: string;
-      sku: string;
-      qty: number;
-      discount: number;
-      tax: number;
-      amount: number;
-      price: number;
-      awb?: string;
-      last_digit?: string;
-    }>;
-  };
-}
-
-// TypeScript interfaces untuk Order Tracking
-export interface TrackingManifest {
-  manifest_code: string;
-  manifest_description: string;
-  manifest_date: string;
-  manifest_time: string;
-  city_name: string;
-}
-
-export interface TrackingSummary {
-  courier_code: string;
-  courier_name: string;
-  waybill_number: string;
-  service_code: string;
-  waybill_date: string;
-  shipper_name: string;
-  receiver_name: string;
-  origin: string;
-  destination: string;
-  status: string;
-}
-
-export interface OrderTrackingResponse {
-  content: {
-    status: boolean;
-    manifest: TrackingManifest[];
-    summary: TrackingSummary;
-  };
-}
-
-export interface OrderTrackingRequest {
-  awb: string;
-  lastDigit: string;
-  limit?: string;
-  offset?: string;
-  confirm?: string;
-  paid?: string;
-  start?: string;
-  end?: string;
-}
-
-// Order API functions
-export const orderApi = {
-  // Get Orders - POST method
-  async getOrders(
-    payload: OrderListRequest = {
-      limit: "120",
-      offset: "0",
-      confirm: "",
-      paid: "",
-      start: "",
-      end: ""
+  client.interceptors.request.use(
+    (config) => {
+      const token = useAuthStore.getState().token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
     },
-    authToken: string
-  ): Promise<OrderListResponse> {
-    try {
-      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER}`, payload, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || error.message || 'Failed to get orders');
-      }
-      throw error;
-    }
-  },
+    (error) => Promise.reject(error)
+  );
 
-  // Add Order - POST method with FormData
-  async addOrder(authToken: string): Promise<OrderAddResponse> {
-    try {
-      // Create empty FormData for order creation
-      const formData = new FormData();
+  client.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError<ApiError>) => {
+      const status = error.response?.status ?? 0;
+      const data = error.response?.data;
 
-      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_ADD}`, formData, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        timeout: 10000
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || error.message || 'Failed to add order');
-      }
-      throw error;
-    }
-  },
-
-  // Add Item to Order - POST method with FormData
-  async addItemToOrder(
-    orderId: string,
-    payload: OrderAddItemRequest,
-    authToken: string
-  ): Promise<OrderAddItemResponse> {
-    try {
-      // Create FormData
-      const formData = new FormData();
-      formData.append('cproduct', payload.cproduct);
-      formData.append('ctax', payload.ctax);
-      formData.append('tqty', payload.tqty);
-      formData.append('tdiscount', payload.tdiscount);
-      formData.append('tshipping', payload.tshipping);
-
-      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_ADD_ITEM}${orderId}`, formData, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        timeout: 10000
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle specific 404 error
-        if (error.response?.status === 404) {
-          throw new Error(error.response?.data?.error || 'ID not found');
-        }
-        throw new Error(error.response?.data?.message || error.message || 'Failed to add item to order');
-      }
-      throw error;
-    }
-  },
-
-  // Checkout Order - GET method
-  async checkoutOrder(orderId: string, authToken: string): Promise<OrderCheckoutResponse> {
-    try {
-      const response = await axios.get(`${BASE_URL}${ENDPOINT_ORDER_CHECKOUT}${orderId}`, {
-        headers: {
-          'X-auth-token': authToken
-        },
-        timeout: 10000
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle specific 403 error
-        if (error.response?.status === 403) {
-          throw new Error(error.response?.data?.error || 'Failed to create payment');
-        }
-        throw new Error(error.response?.data?.message || error.message || 'Failed to checkout order');
-      }
-      throw error;
-    }
-  },
-
-  // Get Order Detail - GET method
-  async getOrderDetail(orderId: string, authToken: string): Promise<OrderDetailResponse> {
-    try {
-      const response = await axios.get(`${BASE_URL}${ENDPOINT_ORDER_GET}${orderId}`, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle specific error codes
-        if (error.response?.status === 404) {
-          throw new Error('Order not found');
-        }
-        if (error.response?.status === 403) {
-          throw new Error('Access denied to order details');
-        }
-        throw new Error(error.response?.data?.message || error.message || 'Failed to get order details');
-      }
-      throw error;
-    }
-  },
-
-  // Track Order - POST method
-  async trackOrder(
-    awb: string, 
-    lastDigit: string, 
-    authToken: string,
-    payload: Partial<OrderTrackingRequest> = {}
-  ): Promise<OrderTrackingResponse> {
-    try {
-      const requestPayload = {
-        limit: payload.limit || "120",
-        offset: payload.offset || "0",
-        confirm: payload.confirm || "",
-        paid: payload.paid || "",
-        start: payload.start || "",
-        end: payload.end || ""
+      const apiError: ApiError = {
+        status,
+        message: data?.message ?? error.message ?? 'Unknown error occurred',
+        code: data?.code,
       };
 
-      const response = await axios.post(`${BASE_URL}${ENDPOINT_ORDER_TRACKING}/${awb}/${lastDigit}`, requestPayload, {
-        headers: {
-          'X-auth-token': authToken,
-          'Content-Type': 'application/json'
-        },
-        timeout: 30000
-      });
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle specific error codes
-        if (error.response?.status === 404) {
-          throw new Error('Tracking information not found');
+      if (status === 401) {
+        try {
+          useAuthStore.getState().logout();
+        } catch (e) {
+          console.error('Failed to logout on 401:', e);
         }
-        if (error.response?.status === 403) {
-          throw new Error('Access denied to tracking information');
-        }
-        if (error.response?.status === 400) {
-          throw new Error('Invalid tracking number or last digit');
-        }
-        throw new Error(error.response?.data?.message || error.message || 'Failed to track order');
       }
-      throw error;
+
+      console.error(`API Error [${status}]:`, apiError.message);
+      return Promise.reject(apiError);
     }
-  }
+  );
+
+  return client;
 };
 
-// Order API Hooks
-export function useOrders(
-  payload: OrderListRequest = {
-    limit: "120",
-    offset: "0",
-    confirm: "",
-    paid: "",
-    start: "",
-    end: ""
+const apiClient = createApiClient();
+
+export const orderApi = {
+  getOrders(payload: OrderListRequest = { limit: '120', offset: '0', confirm: '', paid: '', start: '', end: '' }): Promise<OrderListResponse> {
+    return apiClient.post(ENDPOINT_ORDER, payload).then((res) => {
+      const data = res.data;
+
+      // Handle raw API response format: { result: [...] }
+      if (data?.result && Array.isArray(data.result)) {
+        return {
+          content: {
+            record: data.result.length,
+            result: data.result as OrderItem[],
+          },
+        };
+      }
+
+      // Handle normalized response format: { content: { result: [...] } }
+      if (data?.content?.result && Array.isArray(data.content.result)) {
+        return data as OrderListResponse;
+      }
+
+      // Fallback: return empty result
+      return {
+        content: {
+          record: 0,
+          result: [],
+        },
+      };
+    });
   },
-  authToken?: string | null
-): UseQueryResult<OrderListResponse, Error> {
-  return useQuery({
-    queryKey: ['orders', JSON.stringify(payload), authToken],
-    queryFn: async () => {
-      if (!authToken || authToken.trim() === '') {
-        throw new Error('Valid auth token is required for orders');
-      }
-      try {
-        return await orderApi.getOrders(payload, authToken);
-      } catch (error) {
-        throw error;
-      }
-    },
-    enabled: !!authToken && authToken.trim() !== '',
-    staleTime: 1000 * 60 * 2, // 2 minutes (order data should be relatively fresh)
-    retry: 2,
-  });
-}
 
-export function useAddOrder(): UseMutationResult<OrderAddResponse, Error, string> {
-  return useMutation({
-    mutationFn: async (authToken: string) => {
-      if (!authToken || authToken.trim() === '') {
-        throw new Error('Valid auth token is required for creating order');
-      }
-      try {
-        return await orderApi.addOrder(authToken);
-      } catch (error) {
-        throw error;
-      }
-    },
-  });
-}
+  getOrderDetail(orderId: string): Promise<OrderDetailResponse> {
+    if (!orderId?.trim()) return Promise.reject(new Error('Order ID is required'));
+    return apiClient.get(`${ENDPOINT_ORDER_GET}${orderId}`).then((res) => {
+      const data = res.data;
 
-interface UseAddItemToOrderPayload {
-  orderId: string;
-  data: OrderAddItemRequest;
-  authToken: string;
-}
+      // Handle raw API response format: { imageurl, result: {...}, items: [...] }
+      if (data?.result && typeof data.result === 'object') {
+        return {
+          content: {
+            ...data.result,
+            items: data.items || [],
+            imageurl: data.imageurl,
+          },
+        };
+      }
 
-export function useAddItemToOrder(): UseMutationResult<OrderAddItemResponse, Error, UseAddItemToOrderPayload> {
-  return useMutation({
-    mutationFn: async ({ orderId, data, authToken }: UseAddItemToOrderPayload) => {
-      if (!authToken || authToken.trim() === '') {
-        throw new Error('Valid auth token is required for adding item to order');
+      // Handle normalized response format: { content: {...} }
+      if (data?.content) {
+        return data as OrderDetailResponse;
       }
-      if (!orderId || orderId.trim() === '') {
-        throw new Error('Order ID is required');
-      }
-      if (!data.cproduct || data.cproduct.trim() === '') {
-        throw new Error('Product code is required');
-      }
-      if (!data.tqty || data.tqty.trim() === '') {
-        throw new Error('Quantity is required');
-      }
-      try {
-        return await orderApi.addItemToOrder(orderId, data, authToken);
-      } catch (error) {
-        throw error;
-      }
-    },
-  });
-}
 
-interface UseCheckoutOrderPayload {
-  orderId: string;
-  authToken: string;
-}
+      // Fallback: reject with error
+      return Promise.reject(new Error('Invalid order detail response format'));
+    });
+  },
 
-export function useCheckoutOrder(): UseMutationResult<OrderCheckoutResponse, Error, UseCheckoutOrderPayload> {
-  return useMutation({
-    mutationFn: async ({ orderId, authToken }: UseCheckoutOrderPayload) => {
-      if (!authToken || authToken.trim() === '') {
-        throw new Error('Valid auth token is required for checkout');
-      }
-      if (!orderId || orderId.trim() === '') {
-        throw new Error('Order ID is required');
-      }
-      try {
-        return await orderApi.checkoutOrder(orderId, authToken);
-      } catch (error) {
-        throw error;
-      }
-    },
-  });
-}
+  trackOrder(awb: string, lastDigit: string): Promise<OrderTrackingResponse> {
+    if (!awb?.trim()) return Promise.reject(new Error('AWB is required'));
+    if (!lastDigit?.trim()) return Promise.reject(new Error('Last digit is required'));
+    return apiClient.get(`${ENDPOINT_ORDER_TRACKING}${awb}`).then((res) => {
+      const data = res.data;
 
+      // Handle raw API response format: { result: { delivered, delivery_status, details, manifest, summary } }
+      if (data?.result && typeof data.result === 'object') {
+        return {
+          content: {
+            status: data.result.delivered ?? false,
+            delivered: data.result.delivered ?? false,
+            delivery_status: data.result.delivery_status,
+            details: data.result.details,
+            manifest: data.result.manifest ?? [],
+            summary: data.result.summary ?? {
+              courier_code: '',
+              courier_name: '',
+              waybill_number: awb,
+              service_code: '',
+              waybill_date: '',
+              shipper_name: data.result.details?.shipper_name ?? '',
+              receiver_name: data.result.details?.receiver_name ?? '',
+              origin: data.result.details?.origin ?? '',
+              destination: data.result.details?.destination ?? '',
+              status: data.result.delivered ? 'DELIVERED' : 'ON PROCESS',
+            },
+          },
+        };
+      }
+
+      // Handle already-normalized response format: { content: {...} }
+      if (data?.content) {
+        return data as OrderTrackingResponse;
+      }
+
+      // Fallback: return empty/tracking-not-found response
+      return {
+        content: {
+          status: false,
+          delivered: false,
+          manifest: [],
+          summary: {
+            courier_code: '',
+            courier_name: '',
+            waybill_number: awb,
+            service_code: '',
+            waybill_date: '',
+            shipper_name: '',
+            receiver_name: '',
+            origin: '',
+            destination: '',
+            status: 'UNKNOWN',
+          },
+        },
+      };
+    });
+  },
+};
+
+// Re-export types for backward compatibility
+export type {
+  OrderListRequest,
+  OrderListResponse,
+  OrderDetailResponse,
+  OrderTrackingResponse,
+} from './types';
+
+// Also export OrderItem for convenience
+export type { OrderItem } from './types/orderTypes';
+
+export default orderApi;

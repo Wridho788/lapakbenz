@@ -19,6 +19,7 @@ const Notifications: React.FC = () => {
     error, 
     refetch 
   } = useNotifications();
+  console.log('Notifications data:', notificationsData);
   
   const [refreshing, setRefreshing] = useState(false);
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
@@ -28,15 +29,49 @@ const Notifications: React.FC = () => {
   const [pullDistance, setPullDistance] = useState(0);
   const PULL_THRESHOLD = 60;
 
-  // Force light mode
+  // Setup non-passive touch event listeners for pull-to-refresh
   useEffect(() => {
-    const body = document.body;
-    body.classList.add('force-light-mode');
-    
-    return () => {
-      body.classList.remove('force-light-mode');
+    const element = pullRef.current;
+    if (!element) return;
+
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (window.scrollY === 0 && !isLoading && !refreshing) {
+        startY.current = e.touches[0].clientY;
+        pulling.current = true;
+      }
     };
-  }, []);
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!pulling.current || startY.current === null) return;
+      const diff = e.touches[0].clientY - startY.current;
+      if (diff > 0) {
+        e.preventDefault();
+        setPullDistance(Math.min(diff, 120));
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (pullDistance > PULL_THRESHOLD) {
+        triggerRefresh();
+      }
+      pulling.current = false;
+      startY.current = null;
+      setTimeout(() => setPullDistance(0), 150);
+    };
+
+    element.addEventListener('touchstart', handleTouchStart, { passive: true });
+    element.addEventListener('touchmove', handleTouchMove, { passive: false });
+    element.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      element.removeEventListener('touchstart', handleTouchStart);
+      element.removeEventListener('touchmove', handleTouchMove);
+      element.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isLoading, refreshing, pullDistance]);
 
   // Get notification detail when needed
   const { 
@@ -49,13 +84,19 @@ const Notifications: React.FC = () => {
 
   // Process notifications data
   const notifications: NotificationItem[] = React.useMemo(() => {
-    if (!notificationsData?.content) return [];
-    
-    return notificationsData.content.map((item: any) => ({
+    const content = notificationsData?.result?.content;
+    console.log('Processing notifications content:', content);
+
+    // Handle case where content might not be an array
+    if (!content || !Array.isArray(content)) {
+      return [];
+    }
+
+    return content.map((item: any) => ({
       id: item.id?.toString() || '',
       title: item.subject || 'No Subject',
       message: item.content || 'No Content',
-      timestamp: new Date(item.created_at || Date.now()),
+      timestamp: new Date(item.created || Date.now()),
       reading: item.reading === '1' ? "1" : "0",
       type: item.type || 'general'
     }));
@@ -64,31 +105,6 @@ const Notifications: React.FC = () => {
   const unreadCount = React.useMemo(() => {
     return notifications.filter(n => n.reading === "0").length;
   }, [notifications]);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (window.scrollY === 0 && !isLoading && !refreshing) {
-      startY.current = e.touches[0].clientY;
-      pulling.current = true;
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!pulling.current || startY.current === null) return;
-    const diff = e.touches[0].clientY - startY.current;
-    if (diff > 0) {
-      e.preventDefault();
-      setPullDistance(Math.min(diff, 120));
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (pullDistance > PULL_THRESHOLD) {
-      triggerRefresh();
-    }
-    pulling.current = false;
-    startY.current = null;
-    setTimeout(() => setPullDistance(0), 150);
-  };
 
   const triggerRefresh = useCallback(async () => {
     if (refreshing || isLoading) return;
@@ -128,72 +144,37 @@ const Notifications: React.FC = () => {
       return;
     }
 
-    try {
-      // Set the selected notification to trigger detail fetch
-      setSelectedNotificationId(notification.id);
+    setSelectedNotificationId(notification.id);
 
-      // Show loading toast
-      const loadingToastId = toast.loading('Loading notification details...', {
-        position: 'bottom-right',
-        theme: 'dark',
-      });
+    // Wait for detail data to load (with timeout)
+    const maxWait = 3000;
+    const startTime = Date.now();
+    while (isDetailLoading && Date.now() - startTime < maxWait) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
 
-      // Wait for detail to be fetched
-      let attempts = 0;
-      const maxAttempts = 50; // 5 seconds max wait
-      const checkInterval = setInterval(async () => {
-        attempts++;
-        
-        if (notificationDetail?.content || attempts >= maxAttempts || !isDetailLoading) {
-          clearInterval(checkInterval);
-          toast.dismiss(loadingToastId);
-          
-          // Extract detail data
-          const detailContent = notificationDetail?.content;
-          const displayTitle = detailContent?.subject || notification.title;
-          
-          // Show notification detail in toast
-          toast.info(
-            <div style={{ textAlign: 'left' }}>
-              <strong style={{ display: 'block', marginBottom: '8px', fontSize: '16px' }}>
-                {displayTitle}
-              </strong>
-            </div>,
-            {
-              position: 'bottom-right',
-              autoClose: 1500,
-              theme: 'dark',
-              closeOnClick: true,
-              onClose: async () => {
-                // Mark as read when user closes the toast
-                if (notification.reading === "0") {
-                  await markAsRead();
-                }
-              }
-            }
-          );
+    const detailContent = notificationDetail?.content;
+    const displayTitle = detailContent?.subject || notification.title;
 
-          // Clear selected notification
-          setSelectedNotificationId(null);
-        }
-      }, 100);
-
-    } catch (err) {
-      console.error('Notification detail error:', err);
-
-      // Fallback to basic notification data
-      toast.info(`${notification.title}: ${notification.message}`, {
+    toast.info(
+      <div style={{ textAlign: 'left' }}>
+        <strong style={{ display: 'block', marginBottom: '8px', fontSize: '16px' }}>
+          {displayTitle}
+        </strong>
+      </div>,
+      {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
-      });
-      
-      if (notification.reading === "0") {
-        await markAsRead();
+        closeOnClick: true,
       }
+    );
 
-      setSelectedNotificationId(null);
+    if (notification.reading === "0") {
+      await markAsRead();
     }
+
+    setSelectedNotificationId(null);
   };
 
   // Redirect if not authenticated
@@ -208,12 +189,9 @@ const Notifications: React.FC = () => {
   }
 
   return (
-    <div 
+    <div
       className="notifications-page force-light-theme"
       ref={pullRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{
         overscrollBehavior: 'contain'
       }}
@@ -280,7 +258,7 @@ const Notifications: React.FC = () => {
               <div className="notification-arrow">
                 <MdKeyboardArrowRight />
               </div>
-            </div>
+          </div>
           ))}
         </div>
       )}
