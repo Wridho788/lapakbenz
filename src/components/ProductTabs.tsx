@@ -19,7 +19,7 @@ export const ProductTabs: React.FC = () => {
     navigate(productUrl);
   };
 
-  const renderProductGrid = (products: any[], imageUrl?: string) => {
+  const renderProductGrid = (products: any[], _imageUrl?: string) => {
     if (!products || products.length === 0) {
       return (
         <div className="products-empty">
@@ -33,7 +33,7 @@ export const ProductTabs: React.FC = () => {
         {products.slice(0, 4).map((product) => (
           <ProductCard
             key={product.id}
-            image={product.image ? (imageUrl ? imageUrl + product.image : product.image) : '/nodata.png'}
+            image={product.image ? (product.url_image ? product.url_image + product.image : product.image) : '/nodata.png'}
             name={product.name}
             price={product.price}
             rating={product.rating}
