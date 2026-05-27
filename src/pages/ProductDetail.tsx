@@ -681,7 +681,7 @@ const ProductDetail: React.FC = () => {
       <SEO 
         title={`${productData.title} - ${productData.category || ''} - Harga & Spesifikasi | LapakBenz - Platform Komunitas & Event Indonesia`}
         description={truncateText(stripHtml(productData.description), 155)}
-        keywords={`${productData.title.toLowerCase()}, ${String(productData.category || '').toLowerCase()}, produk lapakbenz, beli ${productData.title.toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
+        keywords={`${String(productData.title || '').toLowerCase()}, ${String(productData.category || '').toLowerCase()}, produk lapakbenz, beli ${String(productData.title || '').toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
         image={buildImageUrl(productData.image)}
         schemaType="Product"
         price={productData.price}

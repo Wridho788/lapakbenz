@@ -33,7 +33,7 @@ export const ProductTabs: React.FC = () => {
         {products.slice(0, 4).map((product) => (
           <ProductCard
             key={product.id}
-            image={imageUrl ? imageUrl + product.image : product.image}
+            image={product.image ? (imageUrl ? imageUrl + product.image : product.image) : '/nodata.png'}
             name={product.name}
             price={product.price}
             rating={product.rating}
