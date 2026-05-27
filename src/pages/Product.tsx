@@ -79,9 +79,6 @@ const Product: React.FC = () => {
     condition: searchQuery.trim() ? '' : selectedCondition, // Clear filters when searching
   });
 
-  // Get base image URL from products data (after hook is declared)
-  const imageUrl = productsData?.image_url || '';
-
   const { data: categoriesData, isLoading: categoriesLoading, error: categoriesError } = useProductCategories();
   const { data: citiesData, isLoading: citiesLoading, error: citiesError } = useProductCities();
 
@@ -706,7 +703,7 @@ const Product: React.FC = () => {
                 >
                   <div className="product-image">
                     <img
-                      src={imageUrl + product.image}
+                      src={product.url_image + product.image}
                       alt={product.name}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;

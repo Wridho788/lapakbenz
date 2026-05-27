@@ -101,7 +101,6 @@ const Dashboard: React.FC = () => {
     limit: '10',
     offset: '0',
   });
-  console.log(frontChaptersData, 'Front Chapters Data in Dashboard');
 
   // Panggil usePostArticle untuk check upcoming news
   const upcomingNewsMutation = usePostArticle();

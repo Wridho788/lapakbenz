@@ -381,36 +381,17 @@ const ProductDetail: React.FC = () => {
         'Material: 100% Cotton',
         'Available sizes: S, M, L, XL, XXL',
         'Color: Black, White, Navy',
-        'Weight: 180 GSM',
+ 'Weight: 180 GSM',
         'Care: Machine wash cold',
       ],
       stock: 25,
       images: ['/bea2x.jpg', '/bea2x.jpg', '/bea2x.jpg'],
     };
 
-    // Extract apiProduct from result (productDetailData.result) for image_url + result.image construction
     const apiProduct = productDetailData?.result;
-    const apiBaseUrl = productDetailData?.image_url ?? '';
-
-    const buildUrl = (filename: string | null | undefined): string => {
-      if (!filename) return '';
-      if (filename.startsWith('http')) return filename;
-      return `${apiBaseUrl}${filename}`;
-    };
 
     if (apiProduct) {
       console.log(apiProduct, 'API Product Data');
-      // Build full image URLs from image_url + filename
-      const productImages: string[] = [];
-      if (apiProduct.image) productImages.push(buildUrl(apiProduct.image));
-      if (apiProduct.url1) productImages.push(buildUrl(apiProduct.url1));
-      if (apiProduct.url2) productImages.push(buildUrl(apiProduct.url2));
-      if (apiProduct.url3) productImages.push(buildUrl(apiProduct.url3));
-      if (apiProduct.url4) productImages.push(buildUrl(apiProduct.url4));
-      if (apiProduct.url5) productImages.push(buildUrl(apiProduct.url5));
-      if (apiProduct.url6) productImages.push(buildUrl(apiProduct.url6));
-
-      const uniqueImages = [...new Set(productImages)];
 
       const specifications = [];
       if (apiProduct.sku) specifications.push(`SKU: ${apiProduct.sku}`);
@@ -425,13 +406,21 @@ const ProductDetail: React.FC = () => {
         id: apiProduct.id?.toString() || productId || '1',
         title: apiProduct.name || dummyData.title,
         price: apiProduct.price || dummyData.price,
-        image: buildUrl(apiProduct.image) || dummyData.image,
-        category: apiProduct.category || apiProduct.categoryName || apiProduct.kategori || dummyData.category,
+        image: apiProduct.image || dummyData.image,
+        category: String(apiProduct.category || apiProduct.categoryName || apiProduct.kategori || dummyData.category),
         rating: parseFloat(apiProduct.rating) || dummyData.rating,
         description: apiProduct.description || apiProduct.shortdesc || dummyData.description,
         specifications: specifications.length > 0 ? specifications : dummyData.specifications,
-        stock: 25,
-        images: uniqueImages.length > 0 ? uniqueImages : dummyData.images,
+        stock: apiProduct.qty || 25,
+        images: [
+          apiProduct.image,
+          apiProduct.url1,
+          apiProduct.url2,
+          apiProduct.url3,
+          apiProduct.url4,
+          apiProduct.url5,
+          apiProduct.url6,
+        ].filter(Boolean) as string[],
       };
     }
 
@@ -440,6 +429,25 @@ const ProductDetail: React.FC = () => {
   };
 
   const productData = getProductData();
+  const productUrlImage = productDetailData?.url_image || 'http://mbapi.dswip.com/images/product/';
+  const productImageUrl = productDetailData?.image_url || 'https://mbadministrator.dswip.com/images/product/';
+
+  const buildImageUrl = (filename: string): string => {
+    if (!filename) return '/bea2x.jpg';
+    if (filename.startsWith('http')) return filename;
+    return `${productUrlImage}${filename}`;
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.currentTarget;
+    const currentSrc = target.src;
+    const filename = target.getAttribute('data-filename');
+    if (filename && currentSrc.startsWith(productUrlImage)) {
+      target.src = `${productImageUrl}${filename}`;
+    } else {
+      target.src = '/bea2x.jpg';
+    }
+  };
 
   // Log zoom level changes
   useEffect(() => {
@@ -671,10 +679,10 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="product-detail-page">
       <SEO 
-        title={`${productData.title} - ${productData.category} - Harga & Spesifikasi | LapakBenz - Platform Komunitas & Event Indonesia`}
+        title={`${productData.title} - ${productData.category || ''} - Harga & Spesifikasi | LapakBenz - Platform Komunitas & Event Indonesia`}
         description={truncateText(stripHtml(productData.description), 155)}
-        keywords={`${productData.title.toLowerCase()}, ${productData.category.toLowerCase()}, produk lapakbenz, beli ${productData.title.toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
-        image={productData.image}
+        keywords={`${productData.title.toLowerCase()}, ${String(productData.category || '').toLowerCase()}, produk lapakbenz, beli ${productData.title.toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
+        image={buildImageUrl(productData.image)}
         schemaType="Product"
         price={productData.price}
         currency="IDR"
@@ -729,14 +737,12 @@ const ProductDetail: React.FC = () => {
               onTouchEnd={handleTouchEnd}
             >
               <img
-                src={productData.images[zoomImageIndex]}
+                src={buildImageUrl(productData.image)}
                 alt={`${productData.title} ${zoomImageIndex + 1}`}
                 className="zoom-image"
                 draggable="false"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/bea2x.jpg';
-                }}
+                data-filename={productData.image}
+                onError={handleImageError}
               />
             </div>
 
@@ -824,12 +830,10 @@ const ProductDetail: React.FC = () => {
                     aria-label={`Gambar ${index + 1}`}
                   >
                     <img
-                      src={image}
+                      src={buildImageUrl(image)}
                       alt={`${productData.title} thumbnail ${index + 1}`}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/bea2x.jpg';
-                      }}
+                      data-filename={image}
+                      onError={handleImageError}
                     />
                     <div className="thumbnail-overlay"></div>
                   </button>
@@ -909,12 +913,10 @@ const ProductDetail: React.FC = () => {
           <div className="product-images-section">
             <div className="main-image" onClick={() => handleImageZoomOpen(selectedImageIndex)}>
               <img
-                src={productData.images[selectedImageIndex]}
+                src={buildImageUrl(productData.image)}
                 alt={productData.title}
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/bea2x.jpg';
-                }}
+                data-filename={productData.image}
+                onError={handleImageError}
               />
               <div className="zoom-indicator-overlay">
                 <MdZoomIn className="zoom-icon" />
@@ -929,12 +931,10 @@ const ProductDetail: React.FC = () => {
                   onClick={() => setSelectedImageIndex(index)}
                 >
                   <img
-                    src={image}
+                    src={buildImageUrl(image)}
                     alt={`${productData.title} ${index + 1}`}
-                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/bea2x.jpg';
-                    }}
+                    data-filename={image}
+                    onError={handleImageError}
                   />
                 </div>
               ))}
