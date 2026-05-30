@@ -169,9 +169,9 @@ const VerifyOtp: React.FC = () => {
       if (typeof data === 'object' && data !== null) {
         // Try to extract meaningful message from various possible response formats
         errorMessage =
+          data.error ||
           data.message ||
           data.msg ||
-          data.error ||
           data.result?.message ||
           data.result?.error ||
           data.result?.msg ||
@@ -182,7 +182,7 @@ const VerifyOtp: React.FC = () => {
 
       // Handle specific status codes with clear user messages
       if (status === 403) {
-        errorMessage = 'Akses ditolak. Token tidak valid atau sudah kadaluarsa.';
+        // Preserve the actual server error message for 403
       } else if (status === 400) {
         errorMessage = 'Kode OTP tidak valid. Pastikan kode yang Anda masukkan benar.';
       } else if (status === 404) {
