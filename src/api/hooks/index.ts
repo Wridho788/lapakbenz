@@ -77,6 +77,7 @@ export {
 export {
   useVoucherList,
   useSetVoucher,
+  useRemoveVoucher,
 } from './voucherHooks';
 
 // General/UI Hooks
