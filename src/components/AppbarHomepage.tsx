@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdNotifications, MdShoppingCart, MdPerson } from 'react-icons/md';
+import { MdNotifications, MdShoppingCart } from 'react-icons/md';
 import './AppbarHomepage.css';
 
 export type AppbarHomepageProps = {
@@ -26,7 +26,9 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
   const handleAvatarError = () => setAvatarError(true);
   const handleAvatarLoad = () => setAvatarError(false);
 
-  const showDefaultIcon = avatarError || !avatar;
+  const isAvatarValid = avatar && avatar.trim() !== '' && avatar !== '/merci.png';
+
+  const showDefaultAvatar = avatarError || !isAvatarValid;
 
   const handleNotificationClick = () => {
     if (onNotificationClick) {
@@ -46,10 +48,12 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
   return (
     <header className="appbar-homepage">
       <div className="appbar-user-info">
-        {showDefaultIcon ? (
-          <div className="appbar-avatar-placeholder">
-            <MdPerson size={20} />
-          </div>
+        {showDefaultAvatar ? (
+          <img
+            src="/merci.png"
+            alt="default avatar"
+            className="appbar-avatar"
+          />
         ) : (
           <img
             src={avatar}
