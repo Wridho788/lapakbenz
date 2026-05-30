@@ -597,7 +597,7 @@ const Cart: React.FC = () => {
   };
 
   const getCostFromToken = () => {
-    return decodeTokenData?.content?.cost || 0;
+    return decodeTokenData?.cost || 0;
   };
 
   const subtotal = getApiCartTotal();
