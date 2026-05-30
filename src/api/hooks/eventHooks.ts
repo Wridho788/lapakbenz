@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { eventApi, chapterApi } from '../eventApi';
+import { useAuthStore } from '../../stores/authStore';
 import type {
   EventListRequest,
   EventListResponse,
@@ -11,7 +12,7 @@ import type {
   ChapterDetailResponse,
 } from '../types';
 
-const getAuthToken = (): string | null => localStorage.getItem('authToken');
+const getAuthToken = (): string | null => useAuthStore.getState().token;
 
 // Query-based hook for fetching events with filters
 export function useEventList(

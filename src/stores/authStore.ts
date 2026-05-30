@@ -61,18 +61,12 @@ const useAuthStore = create<AuthState>()(
 
       // Logout action
       logout: () => {
-        // Clear localStorage items
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('userLog');
-        
         set({
           token: null,
           user: null,
           isAuthenticated: false,
           isLoading: false
         });
-
       },
 
       // Update user data
