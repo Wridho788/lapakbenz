@@ -1,51 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAuthStore } from '../stores/authStore';
-import { toast } from 'react-toastify';
-import './EventRegistration.css';
 
 interface EventRegistrationProps {
-  eventId?: string;
   isAuthenticated: boolean;
   isPending: boolean;
+  alreadyJoined?: boolean;
   onRegister: () => void;
 }
 
 const EventRegistration: React.FC<EventRegistrationProps> = ({
-  eventId,
   isAuthenticated,
   isPending,
+  alreadyJoined = false,
   onRegister,
 }) => {
   const { token, validateToken } = useAuthStore();
-  const [alreadyJoined, setAlreadyJoined] = useState(false);
 
   const isValidAuthentication = isAuthenticated && token && validateToken();
-
-  useEffect(() => {
-    setAlreadyJoined(false);
-  }, [eventId]);
 
   if (!isValidAuthentication) {
     return null;
   }
 
-  const handleRegisterClick = () => {
-    if (alreadyJoined || isPending) {
-      toast.error('Anda sudah terdaftar di event ini.', {
-        position: 'bottom-right',
-        autoClose: 2000,
-        theme: 'dark',
-      });
-      return;
-    }
-    setAlreadyJoined(true);
-    onRegister();
-  };
-
   return (
     <div className="event-registration">
       <button
-        onClick={handleRegisterClick}
+        onClick={onRegister}
         disabled={isPending || alreadyJoined}
         className={`registration-button ${isPending ? 'loading' : ''} ${alreadyJoined ? 'already-joined' : ''}`}
       >

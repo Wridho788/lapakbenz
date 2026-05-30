@@ -20,6 +20,7 @@ const EventDetail: React.FC = () => {
 
   const [isAuthValidated, setIsAuthValidated] = useState(false);
   const [triggerRegistration, setTriggerRegistration] = useState(false);
+  const [alreadyJoined, setAlreadyJoined] = useState(false);
 
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
 
@@ -38,13 +39,23 @@ const EventDetail: React.FC = () => {
           autoClose: 1500,
           theme: 'dark',
         });
+        setAlreadyJoined(true);
       } else {
         const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        toast.error(`Registration Failed: ${errorMsg}`, {
-          position: 'bottom-right',
-          autoClose: 1500,
-          theme: 'dark',
-        });
+        if (errorMsg.toLowerCase().includes('already done') || errorMsg.toLowerCase().includes('already')) {
+          toast.error('Register Failed: Event Already Done', {
+            position: 'bottom-right',
+            autoClose: 2000,
+            theme: 'dark',
+          });
+        } else {
+          toast.error(`Registration Failed: ${errorMsg}`, {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
+        }
+        setAlreadyJoined(true);
       }
       setTriggerRegistration(false);
     }
@@ -58,14 +69,27 @@ const EventDetail: React.FC = () => {
         errorMessage = eventRegisterQuery.error.message;
       }
 
-      toast.error(`Registration Failed: ${errorMessage}`, {
-        position: 'bottom-right',
-        autoClose: 1500,
-        theme: 'dark',
-      });
+      if (errorMessage.toLowerCase().includes('already done') || errorMessage.toLowerCase().includes('already')) {
+        toast.error('Register Failed: Event Already Done', {
+          position: 'bottom-right',
+          autoClose: 2000,
+          theme: 'dark',
+        });
+      } else {
+        toast.error(`Registration Failed: ${errorMessage}`, {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        });
+      }
+      setAlreadyJoined(true);
       setTriggerRegistration(false);
     }
   }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
+
+  useEffect(() => {
+    setAlreadyJoined(false);
+  }, [eventId]);
 
   useEffect(() => {
     const validateAuth = async () => {
@@ -272,6 +296,7 @@ const EventDetail: React.FC = () => {
           <EventRegistration
             isAuthenticated={isAuthenticated && isAuthValidated}
             isPending={eventRegisterQuery.isFetching && triggerRegistration}
+            alreadyJoined={alreadyJoined}
             onRegister={handleEventRegister}
           />
 
