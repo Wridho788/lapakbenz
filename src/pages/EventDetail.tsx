@@ -169,7 +169,7 @@ const EventDetail: React.FC = () => {
   };
 
   const getImageSrc = (imagePath?: string) => {
-    if (!imagePath) return '/lapakbenz.png';
+    if (!imagePath) return '/merci.png';
     if (imagePath.startsWith('http')) return imagePath;
     return `${imageUrl}${imagePath}`;
   };

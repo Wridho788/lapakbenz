@@ -410,7 +410,7 @@ navigate('/cart');  };
                     profileData.result.image !==
                       'http://mbapi.dswip.com/images/customer/'
                       ? profileData.result.image
-                      : '/lapakbenz.png'
+                      : '/merci.png'
                   }
                   alt="Profile"
                   style={{
@@ -424,7 +424,7 @@ navigate('/cart');  };
                   }}
                   onClick={handleImageClick}
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/lapakbenz.png';
+                    (e.target as HTMLImageElement).src = '/merci.png';
                   }}
                   onMouseEnter={(e) => {
                     (e.target as HTMLImageElement).style.opacity = '0.8';

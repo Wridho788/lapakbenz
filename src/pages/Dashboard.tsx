@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
 
   // Get user data from unified hook (useDecodeToken provides name & image after login)
   const userName = userInfo?.name || 'User';
-  const userImage = userInfo?.image ? `${userInfo.image}` : '/lapakbenz.png';
+  const userImage = userInfo?.image ? `${userInfo.image}` : '/merci.png';
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData, refetch: sliderRefetch } = useSlider();
 
