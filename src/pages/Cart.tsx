@@ -1294,19 +1294,35 @@ const Cart: React.FC = () => {
               )}
 
               {selectedVoucher && (
-                <div className="summary-row discount">
-                  <div className="voucher-summary-label">
-                    <span>Voucher: {selectedVoucher.name}</span>
-                    <button
-                      className="remove-voucher-btn"
-                      onClick={handleRemoveVoucher}
-                      disabled={removeVoucherMutation.isPending}
-                      title="Hapus voucher"
-                    >
-                      {removeVoucherMutation.isPending ? '...' : '✕'}
-                    </button>
+                <div className="voucher-summary-card">
+                  <div className="voucher-summary-left">
+                    <div className="voucher-summary-thumb">
+                      <img
+                        src={selectedVoucher.image || '/nodata.png'}
+                        alt={selectedVoucher.name}
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/nodata.png'; }}
+                      />
+                    </div>
+                    <div className="voucher-summary-info">
+                      <span className="voucher-summary-label">Voucher</span>
+                      <span className="voucher-summary-name">{selectedVoucher.name}</span>
+                    </div>
                   </div>
-                  <span>- Rp {voucherDiscount.toLocaleString('id-ID')}</span>
+                  <button
+                    className="remove-voucher-btn"
+                    onClick={handleRemoveVoucher}
+                    disabled={removeVoucherMutation.isPending}
+                    title="Hapus voucher"
+                  >
+                    {removeVoucherMutation.isPending ? (
+                      <span className="remove-spinner" />
+                    ) : (
+                      <>
+                        <MdClear size={14} />
+                        <span>Hapus</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
 
