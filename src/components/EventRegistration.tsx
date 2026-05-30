@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuthStore } from '../stores/authStore';
+import './EventRegistration.css';
 
 interface EventRegistrationProps {
   eventId?: string;
