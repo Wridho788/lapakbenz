@@ -20,7 +20,6 @@ const EventDetail: React.FC = () => {
 
   const [isAuthValidated, setIsAuthValidated] = useState(false);
   const [triggerRegistration, setTriggerRegistration] = useState(false);
-  const [alreadyJoined, setAlreadyJoined] = useState(false);
 
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
 
@@ -39,7 +38,6 @@ const EventDetail: React.FC = () => {
           autoClose: 1500,
           theme: 'dark',
         });
-        setAlreadyJoined(true);
       } else {
         const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
         if (errorMsg.toLowerCase().includes('already done') || errorMsg.toLowerCase().includes('already')) {
@@ -55,7 +53,6 @@ const EventDetail: React.FC = () => {
             theme: 'dark',
           });
         }
-        setAlreadyJoined(true);
       }
       setTriggerRegistration(false);
     }
@@ -82,14 +79,9 @@ const EventDetail: React.FC = () => {
           theme: 'dark',
         });
       }
-      setAlreadyJoined(true);
       setTriggerRegistration(false);
     }
   }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
-
-  useEffect(() => {
-    setAlreadyJoined(false);
-  }, [eventId]);
 
   useEffect(() => {
     const validateAuth = async () => {
@@ -296,7 +288,6 @@ const EventDetail: React.FC = () => {
           <EventRegistration
             isAuthenticated={isAuthenticated && isAuthValidated}
             isPending={eventRegisterQuery.isFetching && triggerRegistration}
-            alreadyJoined={alreadyJoined}
             onRegister={handleEventRegister}
           />
 
