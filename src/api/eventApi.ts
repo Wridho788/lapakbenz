@@ -65,11 +65,16 @@ export const eventApi = {
 
   registerEvent: async (authToken: string, eventId: string): Promise<EventRegisterResponse> => {
     try {
-      const response = await apiClient.get(`${ENDPOINT_EVENT_REGISTER}/${eventId}`, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
+      const response = await apiClient.post(
+        ENDPOINT_EVENT_REGISTER,
+        JSON.stringify({ event_id: eventId }),
+        {
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
       return {
         ...response.data,
         status: response.status,
@@ -87,7 +92,6 @@ export const eventApi = {
             serverMsg || 'Invalid request. Please check your data.',
           );
         }
-        // Handle duplicate registration
         const serverError = error.response?.data?.error || error.response?.data?.message;
         if (serverError) {
           throw new Error(serverError);
