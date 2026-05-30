@@ -35,8 +35,8 @@ const Dashboard: React.FC = () => {
     logout,
   } = useAuthStore();
 
-  // Unified user data hook
-  const { profile, userInfo, unreadCount } = useUserData();
+  // Unified user data hook (useDecodeToken provides name & image after login)
+  const { userInfo, unreadCount } = useUserData();
 
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();
@@ -83,9 +83,9 @@ const Dashboard: React.FC = () => {
       .join(' ');
   };
 
-  // Get user data from unified hook
+  // Get user data from unified hook (useDecodeToken provides name & image after login)
   const userName = userInfo?.name || 'User';
-  const userImage = profile?.image ? `${profile.image}` : '/lapakbenz.png';
+  const userImage = userInfo?.image ? `${userInfo.image}` : '/lapakbenz.png';
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData, refetch: sliderRefetch } = useSlider();
 
@@ -390,7 +390,6 @@ const Dashboard: React.FC = () => {
         <div className="dashboard-content">
           <UserCard
             points={userPoints}
-            avatar={userImage}
             userName={capitalizeName(userName)}
             onProfileClick={handleProfileClick}
             onEventHistoryClick={handleEventHistoryClick}

@@ -150,19 +150,25 @@ export interface ProfileResult {
   deleted: string | null;
 }
 
+export interface DecodeTokenContent {
+  user_id: number;
+  code: string;
+  email: string;
+  name: string;
+  phone: string;
+  chapter: number;
+  chapter_code: string;
+  token: string;
+  device: string;
+  image: string;
+  login_at: string;
+  [key: string]: any;
+}
+
 export interface DecodeTokenResponse {
   success?: boolean;
   message?: string;
-  content?: {
-    userid: string;
-    username: string;
-    name: string;
-    phone: string;
-    premium: string;
-    chapter: string;
-    log: number;
-    [key: string]: any;
-  };
+  result?: DecodeTokenContent;
 }
 
 export interface LogoutResponse {

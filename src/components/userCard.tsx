@@ -4,7 +4,6 @@ import './UserCard.css';
 
 export type UserCardProps = {
   points: number;
-  avatar?: string;
   userName?: string;
   onProfileClick?: () => void;
   onEventHistoryClick?: () => void;
@@ -13,7 +12,6 @@ export type UserCardProps = {
 
 export const UserCard: React.FC<UserCardProps> = ({
   points,
-  avatar = '/lapakbenz.png',
   userName = 'User',
   onProfileClick,
   onEventHistoryClick,
@@ -29,16 +27,7 @@ export const UserCard: React.FC<UserCardProps> = ({
   return (
     <div className="user-card">
       <div className="user-card-avatar-section">
-        <div className="avatar-wrapper">
-          <img
-            src={avatar && avatar.trim() !== '' ? avatar : '/lapakbenz.png'}
-            alt={userName}
-            className="avatar-image"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/lapakbenz.png';
-            }}
-          />
-        </div>
+       
         <span className="avatar-name">{capitalizeName(userName || 'User')}</span>
       </div>
       <div className="user-card-points">

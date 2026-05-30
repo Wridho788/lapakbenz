@@ -18,7 +18,7 @@ import type {
   ChangePasswordResponse,
   GetProfileResponse,
   NotificationPayload,
-  DecodeTokenResponse,
+  DecodeTokenContent,
   LogoutResponse,
 } from '../types';
 
@@ -183,13 +183,15 @@ export function useProfile(): UseQueryResult<GetProfileResponse, Error> {
   });
 }
 
-export function useDecodeToken(): UseQueryResult<DecodeTokenResponse, Error> {
+export function useDecodeToken(): UseQueryResult<DecodeTokenContent, Error> {
   const token = getAuthToken();
   return useQuery({
     queryKey: ['decodeToken', token],
-    queryFn: () => {
+    queryFn: async () => {
       if (!token) throw new Error('Auth token required');
-      return customerApi.decodeToken(token);
+      const res = await customerApi.decodeToken(token);
+      if (!res.result) throw new Error('Invalid token response');
+      return res.result;
     },
     enabled: !!token,
     staleTime: 1000 * 60 * 10,
@@ -295,7 +297,7 @@ export function useUserData() {
 
   return {
     profile: profile.data?.result,
-    userInfo: decodeToken.data?.content,
+    userInfo: decodeToken.data,
     unreadCount,
     isLoading: profile.isLoading || decodeToken.isLoading,
     notifications: notifications.data?.result?.content,
