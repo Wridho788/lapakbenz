@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuthStore } from '../stores/authStore';
 
 interface EventRegistrationProps {
+  eventId?: string;
   isAuthenticated: boolean;
   isPending: boolean;
   alreadyJoined?: boolean;

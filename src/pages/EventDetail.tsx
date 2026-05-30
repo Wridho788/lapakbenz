@@ -20,6 +20,7 @@ const EventDetail: React.FC = () => {
 
   const [isAuthValidated, setIsAuthValidated] = useState(false);
   const [triggerRegistration, setTriggerRegistration] = useState(false);
+  const [alreadyJoined, setAlreadyJoined] = useState(false);
 
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
 
@@ -33,55 +34,69 @@ const EventDetail: React.FC = () => {
     if (eventRegisterQuery.data && triggerRegistration) {
       const result = eventRegisterQuery.data;
       if (result.status === 200) {
-        toast.success('Registration Successful! Your event registration has been completed successfully.', {
+        toast.success('Registration Successful!', {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
         });
+        setAlreadyJoined(true);
       } else {
-        const errorMsg = result.message || result.error || 'Registration failed. Please try again.';
-        if (errorMsg.toLowerCase().includes('already done') || errorMsg.toLowerCase().includes('already')) {
+        const errorMsg = result.message || result.error || 'Registration failed.';
+        if (errorMsg.toLowerCase().includes('already')) {
           toast.error('Register Failed: Event Already Done', {
             position: 'bottom-right',
             autoClose: 2000,
             theme: 'dark',
           });
         } else {
-          toast.error(`Registration Failed: ${errorMsg}`, {
+          toast.error(`Register Failed: ${errorMsg}`, {
             position: 'bottom-right',
             autoClose: 1500,
             theme: 'dark',
           });
         }
+        setAlreadyJoined(true);
       }
       setTriggerRegistration(false);
     }
 
     if (eventRegisterQuery.error && triggerRegistration) {
-      let errorMessage = 'An unexpected error occurred during registration.';
-      if (eventRegisterQuery.error && typeof eventRegisterQuery.error === 'object' && 'response' in eventRegisterQuery.error) {
-        const axiosError = eventRegisterQuery.error as { response?: { data?: { error?: string } }; message?: string };
+      let errorMessage = 'An unexpected error occurred.';
+      if (
+        eventRegisterQuery.error &&
+        typeof eventRegisterQuery.error === 'object' &&
+        'response' in eventRegisterQuery.error
+      ) {
+        const axiosError = eventRegisterQuery.error as {
+          response?: { data?: { error?: string } };
+          message?: string;
+        };
         errorMessage = axiosError.response?.data?.error || axiosError.message || errorMessage;
       } else if (eventRegisterQuery.error.message) {
         errorMessage = eventRegisterQuery.error.message;
       }
 
-      if (errorMessage.toLowerCase().includes('already done') || errorMessage.toLowerCase().includes('already')) {
+      if (errorMessage.toLowerCase().includes('already')) {
         toast.error('Register Failed: Event Already Done', {
           position: 'bottom-right',
           autoClose: 2000,
           theme: 'dark',
         });
       } else {
-        toast.error(`Registration Failed: ${errorMessage}`, {
+        toast.error(`Register Failed: ${errorMessage}`, {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
         });
       }
+      setAlreadyJoined(true);
       setTriggerRegistration(false);
     }
   }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
+
+  useEffect(() => {
+    setAlreadyJoined(false);
+  }, [eventId]);
 
   useEffect(() => {
     const validateAuth = async () => {
@@ -217,9 +232,8 @@ const EventDetail: React.FC = () => {
   return (
     <div className="event-detail-page">
       <SEO
-        title={`${eventData.Name} • ${eventData.Dates} - ${getTypeLabel(eventData.Type)} | LapakBenz - Platform Komunitas & Event Indonesia`}
-        description={truncateText(stripHtml(eventData.Desc || ''), 155) + ` Event pada ${eventData.Dates}. ${(eventData.Fee || 0) > 0 ? `Biaya kontribusi: ${formatPrice(eventData.Fee || 0)}` : 'Gratis'}. Daftar sekarang di lapakBenz!`}
-        keywords={`${(eventData.Name || '').toLowerCase()}, event lapakbenz, event komunitas indonesia, ${eventData.Dates}`}
+        title={`${eventData.Name} - ${getTypeLabel(eventData.Type)} | LapakBenz`}
+        description={truncateText(stripHtml(eventData.Desc || ''), 155)}
         image={getImageSrc(eventData.Image)}
         schemaType="Event"
         publishedTime={formatDateForSchema(eventData.Dates)}
@@ -286,8 +300,10 @@ const EventDetail: React.FC = () => {
           </div>
 
           <EventRegistration
+            eventId={eventId || undefined}
             isAuthenticated={isAuthenticated && isAuthValidated}
             isPending={eventRegisterQuery.isFetching && triggerRegistration}
+            alreadyJoined={alreadyJoined}
             onRegister={handleEventRegister}
           />
 
