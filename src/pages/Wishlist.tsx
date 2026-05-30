@@ -26,9 +26,7 @@ const Wishlist: React.FC = () => {
 
   // Redirect if not authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
+    // Don't redirect - just show empty state with message
   }, [isAuthenticated, navigate]);
 
   // Wishlist hooks
@@ -127,8 +125,25 @@ const Wishlist: React.FC = () => {
     }
   };
 
+
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="wishlist-page">
+        <AppbarDefault
+          title="Wishlist Produk"
+          onBack={handleBackClick}
+          onCartClick={handleCartClick}
+          showCart={false}
+          defaultBack="/profile"
+        />
+        <div className="wishlist-empty">
+          <MdFavorite className="empty-icon" />
+          <h3>Login Diperlukan</h3>
+          <p>Silakan login untuk melihat wishlist Anda</p>
+        </div>
+        <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
+      </div>
+    );
   }
 
   return (
