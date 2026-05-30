@@ -87,8 +87,16 @@ const ProductDetail: React.FC = () => {
 
   // Wishlist hooks
   const { data: wishlistStatus, isLoading: isWishlistLoading } = useIsWishlist(productDetailData?.result?.id);
-  const isWishlisted = wishlistStatus?.result === true || wishlistStatus?.content === true || wishlistStatus?.status === true;
+  // Use local state for immediate UI feedback, sync with API status on mount/update
+  const [localWishlistStatus, setLocalWishlistStatus] = useState(false);
+  const isWishlisted = localWishlistStatus;
   const toggleWishlistMutation = useToggleWishlist();
+
+  // Sync local wishlist status when API data loads
+  useEffect(() => {
+    const apiStatus = wishlistStatus?.result === true || wishlistStatus?.content === true || wishlistStatus?.status === true;
+    setLocalWishlistStatus(apiStatus);
+  }, [wishlistStatus]);
 
   // Debug log
   console.log('Wishlist status:', wishlistStatus, 'isWishlisted:', isWishlisted);
@@ -438,6 +446,16 @@ const ProductDetail: React.FC = () => {
     return `${productUrlImage}${filename}`;
   };
 
+  // Decode HTML entities in description for safe rendering
+  const decodeHtmlEntities = (text: string): string => {
+    if (!text) return '';
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    return textarea.value;
+  };
+
+  const safeDescription = decodeHtmlEntities(productData.description);
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const target = e.currentTarget;
     const currentSrc = target.src;
@@ -636,6 +654,9 @@ const ProductDetail: React.FC = () => {
     }
 
     try {
+      // Toggle local state immediately for instant feedback
+      setLocalWishlistStatus(!isWishlisted);
+
       await toggleWishlistMutation.mutateAsync({
         productId: currentProductId,
         isWishlisted,
@@ -973,7 +994,7 @@ const ProductDetail: React.FC = () => {
 
             <div className="product-description">
               <h3>Deskripsi</h3>
-              <p>{productData.description}</p>
+              <p>{safeDescription}</p>
             </div>
           </div>
 

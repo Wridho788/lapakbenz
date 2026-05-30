@@ -4,6 +4,8 @@ import './UserCard.css';
 
 export type UserCardProps = {
   points: number;
+  avatar?: string;
+  userName?: string;
   onProfileClick?: () => void;
   onEventHistoryClick?: () => void;
   onTransactionClick?: () => void;
@@ -11,18 +13,34 @@ export type UserCardProps = {
 
 export const UserCard: React.FC<UserCardProps> = ({
   points,
+  avatar = '/lapakbenz.png',
+  userName = 'User',
   onProfileClick,
   onEventHistoryClick,
   onTransactionClick,
 }) => {
-  // Format points dengan koma sebagai separator ribuan
-  const formatPoints = (value: number): string => {
-    return value.toLocaleString('id-ID');
+  const capitalizeName = (name: string) => {
+    if (!name) return 'User';
+    return name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
   };
+
+  const formatPoints = (value: number): string => value.toLocaleString('id-ID');
 
   return (
     <div className="user-card">
-      {/* Point Section */}
+      <div className="user-card-avatar-section">
+        <div className="avatar-wrapper">
+          <img
+            src={avatar && avatar.trim() !== '' ? avatar : '/lapakbenz.png'}
+            alt={userName}
+            className="avatar-image"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/lapakbenz.png';
+            }}
+          />
+        </div>
+        <span className="avatar-name">{capitalizeName(userName || 'User')}</span>
+      </div>
       <div className="user-card-points">
         <div className="point-text">
           <h3 className="point-label">My Point</h3>
@@ -33,29 +51,19 @@ export const UserCard: React.FC<UserCardProps> = ({
         </div>
       </div>
 
-      {/* Divider */}
       <div className="user-card-divider"></div>
 
-      {/* Button Grid Section */}
       <div className="user-card-buttons">
         <button className="user-card-button" onClick={onProfileClick}>
-          <div className="button-icon">
-            <MdPerson />
-          </div>
+          <div className="button-icon"><MdPerson /></div>
           <span className="button-label">Profil</span>
         </button>
-
         <button className="user-card-button" onClick={onEventHistoryClick}>
-          <div className="button-icon">
-            <MdOutlineHistory />
-          </div>
+          <div className="button-icon"><MdOutlineHistory /></div>
           <span className="button-label">Riwayat Event</span>
         </button>
-
         <button className="user-card-button" onClick={onTransactionClick}>
-          <div className="button-icon">
-            <MdOutlineAccountBalanceWallet />
-          </div>
+          <div className="button-icon"><MdOutlineAccountBalanceWallet /></div>
           <span className="button-label">Transaksi</span>
         </button>
       </div>

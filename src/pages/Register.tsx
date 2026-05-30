@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdPersonAdd } from 'react-icons/md';
 import { MdCalendarToday } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
-import { useChapters, useCityList } from '../api/hooks/index';
+import { useChapters, useCityList, useRegister } from '../api/hooks/index';
 import { toast } from 'react-toastify';
 import './Register.css';
 import type { ChapterItem } from '../api/types/chapterTypes';
@@ -45,7 +45,7 @@ const Register: React.FC = () => {
   });
 
   // API hooks
-  // const registerMutation = useRegister();
+  const registerMutation = useRegister();
   const { data: chaptersData, isLoading: chaptersLoading, error: chaptersError } = useChapters();
   const { data: citiesData, isLoading: citiesLoading, error: citiesError } = useCityList();
 
@@ -212,11 +212,11 @@ const Register: React.FC = () => {
         tpassword: formData.password,
       };
 
-      // const result = await registerMutation.mutateAsync(registerData);
+      const result = await registerMutation.mutateAsync(registerData);
 
       // Show success message with toast
       toast.success(
-        'Registration Successful! Your registration will be processed offline by admin.',
+        result?.message || 'Registration Successful! Please verify your account.',
         {
           position: 'bottom-right',
           autoClose: 1500,

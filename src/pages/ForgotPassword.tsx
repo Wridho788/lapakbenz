@@ -35,15 +35,23 @@ const ForgotPassword: React.FC = () => {
         },
         onError: (err: any) => {
           let msg = 'Gagal mengirim OTP.';
-          if (err && typeof err === 'object') {
-            // Handle axios error with response body
-            if ('response' in err && err.response?.data?.error) {
-              msg = err.response.data.error;
-            } else if ('response' in err && err.response?.data?.message) {
-              msg = err.response.data.message;
-            } else if ('message' in err && typeof err.message === 'string' && err.message) {
-              msg = err.message;
-            }
+          const status = err?.response?.status;
+          const data = err?.response?.data;
+
+          if (data?.message) {
+            msg = data.message;
+          } else if (data?.error) {
+            msg = data.error;
+          } else if (status === 400) {
+            msg = 'Format input tidak valid. Masukkan email atau nomor HP yang benar.';
+          } else if (status === 403) {
+            msg = 'Akun tidak ditemukan.';
+          } else if (status === 429) {
+            msg = 'Terlalu banyak permintaan. Silakan tunggu beberapa saat.';
+          } else if (status === 500) {
+            msg = 'Server sedang sibuk. Silakan coba beberapa saat lagi.';
+          } else if (err?.message && typeof err.message === 'string' && err.message) {
+            msg = err.message;
           }
           toast.error(msg, {
             position: 'bottom-right',
@@ -90,15 +98,25 @@ const ForgotPassword: React.FC = () => {
         },
         onError: (err: any) => {
           let msg = 'Gagal mengubah password.';
-          if (err && typeof err === 'object') {
-            // Handle axios error with structured response (400 Invalid request body)
-            if ('response' in err && err.response?.data?.error) {
-              msg = err.response.data.error;
-            } else if ('response' in err && err.response?.data?.message) {
-              msg = err.response.data.message;
-            } else if ('message' in err && typeof err.message === 'string' && err.message) {
-              msg = err.message;
-            }
+          const status = err?.response?.status;
+          const data = err?.response?.data;
+
+          if (data?.message) {
+            msg = data.message;
+          } else if (data?.error) {
+            msg = data.error;
+          } else if (status === 400) {
+            msg = data?.message || 'Data tidak valid. Pastikan OTP sudah benar.';
+          } else if (status === 403) {
+            msg = 'OTP tidak valid atau sudah kadaluarsa. Silakan minta OTP baru.';
+          } else if (status === 404) {
+            msg = 'Akun tidak ditemukan.';
+          } else if (status === 410) {
+            msg = 'Kode OTP sudah kadaluarsa. Silakan minta OTP baru.';
+          } else if (status === 429) {
+            msg = 'Terlalu banyak percobaan. Silakan tunggu beberapa saat.';
+          } else if (err?.message && typeof err.message === 'string' && err.message) {
+            msg = err.message;
           }
           toast.error(msg, {
             position: 'bottom-right',

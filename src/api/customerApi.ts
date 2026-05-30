@@ -89,9 +89,9 @@ export const customerApi = {
    */
   forgotPassword: async (payload: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
     try {
-      const response = await apiClient.post(ENDPOINT_FORGOT, JSON.stringify(payload), {
+      const response = await apiClient.post(ENDPOINT_FORGOT, createFormData(payload), {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
       return response.data;
@@ -112,9 +112,9 @@ export const customerApi = {
    */
   requestOTP: async (payload: RequestOTPRequest): Promise<RequestOTPResponse> => {
     try {
-      const response = await apiClient.post(ENDPOINT_REQ_OTP, JSON.stringify(payload), {
+      const response = await apiClient.post(ENDPOINT_REQ_OTP, createFormData(payload), {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
       return response.data;
@@ -158,6 +158,12 @@ export const customerApi = {
       return response.data;
     } catch (error) {
       console.error('Register API Error:', error);
+      if (axios.isAxiosError(error)) {
+        const serverMsg = error.response?.data?.error || error.response?.data?.message;
+        if (serverMsg) {
+          throw Object.assign(new Error(serverMsg), { response: error.response });
+        }
+      }
       throw error;
     }
   },

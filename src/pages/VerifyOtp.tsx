@@ -54,7 +54,7 @@ const VerifyOtp: React.FC = () => {
     },
   });
 
-  // Request OTP saat pertama kali masuk halaman (hanya sekali)
+  // Request OTP saat pertama kali masuk halaman ATAU saat user kembali setelah timeout
   useEffect(() => {
     if (!username) {
       toast.error('Username tidak valid. Silakan kembali dan coba lagi.', {
@@ -66,12 +66,13 @@ const VerifyOtp: React.FC = () => {
       return;
     }
 
-    if (canRequest && !hasRequestedOTP.current) {
-      hasRequestedOTP.current = true;
+    if (canRequest) {
+      // Jika user kembali dari timeout, request OTP baru secara otomatis
       requestOTP();
+      hasRequestedOTP.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency - hanya run sekali saat mount
+  }, [location.state]); // Re-run when location state changes (user returning after timeout)
 
   // Timer countdown
   useEffect(() => {
@@ -160,20 +161,42 @@ const VerifyOtp: React.FC = () => {
     } catch (err: any) {
       console.error('❌ OTP Verification Error:', err);
 
-      // Handle berbagai jenis error
       let errorMessage = 'Verifikasi OTP gagal. Silakan coba lagi.';
 
-      if (err?.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err?.message) {
+      const data = err?.response?.data;
+      const status = err?.response?.status;
+
+      if (typeof data === 'object' && data !== null) {
+        // Try to extract meaningful message from various possible response formats
+        errorMessage =
+          data.message ||
+          data.msg ||
+          data.error ||
+          data.result?.message ||
+          data.result?.error ||
+          data.result?.msg ||
+          JSON.stringify(data);
+      } else if (err?.message && !err.message.includes('Username')) {
         errorMessage = err.message;
       }
 
-      // Tampilkan error
+      // Handle specific status codes with clear user messages
+      if (status === 403) {
+        errorMessage = 'Akses ditolak. Token tidak valid atau sudah kadaluarsa.';
+      } else if (status === 400) {
+        errorMessage = 'Kode OTP tidak valid. Pastikan kode yang Anda masukkan benar.';
+      } else if (status === 404) {
+        errorMessage = 'Kode OTP tidak ditemukan. Pastikan kode yang Anda masukkan benar.';
+      } else if (status === 410) {
+        errorMessage = 'Kode OTP sudah kadaluarsa. Silakan minta kode baru.';
+      } else if (status === 429) {
+        errorMessage = 'Terlalu banyak percobaan. Silakan tunggu beberapa saat.';
+      }
+
       setError(errorMessage);
       toast.error(errorMessage, {
         position: 'bottom-right',
-        autoClose: 1500,
+        autoClose: 2000,
         theme: 'dark',
       });
     } finally {
@@ -232,7 +255,7 @@ const VerifyOtp: React.FC = () => {
               type="button"
               className="btn-link resend-otp-btn"
               onClick={handleResend}
-              disabled={resendDisabled || timer > 0}
+              disabled={resendDisabled}
             >
               Kirim ulang OTP {resendCount > 0 && `(percobaan ${resendCount + 1})`}
             </button>

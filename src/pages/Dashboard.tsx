@@ -390,6 +390,8 @@ const Dashboard: React.FC = () => {
         <div className="dashboard-content">
           <UserCard
             points={userPoints}
+            avatar={userImage}
+            userName={capitalizeName(userName)}
             onProfileClick={handleProfileClick}
             onEventHistoryClick={handleEventHistoryClick}
             onTransactionClick={handleTransactionClick}

@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { cartApi } from '../cartApi';
@@ -51,20 +51,32 @@ export function useRemoveFromCart(): UseMutationResult<RemoveFromCartResponse, E
 }
 
 export function useSetPickup(): UseMutationResult<SetPickupResponse, Error, string> {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (cartId: string) => cartApi.setPickup(cartId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
   });
 }
 
 export function useSetPublish(): UseMutationResult<SetPickupResponse, Error, string> {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (cartId: string) => cartApi.setPublish(cartId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
   });
 }
 
 export function useSetNotes(): UseMutationResult<SetPickupResponse, Error, { cartId: string; notes: string }> {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ cartId, notes }: { cartId: string; notes: string }) => cartApi.setNotes(cartId, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
   });
 }
 

@@ -988,7 +988,7 @@ const Cart: React.FC = () => {
                       <div className="shipping-options-popup">
                         <div className="shipping-options-header">Opsi Pengiriman</div>
                         <button
-                          className={`shipping-option ${item.pickup === '1' ? 'selected' : ''}`}
+                          className={`shipping-option ${item.pickup === '0' ? 'selected' : ''}`}
                           onClick={() => handleItemShippingToggle(item.id, false)}
                         >
                           <MdLocalShipping size={16} />
