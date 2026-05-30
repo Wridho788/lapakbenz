@@ -2,7 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/authStore';
 import { voucherApi } from '../voucherApi';
-import type { VoucherListResponse, SetVoucherRequest, SetVoucherResponse } from '../types';
+import type { VoucherListResponse, SetVoucherRequest, SetVoucherResponse, RemoveVoucherResponse } from '../types';
 
 export function useVoucherList(): UseQueryResult<VoucherListResponse, Error> {
   const token = useAuthStore.getState().token;
@@ -40,5 +40,17 @@ export function useSetVoucher(): UseMutationResult<SetVoucherResponse, Error, { 
       return false;
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 5000),
+  });
+}
+
+export function useRemoveVoucher(): UseMutationResult<RemoveVoucherResponse, Error, string> {
+  return useMutation({
+    mutationFn: async (voucherId: string) => {
+      const token = useAuthStore.getState().token;
+      if (!token) {
+        throw new Error('Authentication token required');
+      }
+      return voucherApi.removeVoucher(voucherId, token);
+    },
   });
 }
