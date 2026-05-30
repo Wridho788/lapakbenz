@@ -584,16 +584,20 @@ const Cart: React.FC = () => {
 
   console.log(apiCartData, 'Current API Cart Data');
 
+  const getSelectedItems = () => {
+    return apiCartData?.content?.result?.filter((item) => item.publish === '1') || [];
+  };
+
   const getApiCartTotal = () => {
-    return apiCartData?.content?.result?.reduce((total, item) => total + item.amount, 0) || 0;
+    return getSelectedItems().reduce((total, item) => total + item.amount, 0) || 0;
   };
 
   const getApiCartCount = () => {
-    return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
+    return getSelectedItems().reduce((total, item) => total + item.qty, 0) || 0;
   };
 
   const getShippingCost = () => {
-    return apiCartData?.content?.result?.reduce((total, item) => total + (item.shipping || 0), 0) || 0;
+    return getSelectedItems().reduce((total, item) => total + (item.shipping || 0), 0) || 0;
   };
 
   const getCostFromToken = () => {
@@ -605,7 +609,7 @@ const Cart: React.FC = () => {
   const shippingCost = getShippingCost();
   const costFromToken = getCostFromToken();
   const paymentFee = 0;
-  const baseTotal = apiCartData?.content?.balance ?? 0;
+  const baseTotal = getApiCartTotal();
   const totalPayment = baseTotal - voucherDiscount;
   // New order flow function
   const handlePlaceOrder = async () => {
