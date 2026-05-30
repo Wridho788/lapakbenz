@@ -112,9 +112,9 @@ export const customerApi = {
    */
   requestOTP: async (payload: RequestOTPRequest): Promise<RequestOTPResponse> => {
     try {
-      const response = await apiClient.post(ENDPOINT_REQ_OTP, createFormData(payload), {
+      const response = await apiClient.post(ENDPOINT_REQ_OTP, (payload), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
       });
       return response.data;

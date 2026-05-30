@@ -639,7 +639,7 @@ const ProductDetail: React.FC = () => {
         autoClose: 1500,
         theme: 'dark',
       });
-      navigate('/login');
+      // navigate('/login');
       return;
     }
 
