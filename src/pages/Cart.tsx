@@ -17,7 +17,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useCart, useRemoveFromCart, useAddToCart, useSetPickup, useCheckoutOrder, useVoucherList, useSetVoucher, useSetPublish, useSetNotes, useDeleteItemCart } from '../api/hooks/index';
+import { useCart, useRemoveFromCart, useAddToCart, useSetPickup, useCheckoutOrder, useVoucherList, useSetVoucher, useRemoveVoucher, useSetPublish, useSetNotes, useDeleteItemCart } from '../api/hooks/index';
 import { useDecodeToken } from '../api/hooks/authHooks';
 import type { VoucherItem } from '../api/types';
 import { toast } from 'react-toastify';
@@ -137,6 +137,7 @@ const Cart: React.FC = () => {
   } = useVoucherList();
 
   const setVoucherMutation = useSetVoucher();
+  const removeVoucherMutation = useRemoveVoucher();
   const [selectedVoucherId, setSelectedVoucherId] = useState<string | null>(null);
   const [voucherDiscount, setVoucherDiscount] = useState<number>(0);
 
@@ -165,7 +166,10 @@ const Cart: React.FC = () => {
 
   const apiSelectedVoucherId = voucherData?.content?.selected_voucher?.id;
   const currentVoucherId = selectedVoucherId ?? (apiSelectedVoucherId ? String(apiSelectedVoucherId) : null);
-  const selectedVoucher = voucherData?.content?.voucher?.find((voucher) => voucher.id === currentVoucherId) ?? null;
+  // Use selected_voucher directly from API (not from voucher list find), so the remove button always renders
+  const selectedVoucher = voucherData?.content?.selected_voucher
+    ? { ...voucherData.content.selected_voucher, id: String(voucherData.content.selected_voucher.id) }
+    : null;
 
   // Refetch cart data when window regains focus (user switches back to tab)
   useEffect(() => {
@@ -315,6 +319,30 @@ const Cart: React.FC = () => {
     } catch (error: any) {
       console.error('❌ Failed to set voucher:', error);
       toast.error(error?.message || 'Gagal menerapkan voucher. Silakan coba lagi.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+    }
+  };
+
+  const handleRemoveVoucher = async () => {
+    if (!currentVoucherId) return;
+
+    try {
+      await removeVoucherMutation.mutateAsync(currentVoucherId);
+      setSelectedVoucherId(null);
+      setVoucherDiscount(0);
+      toast.success('Voucher berhasil dihapus', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      refetchCart();
+      refetchVouchers();
+    } catch (error: any) {
+      console.error('❌ Failed to remove voucher:', error);
+      toast.error('Gagal menghapus voucher. Silakan coba lagi.', {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -1267,7 +1295,17 @@ const Cart: React.FC = () => {
 
               {selectedVoucher && (
                 <div className="summary-row discount">
-                  <span>Voucher: {selectedVoucher.name}</span>
+                  <div className="voucher-summary-label">
+                    <span>Voucher: {selectedVoucher.name}</span>
+                    <button
+                      className="remove-voucher-btn"
+                      onClick={handleRemoveVoucher}
+                      disabled={removeVoucherMutation.isPending}
+                      title="Hapus voucher"
+                    >
+                      {removeVoucherMutation.isPending ? '...' : '✕'}
+                    </button>
+                  </div>
                   <span>- Rp {voucherDiscount.toLocaleString('id-ID')}</span>
                 </div>
               )}
