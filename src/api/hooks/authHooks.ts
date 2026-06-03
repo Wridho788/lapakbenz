@@ -127,7 +127,7 @@ export function useVerifyOTP(): UseMutationResult<any, Error, VerifyOTPPayload> 
       if (!payload.otp) {
         throw new Error('OTP code is required');
       }
-      return await customerApi.verifyOTP(payload.username, payload.otp);
+      return await customerApi.verifyOTP(payload.username, String(payload.otp));
     },
   });
 }
