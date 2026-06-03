@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ProductCard } from './ProductCard';
 import { useLatestProducts, useBestSellerProducts } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
+import { capitalizeWords } from '../utils/format';
 import './ProductTabs.css';
 
 export const ProductTabs: React.FC = () => {
@@ -14,7 +15,8 @@ export const ProductTabs: React.FC = () => {
   const { data: bestSellerProductsData, isLoading: bestSellerLoading } = useBestSellerProducts();
   
   const handleProductClick = (product: any) => {
-    const productName = product.name || product.title || product.sku || product.id;
+    const rawName = product.name || product.title || product.sku || product.id;
+    const productName = capitalizeWords(rawName);
     const productUrl = createProductUrl(product.sku, productName);
     navigate(productUrl);
   };

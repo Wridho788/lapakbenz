@@ -1,5 +1,6 @@
 import React from 'react';
 import { MdStar, MdFavorite, MdDelete } from 'react-icons/md';
+import { capitalizeWords } from '../utils/format';
 import './ProductCard.css';
 
 interface ProductCardProps {
@@ -95,7 +96,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {renderStars(rating)}
           <span className="rating-number">({typeof rating === 'number' ? rating.toFixed(1) : rating})</span>
         </div>
-        <h3 className="product-card-name">{name}</h3>
+        <h3 className="product-card-name">{capitalizeWords(name)}</h3>
         <div className="product-card-price">
           {formatPrice(price)}
         </div>

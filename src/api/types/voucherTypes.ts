@@ -27,3 +27,8 @@ export interface SetVoucherResponse {
   error?: string;
   message?: string;
 }
+
+export interface RemoveVoucherResponse {
+  success: boolean;
+  message: string;
+}

@@ -145,7 +145,7 @@ const VerifyOtp: React.FC = () => {
       // Panggil API verify OTP
       await verifyOTPMutation.mutateAsync({
         username: username,
-        otp: otp.trim(),
+        otp: parseInt(otp.trim()),
       });
 
       // Tampilkan success message

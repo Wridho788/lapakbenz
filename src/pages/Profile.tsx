@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { AppbarDefault } from '../components/AppbarDefault';
-import { useProfile, useLedger, useCart } from '../api/hooks/index';
+import { useProfile, useLedger, useCart, useLogout } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import {
   MdPerson,
@@ -24,6 +24,7 @@ const Profile: React.FC = () => {
   
   // Auth state
   const { isAuthenticated, logout: authLogout } = useAuthStore();
+  const logoutMutation = useLogout();
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -168,11 +169,23 @@ const Profile: React.FC = () => {
     });
 
     try {
-      await authLogout();
+      await logoutMutation.mutateAsync();
       toast.dismiss(loadingToast);
       toast.success('Anda berhasil keluar', {
         position: 'bottom-right',
         autoClose: 1500,
+        theme: 'dark',
+        onClose: () => {
+          navigate('/login');
+        }
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.dismiss(loadingToast);
+      authLogout();
+      toast.error('Gagal keluar dari server, sesi lokal dibersihkan', {
+        position: 'bottom-right',
+        autoClose: 2000,
         theme: 'dark',
         onClose: () => {
           navigate('/login');

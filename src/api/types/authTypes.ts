@@ -21,8 +21,8 @@ export interface LoginResponse {
 
 export interface ForgotPasswordRequest {
   username: string;
-  new_password: string;
-  otp: string;
+  password: string;
+  otp: number;
 }
 
 export interface ForgotPasswordResponse {

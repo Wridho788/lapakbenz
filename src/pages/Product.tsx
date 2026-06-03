@@ -7,6 +7,7 @@ import SEO from '../components/SEO';
 import { generateBreadcrumbs } from '../utils/seoUtils';
 import { useProducts, useProductCategories, useProductSearch, useProductCities, useCart } from '../api/hooks/index';
 import { createProductUrl } from '../api/codeMapping';
+import { capitalizeWords } from '../utils/format';
 import './Product.css';
 import '../components/LoadingSkeleton.css';
 
@@ -377,7 +378,7 @@ const Product: React.FC = () => {
     const apiCartCount = getApiCartCount();
 
   const handleProductClick = (product: any) => {
-    const productName = product.name || product.sku || product.id;
+    const productName = capitalizeWords(product.name || product.sku || product.id);
     const productUrl = createProductUrl(String(product.sku), productName);
     navigate(productUrl);
   };
@@ -718,7 +719,7 @@ const Product: React.FC = () => {
                     )}
                   </div>
                   <div className="product-info">
-                    <h4 className="product-title">{(product.name || '').toUpperCase()}</h4>
+                    <h4 className="product-title">{capitalizeWords(product.name)}</h4>
                     <div className="product-rating">
                       <div className="rating-stars">
                         {renderStars(product.rating || 0)}

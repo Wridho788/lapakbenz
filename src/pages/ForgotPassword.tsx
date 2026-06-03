@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useRequestOTP, useForgotPassword } from '../api/hooks/index';
 import { useNavigate } from 'react-router-dom';
-import { MdSend } from 'react-icons/md';
+import { MdSend, MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import { AppbarAuth } from '../components/AppbarAuth';
 import './ForgotPassword.css';
 
@@ -69,6 +69,7 @@ const ForgotPassword: React.FC = () => {
 
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const { mutate: setForgotPassword, isPending: isSettingPassword } = useForgotPassword();
 
   const handleSetPassword = (e: React.FormEvent) => {
@@ -83,9 +84,9 @@ const ForgotPassword: React.FC = () => {
     }
     setForgotPassword(
       {
+        otp: parseInt(otp.trim()),
+        password: newPassword,
         username: emailOrPhone.trim(),
-        new_password: newPassword,
-        otp: otp.trim(),
       },
       {
         onSuccess: () => {
@@ -150,15 +151,26 @@ const ForgotPassword: React.FC = () => {
             </div>
             <div className="form-group">
               <label htmlFor="newPassword" className="form-label">Password Baru</label>
-              <input
-                type="password"
-                id="newPassword"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                className="form-input"
-                placeholder="Masukkan password baru"
-                required
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  className="form-input"
+                  placeholder="Masukkan password baru"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowNewPassword(prev => !prev)}
+                  aria-label={showNewPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  tabIndex={-1}
+                >
+                  {showNewPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                </button>
+              </div>
             </div>
             <button type="submit" className="send-button" disabled={isSettingPassword}>
               {isSettingPassword ? 'Menyimpan...' : 'Set Password'}

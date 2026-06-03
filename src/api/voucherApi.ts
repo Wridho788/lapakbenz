@@ -3,12 +3,14 @@ import {
   BASE_URL,
   ENDPOINT_VOUCHER,
   ENDPOINT_SET_VOUCHER,
+  ENDPOINT_REMOVE_VOUCHER,
 } from './constants';
 import type {
   VoucherItem,
   VoucherListResponse,
   SetVoucherRequest,
   SetVoucherResponse,
+  RemoveVoucherResponse,
 } from './types';
 
 const apiClient = axios.create({
@@ -76,6 +78,16 @@ export const voucherApi = {
 
   async setVoucher(payload: SetVoucherRequest, authToken: string): Promise<SetVoucherResponse> {
     const response = await apiClient.get(`${ENDPOINT_SET_VOUCHER}${payload.id}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    return response.data;
+  },
+
+  async removeVoucher(voucherId: string, authToken: string): Promise<RemoveVoucherResponse> {
+    const response = await apiClient.delete(`${ENDPOINT_REMOVE_VOUCHER}/${voucherId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

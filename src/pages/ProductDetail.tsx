@@ -23,6 +23,7 @@ import { useAuthStore } from '../stores/authStore';
 import { extractIdFromParam } from '../api/codeMapping';
 import { toast } from 'react-toastify';
 import { isShippingAddressRequiredError, logErrorDetails, getErrorMessage, isAuthenticationError } from '../utils/errorUtils';
+import { capitalizeWords } from '../utils/format';
 import './ProductDetail.css';
 
 interface ProductDetailType {
@@ -529,7 +530,7 @@ const ProductDetail: React.FC = () => {
       });
 
       // Show success message with toast
-      toast.success(`${quantity} ${productData.title.toUpperCase()} added to cart successfully`, {
+      toast.success(`${quantity} ${capitalizeWords(productData.title)} added to cart successfully`, {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -982,7 +983,7 @@ const ProductDetail: React.FC = () => {
                   )}
                 </button>
               </div>
-              <h1 className="product-title">{productData.title.toUpperCase()}</h1>
+              <h1 className="product-title">{capitalizeWords(productData.title)}</h1>
 
               <div className="product-rating-section">
                 <div className="rating-stars">{renderStars(productData.rating)}</div>

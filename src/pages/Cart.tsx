@@ -6,6 +6,7 @@ import {
   MdPayment,
   MdHome,
   MdClear,
+  MdClose,
   MdShoppingCart,
   MdAdd,
   MdRemove,
@@ -21,6 +22,7 @@ import { useCart, useRemoveFromCart, useAddToCart, useSetPickup, useCheckoutOrde
 import { useDecodeToken } from '../api/hooks/authHooks';
 import type { VoucherItem } from '../api/types';
 import { toast } from 'react-toastify';
+import { capitalizeWords } from '../utils/format';
 import './Cart.css';
 
 interface OrderingStatus {
@@ -271,7 +273,7 @@ const Cart: React.FC = () => {
       removeFromCart(itemId);
 
       // Show success message with item name
-      toast.success(`${itemName.toUpperCase()} telah dihapus dari keranjang`, {
+      toast.success(`${capitalizeWords(itemName)} telah dihapus dari keranjang`, {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -989,8 +991,8 @@ const Cart: React.FC = () => {
                   {/* Right Column - Product Info */}
                   <div className="item-info-column">
                     <div className="product-details">
-                      <h4 className="item-title" style={{ textTransform: 'uppercase' }}>
-                        {item.name.toUpperCase()}
+                      <h4 className="item-title">
+                        {capitalizeWords(item.name)}
                       </h4>
                       <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
                     </div>
@@ -1169,7 +1171,7 @@ const Cart: React.FC = () => {
                         }}
                       />
                       <div className="pickup-item-details">
-                        <h4 className="pickup-item-name">{item.name.toUpperCase()}</h4>
+                        <h4 className="pickup-item-name">{capitalizeWords(item.name)}</h4>
                         <p className="pickup-item-qty">Qty: {item.qty}</p>
                         <p className="pickup-item-status">
                           Status: {item.pickup === "1" ?
@@ -1187,7 +1189,25 @@ const Cart: React.FC = () => {
 
           {/* Voucher Selection Section */}
           <div className="voucher-section">
-            <h3>Pilih Voucher</h3>
+            <div className="voucher-section-header">
+              <h3>Pilih Voucher</h3>
+              {selectedVoucher && (
+                <button
+                  className="remove-voucher-btn"
+                  onClick={handleRemoveVoucher}
+                  disabled={removeVoucherMutation.isPending}
+                  title="Hapus voucher"
+                >
+                  {removeVoucherMutation.isPending ? (
+                    <span className="remove-spinner" />
+                  ) : (
+                    <>
+                      <MdClose /> Hapus
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
 
             {voucherLoading && (
               <div className="voucher-loading">

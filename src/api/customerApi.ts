@@ -89,9 +89,9 @@ export const customerApi = {
    */
   forgotPassword: async (payload: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
     try {
-      const response = await apiClient.post(ENDPOINT_FORGOT, createFormData(payload), {
+      const response = await apiClient.post(ENDPOINT_FORGOT, (payload), {
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
       });
       return response.data;

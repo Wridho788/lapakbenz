@@ -120,7 +120,7 @@ export const wishlistApi = {
   // DELETE - Remove from wishlist by product ID
   removeFromWishlist: async (authToken: string, productId: string): Promise<RemoveWishlistResponse> => {
     try {
-      const response = await apiClient.delete(
+      const response = await apiClient.get(
         `${ENDPOINT_WISHLIST}/${productId}`,
         {
           headers: {
