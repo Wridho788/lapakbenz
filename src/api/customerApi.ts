@@ -310,7 +310,7 @@ export const customerApi = {
    * @param id_customer string - Customer ID
    * @param otp string - OTP code
    */
-  verifyOTP: async (username: string, otp: string): Promise<any> => {
+  verifyOTP: async ( otp: number,username: string): Promise<any> => {
     try {
       const response = await apiClient.post(ENDPOINT_VERIFY, JSON.stringify({ username, otp }), {
         headers: {

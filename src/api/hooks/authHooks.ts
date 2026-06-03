@@ -114,8 +114,8 @@ export function useSimpleRequestOTP(
 }
 
 interface VerifyOTPPayload {
-  username: string;
   otp: number;
+  username: string;
 }
 
 export function useVerifyOTP(): UseMutationResult<any, Error, VerifyOTPPayload> {
@@ -127,7 +127,7 @@ export function useVerifyOTP(): UseMutationResult<any, Error, VerifyOTPPayload> 
       if (!payload.otp) {
         throw new Error('OTP code is required');
       }
-      return await customerApi.verifyOTP(payload.username, String(payload.otp));
+      return await customerApi.verifyOTP(payload.otp,payload.username);
     },
   });
 }
