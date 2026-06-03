@@ -1,6 +1,6 @@
 // Base URL for API
 // export const BASE_URL = 'https://goapi.dswip.com/';
-export const BASE_URL = 'https://dswip.cloud:8080/';
+export const BASE_URL = 'https://dswip.cloud/';
 // article endpoints
 export const ENDPOINT_ARTICLE = 'article';
 export const ENDPOINT_ARTICLE_CATEGORY = 'article_category';
