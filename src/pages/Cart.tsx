@@ -979,8 +979,12 @@ const Cart: React.FC = () => {
                   {/* Left Column - Product Image */}
                   <div className="item-image-column">
                     <img
-                      src={item.image || '/nodata.png'}
-                      alt={item.name}
+                      src={
+                        item.product_url_image && item.product_image
+                          ? `${item.product_url_image}${item.product_image}`
+                          : item.image || '/nodata.png'
+                      }
+                      alt={item.product_name || item.name}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/nodata.png';
