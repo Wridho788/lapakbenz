@@ -7,6 +7,7 @@ interface EventRegistrationProps {
   isAuthenticated: boolean;
   isPending: boolean;
   alreadyJoined?: boolean;
+  isEventNotFound?: boolean;
   onRegister: () => void;
 }
 
@@ -14,6 +15,7 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
   isAuthenticated,
   isPending,
   alreadyJoined = false,
+  isEventNotFound = false,
   onRegister,
 }) => {
   const { token, validateToken } = useAuthStore();
@@ -28,15 +30,16 @@ const EventRegistration: React.FC<EventRegistrationProps> = ({
     <div className="event-registration">
       <button
         onClick={onRegister}
-        disabled={isPending || alreadyJoined}
-        className={`registration-button ${isPending ? 'loading' : ''} ${alreadyJoined ? 'already-joined' : ''}`}
+        disabled={isPending || alreadyJoined || isEventNotFound}
+        className={`registration-button ${isPending ? 'loading' : ''} ${alreadyJoined || isEventNotFound ? 'already-joined' : ''}`}
+        title={isEventNotFound ? 'Event tidak ditemukan' : alreadyJoined ? 'Anda sudah terdaftar' : ''}
       >
         <div className="registration-button-content">
           <span className="registration-icon">
-            {isPending ? '⏳' : alreadyJoined ? '✓' : '🎫'}
+            {isPending ? '⏳' : isEventNotFound ? '✗' : alreadyJoined ? '✓' : '🎫'}
           </span>
           <span className="registration-text">
-            {isPending ? 'Registering...' : alreadyJoined ? 'Sudah Terdaftar' : 'Join Event'}
+            {isPending ? 'Registering...' : isEventNotFound ? 'Event Tidak Ditemukan' : alreadyJoined ? 'Sudah Terdaftar' : 'Join Event'}
           </span>
         </div>
       </button>

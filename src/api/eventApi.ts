@@ -65,9 +65,8 @@ export const eventApi = {
 
   registerEvent: async (authToken: string, eventId: string): Promise<EventRegisterResponse> => {
     try {
-      const response = await apiClient.post(
-        ENDPOINT_EVENT_REGISTER,
-        JSON.stringify({ event_id: eventId }),
+      const response = await apiClient.get(
+        ENDPOINT_EVENT_REGISTER+`/${eventId}`,
         {
           headers: {
             'Authorization': `Bearer ${authToken}`,

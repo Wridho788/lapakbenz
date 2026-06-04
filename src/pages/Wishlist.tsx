@@ -204,7 +204,7 @@ const Wishlist: React.FC = () => {
           {wishlistItems.map((item: any) => (
             <ProductCard
               key={item.id || item.product_id}
-              image={item.image || item.url1 || '/bea2x.jpg'}
+              image={item.url_image + item.image  || '/bea2x.jpg'}
               name={item.name || item.product_name || 'Product'}
               price={item.price || 0}
               rating={item.rating || 0}

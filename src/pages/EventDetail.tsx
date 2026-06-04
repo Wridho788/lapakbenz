@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import EventRegistration from '../components/EventRegistration';
@@ -19,8 +19,9 @@ const EventDetail: React.FC = () => {
   const { cartCount } = useCart();
 
   const [isAuthValidated, setIsAuthValidated] = useState(false);
-  const [triggerRegistration, setTriggerRegistration] = useState(false);
   const [alreadyJoined, setAlreadyJoined] = useState(false);
+  const [isEventNotFound, setIsEventNotFound] = useState(false);
+  const registrationInFlightRef = useRef(false);
 
   const eventId = eventParam ? extractIdFromParam(eventParam) : null;
 
@@ -31,16 +32,18 @@ const EventDetail: React.FC = () => {
   const imageUrl = eventByIdQuery.data?.image_url || '';
 
   useEffect(() => {
-    if (eventRegisterQuery.data && triggerRegistration) {
+    if (registrationInFlightRef.current && !eventRegisterQuery.isFetching) {
       const result = eventRegisterQuery.data;
-      if (result.status === 200) {
+      const error = eventRegisterQuery.error;
+
+      if (result && result.status === 200) {
         toast.success('Registration Successful!', {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
         });
         setAlreadyJoined(true);
-      } else {
+      } else if (result) {
         const errorMsg = result.message || result.error || 'Registration failed.';
         if (errorMsg.toLowerCase().includes('already')) {
           toast.error('Register Failed: Event Already Done', {
@@ -48,6 +51,14 @@ const EventDetail: React.FC = () => {
             autoClose: 2000,
             theme: 'dark',
           });
+          setAlreadyJoined(true);
+        } else if (errorMsg.toLowerCase().includes('not found')) {
+          toast.error('Register Failed: Event Not Found', {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
+          setIsEventNotFound(true);
         } else {
           toast.error(`Register Failed: ${errorMsg}`, {
             position: 'bottom-right',
@@ -55,47 +66,53 @@ const EventDetail: React.FC = () => {
             theme: 'dark',
           });
         }
-        setAlreadyJoined(true);
-      }
-      setTriggerRegistration(false);
-    }
+      } else if (error) {
+        let errorMessage = 'An unexpected error occurred.';
+        if (
+          error &&
+          typeof error === 'object' &&
+          'response' in error
+        ) {
+          const axiosError = error as {
+            response?: { data?: { error?: string } };
+            message?: string;
+          };
+          errorMessage = axiosError.response?.data?.error || axiosError.message || errorMessage;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
 
-    if (eventRegisterQuery.error && triggerRegistration) {
-      let errorMessage = 'An unexpected error occurred.';
-      if (
-        eventRegisterQuery.error &&
-        typeof eventRegisterQuery.error === 'object' &&
-        'response' in eventRegisterQuery.error
-      ) {
-        const axiosError = eventRegisterQuery.error as {
-          response?: { data?: { error?: string } };
-          message?: string;
-        };
-        errorMessage = axiosError.response?.data?.error || axiosError.message || errorMessage;
-      } else if (eventRegisterQuery.error.message) {
-        errorMessage = eventRegisterQuery.error.message;
+        if (errorMessage.toLowerCase().includes('already')) {
+          toast.error('Register Failed: Event Already Done', {
+            position: 'bottom-right',
+            autoClose: 2000,
+            theme: 'dark',
+          });
+          setAlreadyJoined(true);
+        } else if (errorMessage.toLowerCase().includes('not found')) {
+          toast.error('Register Failed: Event Not Found', {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
+          setIsEventNotFound(true);
+        } else {
+          toast.error(`Register Failed: ${errorMessage}`, {
+            position: 'bottom-right',
+            autoClose: 1500,
+            theme: 'dark',
+          });
+        }
       }
 
-      if (errorMessage.toLowerCase().includes('already')) {
-        toast.error('Register Failed: Event Already Done', {
-          position: 'bottom-right',
-          autoClose: 2000,
-          theme: 'dark',
-        });
-      } else {
-        toast.error(`Register Failed: ${errorMessage}`, {
-          position: 'bottom-right',
-          autoClose: 1500,
-          theme: 'dark',
-        });
-      }
-      setAlreadyJoined(true);
-      setTriggerRegistration(false);
+      registrationInFlightRef.current = false;
     }
-  }, [eventRegisterQuery.data, eventRegisterQuery.error, triggerRegistration]);
+  }, [eventRegisterQuery.isFetching, eventRegisterQuery.data, eventRegisterQuery.error]);
 
   useEffect(() => {
     setAlreadyJoined(false);
+    setIsEventNotFound(false);
+    registrationInFlightRef.current = false;
   }, [eventId]);
 
   useEffect(() => {
@@ -125,6 +142,15 @@ const EventDetail: React.FC = () => {
   };
 
   const handleEventRegister = async () => {
+    if (registrationInFlightRef.current) {
+      toast.warning('Registration is already in progress. Please wait.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
+      return;
+    }
+
     const authSuccess = requireAuth(() => {}, 'register for event');
     if (!authSuccess || !isAuthValidated) {
       toast.warning('Please login first to register for this event.', {
@@ -153,7 +179,9 @@ const EventDetail: React.FC = () => {
       });
       return;
     }
-    setTriggerRegistration(true);
+
+    registrationInFlightRef.current = true;
+    eventRegisterQuery.refetch();
   };
 
   const handleMerchantRegistration = () => {
@@ -302,8 +330,9 @@ const EventDetail: React.FC = () => {
           <EventRegistration
             eventId={eventId || undefined}
             isAuthenticated={isAuthenticated && isAuthValidated}
-            isPending={eventRegisterQuery.isFetching && triggerRegistration}
+            isPending={eventRegisterQuery.isFetching}
             alreadyJoined={alreadyJoined}
+            isEventNotFound={isEventNotFound}
             onRegister={handleEventRegister}
           />
 
