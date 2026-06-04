@@ -50,7 +50,7 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
       <div className="appbar-user-info">
         {showDefaultAvatar ? (
           <img
-            src="/merci.png"
+            src="/avatar1.jpg"
             alt="default avatar"
             className="appbar-avatar"
           />
