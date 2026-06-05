@@ -208,7 +208,7 @@ const Wishlist: React.FC = () => {
               name={item.name || item.product_name || 'Product'}
               price={item.price || 0}
               rating={item.rating || 0}
-              onClick={() => handleProductClick(item.product_id)}
+              onClick={() => handleProductClick(item.sku)}
               showWishlistRemove={true}
               isWishlisted={true}
               onRemoveWishlist={() => handleRemoveFromWishlist(item.product_id)}
