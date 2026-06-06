@@ -70,7 +70,11 @@ export const voucherApi = {
       content: {
         voucher: vouchers.map((item: any) => normalizeVoucherItem(item, imageBase)),
         image_url: imageBase,
-        selected_voucher: payload.selected_voucher ?? data.selected_voucher ?? null,
+        selected_voucher: payload.selected_voucher
+          ? normalizeVoucherItem(payload.selected_voucher, imageBase)
+          : data.selected_voucher
+            ? normalizeVoucherItem(data.selected_voucher, imageBase)
+            : null,
         raw: data,
       },
     };
@@ -86,8 +90,8 @@ export const voucherApi = {
     return response.data;
   },
 
-  async removeVoucher(voucherId: string, authToken: string): Promise<RemoveVoucherResponse> {
-    const response = await apiClient.delete(`${ENDPOINT_REMOVE_VOUCHER}/${voucherId}`, {
+  async removeVoucher(authToken: string): Promise<RemoveVoucherResponse> {
+    const response = await apiClient.delete(`${ENDPOINT_REMOVE_VOUCHER}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

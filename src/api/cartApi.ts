@@ -104,37 +104,66 @@ export const cartApi = {
     checkResponseError(res.data, 'getCart');
 
     const data = res.data;
+    const imageBase = data.image_url || '';
 
-    if (data?.content?.result) {
-      return data;
-    }
+    const normalizeItem = (item: any, baseUrl: string) => ({
+      id: String(item.id ?? item.product_id ?? ''),
+      sku: item.sku || item.product_sku || '',
+      name: item.name || item.product_name || '',
+      image:
+        item.image ||
+        (item.product_image ? `${baseUrl || ''}${item.product_image}` : '/nodata.png'),
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_sku: item.product_sku,
+      product_image: item.product_image,
+      product_url_image: item.product_url_image,
+      qty: Number(item.qty) || 0,
+      price: Number(item.price) || 0,
+      shipping: Number(item.shipping) || 0,
+      shipping_temp: item.shipping_temp != null ? Number(item.shipping_temp) : undefined,
+      amount: Number(item.amount) || 0,
+      total: Number(item.total) || 0,
+      pickup: String(item.pickup ?? '0'),
+      publish: String(item.publish ?? '0'),
+      attribute: item.attribute ?? null,
+      description: item.description ?? null,
+      note: item.note ?? null,
+      notes: item.notes ?? null,
+      customer: item.customer,
+      tax: item.tax,
+      created: item.created || '',
+      updated: item.updated ?? null,
+      deleted: item.deleted ?? null,
+    });
+
+    const normalizeItems = (items: any[], baseUrl: string) => items.map((item: any) => normalizeItem(item, baseUrl));
 
     if (Array.isArray(data?.result)) {
-      const normalizedResult = data.result.map((item: any) => ({
-        id: String(item.id ?? item.product_id ?? ''),
-        sku: item.sku || item.product_sku || '',
-        name: item.name || item.product_name || '',
-        image:
-          item.image ||
-          (item.product_image
-            ? `${data.image_url || ''}${item.product_image}`
-            : '/nodata.png'),
-        qty: Number(item.qty) || 0,
-        price: Number(item.price) || 0,
-        shipping: Number(item.shipping) || 0,
-        amount: Number(item.amount) || 0,
-        total: Number(item.total) || 0,
-        pickup: String(item.pickup ?? '0'),
-        publish: String(item.publish ?? '0'),
-        note: item.note || '',
-        created: item.created || '',
-        updated: item.updated ?? null,
-      }));
-
+      const normalizedResult = normalizeItems(data.result, imageBase);
       return {
+        image_url: data.image_url,
+        total: Number(data.total) || 0,
+        cost: Number(data.cost) || 0,
         content: {
           balance: Number(data.total) || 0,
           record: normalizedResult.length,
+          cost: Number(data.cost) || 0,
+          result: normalizedResult,
+        },
+      };
+    }
+
+    if (Array.isArray(data?.content?.result)) {
+      const normalizedResult = normalizeItems(data.content.result, imageBase);
+      return {
+        image_url: data.image_url,
+        total: Number(data.total ?? data.content.balance) || 0,
+        cost: Number(data.cost ?? data.content.cost) || 0,
+        content: {
+          balance: Number(data.content.balance ?? data.total) || 0,
+          record: normalizedResult.length,
+          cost: Number(data.content.cost ?? data.cost) || 0,
           result: normalizedResult,
         },
       };

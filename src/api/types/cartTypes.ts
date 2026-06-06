@@ -1,9 +1,9 @@
 // Cart types
 
 export interface CartItem {
-  id: string;
+  id: number | string;
   sku: string;
-  name: string;
+  name?: string;
   image?: string;
   product_id?: number;
   product_name?: string;
@@ -16,11 +16,11 @@ export interface CartItem {
   shipping_temp?: number;
   amount: number;
   total: number;
-  pickup: string;
-  publish: string;
+  pickup: string | number;
+  publish: string | number;
   attribute?: string | null;
   description?: string | null;
-  note: string;
+  note?: string | null;
   notes?: string | null;
   customer?: number;
   tax?: number;
@@ -30,9 +30,14 @@ export interface CartItem {
 }
 
 export interface CartResponse {
-  content: {
+  image_url?: string;
+  total?: number;
+  cost?: number;
+  result?: CartItem[];
+  content?: {
     balance: number;
     record: number;
+    cost: number;
     result: CartItem[];
   };
 }

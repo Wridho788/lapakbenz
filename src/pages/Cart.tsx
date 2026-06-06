@@ -18,8 +18,20 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useCart as useCartContext } from '../contexts/CartContext';
 import { useAuthStore } from '../stores/authStore';
-import { useCart, useRemoveFromCart, useAddToCart, useSetPickup, useCheckoutOrder, useVoucherList, useSetVoucher, useRemoveVoucher, useSetPublish, useSetNotes, useDeleteItemCart } from '../api/hooks/index';
-import { useDecodeToken } from '../api/hooks/authHooks';
+import {
+  useCart,
+  useRemoveFromCart,
+  useAddToCart,
+  useSetPickup,
+  useCheckoutOrder,
+  useVoucherList,
+  useSetVoucher,
+  useRemoveVoucher,
+  useSetPublish,
+  useSetNotes,
+  useDeleteItemCart,
+} from '../api/hooks/index';
+// import { useDecodeToken } from '../api/hooks/authHooks';
 import type { VoucherItem } from '../api/types';
 import { toast } from 'react-toastify';
 import { capitalizeWords } from '../utils/format';
@@ -151,7 +163,7 @@ const Cart: React.FC = () => {
   const [showShippingOptions, setShowShippingOptions] = useState<string | null>(null);
 
   // Decode token hook untuk mendapatkan cost data
-  const { data: decodeTokenData } = useDecodeToken();
+  // const { data: decodeTokenData } = useDecodeToken();
 
   // Refetch cart data when component mounts to ensure fresh data
   useEffect(() => {
@@ -167,11 +179,16 @@ const Cart: React.FC = () => {
   }, [voucherData]);
 
   const apiSelectedVoucherId = voucherData?.content?.selected_voucher?.id;
-  const currentVoucherId = selectedVoucherId ?? (apiSelectedVoucherId ? String(apiSelectedVoucherId) : null);
-  // Use selected_voucher directly from API (not from voucher list find), so the remove button always renders
-  const selectedVoucher = voucherData?.content?.selected_voucher
-    ? { ...voucherData.content.selected_voucher, id: String(voucherData.content.selected_voucher.id) }
-    : null;
+  const currentVoucherId =
+    selectedVoucherId ?? (apiSelectedVoucherId ? String(apiSelectedVoucherId) : null);
+
+  const selectedVoucher =
+    voucherData?.content?.selected_voucher
+      ? {
+          ...voucherData.content.selected_voucher,
+          id: String(voucherData.content.selected_voucher.id),
+        }
+      : voucherData?.content?.voucher?.find((voucher) => voucher.id === currentVoucherId) ?? null;
 
   // Refetch cart data when window regains focus (user switches back to tab)
   useEffect(() => {
@@ -263,7 +280,7 @@ const Cart: React.FC = () => {
 
     try {
       // Find the item to get its details for the success message
-      const itemToRemove = apiCartData?.content?.result?.find(item => item.id === itemId);
+      const itemToRemove = apiCartData?.content?.result?.find((item) => item.id === itemId);
       const itemName = itemToRemove?.name || 'Item';
 
       // Use deleteItemCart hook to remove specific item via API
@@ -299,6 +316,15 @@ const Cart: React.FC = () => {
         theme: 'dark',
       });
       navigate('/login');
+      return;
+    }
+
+    if (!canApplyVoucher) {
+      toast.warning('Pilih item terlebih dahulu sebelum menggunakan voucher.', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       return;
     }
 
@@ -364,7 +390,7 @@ const Cart: React.FC = () => {
   //   }
 
   //   const cartItems = apiCartData?.content?.result || [];
-    
+
   //   if (cartItems.length === 0) {
   //     toast.warning('Keranjang kosong', {
   //       position: 'bottom-right',
@@ -378,12 +404,12 @@ const Cart: React.FC = () => {
   //     const promises = cartItems.map(item =>
   //       setPickupMutation.mutateAsync(item.id)
   //     );
-      
+
   //     await Promise.all(promises);
-      
+
   //     toast.success(
-  //       isPickup 
-  //         ? `Berhasil mengatur pengambilan sendiri untuk ${cartItems.length} produk` 
+  //       isPickup
+  //         ? `Berhasil mengatur pengambilan sendiri untuk ${cartItems.length} produk`
   //         : `Berhasil mengatur pengiriman untuk ${cartItems.length} produk`,
   //       {
   //         position: 'bottom-right',
@@ -391,7 +417,7 @@ const Cart: React.FC = () => {
   //         theme: 'dark',
   //       }
   //     );
-      
+
   //     // Refresh cart data to get updated pickup status and shipping costs
   //     refetchCart();
   //   } catch (error: any) {
@@ -418,16 +444,11 @@ const Cart: React.FC = () => {
 
     try {
       await setPublishMutation.mutateAsync(itemId);
-      toast.success(
-        isPublished
-          ? 'Item tidak dipilih'
-          : 'Item dipilih untuk diproses',
-        {
-          position: 'bottom-right',
-          autoClose: 1500,
-          theme: 'dark',
-        }
-      );
+      toast.success(isPublished ? 'Item tidak dipilih' : 'Item dipilih untuk diproses', {
+        position: 'bottom-right',
+        autoClose: 1500,
+        theme: 'dark',
+      });
       refetchCart();
     } catch (error: any) {
       console.error('❌ Failed to toggle publish:', error);
@@ -505,7 +526,7 @@ const Cart: React.FC = () => {
           position: 'bottom-right',
           autoClose: 1500,
           theme: 'dark',
-        }
+        },
       );
       refetchCart();
       setShowShippingOptions(null);
@@ -631,16 +652,36 @@ const Cart: React.FC = () => {
   };
 
   const getCostFromToken = () => {
-    return decodeTokenData?.cost || 0;
+    return apiCartData?.content?.cost || 0;
   };
+
+  const selectedItems = getSelectedItems();
+  const selectedItemCount = selectedItems.length;
+  const hasSelectedCartItems = selectedItemCount > 0;
+  const canApplyVoucher = hasSelectedCartItems;
 
   const subtotal = getApiCartTotal();
   const apiCartCount = getApiCartCount();
   const shippingCost = getShippingCost();
   const costFromToken = getCostFromToken();
   const paymentFee = 0;
-  const baseTotal = getApiCartTotal();
-  const totalPayment = baseTotal - voucherDiscount;
+  const baseTotal = subtotal;
+
+  const selectedVoucherValue = Number(selectedVoucher?.value ?? 0);
+  const selectedVoucherDiscount = canApplyVoucher
+    ? voucherDiscount > 0
+      ? voucherDiscount
+      : selectedVoucher
+        ? selectedVoucher.type === 'percent'
+          ? Math.floor((baseTotal + shippingCost + costFromToken + paymentFee) * (selectedVoucherValue / 100))
+          : selectedVoucherValue
+        : 0
+    : 0;
+
+  const totalPayment = Math.max(
+    baseTotal + shippingCost + costFromToken + paymentFee - selectedVoucherDiscount,
+    0,
+  );
   // New order flow function
   const handlePlaceOrder = async () => {
     if (!requireAuth(() => {}, 'place order')) {
@@ -653,8 +694,8 @@ const Cart: React.FC = () => {
       return;
     }
 
-    if (!hasApiCartItems) {
-      toast.warning('Keranjang Anda kosong', {
+    if (!hasSelectedCartItems) {
+      toast.warning('Pilih setidaknya satu item untuk melanjutkan checkout.', {
         position: 'bottom-right',
         autoClose: 1500,
         theme: 'dark',
@@ -968,10 +1009,14 @@ const Cart: React.FC = () => {
                   {/* Checkbox for publish status */}
                   <div
                     className={`item-checkbox ${item.publish === '1' ? 'checked' : ''}`}
-                    onClick={() => handlePublishToggle(item.id, item.publish === '1')}
+                    onClick={() => handlePublishToggle(`${item.id}`, item.publish === '1')}
                     role="checkbox"
                     aria-checked={item.publish === '1'}
-                    title={item.publish === '1' ? 'Klik untuk hapus dari publikasi' : 'Klik untuk publikasikan'}
+                    title={
+                      item.publish === '1'
+                        ? 'Klik untuk hapus dari publikasi'
+                        : 'Klik untuk publikasikan'
+                    }
                   >
                     {item.publish === '1' && <MdCheck size={16} />}
                   </div>
@@ -995,9 +1040,7 @@ const Cart: React.FC = () => {
                   {/* Right Column - Product Info */}
                   <div className="item-info-column">
                     <div className="product-details">
-                      <h4 className="item-title">
-                        {capitalizeWords(item.name)}
-                      </h4>
+                      <h4 className="item-title">{capitalizeWords(item.name)}</h4>
                       <p className="item-price">Rp {item.price.toLocaleString('id-ID')}</p>
                     </div>
 
@@ -1005,7 +1048,7 @@ const Cart: React.FC = () => {
                     <div className="item-action-buttons">
                       <button
                         className={`action-btn notes-btn ${item.note ? 'has-notes' : ''}`}
-                        onClick={() => handleAddNotes(item.id, item.note || '')}
+                        onClick={() => handleAddNotes(`${item.id}`, item.note || '')}
                         title={item.note ? 'Lihat/Edit Catatan' : 'Tambah Catatan'}
                       >
                         <MdNotes size={16} />
@@ -1013,7 +1056,11 @@ const Cart: React.FC = () => {
                       </button>
                       <button
                         className="action-btn shipping-btn"
-                        onClick={() => setShowShippingOptions(showShippingOptions === item.id ? null : item.id)}
+                        onClick={() =>
+                          setShowShippingOptions(
+                            showShippingOptions === `${item.id}` ? null : `${item.id}`,
+                          )
+                        }
                         title="Opsi Pengiriman"
                       >
                         <MdLocalShipping size={16} />
@@ -1022,19 +1069,19 @@ const Cart: React.FC = () => {
                     </div>
 
                     {/* Shipping Options Popup */}
-                    {showShippingOptions === item.id && (
+                    {showShippingOptions === `${item.id}` && (
                       <div className="shipping-options-popup">
                         <div className="shipping-options-header">Opsi Pengiriman</div>
                         <button
                           className={`shipping-option ${item.pickup === '0' ? 'selected' : ''}`}
-                          onClick={() => handleItemShippingToggle(item.id, false)}
+                          onClick={() => handleItemShippingToggle(`${item.id}`, false)}
                         >
                           <MdLocalShipping size={16} />
                           <span>Kirim (Rp {(item.shipping || 0).toLocaleString('id-ID')})</span>
                         </button>
                         <button
                           className={`shipping-option ${item.pickup === '1' ? 'selected' : ''}`}
-                          onClick={() => handleItemShippingToggle(item.id, true)}
+                          onClick={() => handleItemShippingToggle(`${item.id}`, true)}
                         >
                           <MdHome size={16} />
                           <span>Ambil Sendiri</span>
@@ -1049,7 +1096,7 @@ const Cart: React.FC = () => {
                     )}
 
                     {/* Notes Textarea */}
-                    {editingNotesItemId === item.id && (
+                    {editingNotesItemId === `${item.id}` && (
                       <div className="notes-editor">
                         <textarea
                           className="notes-textarea"
@@ -1059,15 +1106,12 @@ const Cart: React.FC = () => {
                           rows={3}
                         />
                         <div className="notes-actions">
-                          <button
-                            className="notes-cancel-btn"
-                            onClick={handleCancelNotes}
-                          >
+                          <button className="notes-cancel-btn" onClick={handleCancelNotes}>
                             Batal
                           </button>
                           <button
                             className="notes-save-btn"
-                            onClick={() => handleSaveNotes(item.id)}
+                            onClick={() => handleSaveNotes(`${item.id}`)}
                             disabled={setNotesMutation.isPending}
                           >
                             {setNotesMutation.isPending ? 'Menyimpan...' : 'Simpan'}
@@ -1077,7 +1121,7 @@ const Cart: React.FC = () => {
                     )}
 
                     {/* Show existing note if not editing */}
-                    {item.note && editingNotesItemId !== item.id && (
+                    {item.note && editingNotesItemId !== `${item.id}` && (
                       <div className="item-note-preview">
                         <MdNotes size={14} />
                         <span>{item.note}</span>
@@ -1107,7 +1151,7 @@ const Cart: React.FC = () => {
 
                       <div
                         className="remove-btn-inline"
-                        onClick={() => handleRemoveItem(item.id)}
+                        onClick={() => handleRemoveItem(`${item.id}`)}
                         aria-label="Hapus item"
                         title="Hapus item dari keranjang"
                       >
@@ -1195,7 +1239,28 @@ const Cart: React.FC = () => {
           <div className="voucher-section">
             <div className="voucher-section-header">
               <h3>Pilih Voucher</h3>
-              {selectedVoucher && (
+            </div>
+
+            {selectedVoucher && (
+              <div className="voucher-summary-card selected-voucher-card">
+                <div className="voucher-summary-left">
+                  <div className="voucher-summary-thumb">
+                    <img
+                      src={selectedVoucher.image || '/nodata.png'}
+                      alt={selectedVoucher.name}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/nodata.png';
+                      }}
+                    />
+                  </div>
+                  <div className="voucher-summary-info">
+                    <span className="voucher-summary-label">Voucher Terpilih</span>
+                    <span className="voucher-summary-name">{selectedVoucher.name}</span>
+                    {selectedVoucher.code && (
+                      <span className="voucher-summary-code">{selectedVoucher.code}</span>
+                    )}
+                  </div>
+                </div>
                 <button
                   className="remove-voucher-btn"
                   onClick={handleRemoveVoucher}
@@ -1210,12 +1275,18 @@ const Cart: React.FC = () => {
                     </>
                   )}
                 </button>
-              )}
-            </div>
+              </div>
+            )}
 
             {voucherLoading && (
               <div className="voucher-loading">
                 <p>Memuat voucher...</p>
+              </div>
+            )}
+
+            {!canApplyVoucher && !voucherLoading && (
+              <div className="voucher-warning">
+                <p>Centang minimal satu item agar voucher dapat digunakan.</p>
               </div>
             )}
 
@@ -1251,7 +1322,7 @@ const Cart: React.FC = () => {
                       type="button"
                       className={`voucher-card ${isSelected ? 'selected' : ''}`}
                       onClick={() => handleSelectVoucher(voucher)}
-                      disabled={setVoucherMutation.isPending}
+                      disabled={setVoucherMutation.isPending || !canApplyVoucher}
                     >
                       <div className="voucher-image">
                         <img
@@ -1269,7 +1340,9 @@ const Cart: React.FC = () => {
                           <div className="voucher-description">{voucher.description}</div>
                         ) : null}
                         <div className="voucher-meta">
-                          {voucher.code ? <span className="voucher-code">{voucher.code}</span> : null}
+                          {voucher.code ? (
+                            <span className="voucher-code">{voucher.code}</span>
+                          ) : null}
                           {voucher.value ? (
                             <span className="voucher-value">
                               {voucher.type === 'percent'
@@ -1286,9 +1359,7 @@ const Cart: React.FC = () => {
               </div>
             ) : (
               !voucherLoading && (
-                <p style={{ margin: 0, color: '#666' }}>
-                  Tidak ada voucher tersedia saat ini.
-                </p>
+                <p style={{ margin: 0, color: '#666' }}>Tidak ada voucher tersedia saat ini.</p>
               )
             )}
           </div>
@@ -1297,56 +1368,32 @@ const Cart: React.FC = () => {
           <div className="order-summary">
             <h3>Ringkasan Pesanan</h3>
             <div className="summary-details">
-              
               <div className="summary-row">
                 <span>Subtotal ({apiCartCount} item)</span>
                 <span>Rp {subtotal.toLocaleString('id-ID')}</span>
               </div>
-              
+
               {shippingCost > 0 && (
                 <div className="summary-row">
                   <span>Biaya Pengiriman</span>
                   <span>Rp {shippingCost.toLocaleString('id-ID')}</span>
                 </div>
               )}
-              
+              {selectedVoucherDiscount > 0 && (
+                <div className="summary-row discount">
+                  <span>
+                    Diskon Voucher
+                    {selectedVoucher?.type === 'percent' && selectedVoucherValue > 0
+                      ? ` (${selectedVoucherValue}%)`
+                      : ''}
+                  </span>
+                  <span>-Rp {selectedVoucherDiscount.toLocaleString('id-ID')}</span>
+                </div>
+              )}
               {costFromToken > 0 && (
                 <div className="summary-row">
                   <span>Biaya Layanan</span>
                   <span>Rp {costFromToken.toLocaleString('id-ID')}</span>
-                </div>
-              )}
-
-              {selectedVoucher && (
-                <div className="voucher-summary-card">
-                  <div className="voucher-summary-left">
-                    <div className="voucher-summary-thumb">
-                      <img
-                        src={selectedVoucher.image || '/nodata.png'}
-                        alt={selectedVoucher.name}
-                        onError={(e) => { (e.target as HTMLImageElement).src = '/nodata.png'; }}
-                      />
-                    </div>
-                    <div className="voucher-summary-info">
-                      <span className="voucher-summary-label">Voucher</span>
-                      <span className="voucher-summary-name">{selectedVoucher.name}</span>
-                    </div>
-                  </div>
-                  <button
-                    className="remove-voucher-btn"
-                    onClick={handleRemoveVoucher}
-                    disabled={removeVoucherMutation.isPending}
-                    title="Hapus voucher"
-                  >
-                    {removeVoucherMutation.isPending ? (
-                      <span className="remove-spinner" />
-                    ) : (
-                      <>
-                        <MdClear size={14} />
-                        <span>Hapus</span>
-                      </>
-                    )}
-                  </button>
                 </div>
               )}
 
@@ -1369,7 +1416,7 @@ const Cart: React.FC = () => {
             <button
               className="checkout-btn"
               onClick={handlePlaceOrder}
-              disabled={orderingStatus.isOrdering || !hasApiCartItems}
+              disabled={orderingStatus.isOrdering || !hasSelectedCartItems}
             >
               {orderingStatus.isOrdering ? (
                 <>

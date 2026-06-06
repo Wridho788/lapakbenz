@@ -45,12 +45,12 @@ export function useSetVoucher(): UseMutationResult<SetVoucherResponse, Error, { 
 
 export function useRemoveVoucher(): UseMutationResult<RemoveVoucherResponse, Error, string> {
   return useMutation({
-    mutationFn: async (voucherId: string) => {
+    mutationFn: async () => {
       const token = useAuthStore.getState().token;
       if (!token) {
         throw new Error('Authentication token required');
       }
-      return voucherApi.removeVoucher(voucherId, token);
+      return voucherApi.removeVoucher(token);
     },
   });
 }
