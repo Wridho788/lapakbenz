@@ -32,7 +32,7 @@ const EventDetail: React.FC = () => {
   const imageUrl = eventByIdQuery.data?.image_url || '';
 
   useEffect(() => {
-    if (registrationInFlightRef.current && !eventRegisterQuery.isFetching) {
+    if (registrationInFlightRef.current && eventRegisterQuery.status !== 'pending') {
       const result = eventRegisterQuery.data;
       const error = eventRegisterQuery.error;
 
@@ -107,7 +107,7 @@ const EventDetail: React.FC = () => {
 
       registrationInFlightRef.current = false;
     }
-  }, [eventRegisterQuery.isFetching, eventRegisterQuery.data, eventRegisterQuery.error]);
+  }, [eventRegisterQuery.status, eventRegisterQuery.data, eventRegisterQuery.error]);
 
   useEffect(() => {
     setAlreadyJoined(false);
@@ -181,7 +181,7 @@ const EventDetail: React.FC = () => {
     }
 
     registrationInFlightRef.current = true;
-    eventRegisterQuery.refetch();
+    eventRegisterQuery.mutate();
   };
 
   const handleMerchantRegistration = () => {
@@ -330,7 +330,7 @@ const EventDetail: React.FC = () => {
           <EventRegistration
             eventId={eventId || undefined}
             isAuthenticated={isAuthenticated && isAuthValidated}
-            isPending={eventRegisterQuery.isFetching}
+            isPending={eventRegisterQuery.status === 'pending'}
             alreadyJoined={alreadyJoined}
             isEventNotFound={isEventNotFound}
             onRegister={handleEventRegister}

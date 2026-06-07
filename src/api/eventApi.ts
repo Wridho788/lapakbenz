@@ -63,7 +63,10 @@ export const eventApi = {
     return response.data;
   },
 
-  registerEvent: async (authToken: string, eventId: string): Promise<EventRegisterResponse> => {
+  registerEvent: async (
+    authToken: string,
+    eventId: string,
+  ): Promise<EventRegisterResponse & { status: number }> => {
     try {
       const response = await apiClient.get(
         ENDPOINT_EVENT_REGISTER+`/${eventId}`,

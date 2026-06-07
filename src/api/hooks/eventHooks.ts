@@ -72,12 +72,15 @@ export function useEventById(id: string): UseQueryResult<EventDetailResponse, Er
 export function useEventRegister(
   eventId: string,
   authToken?: string | null,
-): UseQueryResult<EventRegisterResponse, Error> {
+): UseMutationResult<EventRegisterResponse, Error, void> {
   const token = authToken || getAuthToken();
-  return useQuery({
-    queryKey: ['eventRegister', eventId, token],
-    queryFn: () => eventApi.registerEvent(token!, eventId),
-    enabled: !!token && !!eventId,
+  return useMutation<EventRegisterResponse, Error, void>({
+    mutationFn: async (): Promise<EventRegisterResponse & { status: number }> => {
+      if (!token || !eventId) {
+        throw new Error('Missing authentication or event ID for registration.');
+      }
+      return eventApi.registerEvent(token, eventId);
+    },
     retry: 2,
   });
 }
