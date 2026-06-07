@@ -88,7 +88,7 @@ export const isAuthenticationError = (error: any): boolean => {
 /**
  * Log error details for debugging
  */
-export const logErrorDetails = (error: any, context: string = '') => {
+export const logErrorDetails = (context: string = '') => {
   console.group(`🔍 Error Details${context ? ` - ${context}` : ''}`);
   // console.log('Full error object:', error);
   console.groupEnd();
