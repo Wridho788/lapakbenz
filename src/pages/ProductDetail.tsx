@@ -22,7 +22,7 @@ import { useProductDetail, useAddToCart, useCart, useIsWishlist, useToggleWishli
 import { useAuthStore } from '../stores/authStore';
 import { extractIdFromParam } from '../api/codeMapping';
 import { toast } from 'react-toastify';
-import { isShippingAddressRequiredError, logErrorDetails, getErrorMessage, isAuthenticationError } from '../utils/errorUtils';
+import { isShippingAddressRequiredError, getErrorMessage, isAuthenticationError } from '../utils/errorUtils';
 import { capitalizeWords } from '../utils/format';
 import './ProductDetail.css';
 
@@ -551,7 +551,7 @@ const ProductDetail: React.FC = () => {
       console.error('Failed to add to cart:', error);
       
       // Enhanced error logging for debugging
-      logErrorDetails(error, 'Add to Cart');
+      // logErrorDetails(error, 'Add to Cart');
 
       // Check if error is 307 - Shipping address required
       if (isShippingAddressRequiredError(error)) {
