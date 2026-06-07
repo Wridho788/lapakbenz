@@ -964,7 +964,7 @@ const ProductDetail: React.FC = () => {
           <div className="product-info-section">
             <div className="product-header">
               <div className="product-header-row">
-                <span className="product-category">{productData.category}</span>
+                {/* <span className="product-category">{productData.category}</span> */}
                 <button
                   className="wishlist-toggle-btn"
                   onClick={handleWishlistToggle}
@@ -992,7 +992,10 @@ const ProductDetail: React.FC = () => {
 
             <div className="product-description">
               <h3>Deskripsi</h3>
-              <p>{safeDescription}</p>
+              <div 
+                className="description-content"
+                dangerouslySetInnerHTML={{ __html: safeDescription }} 
+              />
             </div>
           </div>
 

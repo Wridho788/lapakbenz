@@ -718,17 +718,19 @@ const Product: React.FC = () => {
                     )}
                   </div>
                   <div className="product-info">
-                    <h4 className="product-title">{capitalizeWords(product.name)}</h4>
-                    <div className="product-rating">
+                    <div className="product-info-header">
+                      <h4 className="product-title">{capitalizeWords(product.name)}</h4>
+                    </div>
+
+                    <div className="product-rating-row">
                       <div className="rating-stars">
                         {renderStars(product.rating || 0)}
-                        <span className="rating-number">({product.rating || 0})</span>
+                        <span className="rating-number">{product.rating ? `(${product.rating})` : '(0.0)'}</span>
                       </div>
-                      <span className="product-category">{product.city}</span>
                     </div>
-                    <div className="product-price">
-                      Rp {(product.price || 0).toLocaleString('id-ID')}
-                    </div>
+                      <span className="product-category-badge">{product.city || 'Lokasi belum tersedia'}</span>
+
+                    <div className="product-price">Rp {(product.price || 0).toLocaleString('id-ID')}</div>
                   </div>
                 </div>
               ))}
