@@ -182,7 +182,7 @@ export const cartApi = {
   },
 
   async removeFromCart(): Promise<RemoveFromCartResponse> {
-    const res = await apiClient.delete(ENDPOINT_CART_CLEAN);
+    const res = await apiClient.get(ENDPOINT_CART_CLEAN);
     checkResponseError(res.data, 'removeFromCart');
     return res.data;
   },

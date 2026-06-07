@@ -81,8 +81,12 @@ export function useSetNotes(): UseMutationResult<SetPickupResponse, Error, { car
 }
 
 export function useDeleteItemCart(): UseMutationResult<void, Error, string> {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (cartId: string) => cartApi.deleteItemCart(cartId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
   });
 }
 
