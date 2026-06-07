@@ -4,6 +4,7 @@ import { EventCard } from './EventCard';
 import './CompletedEvent.css';
 import { useEventList } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
+import { formatDate } from '../utils/dateUtils';
 
 interface CompletedEventProps {
   className?: string;
@@ -39,7 +40,7 @@ export const CompletedEvent: React.FC<CompletedEventProps> = ({ className }) => 
             id={String(event.ID)}
             image={imageUrl + event.Image}
             title={event.Code}
-            date={event.Dates}
+            date={formatDate(event.Dates)}
             chapter={event.chapter_name}
             type={event.type_label}
             event={event}

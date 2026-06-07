@@ -29,44 +29,29 @@
   position: relative;
 }
 
-.product-card-wishlist-btn {
+.product-card-wishlist-icon {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 1;
 }
 
-.product-card-wishlist-btn:hover {
-  background: #fff;
-  transform: scale(1.1);
+.product-card-wishlist-icon:hover {
+  transform: scale(1.15);
 }
 
-.product-card-wishlist-btn:active {
+.product-card-wishlist-icon:active {
   transform: scale(0.95);
 }
 
-.product-card-wishlist-btn .wishlist-icon {
-  font-size: 18px;
-  color: #666;
-}
-
-.product-card-wishlist-btn .wishlist-icon.filled {
+.product-card-wishlist-icon .wishlist-icon {
+  font-size: 24px;
   color: #ff4757;
-}
-
-.product-card-wishlist-btn .wishlist-icon:not(.filled) {
-  color: #dc3545;
 }
 
 .product-card-image img {

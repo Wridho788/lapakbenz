@@ -4,6 +4,7 @@ import { EventCard } from './EventCard';
 import './CompletedEvent.css';
 import { usePostEvent } from '../api/hooks/index';
 import { createEventUrl } from '../api/codeMapping';
+import { formatDate } from '../utils/dateUtils';
 
 interface EventItem {
   ID?: number;
@@ -91,7 +92,7 @@ export const FrontChapter: React.FC<FrontChapterProps> = ({ className, chapterId
             id={String(event.ID)}
             image={(eventMutation?.data?.image_url ?? '') + (event?.Image ?? '')}
             title={event.Name}
-            date={event.Dates}
+            date={formatDate(event.Dates ?? '')}
             chapter={event.chapter_name}
             type={event.type_label}
             // event={event}

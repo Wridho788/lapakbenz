@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdStar, MdFavorite, MdDelete } from 'react-icons/md';
+import { MdStar, MdFavorite } from 'react-icons/md';
 import { capitalizeWords } from '../utils/format';
 import './ProductCard.css';
 
@@ -77,18 +77,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             target.src = '/bea2x.jpg';
           }}
         />
-        {showWishlistRemove && (
-          <button
-            className="product-card-wishlist-btn"
+        {showWishlistRemove && isWishlisted && (
+          <div
+            className="product-card-wishlist-icon"
             onClick={handleRemoveWishlist}
             aria-label="Remove from wishlist"
+            role="button"
+            tabIndex={0}
           >
-            {isWishlisted ? (
-              <MdFavorite className="wishlist-icon filled" />
-            ) : (
-              <MdDelete className="wishlist-icon" />
-            )}
-          </button>
+            <MdFavorite className="wishlist-icon filled" />
+          </div>
         )}
       </div>
       <div className="product-card-content">

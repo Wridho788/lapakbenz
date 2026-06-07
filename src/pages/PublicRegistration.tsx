@@ -377,16 +377,6 @@ const PublicRegistration: React.FC = () => {
                 </div>
               </div>
 
-              {/* Free Badge */}
-              <div className="success-free-badge">
-                <div className="free-badge-content">
-                  <span className="free-badge-icon">🎉</span>
-                  <div className="free-badge-text">
-                    <span className="free-badge-title">GRATIS!</span>
-                    <span className="free-badge-subtitle">Tidak ada biaya pendaftaran</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Info Message */}

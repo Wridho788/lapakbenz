@@ -4,6 +4,7 @@ import { AppbarDefault } from '../components/AppbarDefault';
 import EventRegistration from '../components/EventRegistration';
 import SEO from '../components/SEO';
 import { generateBreadcrumbs, formatDateForSchema, truncateText, stripHtml, formatPrice } from '../utils/seoUtils';
+import { formatDate } from '../utils/dateUtils';
 import { useAuthStore } from '../stores/authStore';
 import { useCart } from '../contexts/CartContext';
 import { useEventById, useEventRegister } from '../api/hooks/index';
@@ -46,7 +47,7 @@ const EventDetail: React.FC = () => {
       } else if (result) {
         const errorMsg = result.message || result.error || 'Registration failed.';
         if (errorMsg.toLowerCase().includes('already')) {
-          toast.error('Register Failed: Event Already Done', {
+          toast.error('Register Failed: User Already Registered', {
             position: 'bottom-right',
             autoClose: 2000,
             theme: 'dark',
@@ -200,18 +201,6 @@ const EventDetail: React.FC = () => {
     if (!imagePath) return '/merci.png';
     if (imagePath.startsWith('http')) return imagePath;
     return `${imageUrl}${imagePath}`;
-  };
-
-  const formatDate = (dateStr: string) => {
-    try {
-      return new Date(dateStr).toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      });
-    } catch {
-      return dateStr;
-    }
   };
 
   const getTypeLabel = (type?: number) => {
