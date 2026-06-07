@@ -632,9 +632,6 @@ const Cart: React.FC = () => {
       });
     }
   };
-
-  console.log(apiCartData, 'Current API Cart Data');
-
   const getSelectedItems = () => {
     return apiCartData?.content?.result?.filter((item) => item.publish === '1') || [];
   };
@@ -732,9 +729,6 @@ const Cart: React.FC = () => {
       const orderCode = checkoutResponse?.order_code || checkoutResponse?.content?.order_code;
       const linkUrl = checkoutResponse?.link_url || checkoutResponse?.content?.link_url;
       const returnedOrderId = checkoutResponse?.content?.orderid;
-
-      console.log('Checkout Response:', checkoutResponse);
-      console.log('Order Code:', orderCode, 'Link URL:', linkUrl);
 
       // Reset ordering status
       setOrderingStatus({

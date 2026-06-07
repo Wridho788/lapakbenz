@@ -133,7 +133,7 @@ const PublicRegistration: React.FC = () => {
       };
 
       const result = await publicRegistration.mutateAsync(payload);
-      console.log('Registration Result:', result);
+      // console.log('Registration Result:', result);
       toast.dismiss(loadingToast);
       // Check if registration was successful
       if (result.status === 200) {

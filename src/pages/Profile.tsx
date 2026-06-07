@@ -239,7 +239,7 @@ const Profile: React.FC = () => {
         handleLogout();
         break;
       default:
-        console.log('Unknown menu item:', menuId);
+        // console.log('Unknown menu item:', menuId);
     }
   };
 

@@ -100,7 +100,6 @@ const Product: React.FC = () => {
         { filter: query.trim(), limit: '10' },
         {
           onSuccess: (data) => {
-            // console.log('✅ Search results:', data);
             if (data?.result === null) {
               console.log('🔍 No products found for query:', query);
             }

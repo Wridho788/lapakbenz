@@ -84,7 +84,6 @@ const ProductDetail: React.FC = () => {
     isLoading: productLoading,
     error: productError,
   } = useProductDetail(productId || '');
-  console.log('Product Detail API Response:', productDetailData);
 
   // Wishlist hooks
   const { data: wishlistStatus, isLoading: isWishlistLoading } = useIsWishlist(productDetailData?.result?.id);
@@ -100,7 +99,7 @@ const ProductDetail: React.FC = () => {
   }, [wishlistStatus]);
 
   // Debug log
-  console.log('Wishlist status:', wishlistStatus, 'isWishlisted:', isWishlisted);
+  // console.log('Wishlist status:', wishlistStatus, 'isWishlisted:', isWishlisted);
 
   // Add to cart mutation hook
   const addToCartMutation = useAddToCart();
@@ -400,7 +399,7 @@ const ProductDetail: React.FC = () => {
     const apiProduct = productDetailData?.result;
 
     if (apiProduct) {
-      console.log(apiProduct, 'API Product Data');
+      // console.log(apiProduct, 'API Product Data');
 
       const specifications = [];
       if (apiProduct.sku) specifications.push(`SKU: ${apiProduct.sku}`);
@@ -470,7 +469,7 @@ const ProductDetail: React.FC = () => {
 
   // Log zoom level changes
   useEffect(() => {
-    console.log('🔍 Zoom Level Changed:', zoomLevel);
+    // console.log('🔍 Zoom Level Changed:', zoomLevel);
   }, [zoomLevel]);
 
   // Log image position changes
@@ -485,8 +484,6 @@ const ProductDetail: React.FC = () => {
       setQuantity(newQuantity);
     }
   };
-      console.log('Product SKU for cart:', productDetailData);
-
   const handleAddToCart = async () => {
     // Enhanced authentication check using authStore methods
     const isTokenValid = validateToken();
@@ -505,7 +502,7 @@ const ProductDetail: React.FC = () => {
     // Use requireAuth method from authStore for additional validation
     const canProceed = requireAuth(() => {
       // This callback will only execute if authentication is valid
-      console.log('✅ Authentication verified, proceeding with add to cart');
+      // console.log('✅ Authentication verified, proceeding with add to cart');
     }, 'add items to cart');
 
     if (!canProceed) {
