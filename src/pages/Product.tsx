@@ -730,7 +730,7 @@ const Product: React.FC = () => {
                     </div>
                       <span className="product-category-badge">{product.city || 'Lokasi belum tersedia'}</span>
 
-                    <div className="product-price">Rp {(product.price || 0).toLocaleString('id-ID')}</div>
+                    <h3 className="product-price">Rp {(product.price || 0).toLocaleString('id-ID')}</h3>
                   </div>
                 </div>
               ))}
