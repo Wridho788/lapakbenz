@@ -378,7 +378,7 @@ const Product: React.FC = () => {
 
   const handleProductClick = (product: any) => {
     const productName = capitalizeWords(product.name || product.sku || product.id);
-    const productUrl = createProductUrl(String(product.sku), productName);
+    const productUrl = createProductUrl(productName,String(product.sku));
     navigate(productUrl);
   };
 
