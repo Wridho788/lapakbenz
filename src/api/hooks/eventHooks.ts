@@ -10,6 +10,7 @@ import type {
   ChapterListRequest,
   ChapterListResponse,
   ChapterDetailResponse,
+  EventHistoryRequest
 } from '../types';
 
 const getAuthToken = (): string | null => useAuthStore.getState().token;
@@ -84,6 +85,32 @@ export function useEventRegister(
     retry: 2,
   });
 }
+
+export function useEventHistory(): UseMutationResult<
+  EventListResponse,
+  Error, EventHistoryRequest  
+> {
+  const authToken = getAuthToken();
+  return useMutation<
+    EventListResponse,
+    Error,
+    EventHistoryRequest
+  >({
+    mutationFn: async (data?: EventHistoryRequest) => {
+      if (!authToken) {
+        throw new Error('Auth token required');
+      }
+
+      return eventApi.getEventHistory(authToken, {
+        limit: data?.limit ? '10' : undefined,
+        offset: data?.offset ? '0' : undefined,
+      });
+    },
+    retry: 2,
+  });
+}
+
+export const useEventsHistory = useEventHistory;
 
 interface MerchantRegistrationPayload {
   eventid: string;

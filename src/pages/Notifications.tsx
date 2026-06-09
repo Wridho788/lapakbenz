@@ -82,23 +82,38 @@ const Notifications: React.FC = () => {
     undefined
   );
 
+  const normalizeNotificationResult = (data: any): any[] => {
+    if (!data) {
+      return [];
+    }
+
+    if (Array.isArray(data.result)) {
+      return data.result;
+    }
+
+    if (data.result?.content && Array.isArray(data.result.content)) {
+      return data.result.content;
+    }
+
+    return [];
+  };
+
   // Process notifications data
   const notifications: NotificationItem[] = React.useMemo(() => {
-    const content = notificationsData?.result?.content;
-    console.log('Processing notifications content:', content);
+    const content = normalizeNotificationResult(notificationsData);
+    console.log('Processing notifications content:', notificationsData);
 
-    // Handle case where content might not be an array
-    if (!content || !Array.isArray(content)) {
+    if (!content.length) {
       return [];
     }
 
     return content.map((item: any) => ({
       id: item.id?.toString() || '',
-      title: item.subject || 'No Subject',
-      message: item.content || 'No Content',
-      timestamp: new Date(item.created || Date.now()),
-      reading: item.reading === '1' ? "1" : "0",
-      type: item.type || 'general'
+      title: item.subject || item.content || 'No Subject',
+      message: item.content || item.subject || 'No Content',
+      timestamp: item.created ? new Date(item.created) : new Date(),
+      reading: item.reading === 1 || item.reading === '1' ? '1' : '0',
+      type: item.type?.toString() || 'general',
     }));
   }, [notificationsData]);
 
@@ -153,8 +168,8 @@ const Notifications: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    const detailContent = notificationDetail?.content;
-    const displayTitle = detailContent?.subject || notification.title;
+    const detailContent = notificationDetail?.content || notificationDetail?.result || notificationDetail;
+    const displayTitle = detailContent?.subject || detailContent?.content || notification.title;
 
     toast.info(
       <div style={{ textAlign: 'left' }}>
@@ -250,6 +265,7 @@ const Notifications: React.FC = () => {
               
               <div className="notification-content">
                 <h3 className="notification-title">{notification.title}</h3>
+                <p className="notification-message">{notification.message}</p>
                 <p className="notification-datetime">
                   {formatDateTime(notification.timestamp)}
                 </p>

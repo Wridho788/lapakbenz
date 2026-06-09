@@ -291,15 +291,25 @@ export function useUserData() {
   const profile = useProfile();
   const decodeToken = useDecodeToken();
   const notifications = useNotifications();
+  // Normalize notifications response to handle different API shapes
+  const normalizeNotificationResult = (data: any): any[] => {
+    if (!data) return [];
+    if (Array.isArray(data.result)) return data.result;
+    if (data.result?.content && Array.isArray(data.result.content)) return data.result.content;
+    return [];
+  };
 
-  const unreadCount =
-    notifications.data?.result?.content?.filter((n: { reading?: string }) => n.reading === '0')?.length || 0;
+  const notificationItems = normalizeNotificationResult(notifications.data);
+
+  // reading can be number (0) or string ('0'), count both as unread
+  const unreadCount = notificationItems.filter((n: any) => n.reading === '0' || n.reading === 0).length || 0;
+  console.log('unreadCount calculated:', unreadCount);
 
   return {
     profile: profile.data?.result,
     userInfo: decodeToken.data,
     unreadCount,
     isLoading: profile.isLoading || decodeToken.isLoading,
-    notifications: notifications.data?.result?.content,
+    notifications: notificationItems,
   };
 }

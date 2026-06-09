@@ -23,24 +23,42 @@ interface NotificationContextType {
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
+const normalizeNotificationResult = (data: any): any[] => {
+  if (!data) {
+    return [];
+  }
+
+  if (Array.isArray(data.result)) {
+    return data.result;
+  }
+
+  if (data.result?.content && Array.isArray(data.result.content)) {
+    return data.result.content;
+  }
+
+  return [];
+};
+
 // Helper function to transform API notification to local format
 const transformApiNotification = (apiNotification: any): NotificationItem => {
   try {
+    const readingValue = apiNotification.reading;
+    const normalizedReading = readingValue === 1 || readingValue === '1' ? '1' : '0';
+
     return {
-      id: apiNotification.id || `api-${Date.now()}-${Math.random()}`,
-      title: apiNotification.subject || 'Notification',
-      message: apiNotification.content || '',
-      reading: apiNotification.reading || "0",
+      id: apiNotification.id?.toString() || `api-${Date.now()}-${Math.random()}`,
+      title: apiNotification.subject || apiNotification.content || 'Notification',
+      message: apiNotification.content || apiNotification.subject || '',
+      reading: normalizedReading,
       timestamp: apiNotification.created ? new Date(apiNotification.created) : new Date(),
     };
   } catch (error) {
     console.error('📋 Error transforming single notification:', error, apiNotification);
-    // Return a safe fallback notification
     return {
       id: `error-${Date.now()}`,
       title: 'Error Loading Notification',
       message: 'There was an error loading this notification.',
-      reading: "0",
+      reading: '0',
       timestamp: new Date(),
     };
   }
@@ -76,8 +94,8 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   // Transform API data to local format with error handling
   const apiNotifications: NotificationItem[] = React.useMemo(() => {
-    const content = notificationData?.result?.content;
-    if (!content || !Array.isArray(content)) {
+    const content = normalizeNotificationResult(notificationData);
+    if (!content.length) {
       return [];
     }
 
@@ -96,11 +114,11 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   // Calculate unread count from API data with error handling
   const apiUnreadCount = React.useMemo(() => {
-    const content = unreadData?.result?.content;
-    if (content && Array.isArray(content)) {
-      return content.filter((notification: any) => notification.reading === "0").length;
+    const content = normalizeNotificationResult(unreadData);
+    if (!content.length) {
+      return 0;
     }
-    return 0;
+    return content.filter((notification: any) => notification.reading === '0' || notification.reading === 0).length;
   }, [unreadData]);
 
   // Total unread count (API + local)
@@ -113,7 +131,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
     setLocalNotifications(prev => 
       prev.map(notification => 
         notification.id === id 
-          ? { ...notification, reading: "1" }
+          ? { ...notification, reading: '1' }
           : notification
       )
     );
@@ -122,7 +140,7 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const markAllAsRead = () => {
     setLocalNotifications(prev => 
-      prev.map(notification => ({ ...notification, isRead: true }))
+      prev.map(notification => ({ ...notification, reading: '1' }))
     );
     // TODO: Call API to mark all notifications as read
   };

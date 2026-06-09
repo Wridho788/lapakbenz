@@ -7,6 +7,11 @@ export interface EventListRequest {
   chapter?: string;
 }
 
+export interface EventHistoryRequest {
+  limit?: string;
+  offset?: string;
+}
+
 export interface EventItem {
   id?: number;
   ID: number;

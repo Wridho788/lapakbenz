@@ -28,24 +28,10 @@ const Product: React.FC = () => {
   
   // Render stars function similar to ProductDetail
   const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<MdStar key={i} className="star filled" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<MdStar key="half" className="star half" />);
-    }
-
-    const remainingStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(<MdStar key={`empty-${i}`} className="star empty" />);
-    }
-
-    return stars;
+    const value = Number.isFinite(rating) ? rating : 0;
+    return (
+      <MdStar className={value > 0 ? 'star filled' : 'star empty'} />
+    );
   };
   
   // New filter states
@@ -377,8 +363,9 @@ const Product: React.FC = () => {
     const apiCartCount = getApiCartCount();
 
   const handleProductClick = (product: any) => {
-    const productName = capitalizeWords(product.name || product.sku || product.id);
-    const productUrl = createProductUrl(productName,String(product.sku));
+    const productId = String(product.sku || product.id || product.name || '');
+    const productName = String(product.name || product.sku || product.id || 'produk');
+    const productUrl = createProductUrl(productId, productName);
     navigate(productUrl);
   };
 
@@ -722,15 +709,19 @@ const Product: React.FC = () => {
                       <h4 className="product-title">{capitalizeWords(product.name)}</h4>
                     </div>
 
+                    <h3 className="product-price">Rp {(product.price || 0).toLocaleString('id-ID')}</h3>
+
                     <div className="product-rating-row">
                       <div className="rating-stars">
                         {renderStars(product.rating || 0)}
-                        <span className="rating-number">{product.rating ? `(${product.rating})` : '(0.0)'}</span>
+                        <span className="rating-number">{product.rating ? product.rating.toFixed(1) : '0.0'}</span>
                       </div>
                     </div>
-                      <span className="product-category-badge">{product.city || 'Lokasi belum tersedia'}</span>
 
-                    <h3 className="product-price">Rp {(product.price || 0).toLocaleString('id-ID')}</h3>
+                    <div className="product-meta-row">
+                      <span className="product-meta-city">{product.city || 'Lokasi belum tersedia'}</span>
+                      <span className="product-meta-supplier">{product.supplier || 'Supplier belum tersedia'}</span>
+                    </div>
                   </div>
                 </div>
               ))}

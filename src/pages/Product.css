@@ -342,7 +342,7 @@
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
+  gap: 8px;
   max-width: 100%;
 }
 
@@ -389,12 +389,11 @@
 }
 
 .product-info {
-  padding: 14px 14px 18px;
+  padding: 1px 0px;
   background: white !important;
   display: flex;
   flex-direction: column;
   flex: 1;
-  justify-content: space-between;
 }
 
 .product-info-header {
@@ -405,8 +404,8 @@
 
 .product-title {
   font-family: 'Lato', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 400;
   color: #111 !important;
   margin: 0;
   overflow: hidden;
@@ -438,20 +437,19 @@
   justify-content: flex-start;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 2px;
 }
 
 .rating-stars {
   display: flex;
   align-items: center;
-  gap: 2px;
-  font-size: 11px;
-  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
 }
 
 .rating-stars .star {
   color: #e0e0e0;
-  font-size: 14px;
+  font-size: 18px;
   transition: color 0.2s ease;
 }
 
@@ -461,19 +459,41 @@
 }
 
 .rating-number {
-  font-size: 11px;
-  color: #666 !important;
-  margin-left: 6px;
-  font-weight: 500;
+  font-size: 13px;
+  color: #444 !important;
+  font-weight: 600;
+  margin-left: 0;
 }
 
 .product-price {
   font-family: 'Lato', sans-serif;
-  font-weight: 700;
-  font-size: 19px;
-  color: #161129 !important;
-  margin: 0;
+  font-weight: 800;
+  font-size: 20px;
+  color: #d32f2f !important;
   line-height: 1.2;
+}
+
+.product-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  font-size: 12px;
+  color: #666;
+}
+
+.product-meta-city,
+.product-meta-supplier {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-meta-supplier {
+  text-align: right;
+  color: #111;
+  font-weight: 600;
 }
 
 .product-price::before {
@@ -482,11 +502,10 @@
   height: 1px;
   width: 100%;
   background: #f0f0f0;
-  margin-bottom: 12px;
 }
 
 .product-price {
-  padding-top: 12px;
+  padding-bottom: 8px;
 }
 
 

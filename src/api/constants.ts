@@ -31,7 +31,7 @@ export const ENDPOINT_EVENT_BY_ID = 'event'; // method get parameter: { event id
 export const ENDPOINT_EVENT_REGISTER = 'event/register'; // method get parameter: { event id }
 export const ENDPOINT_EVENT_REGISTER_MERCHANT = 'event/merchant'; // method post parameter: { eventid, name, cp, address, email, phone, menu, qty }
 export const ENDPOINT_EVENT_REGISTER_PUBLIC = 'event/public'; // method post parameter: { eventid, name, type, policeno, phone, email, notes }
-
+export const ENDPOINT_EVENT_HISTORY = 'event/history'; // method get parameter: { limit, offset }
 // general endpoints
 export const ENDPOINT_CITY = 'city'; // method get parameter: none
 

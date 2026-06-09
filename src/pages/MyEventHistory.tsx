@@ -1,28 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
-import { useEventsByCustomer } from '../api/hooks/index';
+import { useEventHistory } from '../api/hooks/index';
 import './AccountPages.css';
 
 interface EventItem {
-  id: string;
-  chapter_id?: string;
-  chapter?: string;
+  id?: number | string;
+  club_id?: number;
   code?: string;
   name: string;
   dates?: string;
-  date?: string;
-  time?: string;
   desc?: string;
   image?: string;
   fee?: number;
-  minimum_participants?: string;
+  minimum_participant?: number | string;
+  minimum_participants?: string | number;
   type?: number;
   type_desc?: string;
   done?: number;
   done_desc?: string;
-status?: string;
+  status?: string;
+  joined_at?: string;
+  chapter?: string;
   [key: string]: any;
 }
 
@@ -30,14 +30,20 @@ const MyEventHistory: React.FC = () => {
   const navigate = useNavigate();
 
   // Fetch events using the new hook
-  const {
-    data: eventsResponse,
-    isLoading: eventsLoading,
-    error: eventsError,
-  } = useEventsByCustomer({
-    limit: '30',
-    offset: '0',
-  });
+  const eventHistory = useEventHistory();
+
+  useEffect(() => {
+    eventHistory.mutate({
+      limit: '30',
+      offset: '0',
+    });
+  }, []);
+
+  const eventsResponse = eventHistory.data;
+  const events: EventItem[] = eventsResponse?.result || [];
+  const eventImageUrl = eventsResponse?.image_url || '';
+  // const eventsLoading = eventHistory.isLoading;
+  const eventsError = eventHistory.error;
 
   // Log the response to console
   const handleBackClick = () => {
@@ -55,9 +61,6 @@ const MyEventHistory: React.FC = () => {
   // Uncomment below to test empty state
   //   const events: any[] = [];
 
-  // Use API data if available, otherwise fallback to static data
-  const events: EventItem[] = eventsResponse?.content?.result || [];
-
   return (
     <div className="account-page">
       <AppbarDefault
@@ -72,7 +75,7 @@ const MyEventHistory: React.FC = () => {
           <h3>Riwayat Partisipasi Event</h3>
 
           {/* Show loading state */}
-          {eventsLoading && (
+          {/* {eventsLoading && (
             <div
               style={{
                 textAlign: 'center',
@@ -82,7 +85,7 @@ const MyEventHistory: React.FC = () => {
             >
               Memuat riwayat event...
             </div>
-          )}
+          )} */}
 
           {/* Show error state */}
           {eventsError && (
@@ -98,9 +101,9 @@ const MyEventHistory: React.FC = () => {
           )}
 
           {/* Show events data or fallback to static data */}
-          {!eventsLoading && !eventsError && events.length > 0 ? (
+          {!eventsError && events.length > 0 ? (
             events.map((event) => (
-              <div key={event.id} className="event-item" >
+              <div key={event.id?.toString() || event.name || 'event'} className="event-item" >
                 {/* Baris 1: Event Image with Status Overlay */}
                 {event.image && (
                   <div className="event-row-1" style={{ 
@@ -108,7 +111,7 @@ const MyEventHistory: React.FC = () => {
                     marginBottom: '16px'
                   }}>
                     <img 
-                      src={event.image} 
+                      src={event.image ? `${eventImageUrl}${event.image}` : '/nodata.png'} 
                       alt={event.name} 
                       style={{
                         width: '100%',
@@ -290,7 +293,7 @@ const MyEventHistory: React.FC = () => {
                 
               </div>
             ))
-          ) : !eventsLoading && !eventsError ? (
+          ) : !eventsError ? (
             <div className="empty-state">
               <img src="/nodata.png" alt="No Data" className="empty-icon" />
               <h3>Tidak Ada Riwayat Event</h3>

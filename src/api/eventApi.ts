@@ -9,6 +9,7 @@ import {
   ENDPOINT_CHAPTER,
   ENDPOINT_CHAPTER_BY_ID,
   ENDPOINT_GET_FRONT,
+  ENDPOINT_EVENT_HISTORY,
 } from './constants';
 import type {
   EventListRequest,
@@ -19,6 +20,7 @@ import type {
   ChapterListResponse,
   ChapterDetailResponse,
   ChapterByCustomerResponse,
+  EventHistoryRequest,
 } from './types';
 
 const apiClient = axios.create({
@@ -132,6 +134,20 @@ export const eventApi = {
     };
   },
 
+  getEventHistory: async (
+    authToken: string,
+    data?: EventHistoryRequest
+  ): Promise<EventListResponse> => {
+    const defaultPayload = { limit: '10', offset: '0' };
+    const payload = data ? { ...defaultPayload, ...data } : defaultPayload;
+    const response = await apiClient.post(ENDPOINT_EVENT_HISTORY, payload, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
+    return response.data;
+  },
+
   getEventsByChapters: async (chapterIds: number[]): Promise<any> => {
     const requests = chapterIds.map((chapterId) =>
       apiClient.post(ENDPOINT_EVENT, {
@@ -163,6 +179,8 @@ export const eventApi = {
       },
     };
   },
+
+  
 };
 
 export const chapterApi = {

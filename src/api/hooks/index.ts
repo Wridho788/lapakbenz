@@ -26,6 +26,7 @@ export {
   usePostEvent,
   usePostFrontEvent,
   useEventsByCustomer,
+  useEventHistory,
   useEventById,
   useEventRegister,
   useMerchantRegistration,

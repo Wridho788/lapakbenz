@@ -39,6 +39,8 @@ export const ProductTabs: React.FC = () => {
             name={product.name}
             price={product.price}
             rating={product.rating}
+            city={product.city}
+            supplier={product.supplier}
             onClick={() => handleProductClick(product)}
           />
         ))}

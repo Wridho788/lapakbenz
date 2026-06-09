@@ -56,6 +56,9 @@ const ProductDetail: React.FC = () => {
   // Extract actual product ID from URL parameter (handles both old ID format and new SEO format)
   const productId = productParam ? extractIdFromParam(productParam) : null;
 
+  console.log('ProductDetail Rendered with productId:', productId);
+  console.log(productParam, 'Raw productParam from URL');
+
   // Auth state - get all needed auth properties
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
   const location = useLocation();

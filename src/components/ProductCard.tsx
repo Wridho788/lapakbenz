@@ -8,6 +8,8 @@ interface ProductCardProps {
   name: string;
   price: number;
   rating: string | number;
+  city?: string;
+  supplier?: string;
   onClick: () => void;
   // Wishlist props (optional)
   showWishlistRemove?: boolean;
@@ -20,6 +22,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   name,
   price,
   rating,
+  city,
+  supplier,
   onClick,
   showWishlistRemove = false,
   isWishlisted = false,
@@ -36,26 +40,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
-  const renderStars = (rating: string | number) => {
+  const renderRating = (rating: string | number) => {
     const ratingNumber = typeof rating === 'string' ? parseFloat(rating) : rating;
-    const stars = [];
-    const fullStars = Math.floor(ratingNumber);
-    const hasHalfStar = ratingNumber % 1 !== 0;
+    const normalizedRating = Number.isFinite(ratingNumber) ? ratingNumber : 0;
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<MdStar key={i} className="star filled" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<MdStar key="half" className="star half" />);
-    }
-
-    const remainingStars = 5 - Math.ceil(ratingNumber);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(<MdStar key={`empty-${i}`} className="star empty" />);
-    }
-
-    return stars;
+    return (
+      <div className="product-card-rating-row">
+        <MdStar className={normalizedRating > 0 ? 'star filled' : 'star empty'} />
+        <span className="rating-number">{normalizedRating.toFixed(1)}</span>
+      </div>
+    );
   };
 
   const formatPrice = (price: number) => {
@@ -90,13 +84,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         )}
       </div>
       <div className="product-card-content">
-        <div className="product-card-rating">
-          {renderStars(rating)}
-          <span className="rating-number">({typeof rating === 'number' ? rating.toFixed(1) : rating})</span>
-        </div>
-        <h3 className="product-card-name">{capitalizeWords(name)}</h3>
+        <div className="product-card-name">{capitalizeWords(name)}</div>
         <div className="product-card-price">
           {formatPrice(price)}
+        </div>
+        {renderRating(rating)}
+        <div className="product-card-meta-row">
+          <span className="product-card-city">{city || 'Lokasi tidak tersedia'}</span>
+          <span className="product-card-supplier">{supplier || 'Supplier tidak tersedia'}</span>
         </div>
       </div>
     </div>
