@@ -54,6 +54,7 @@ export {
   useProducts,
   useProductCategories,
   useProductSearch,
+  useProductPermalink,
   useProductDetail,
   useProductCities,
   useLatestProducts,

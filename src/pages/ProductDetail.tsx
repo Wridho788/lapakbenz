@@ -18,11 +18,20 @@ import { FAB } from '../components/FAB';
 import SEO from '../components/SEO';
 import { generateBreadcrumbs, formatPrice, truncateText, stripHtml } from '../utils/seoUtils';
 import { useCart as useCartContext } from '../contexts/CartContext';
-import { useProductDetail, useAddToCart, useCart, useIsWishlist, useToggleWishlist } from '../api/hooks/index';
+import {
+  useProductPermalink,
+  useAddToCart,
+  useCart,
+  useIsWishlist,
+  useToggleWishlist,
+} from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
-import { extractIdFromParam } from '../api/codeMapping';
 import { toast } from 'react-toastify';
-import { isShippingAddressRequiredError, getErrorMessage, isAuthenticationError } from '../utils/errorUtils';
+import {
+  isShippingAddressRequiredError,
+  getErrorMessage,
+  isAuthenticationError,
+} from '../utils/errorUtils';
 import { capitalizeWords } from '../utils/format';
 import './ProductDetail.css';
 
@@ -41,7 +50,7 @@ interface ProductDetailType {
 
 const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
-  const { productId: productParam } = useParams<{ productId: string }>();
+  const { productPermalink } = useParams<{ productPermalink: string }>();
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isImageZoomOpen, setIsImageZoomOpen] = useState(false);
@@ -53,11 +62,9 @@ const ProductDetail: React.FC = () => {
   const { addToCart } = useCartContext();
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();
-  // Extract actual product ID from URL parameter (handles both old ID format and new SEO format)
-  const productId = productParam ? extractIdFromParam(productParam) : null;
+  const productPermalinkParam = productPermalink || '';
 
-  console.log('ProductDetail Rendered with productId:', productId);
-  console.log(productParam, 'Raw productParam from URL');
+  console.log('ProductDetail Rendered with productPermalink:', productPermalinkParam);
 
   // Auth state - get all needed auth properties
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
@@ -69,27 +76,28 @@ const ProductDetail: React.FC = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Log when productParam changes and scroll to top
+  // Log when permalink changes and scroll to top
   useEffect(() => {
-    // Scroll to top when productParam changes (for navigation between products)
-    if (productParam && productId) {
+    if (productPermalinkParam) {
       window.scrollTo({
         top: 0,
         left: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
-  }, [productParam, productId]);
+  }, [productPermalinkParam]);
 
-  // API hook for product detail
+  // API hook for product detail by permalink
   const {
     data: productDetailData,
     isLoading: productLoading,
     error: productError,
-  } = useProductDetail(productId || '');
+  } = useProductPermalink(productPermalinkParam);
 
   // Wishlist hooks
-  const { data: wishlistStatus, isLoading: isWishlistLoading } = useIsWishlist(productDetailData?.result?.id);
+  const { data: wishlistStatus, isLoading: isWishlistLoading } = useIsWishlist(
+    productDetailData?.result?.id,
+  );
   // Use local state for immediate UI feedback, sync with API status on mount/update
   const [localWishlistStatus, setLocalWishlistStatus] = useState(false);
   const isWishlisted = localWishlistStatus;
@@ -97,7 +105,10 @@ const ProductDetail: React.FC = () => {
 
   // Sync local wishlist status when API data loads
   useEffect(() => {
-    const apiStatus = wishlistStatus?.result === true || wishlistStatus?.content === true || wishlistStatus?.status === true;
+    const apiStatus =
+      wishlistStatus?.result === true ||
+      wishlistStatus?.content === true ||
+      wishlistStatus?.status === true;
     setLocalWishlistStatus(apiStatus);
   }, [wishlistStatus]);
 
@@ -114,7 +125,6 @@ const ProductDetail: React.FC = () => {
       }
     }
   }, [productDetailData]);
-
 
   // Log errors
   useEffect(() => {
@@ -142,11 +152,11 @@ const ProductDetail: React.FC = () => {
   const handleCartClick = () => {
     // Small delay to ensure any pending cart operations complete
     setTimeout(() => {
-      navigate('/cart', { 
-        state: { 
+      navigate('/cart', {
+        state: {
           from: window.location.pathname,
-          productId: productId // Include productId for better back navigation
-        } 
+          productPermalink: productPermalinkParam,
+        },
       });
     }, 100);
   };
@@ -380,7 +390,7 @@ const ProductDetail: React.FC = () => {
   const getProductData = (): ProductDetailType => {
     // Default dummy data
     const dummyData: ProductDetailType = {
-      id: productParam || '1',
+      id: productPermalinkParam || '1',
       title: 'Merciku T-Shirt Premium',
       price: 149000,
       image: '/bea2x.jpg',
@@ -392,7 +402,7 @@ const ProductDetail: React.FC = () => {
         'Material: 100% Cotton',
         'Available sizes: S, M, L, XL, XXL',
         'Color: Black, White, Navy',
- 'Weight: 180 GSM',
+        'Weight: 180 GSM',
         'Care: Machine wash cold',
       ],
       stock: 25,
@@ -414,13 +424,18 @@ const ProductDetail: React.FC = () => {
         specifications.push(`Status: ${apiProduct.status === 1 ? 'Active' : 'InActive'}`);
 
       return {
-        id: apiProduct.id?.toString() || productId || '1',
+        id: apiProduct.id?.toString() || productPermalinkParam || '1',
         title: apiProduct.name || dummyData.title,
         price: apiProduct.price || dummyData.price,
         image: apiProduct.image || dummyData.image,
-        category: String(apiProduct.category || apiProduct.categoryName || apiProduct.kategori || dummyData.category),
+        category: String(
+          apiProduct.category ||
+            apiProduct.categoryName ||
+            apiProduct.kategori ||
+            dummyData.category,
+        ),
         rating: parseFloat(apiProduct.rating) || dummyData.rating,
-        description: apiProduct.description || apiProduct.shortdesc || dummyData.description,
+        description: apiProduct.description || dummyData.description,
         specifications: specifications.length > 0 ? specifications : dummyData.specifications,
         stock: apiProduct.qty || 25,
         images: [
@@ -441,7 +456,8 @@ const ProductDetail: React.FC = () => {
 
   const productData = getProductData();
   const productUrlImage = productDetailData?.url_image || 'http://mbapi.dswip.com/images/product/';
-  const productImageUrl = productDetailData?.image_url || 'https://mbadministrator.dswip.com/images/product/';
+  const productImageUrl =
+    productDetailData?.image_url || 'https://mbadministrator.dswip.com/images/product/';
 
   const buildImageUrl = (filename: string): string => {
     if (!filename) return '/bea2x.jpg';
@@ -490,7 +506,6 @@ const ProductDetail: React.FC = () => {
   const handleAddToCart = async () => {
     // Enhanced authentication check using authStore methods
     const isTokenValid = validateToken();
-    
 
     if (!isAuthenticated || !token || !isTokenValid) {
       toast.warning('Please login to add items to cart', {
@@ -518,25 +533,28 @@ const ProductDetail: React.FC = () => {
       const productSku = productDetailData?.result.id;
 
       // Check if item already exists in cart
-      const existingItem = apiCartData?.content?.result?.find(item => item.sku === productSku);
+      const existingItem = apiCartData?.content?.result?.find((item) => item.sku === productSku);
       const newQuantity = existingItem ? existingItem.qty + quantity : quantity;
 
       // Add to cart using API with cumulative quantity
       await addToCartMutation.mutateAsync({
         data: {
-          product_id: Number(productId),
+          product_id: Number(productDetailData?.result?.id),
           qty: newQuantity,
         },
       });
 
       // Show success message with toast
-      toast.success(`${quantity} ${capitalizeWords(productData.title)} added to cart successfully`, {
-        position: 'bottom-right',
-        autoClose: 1500,
-        theme: 'dark',
-      });
+      toast.success(
+        `${quantity} ${capitalizeWords(productData.title)} added to cart successfully`,
+        {
+          position: 'bottom-right',
+          autoClose: 1500,
+          theme: 'dark',
+        },
+      );
       cartRefetch();
-      
+
       // Also add to cart context for immediate UI update
       addToCart(
         {
@@ -552,7 +570,7 @@ const ProductDetail: React.FC = () => {
       setQuantity(1);
     } catch (error: any) {
       console.error('Failed to add to cart:', error);
-      
+
       // Enhanced error logging for debugging
       // logErrorDetails(error, 'Add to Cart');
 
@@ -602,7 +620,8 @@ const ProductDetail: React.FC = () => {
       }
 
       // Handle other errors
-      const errorMessage = getErrorMessage(error) || 'Gagal menambahkan ke keranjang. Silakan coba lagi.';
+      const errorMessage =
+        getErrorMessage(error) || 'Gagal menambahkan ke keranjang. Silakan coba lagi.';
       toast.error(`${errorMessage}`, {
         position: 'bottom-right',
         autoClose: 1500,
@@ -612,26 +631,9 @@ const ProductDetail: React.FC = () => {
   };
 
   const renderStars = (rating: number) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<MdStar key={i} className="star filled" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<MdStar key="half" className="star half" />);
-    }
-
-    const remainingStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(<MdStar key={`empty-${i}`} className="star empty" />);
-    }
-
-    return stars;
+    const value = Number.isFinite(rating) ? rating : 0;
+    return <MdStar className={value > 0 ? 'star filled' : 'star empty'} />;
   };
-
   // Wishlist toggle handler
   const handleWishlistToggle = async () => {
     if (!isAuthenticated || !token) {
@@ -673,7 +675,7 @@ const ProductDetail: React.FC = () => {
             position: 'bottom-right',
             autoClose: 1500,
             theme: 'dark',
-          }
+          },
         );
       } else {
         toast.success(
@@ -685,7 +687,7 @@ const ProductDetail: React.FC = () => {
             position: 'bottom-right',
             autoClose: 1500,
             theme: 'dark',
-          }
+          },
         );
       }
     } catch (error) {
@@ -700,7 +702,7 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div className="product-detail-page">
-      <SEO 
+      <SEO
         title={`${productData.title} - ${productData.category || ''} - Harga & Spesifikasi | LapakBenz - Platform Komunitas & Event Indonesia`}
         description={truncateText(stripHtml(productData.description), 155)}
         keywords={`${String(productData.title || '').toLowerCase()}, ${String(productData.category || '').toLowerCase()}, produk lapakbenz, beli ${String(productData.title || '').toLowerCase()}, ${formatPrice(productData.price)}, marketplace indonesia`}
@@ -961,13 +963,15 @@ const ProductDetail: React.FC = () => {
                 </div>
               ))}
             </div>
+            <h1 className="product-price">Rp {productData.price.toLocaleString('id-ID')}</h1>
           </div>
 
           {/* Product Info */}
           <div className="product-info-section">
             <div className="product-header">
               <div className="product-header-row">
-                {/* <span className="product-category">{productData.category}</span> */}
+                <h1 className="product-title">{capitalizeWords(productData.title)}</h1>
+
                 <button
                   className="wishlist-toggle-btn"
                   onClick={handleWishlistToggle}
@@ -983,21 +987,18 @@ const ProductDetail: React.FC = () => {
                   )}
                 </button>
               </div>
-              <h1 className="product-title">{capitalizeWords(productData.title)}</h1>
 
               <div className="product-rating-section">
                 <div className="rating-stars">{renderStars(productData.rating)}</div>
-                <span className="rating-text">({productData.rating}) • 156 reviews</span>
+                <span className="rating-text">({productData.rating})</span>
               </div>
-
-              <div className="product-price">Rp {productData.price.toLocaleString('id-ID')}</div>
             </div>
 
             <div className="product-description">
               <h3>Deskripsi</h3>
-              <div 
+              <div
                 className="description-content"
-                dangerouslySetInnerHTML={{ __html: safeDescription }} 
+                dangerouslySetInnerHTML={{ __html: safeDescription }}
               />
             </div>
           </div>

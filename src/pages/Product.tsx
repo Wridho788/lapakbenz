@@ -363,9 +363,8 @@ const Product: React.FC = () => {
     const apiCartCount = getApiCartCount();
 
   const handleProductClick = (product: any) => {
-    const productId = String(product.sku || product.id || product.name || '');
-    const productName = String(product.name || product.sku || product.id || 'produk');
-    const productUrl = createProductUrl(productId, productName);
+    const permalink = product.permalink || `${product.sku || product.id || ''}`;
+    const productUrl = permalink ? `/product/${permalink}` : createProductUrl(String(product.sku || product.id || ''), String(product.name || product.sku || product.id || 'produk'));
     navigate(productUrl);
   };
 

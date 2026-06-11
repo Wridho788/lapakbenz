@@ -101,8 +101,8 @@ const Wishlist: React.FC = () => {
   // Extract wishlist items from response
   const wishlistItems = wishlistData?.result || wishlistData?.content?.content || wishlistData?.content?.result || [];
 
-  const handleProductClick = (productId: string) => {
-    navigate(`/product/${productId}`);
+  const handleProductClick = (productPermalink: string) => {
+    navigate(`/product/${productPermalink}`);
   };
 
   const handleRemoveFromWishlist = async (productId: string) => {
@@ -208,7 +208,7 @@ const Wishlist: React.FC = () => {
               name={item.name || item.product_name || 'Product'}
               price={item.price || 0}
               rating={item.rating || 0}
-              onClick={() => handleProductClick(item.sku)}
+              onClick={() => handleProductClick(item.permalink || item.sku || String(item.product_id || item.id || ''))}
               showWishlistRemove={true}
               isWishlisted={true}
               onRemoveWishlist={() => handleRemoveFromWishlist(item.product_id)}

@@ -52,7 +52,7 @@ function App() {
               <Route path="/event" element={<Event />} />
               <Route path="/event/:eventId" element={<EventDetail />} />
               <Route path="/product" element={<Product />} />
-              <Route path="/product/:productId" element={<ProductDetail />} />
+              <Route path="/product/:productPermalink" element={<ProductDetail />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/invoice" element={<Invoice />} />

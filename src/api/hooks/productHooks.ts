@@ -36,6 +36,16 @@ export function useProductSearch(): UseMutationResult<any, Error, ProductSearchR
   });
 }
 
+export function useProductPermalink(permalink: string): UseQueryResult<any, Error> {
+  return useQuery({
+    queryKey: ['productPermalink', permalink],
+    queryFn: () => productAPI.getProductPermalink(permalink),
+    enabled: !!permalink,
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
+}
+
 export function useProductDetail(productId: string): UseQueryResult<any, Error> {
   return useQuery({
     queryKey: ['productDetail', productId],

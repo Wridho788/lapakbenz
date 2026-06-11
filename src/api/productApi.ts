@@ -6,6 +6,7 @@ import {
   ENDPOINT_PRODUCT_SEARCH,
   ENDPOINT_PRODUCT_CITY,
   ENDPOINT_PRODUCT_LATEST,
+  ENDPOINT_PRODUCT_PERMALINK,
 } from './constants';
 
 export interface ApiError {
@@ -70,6 +71,15 @@ export const productAPI = {
   getProductDetail: async (productId: string) => {
     try {
       const response = await apiClient.get(`${ENDPOINT_PRODUCT_DETAIL}${productId}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getProductPermalink: async (permalink: string) => {
+    try {
+      const response = await apiClient.get(`${ENDPOINT_PRODUCT_PERMALINK}${permalink}`);
       return response.data;
     } catch (error) {
       throw error;

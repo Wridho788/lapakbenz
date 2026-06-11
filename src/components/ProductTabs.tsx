@@ -15,9 +15,8 @@ export const ProductTabs: React.FC = () => {
   const { data: bestSellerProductsData, isLoading: bestSellerLoading } = useBestSellerProducts();
   
   const handleProductClick = (product: any) => {
-    const rawName = product.name || product.title || product.sku || product.id;
-    const productName = capitalizeWords(rawName);
-    const productUrl = createProductUrl(product.sku, productName);
+    const permalink = product.permalink || `${product.sku || product.id || ''}`;
+    const productUrl = permalink ? `/product/${permalink}` : createProductUrl(product.sku, capitalizeWords(product.name || product.title || product.sku || product.id));
     navigate(productUrl);
   };
 

@@ -74,6 +74,7 @@ export const ENDPOINT_PRODUCT_REFRESH_CACHE = 'product/refresh-cache'; // method
 export const ENDPOINT_PRODUCT_DETAIL = 'product/'; // method get parameter: { sku }
 export const ENDPOINT_PRODUCT_CITY = 'product_city'; // method get parameter: none
 export const ENDPOINT_PRODUCT_LATEST = 'product_front/'; // method post parameter: { product type: 0 for latest, 1 for best seller }
+export const ENDPOINT_PRODUCT_PERMALINK = 'product/'
 
 // SLIDER
 export const ENDPOINT_SLIDER = 'slider'; // method post parameter: { limit, offset }
