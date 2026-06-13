@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
 import { useEventHistory } from '../api/hooks/index';
+import { formatDate } from '../utils/dateUtils';
 import './AccountPages.css';
+import './Event.css';
 
 interface EventItem {
   id?: number | string;
@@ -11,6 +13,7 @@ interface EventItem {
   code?: string;
   name: string;
   dates?: string;
+  date?: string;
   desc?: string;
   image?: string;
   fee?: number;
@@ -26,11 +29,16 @@ interface EventItem {
   [key: string]: any;
 }
 
+const FALLBACK_IMAGE = '/bea2x.jpg';
+
 const MyEventHistory: React.FC = () => {
   const navigate = useNavigate();
 
   // Fetch events using the new hook
   const eventHistory = useEventHistory();
+
+  // Modal state: event yang sedang ditampilkan detailnya
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
 
   useEffect(() => {
     eventHistory.mutate({
@@ -39,13 +47,31 @@ const MyEventHistory: React.FC = () => {
     });
   }, []);
 
+  // Lock body scroll selama modal terbuka
+  useEffect(() => {
+    document.body.style.overflow = selectedEvent ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedEvent]);
+
+  // Tutup modal dengan tombol Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSelectedEvent(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const eventsResponse = eventHistory.data;
   const events: EventItem[] = eventsResponse?.result || [];
   const eventImageUrl = eventsResponse?.image_url || '';
   // const eventsLoading = eventHistory.isLoading;
   const eventsError = eventHistory.error;
 
-  // Log the response to console
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -56,6 +82,28 @@ const MyEventHistory: React.FC = () => {
 
   const handleNotificationClick = () => {
     navigate('/notifications');
+  };
+
+  const getImageSrc = (event: EventItem) => {
+    if (!event.image) return FALLBACK_IMAGE;
+    if (event.image.startsWith('http')) return event.image;
+    return `${eventImageUrl}${event.image}`;
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    (e.target as HTMLImageElement).src = FALLBACK_IMAGE;
+  };
+
+  // Tentukan label & style badge status (selesai / akan datang)
+  // const getStatusInfo = (event: EventItem) => {
+  //   const label = event.done_desc || event.status || (event.done === 1 ? 'Selesai' : 'Akan Datang');
+  //   const isCompleted = event.done === 1 || /selesai|completed|done/i.test(String(label));
+  //   return { label, className: isCompleted ? 'completed' : 'upcoming' };
+  // };
+
+  const getEventDate = (event: EventItem) => {
+    const raw = event.dates || event.date;
+    return raw ? formatDate(raw) : '-';
   };
 
   // Uncomment below to test empty state
@@ -74,19 +122,6 @@ const MyEventHistory: React.FC = () => {
         <div className="account-card">
           <h3>Riwayat Partisipasi Event</h3>
 
-          {/* Show loading state */}
-          {/* {eventsLoading && (
-            <div
-              style={{
-                textAlign: 'center',
-                padding: '20px',
-                color: '#161129',
-              }}
-            >
-              Memuat riwayat event...
-            </div>
-          )} */}
-
           {/* Show error state */}
           {eventsError && (
             <div
@@ -100,199 +135,56 @@ const MyEventHistory: React.FC = () => {
             </div>
           )}
 
-          {/* Show events data or fallback to static data */}
+          {/* Show events data as a list, or fallback to empty state */}
           {!eventsError && events.length > 0 ? (
-            events.map((event) => (
-              <div key={event.id?.toString() || event.name || 'event'} className="event-item" >
-                {/* Baris 1: Event Image with Status Overlay */}
-                {event.image && (
-                  <div className="event-row-1" style={{ 
-                    position: 'relative',
-                    marginBottom: '16px'
-                  }}>
-                    <img 
-                      src={event.image ? `${eventImageUrl}${event.image}` : '/nodata.png'} 
-                      alt={event.name} 
-                      style={{
-                        width: '100%',
-                        height: '200px',
-                        objectFit: 'cover',
-                        borderRadius: '8px',
-                        display: 'block'
-                      }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
-                    {/* Status Badge in bottom right corner of image */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: '12px',
-                        right: '12px',
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        color: 'white',
-                        padding: '6px 12px',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        fontWeight: '900',
-                        textTransform: 'uppercase'
-                      }}
-                    >
-                      {event.done_desc || event.status || 'Available'}
+            <div className="event-list">
+              {events.map((event) => {
+                // const status = getStatusInfo(event);
+                return (
+                  <div
+                    key={event.id?.toString() || event.name || 'event'}
+                    className="custom-event-card"
+                    onClick={() => setSelectedEvent(event)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedEvent(event);
+                      }
+                    }}
+                  >
+                    <div className="event-row">
+                      <div className="event-img-col">
+                        <img
+                          src={getImageSrc(event)}
+                          alt={event.name}
+                          style={{
+                            maxWidth: '70px',
+                            height: '50px',
+                            objectFit: 'cover',
+                            borderRadius: '8px',
+                          }}
+                          onError={handleImageError}
+                        />
+                      </div>
+                      <div className="event-info-col">
+                        <div className="event-title-row">
+                          <h3 className="event-title">{event.name}</h3>
+                          <span className="event-chapter">{event.chapter}</span>
+                        </div>
+                        <div className="event-date-row">
+                          <span className="event-date">{getEventDate(event)}</span>
+                        </div>
+                      </div>
+                      {/* <span className={`event-status-pill ${status.className}`}>
+                        {status.label}
+                      </span> */}
                     </div>
                   </div>
-                )}
-                
-                {/* Baris 2: Two Column Layout */}
-                <div className="event-row-2" style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: '1fr 1fr', 
-                  gap: '20px',
-                  padding: '0'
-                }}>
-                  {/* Column 1 */}
-                  <div className="event-column-1">
-                    {/* Name */}
-                    <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                        fontSize: '15px', 
-                        fontWeight: '900', 
-                        color: '#161129',
-                        marginBottom: '4px'
-                        }}>
-                        NAMA EVENT
-                        </div>
-                      <div style={{ 
-                        fontSize: '15px', 
-                        fontWeight: '600',
-                        lineHeight: '1.3'
-                      }}>
-                        {event.name}
-                      </div>
-                    </div>
-                    
-                    {/* Chapter */}
-                    <div style={{ marginBottom: '12px' }}>
-                      <div style={{ 
-                        fontSize: '15px', 
-                        fontWeight: '900', 
-                        color: '#161129',
-                        marginBottom: '4px'
-                      }}>
-                        CHAPTER
-                      </div>
-                      <div>{event.chapter}</div>
-                    </div>
-                    
-                    {/* Event Code */}
-                    {event.code && (
-                      <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                          fontSize: '15px', 
-                          fontWeight: '900', 
-                          color: '#161129',
-                          marginBottom: '4px'
-                        }}>
-                          KODE EVENT
-                        </div>
-                        <div>{event.code}</div>
-                      </div>
-                    )}
-                    
-                    {/* Min Participants */}
-                    {event.minimum_participants && (
-                      <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                          fontSize: '15px', 
-                          fontWeight: '900', 
-                          color: '#161129',
-                          marginBottom: '4px'
-                        }}>
-                          MIN. PESERTA
-                        </div>
-                        <div>{event.minimum_participants}</div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Column 2 */}
-                  <div className="event-column-2">
-                    {/* Date */}
-                    <div style={{ marginBottom: '12px' }}>
-                      <div style={{ 
-                        fontSize: '15px', 
-                        fontWeight: '900', 
-                        color: '#161129',
-                        marginBottom: '4px'
-                      }}>
-                        TANGGAL
-                      </div>
-                      <div>{event.dates || event.date}</div>
-                    </div>
-                    
-                    {/* Time */}
-                    {event.time && (
-                      <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                          fontSize: '15px', 
-                          fontWeight: '900', 
-                          color: '#161129',
-                          marginBottom: '4px'
-                        }}>
-                          WAKTU
-                        </div>
-                        <div>{event.time}</div>
-                      </div>
-                    )}
-                    
-                    {/* Fee */}
-                    {event.fee !== null && event.fee !== undefined && (
-                      <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                          fontSize: '15px', 
-                          fontWeight: '900', 
-                          color: '#161129',
-                          marginBottom: '4px'
-                        }}>
-                          BIAYA
-                        </div>
-                        <div style={{ 
-                          fontSize: '14px', 
-                          lineHeight: '1.4',
-                          color: '#161129'
-                        }}>
-                          Rp {event.fee.toLocaleString()}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Description */}
-                    {event.desc && (
-                      <div style={{ marginBottom: '12px' }}>
-                        <div style={{ 
-                          fontSize: '15px', 
-                          fontWeight: '900', 
-                          color: '#161129',
-                          marginBottom: '4px'
-                        }}>
-                          DESKRIPSI
-                        </div>
-                        <div style={{ 
-                          fontSize: '14px', 
-                          lineHeight: '1.4',
-                          color: '#161129'
-                        }}>
-                          {event.desc}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-              </div>
-            ))
+                );
+              })}
+            </div>
           ) : !eventsError ? (
             <div className="empty-state">
               <img src="/nodata.png" alt="No Data" className="empty-icon" />
@@ -304,6 +196,112 @@ const MyEventHistory: React.FC = () => {
           ) : null}
         </div>
       </div>
+
+      {/* Modal Detail Event */}
+      {selectedEvent && (
+        <div className="event-modal-overlay" onClick={() => setSelectedEvent(null)}>
+          <div
+            className="event-modal-content"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label={selectedEvent.name}
+          >
+            <button
+              className="event-modal-close"
+              onClick={() => setSelectedEvent(null)}
+              aria-label="Tutup"
+              type="button"
+            >
+              &times;
+            </button>
+
+            {/* Gambar + Badge Status */}
+            {selectedEvent.image && (
+              <div className="event-modal-image-wrap">
+                <img
+                  src={getImageSrc(selectedEvent)}
+                  alt={selectedEvent.name}
+                  className="event-modal-image"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
+                />
+                <div className="event-modal-status-badge">
+                  {selectedEvent.done_desc || selectedEvent.status || 'Available'}
+                </div>
+              </div>
+            )}
+
+            <div className="event-modal-body">
+              <div className="event-modal-grid">
+                {/* Nama */}
+                <div className="event-modal-field">
+                  <div className="event-modal-label">NAMA EVENT</div>
+                  <div className="event-modal-value">{selectedEvent.name}</div>
+                </div>
+
+                {/* Tanggal */}
+                <div className="event-modal-field">
+                  <div className="event-modal-label">TANGGAL</div>
+                  <div className="event-modal-value">{getEventDate(selectedEvent)}</div>
+                </div>
+
+                {/* Chapter */}
+                <div className="event-modal-field">
+                  <div className="event-modal-label">CHAPTER</div>
+                  <div className="event-modal-value">{selectedEvent.chapter || '-'}</div>
+                </div>
+
+                {/* Waktu */}
+                {selectedEvent.time && (
+                  <div className="event-modal-field">
+                    <div className="event-modal-label">WAKTU</div>
+                    <div className="event-modal-value">{selectedEvent.time}</div>
+                  </div>
+                )}
+
+                {/* Kode Event */}
+                {selectedEvent.code && (
+                  <div className="event-modal-field">
+                    <div className="event-modal-label">KODE EVENT</div>
+                    <div className="event-modal-value">{selectedEvent.code}</div>
+                  </div>
+                )}
+
+                {/* Biaya */}
+                {selectedEvent.fee !== null && selectedEvent.fee !== undefined && (
+                  <div className="event-modal-field">
+                    <div className="event-modal-label">BIAYA</div>
+                    <div className="event-modal-value">
+                      Rp {Number(selectedEvent.fee).toLocaleString('id-ID')}
+                    </div>
+                  </div>
+                )}
+
+                {/* Min. Peserta */}
+                {(selectedEvent.minimum_participants || selectedEvent.minimum_participant) && (
+                  <div className="event-modal-field">
+                    <div className="event-modal-label">MIN. PESERTA</div>
+                    <div className="event-modal-value">
+                      {selectedEvent.minimum_participants || selectedEvent.minimum_participant}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Deskripsi */}
+              {selectedEvent.desc && (
+                <div className="event-modal-desc-block">
+                  <div className="event-modal-label">DESKRIPSI</div>
+                  <div className="event-modal-value">{selectedEvent.desc}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <FAB onClick={handleNotificationClick} ariaLabel="Notifications" />
     </div>

@@ -1,0 +1,234 @@
+/* =========================================================
+   Order Detail - Order Items & Payment Summary
+   (Tokopedia-style compact layout)
+   ========================================================= */
+
+.order-summary-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(22, 17, 41, 0.06);
+}
+
+.order-summary-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #161129;
+  margin: 0 0 12px 0;
+}
+
+/* ---------------------------------------------------------
+   Items list
+   --------------------------------------------------------- */
+.order-items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-item-card {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.order-item-card:last-child {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.order-item-main {
+  display: flex;
+  gap: 12px;
+}
+
+.order-item-image {
+  flex: 0 0 64px;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f0f0f0;
+  background: #f8f9fa;
+}
+
+.order-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.order-item-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-item-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #161129;
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.order-item-sku {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.order-item-pricing {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: auto;
+  padding-top: 6px;
+  gap: 8px;
+}
+
+.order-item-qty-price {
+  font-size: 0.8rem;
+  color: #777;
+  white-space: nowrap;
+}
+
+.order-item-subtotal {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #161129;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   Per-item tracking status
+   --------------------------------------------------------- */
+.order-item-tracking {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+}
+
+.item-tracking-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #161129;
+}
+
+.item-tracking-link svg {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.item-tracking-cta {
+  margin-left: auto;
+  color: #161129;
+  font-weight: 700;
+}
+
+.item-tracking-pending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #f57c00;
+}
+
+.item-tracking-pending svg {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   Payment summary
+   --------------------------------------------------------- */
+.order-payment-summary {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.order-payment-summary h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #161129;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.payment-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #666;
+  padding: 4px 0;
+}
+
+.payment-summary-row span:last-child {
+  font-weight: 500;
+  color: #333;
+}
+
+.payment-summary-row.discount span:last-child {
+  color: #2e7d32;
+}
+
+.payment-summary-row.total {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #161129;
+}
+
+.payment-summary-row.total span:last-child {
+  font-weight: 800;
+  color: #161129;
+  font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------
+   Responsive
+   --------------------------------------------------------- */
+@media (max-width: 480px) {
+  .order-summary-section {
+    padding: 12px;
+  }
+
+  .order-item-image {
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+  }
+
+  .order-item-name {
+    font-size: 0.85rem;
+  }
+
+  .order-item-qty-price,
+  .order-item-subtotal {
+    font-size: 0.78rem;
+  }
+}

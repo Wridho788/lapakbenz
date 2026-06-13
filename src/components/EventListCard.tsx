@@ -1,6 +1,7 @@
 import React from 'react';
 import type { EventItem } from '../api/types/eventTypes';
 import '../pages/Event.css';
+import { formatDate } from '../utils/dateUtils';
 
 interface EventListCardProps {
   event: EventItem;
@@ -20,14 +21,6 @@ const EventListCard: React.FC<EventListCardProps> = ({ event, onClick, isGrid = 
     (e.target as HTMLImageElement).src = '/bea2x.jpg';
   };
 
-  const formatDate = (dateStr: string) => {
-    try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    } catch {
-      return dateStr;
-    }
-  };
 
   if (isGrid) {
     return (

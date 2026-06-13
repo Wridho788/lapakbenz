@@ -101,8 +101,6 @@
 
 .product-header {
   border-bottom: 1px solid #f0f0f0;
-  padding-bottom: 10px;
-  margin-bottom: 8px;
 }
 
 .product-category {
@@ -112,14 +110,12 @@
   padding: 8px;
   border-radius: 12px;
   font-size: 10px;
-  margin-bottom: 8px;
 }
 
 .product-header-row {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
 }
 
 .wishlist-toggle-btn {
@@ -216,7 +212,7 @@
 .product-price {
     font-family: 'Lato', sans-serif;
   font-weight: 800;
-  font-size: 25px !important;
+  font-size: 20px !important;
   color: #d32f2f !important;
   line-height: 1.2;
   margin: 5px 0;

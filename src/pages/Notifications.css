@@ -387,3 +387,145 @@ body.force-light-mode .error-state {
     transform: none;
   }
 }
+
+.notification-detail-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #2c3e50;
+}
+
+.notification-detail-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.notification-detail-badge {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 12px 24px rgba(22, 17, 41, 0.1);
+}
+
+.notification-detail-badge.unread {
+  background: linear-gradient(135deg, #ff4757 0%, #ff6b6b 100%);
+}
+
+.notification-detail-badge.read {
+  background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
+}
+
+.notification-detail-summary {
+  flex: 1;
+}
+
+.notification-detail-type {
+  margin: 0 0 0.35rem 0;
+  color: #7f8c8d;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.notification-detail-title {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+.notification-detail-meta {
+  margin: 0.65rem 0 0 0;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.notification-detail-body {
+  background: #fbfcff;
+  border: 1px solid #e9ebf2;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.notification-detail-loading {
+  color: #586273;
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+
+.notification-detail-message {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: #2c3e50;
+}
+
+.notification-detail-additional {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #dde2ea;
+  color: #4b4b4b;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.notification-detail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.notification-detail-counter {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.notification-detail-close {
+  background: #161129;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.notification-detail-close:hover {
+  background: #2c3e50;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 450px) {
+  .notification-detail-modal {
+    gap: 14px;
+  }
+
+  .notification-detail-header {
+    gap: 12px;
+  }
+
+  .notification-detail-badge {
+    width: 48px;
+    height: 48px;
+  }
+
+  .notification-detail-title {
+    font-size: 1rem;
+  }
+
+  .notification-detail-body {
+    padding: 16px;
+  }
+}

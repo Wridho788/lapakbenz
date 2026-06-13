@@ -963,7 +963,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               ))}
             </div>
-            <h1 className="product-price">Rp {productData.price.toLocaleString('id-ID')}</h1>
+            <span className="product-price">Rp {productData.price.toLocaleString('id-ID')}</span>
           </div>
 
           {/* Product Info */}

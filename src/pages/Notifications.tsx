@@ -2,6 +2,7 @@ import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdMessage, MdKeyboardArrowRight } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import Modal from '../components/Modal';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useNotifications, useNotificationDetail } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
@@ -23,6 +24,9 @@ const Notifications: React.FC = () => {
   
   const [refreshing, setRefreshing] = useState(false);
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
+  const [activeNotification, setActiveNotification] = useState<NotificationItem | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [remainingSeconds, setRemainingSeconds] = useState(35);
   const pullRef = useRef<HTMLDivElement | null>(null);
   const startY = useRef<number | null>(null);
   const pulling = useRef(false);
@@ -59,7 +63,7 @@ const Notifications: React.FC = () => {
       }
       pulling.current = false;
       startY.current = null;
-      setTimeout(() => setPullDistance(0), 150);
+      setTimeout(() => setPullDistance(0), 3000);
     };
 
     element.addEventListener('touchstart', handleTouchStart, { passive: true });
@@ -149,6 +153,30 @@ const Notifications: React.FC = () => {
     await refetch();
   }, [refetch]);
 
+  const closeModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedNotificationId(null);
+    setActiveNotification(null);
+  };
+
+  useEffect(() => {
+    if (!isDetailModalOpen) return;
+
+    setRemainingSeconds(35);
+    const intervalId = window.setInterval(() => {
+      setRemainingSeconds((prev) => Math.max(prev - 1, 0));
+    }, 1000);
+
+    const timeoutId = window.setTimeout(() => {
+      closeModal();
+    }, 35000);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [isDetailModalOpen]);
+
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!isAuthenticated || !token) {
       toast.warning('Silakan masuk untuk melihat detail notifikasi', {
@@ -160,36 +188,12 @@ const Notifications: React.FC = () => {
     }
 
     setSelectedNotificationId(notification.id);
+    setActiveNotification(notification);
+    setIsDetailModalOpen(true);
 
-    // Wait for detail data to load (with timeout)
-    const maxWait = 3000;
-    const startTime = Date.now();
-    while (isDetailLoading && Date.now() - startTime < maxWait) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    const detailContent = notificationDetail?.content || notificationDetail?.result || notificationDetail;
-    const displayTitle = detailContent?.subject || detailContent?.content || notification.title;
-
-    toast.info(
-      <div style={{ textAlign: 'left' }}>
-        <strong style={{ display: 'block', marginBottom: '8px', fontSize: '16px' }}>
-          {displayTitle}
-        </strong>
-      </div>,
-      {
-        position: 'bottom-right',
-        autoClose: 1500,
-        theme: 'dark',
-        closeOnClick: true,
-      }
-    );
-
-    if (notification.reading === "0") {
+    if (notification.reading === '0') {
       await markAsRead();
     }
-
-    setSelectedNotificationId(null);
   };
 
   // Redirect if not authenticated
@@ -250,6 +254,53 @@ const Notifications: React.FC = () => {
           </div>
         );
       })()}
+
+      <Modal open={isDetailModalOpen} onClose={closeModal} maxWidth="420px">
+        <div className="notification-detail-modal">
+          <div className="notification-detail-header">
+            <div className={`notification-detail-badge ${activeNotification?.reading === '0' ? 'unread' : 'read'}`}>
+              <MdMessage />
+            </div>
+            <div className="notification-detail-summary">
+              <p className="notification-detail-type">{(notificationDetail?.content?.type || 'Notifikasi').toString().toUpperCase()}</p>
+              <h3 className="notification-detail-title">
+                {notificationDetail?.content?.subject || activeNotification?.title || 'Detail Notifikasi'}
+              </h3>
+              <p className="notification-detail-meta">
+                {notificationDetail?.content?.created
+                  ? formatDateTime(new Date(notificationDetail.content.created))
+                  : activeNotification?.timestamp
+                    ? formatDateTime(activeNotification.timestamp)
+                    : ''}
+              </p>
+            </div>
+          </div>
+
+          <div className="notification-detail-body">
+            {isDetailLoading ? (
+              <p className="notification-detail-loading">Memuat detail notifikasi...</p>
+            ) : (
+              <>
+                <div className="notification-detail-message">
+                  {notificationDetail?.content?.content || activeNotification?.message || 'Tidak ada detail notifikasi.'}
+                </div>
+                {notificationDetail?.content?.additional && (
+                  <div className="notification-detail-additional">
+                    {notificationDetail.content.additional}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="notification-detail-footer">
+            <span className="notification-detail-counter">Tutup otomatis dalam {remainingSeconds} detik</span>
+            <button className="notification-detail-close" onClick={closeModal}>
+              Tutup Sekarang
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {!isLoading && !error && (
         <div className="notifications-list">

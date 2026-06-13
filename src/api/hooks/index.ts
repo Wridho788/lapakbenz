@@ -74,6 +74,8 @@ export {
   useCheckoutOrder,
   useOrderDetail,
   useOrderTracking,
+  useCancelOrder,
+  useOrderByCode
 } from './cartHooks';
 
 export {

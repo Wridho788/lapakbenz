@@ -72,8 +72,8 @@ const Orders: React.FC = () => {
   //   setTimeout(() => setIsRefreshing(false), 500);
   // };
 
-  const handleOrderClick = (orderId: string) => {
-    navigate(`/orders/${orderId}`);
+  const handleOrderClick = (orderCode: string) => {
+    navigate(`/orders/${orderCode}`);
   };
 
   const handleToggleFilters = () => {
@@ -439,7 +439,7 @@ const Orders: React.FC = () => {
         {!isLoading && orders.length > 0 && (
           <div className="orders-list">
             {orders.map((order: OrderItem) => (
-              <div key={order.id} className="order-card" onClick={() => handleOrderClick(String(order.id))}>
+              <div key={order.id} className="order-card" onClick={() => handleOrderClick(order.code)}>
                 <div className="order-header">
                   <div className="order-code">
                     <h4>#{order.code}</h4>

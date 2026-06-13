@@ -708,7 +708,7 @@ const Product: React.FC = () => {
                       <h4 className="product-title">{capitalizeWords(product.name)}</h4>
                     </div>
 
-                    <h3 className="product-price">Rp {(product.price || 0).toLocaleString('id-ID')}</h3>
+                    <span className="product-prices">Rp {(product.price || 0).toLocaleString('id-ID')}</span>
 
                     <div className="product-rating-row">
                       <div className="rating-stars">

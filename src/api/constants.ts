@@ -55,7 +55,8 @@ export const ENDPOINT_ORDER = 'order'; // method post parameter: {confirm, end, 
 export const ENDPOINT_ORDER_CHECKOUT = 'order/checkout'; // method get parameter: none
 export const ENDPOINT_ORDER_GET = 'order/'; // method get parameter: { order id }
 export const ENDPOINT_ORDER_TRACKING = 'order/tracking/'; // method get parameter: {awb(airway bill number)}
-
+export const ENDPOINT_ORDER_CANCEL = 'order/cancel/'; // method post parameter: { order id }
+export const ENDPOINT_ORDER_BY_CODE = 'order/get_by_code/'; // method get parameter: { order code }
 // shipping endpoints
 export const ENDPOINT_SET_SHIPPING = 'set_shipping'; // method put parameter: { address, city, city_name, district, district_name, province, province_name }
 export const ENDPOINT_CITY_SHIPPING = 'city_shipping/'; // method get parameter province id

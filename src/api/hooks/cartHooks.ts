@@ -138,3 +138,25 @@ export function useOrderTracking(awb: string, lastDigit: string): UseQueryResult
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 }
+
+export function useCancelOrder(): UseMutationResult<any, Error, string> {
+  return useMutation({
+    mutationFn: (orderCode: string) => orderApi.cancelOrder(orderCode),
+  });
+}
+
+export function useOrderByCode(orderCode: string): UseQueryResult<OrderDetailResponse, Error> {
+  return useQuery({
+    queryKey: ['orderByCode', orderCode],
+    queryFn: () => orderApi.getOrderByCode(orderCode),
+    enabled: !!orderCode && orderCode.trim() !== '',
+    staleTime: 1000 * 60 * 5,
+    retry: (failureCount, error) => {
+      if (axios.isAxiosError(error) && [400, 401, 403, 404].includes(error.response?.status || 0)) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}

@@ -57,8 +57,8 @@ const MyTransactionHistory: React.FC = () => {
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  const handleOrderClick = (orderId: string | number) => {
-    navigate(`/orders/${orderId}`);
+  const handleOrderClick = (orderCode: string) => {
+    navigate(`/orders/${orderCode}`);
   };
 
   const handleCartClick = () => {
@@ -204,7 +204,7 @@ navigate('/cart');  };
               <div 
                 key={order.id} 
                 className="order-card"
-                onClick={() => handleOrderClick(order.id)}
+                onClick={() => handleOrderClick(order.code)}
               >
                 <div className="order-header">
                   <div className="order-code">

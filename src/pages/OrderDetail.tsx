@@ -10,9 +10,11 @@ import {
 } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { useAuthStore } from '../stores/authStore';
-import { useOrderDetail } from '../api/hooks/index';
+import { useOrderByCode, useCancelOrder } from '../api/hooks/index';
+import { toast } from 'react-toastify';
 import OrderTracking from '../components/OrderTracking';
 import './OrderDetail.css';
+import './OrderDetailItems.css';
 
 const OrderDetail: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -27,8 +29,11 @@ const OrderDetail: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const { data: orderDetail, isLoading, error, refetch } = useOrderDetail(orderId || '');
-
+  const orderCode = orderId || '';
+  const { data: orderDetail, isLoading, error, refetch } = useOrderByCode(orderCode);
+  const cancelOrderMutation = useCancelOrder();
+  const [isCancelling, setIsCancelling] = useState(false);
+  console.log(orderDetail, 'orderDetail'); // Debugging log
   const handleBackClick = () => {
     navigate('/orders');
   };
@@ -75,6 +80,22 @@ const OrderDetail: React.FC = () => {
     if (order.link_url) {
       const fullUrl = getFullUrl(order.link_url);
       window.open(fullUrl, '_blank');
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!order.code) return;
+    setIsCancelling(true);
+    try {
+      const res = await cancelOrderMutation.mutateAsync(order.code);
+      const message = res?.message || 'Pesanan berhasil dibatalkan';
+      toast.success(message, { position: 'bottom-right', autoClose: 2000, theme: 'dark' });
+      refetch();
+    } catch (err: any) {
+      const msg = err?.message || 'Gagal membatalkan pesanan';
+      toast.error(msg, { position: 'bottom-right', autoClose: 2000, theme: 'dark' });
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -207,7 +228,11 @@ const OrderDetail: React.FC = () => {
   }
 
   const order = orderDetail.content || {};
-  const orderItems = (orderDetail.content?.items) || [];
+  const orderItems = orderDetail.content?.items || [];
+  const imageBaseUrl = orderDetail.content?.imageurl || '';
+  // Ringkasan Pesanan hanya relevan untuk order produk (bukan EVN/event)
+  // dan hanya jika ada item yang bisa ditampilkan.
+  const showOrderSummary = order.transcode !== 'EVN' && orderItems.length > 0;
 
   return (
     <div className="order-detail-page">
@@ -402,126 +427,135 @@ const OrderDetail: React.FC = () => {
           );
         })()}
 
-        {/* Order Summary Section */}
-        <div className="order-summary-section">
-          <h3>Ringkasan Pesanan</h3>
-          {/* Order Items */}
-          <div className="summary-items">
-            <h4>Item Pesanan ({orderItems?.length || 0})</h4>
-            <div className="summary-items-list">
-              {orderItems?.map((item: any) => (
-                <div key={item.id} style={{padding: '1rem', background: '#f8f9fa'}}>
-                  <h5 >{item.product_name || item.product || 'Produk'}</h5>
-                  {item.product_image && (
-                    <img
-                      src={`${orderDetail.content?.imageurl || ''}${item.product_image}`}
-                      alt={item.product_name}
-                      style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px'}}
-                      onError={(e) => { (e.target as HTMLImageElement).src = '/nodata.png'; }}
-                    />
-                  )}
-                  <div className="summary-item-grid">
-                    <div className="grid-row">
-                      <span className="grid-label">SKU</span>
-                      <span className="grid-value">{item.product_sku || item.sku || '-'}</span>
+        {/* Order Summary Section - hanya untuk order produk (transcode !== 'EVN') dengan items */}
+        {showOrderSummary && (
+          <div className="order-summary-section">
+            <h3>
+              <MdReceipt className="card-icon" />
+              Ringkasan Pesanan
+            </h3>
+
+            {/* Order Items */}
+            <div className="order-items-list">
+              {orderItems.map((item: any) => {
+                console.log( imageBaseUrl + item.product_image, 'imageBaseUrl + item.product_image')
+                return ( 
+                <div key={item.id} className="order-item-card">
+                  <div className="order-item-main">
+                    <div className="order-item-image">
+                      <img
+                        src={
+                          imageBaseUrl + item.product_image
+                            ? `${imageBaseUrl}${item.product_image}`
+                            : '/nodata.png'
+                        }
+                        alt={item.product_name || item.product || 'Produk'}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/nodata.png';
+                        }}
+                      />
                     </div>
-                    <div className="grid-row">
-                      <span className="grid-label">Jumlah</span>
-                      <span className="grid-value">{item.qty} pcs</span>
-                    </div>
-                    <div className="grid-row">
-                      <span className="grid-label">Harga Satuan</span>
-                      <span className="grid-value">{formatCurrency(item.price)}</span>
-                    </div>
-                    <div className="grid-row">
-                      <span className="grid-label">Total</span>
-                      <span className="grid-value">{formatCurrency(item.amount)}</span>
+                    <div className="order-item-details">
+                      <h5 className="order-item-name">
+                        {item.product_name || item.product || 'Produk'}
+                      </h5>
+                      {item.product_sku && (
+                        <span className="order-item-sku">SKU: {item.product_sku}</span>
+                      )}
+                      <div className="order-item-pricing">
+                        <span className="order-item-qty-price">
+                          {item.qty} x {formatCurrency(item.price)}
+                        </span>
+                        <span className="order-item-subtotal">
+                          {formatCurrency(item.amount)}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Tombol lacak pesanan dengan status yang lebih menarik */}
-                  <div className="tracking-action-section">
+                  {/* Status pengiriman per item - ringkas */}
+                  <div className="order-item-tracking">
                     {item.awb && item.awb !== null ? (
-                      <div
-                        className="track-item-btn active"
+                      <button
+                        type="button"
+                        className="item-tracking-link"
                         onClick={() => {
-                          const trackingInfo = {
-                            awb: item.awb,
-                            lastDigit: item.last_digit || '',
-                            hasAwb: !!item.awb,
-                            hasLastDigit: !!item.last_digit,
-                          };
-
-                          if (trackingInfo.hasAwb && trackingInfo.hasLastDigit) {
-                            setShowTracking(!showTracking);
-                            const trackingSection = document.querySelector('.order-tracking-section');
-                            if (trackingSection) {
-                              trackingSection.scrollIntoView({ behavior: 'smooth' });
-                            }
+                          if (item.awb && item.last_digit) {
+                            setShowTracking(true);
+                            requestAnimationFrame(() => {
+                              document
+                                .querySelector('.order-tracking-section')
+                                ?.scrollIntoView({ behavior: 'smooth' });
+                            });
                           }
                         }}
                       >
-                        <div className="track-btn-content">
-                          <MdLocalShipping className="track-icon" color='#161129' />
-                          <div className="track-text">
-                            <span className="track-title">Lacak Pengiriman</span>
-                            <span className="track-subtitle">Resi: {item.awb}</span>
-                          </div>
-                        </div>
-                      </div>
+                        <MdLocalShipping />
+                        <span>Resi: {item.awb}</span>
+                        <span className="item-tracking-cta">Lacak &rsaquo;</span>
+                      </button>
                     ) : (
-                      <div className="processing-status">
-                        <div className="processing-content">
-                          <div className="processing-icon-wrapper">
-                            <MdPending className="processing-icon" />
-                          </div>
-                          <div className="processing-text">
-                            <span className="processing-title">Sedang Diproses</span>
-                            <span className="processing-subtitle">Nomor resi akan tersedia setelah dikirim</span>
-                          </div>
-                        </div>
-                        <div className="processing-dots">
-                          <span className="dot"></span>
-                          <span className="dot"></span>
-                          <span className="dot"></span>
-                        </div>
+                      <div className="item-tracking-pending">
+                        <MdPending />
+                        <span>Sedang diproses penjual</span>
                       </div>
                     )}
                   </div>
                 </div>
-              ))}
+              )
+              })}
+            </div>
+
+            {/* Rincian Pembayaran */}
+            <div className="order-payment-summary">
+              <h4>Rincian Pembayaran</h4>
+              <div className="payment-summary-row">
+                <span>Total Harga Barang</span>
+                <span>{formatCurrency(order.amount || 0)}</span>
+              </div>
+              {order.shipping > 0 && (
+                <div className="payment-summary-row">
+                  <span>Biaya Pengiriman</span>
+                  <span>{formatCurrency(order.shipping)}</span>
+                </div>
+              )}
+              {order.discount > 0 && (
+                <div className="payment-summary-row discount">
+                  <span>Diskon</span>
+                  <span>-{formatCurrency(order.discount)}</span>
+                </div>
+              )}
+              {order.tax > 0 && (
+                <div className="payment-summary-row">
+                  <span>Pajak</span>
+                  <span>{formatCurrency(order.tax)}</span>
+                </div>
+              )}
+              {order.cost > 0 && (
+                <div className="payment-summary-row">
+                  <span>Biaya Layanan</span>
+                  <span>{formatCurrency(order.cost)}</span>
+                </div>
+              )}
+              <div className="payment-summary-row total">
+                <span>Total Pembayaran</span>
+                <span>{formatCurrency(order.total)}</span>
+              </div>
             </div>
           </div>
-
-          {/* Summary Totals */}
-          <div className="summary-totals">
-            <div className="total-row">
-              <span className="total-label">Total Belanja:</span>
-              <span className="total-value">{formatCurrency((order.total || 0) - (order.shipping || 0))}</span>
-            </div>
-             <div className="total-row">
-              <span className="total-label">Biaya Pengiriman:</span>
-              <span className="total-value">{formatCurrency(order.shipping)}</span>
-            </div>
-            <div className="total-row savings">
-              <span className="total-label">Discount:</span>
-              <span className="total-value">-{formatCurrency(order.discount)}</span>
-            </div>
-            <div className="total-row">
-              <span className="total-label">Pajak:</span>
-              <span className="total-value">{formatCurrency(order.tax)}</span>
-            </div>
-            <div className="total-row">
-              <span className="total-label">Biaya Layanan:</span>
-              <span className="total-value">{formatCurrency(order.costs ?? 0)}</span>
-            </div>
-            <div className="total-row final-total">
-              <span className="total-label">Total Bayar:</span>
-              <span className="total-value">{formatCurrency(order.tot_amt || order.total)}</span>
-            </div>
+        )}
+        {!order.canceled && (
+          <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              className="cancel-order-btn"
+              onClick={handleCancelOrder}
+              disabled={isCancelling}
+              style={{ background: '#dc3545', color: '#fff' }}
+            >
+              {isCancelling ? 'Membatalkan...' : 'Batalkan Pesanan'}
+            </button>
           </div>
-        </div>
-
+        )}
         {/* Cancellation Notice */}
         {order.canceled && (
           <div className="cancellation-card">

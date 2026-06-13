@@ -435,6 +435,184 @@ form {
   background: #2a1f3d;
 }
 
+/* ===================================================== */
+/* Event History - List Item Status Pill                 */
+/* ===================================================== */
+.account-content .custom-event-card {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.account-content .custom-event-card:hover {
+  box-shadow: 0 2px 8px rgba(22, 17, 41, 0.1);
+  transform: translateY(-1px);
+}
+
+.account-content .custom-event-card:focus-visible {
+  outline: 2px solid #161129;
+  outline-offset: 2px;
+}
+
+.custom-event-card .event-row {
+  position: relative;
+  gap: 8px;
+}
+
+.event-status-pill {
+  margin-left: auto;
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.event-status-pill.completed {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.event-status-pill.upcoming {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+/* ===================================================== */
+/* Event History - Detail Modal                          */
+/* ===================================================== */
+.event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: eventModalFadeIn 0.2s ease;
+}
+
+.event-modal-content {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: eventModalSlideUp 0.25s ease;
+}
+
+@keyframes eventModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes eventModalSlideUp {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.event-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background-color 0.2s ease;
+}
+
+.event-modal-close:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.event-modal-image-wrap {
+  position: relative;
+}
+
+.event-modal-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px 16px 0 0;
+}
+
+.event-modal-status-badge {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.event-modal-body {
+  padding: 20px;
+}
+
+.event-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.event-modal-field:first-child {
+  grid-column: 1 / -1;
+}
+
+.event-modal-label {
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #161129;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.event-modal-value {
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.event-modal-desc-block {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .account-content {
@@ -460,5 +638,36 @@ form {
   .transaction-status,
   .redeem-status {
     align-self: flex-end;
+  }
+
+  .event-modal-content {
+    max-height: 90vh;
+  }
+
+  .event-modal-image {
+    height: 160px;
+  }
+
+  .event-modal-grid {
+    gap: 12px;
+  }
+}
+
+/* Dark mode override for modal */
+@media (prefers-color-scheme: dark) {
+  .event-modal-content {
+    background: #fff !important;
+  }
+
+  .event-modal-label {
+    color: #161129 !important;
+  }
+
+  .event-modal-value {
+    color: #333 !important;
+  }
+
+  .event-modal-desc-block {
+    border-top: 1px solid #f0f0f0 !important;
   }
 }
