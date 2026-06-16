@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdNotifications, MdShoppingCart } from 'react-icons/md';
+import { FaHandshake } from 'react-icons/fa';
 import './AppbarHomepage.css';
 
 export type AppbarHomepageProps = {
@@ -10,6 +11,7 @@ export type AppbarHomepageProps = {
   notificationCount?: number;
   onCartClick?: () => void;
   cartCount?: number;
+  onPartnerClick?: () => void;
 };
 
 export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
@@ -18,7 +20,8 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
   onNotificationClick,
   notificationCount = 0,
   onCartClick,
-  cartCount = 0
+  cartCount = 0,
+  onPartnerClick,
 }) => {
   const navigate = useNavigate();
   const [avatarError, setAvatarError] = useState(false);
@@ -45,6 +48,14 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
     }
   };
 
+  const handlePartnerClick = () => {
+    if (onPartnerClick) {
+      onPartnerClick();
+    } else {
+      navigate('/partner', { state: { from: '/dashboard' } });
+    }
+  };
+
   return (
     <header className="appbar-homepage">
       <div className="appbar-user-info">
@@ -66,6 +77,14 @@ export const AppbarHomepage: React.FC<AppbarHomepageProps> = ({
         <span className="appbar-name">Hi, {name || 'User'} !</span>
       </div>
       <div className="appbar-actions">
+        <button
+          className="appbar-partner-btn"
+          onClick={handlePartnerClick}
+          aria-label="Partners"
+          title="View partners"
+        >
+          <FaHandshake />
+        </button>
         <button
           className={`appbar-cart-btn ${cartCount > 0 ? 'has-items' : ''}`}
           onClick={handleCartClick}

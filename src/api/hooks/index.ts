@@ -1,5 +1,4 @@
 // Re-export all hooks from their respective modules for convenient importing
-
 // Authentication & User Management Hooks
 export {
   useLogin,
@@ -111,3 +110,10 @@ export {
   useToggleWishlist,
   useWishlistItems,
 } from './wishlistHooks';
+
+// Partner Hooks
+export {
+  usePartnerCategories,
+  usePartnerCities,
+  usePartnerList
+} from './partnerHooks';

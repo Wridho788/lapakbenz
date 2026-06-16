@@ -63,9 +63,6 @@ const ProductDetail: React.FC = () => {
   // API hooks for cart
   const { data: apiCartData, refetch: cartRefetch } = useCart();
   const productPermalinkParam = productPermalink || '';
-
-  console.log('ProductDetail Rendered with productPermalink:', productPermalinkParam);
-
   // Auth state - get all needed auth properties
   const { isAuthenticated, token, validateToken, requireAuth } = useAuthStore();
   const location = useLocation();
@@ -412,8 +409,6 @@ const ProductDetail: React.FC = () => {
     const apiProduct = productDetailData?.result;
 
     if (apiProduct) {
-      // console.log(apiProduct, 'API Product Data');
-
       const specifications = [];
       if (apiProduct.sku) specifications.push(`SKU: ${apiProduct.sku}`);
       if (apiProduct.weight) specifications.push(`Weight: ${apiProduct.weight}g`);

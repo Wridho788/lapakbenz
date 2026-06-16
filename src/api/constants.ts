@@ -1,5 +1,4 @@
 // Base URL for API
-// export const BASE_URL = 'https://goapi.dswip.com/';
 export const BASE_URL = 'https://dswip.cloud/';
 // article endpoints
 export const ENDPOINT_ARTICLE = 'article';
@@ -44,7 +43,6 @@ export const ENDPOINT_CART_SET_PICKUP = 'cart/pickup/'; // method put cart id
 export const ENDPOINT_CART_SET_NOTE = 'cart/notes/'; // method put cart id parameter: { note }
 export const ENDPOINT_CART_SET_PUBLISH = 'cart/publish/'; // method put cart id 
 
-
 // Chapter endpoints
 export const ENDPOINT_CHAPTER = 'chapter'; // method get, parameter: none
 export const ENDPOINT_CHAPTER_BY_ID = 'chapter/'; // method get parameter: { chapter id }
@@ -57,6 +55,7 @@ export const ENDPOINT_ORDER_GET = 'order/'; // method get parameter: { order id 
 export const ENDPOINT_ORDER_TRACKING = 'order/tracking/'; // method get parameter: {awb(airway bill number)}
 export const ENDPOINT_ORDER_CANCEL = 'order/cancel/'; // method post parameter: { order id }
 export const ENDPOINT_ORDER_BY_CODE = 'order/get_by_code/'; // method get parameter: { order code }
+
 // shipping endpoints
 export const ENDPOINT_SET_SHIPPING = 'set_shipping'; // method put parameter: { address, city, city_name, district, district_name, province, province_name }
 export const ENDPOINT_CITY_SHIPPING = 'city_shipping/'; // method get parameter province id
@@ -86,3 +85,8 @@ export const ENDPOINT_VOUCHER = 'voucher'; // method get parameter: none
 export const ENDPOINT_REMOVE_VOUCHER = 'voucher'; // method delete parameter: none
 export const ENDPOINT_GET_VOUCHER = 'voucher/get'; // method get parameter: none
 export const ENDPOINT_SET_VOUCHER = 'voucher/set/'; // method post parameter: { voucher id }
+
+// partner
+export const ENDPOINT_PARTNER = 'partner'; // method POST parameter: none
+export const ENDPOINT_PARTNER_CATEGORY = 'partner/category'; // method GET parameter: none
+export const ENDPOINT_PARTNER_CITY = 'partner/city'; // method GET parameter: none

@@ -49,8 +49,6 @@ export const UpcomingNews: React.FC<UpcomingNewsProps> = ({ className }) => {
 
   const responseData = articleMutation.data as ArticleResponse | undefined;
 
-  console.log('📋 Upcoming News Data:', responseData);
-
   // Ambil hasil articleMutation.data.result sebagai upcomingNews
   const upcomingNews: NewsItem[] = responseData?.result ?? [];
   const imageBaseUrl = responseData?.image_url ?? '';

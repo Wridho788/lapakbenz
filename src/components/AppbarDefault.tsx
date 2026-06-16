@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MdArrowBack, MdShoppingCart } from 'react-icons/md';
+import { FaHandshake } from 'react-icons/fa';
 import './AppbarDefault.css';
 
 export type AppbarDefaultProps = {
@@ -11,6 +12,8 @@ export type AppbarDefaultProps = {
   showCart?: boolean; // New optional prop to control cart visibility
   backTo?: string; // NEW: Explicit back destination
   defaultBack?: string; // NEW: Default fallback route
+  onPartnerClick?: () => void;
+  showPartner?: boolean;
 };
 
 export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
@@ -21,14 +24,25 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
   showCart = true, // Default to true to maintain backward compatibility
   backTo, // NEW
   defaultBack = '/dashboard', // NEW: Default fallback
+  onPartnerClick,
+  showPartner = true, // Default to true, same as showCart, for backward compatibility
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const handleCartClick = () => {
     if (onCartClick) {
       onCartClick();
     } else {
       navigate('/cart', { state: { from: window.location.pathname } });
+    }
+  };
+
+  const handlePartnerClick = () => {
+    if (onPartnerClick) {
+      onPartnerClick();
+    } else {
+      navigate('/partner', { state: { from: window.location.pathname } });
     }
   };
 
@@ -64,6 +78,16 @@ export const AppbarDefault: React.FC<AppbarDefaultProps> = ({
         </button>
       )}
       <span className="appbar-title">{title}</span>
+      {showPartner && (
+        <button
+          className="appbar-partner-btn"
+          onClick={handlePartnerClick}
+          aria-label="Partners"
+          title="View partners"
+        >
+          <FaHandshake />
+        </button>
+      )}
       {showCart && (
         <button
           className={`appbar-cart-btn ${cartCount > 0 ? 'has-items' : ''}`}

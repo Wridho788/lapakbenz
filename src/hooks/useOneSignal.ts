@@ -17,8 +17,6 @@ export const useOneSignal = () => {
 
     const initOneSignal = async () => {
       try {
-        console.log('🔔 Initializing OneSignal...');
-
         await OneSignal.init({
           appId: 'e97b9d55-bdde-4fa9-8b00-b5d8c72cd466',
           allowLocalhostAsSecureOrigin: true,
@@ -56,12 +54,12 @@ export const useOneSignal = () => {
 
         // Mark as initialized
         initialized.current = true;
-        console.log('✅ OneSignal initialized successfully');
+        // console.log('✅ OneSignal initialized successfully');
 
         // Check service worker registration
         if ('serviceWorker' in navigator) {
           const registrations = await navigator.serviceWorker.getRegistrations();
-          console.log('🔧 Service Workers registered:', registrations.length);
+          // console.log('🔧 Service Workers registered:', registrations.length);
           registrations.forEach((reg, index) => {
             console.log(`  SW ${index + 1}:`, reg.scope, reg.active?.state);
           });
@@ -69,11 +67,11 @@ export const useOneSignal = () => {
 
         // Check permission status
         const permission = String(await OneSignal.Notifications.permission);
-        console.log('🔐 Notification permission:', permission);
+        // console.log('🔐 Notification permission:', permission);
 
         // Show slidedown prompt if not already subscribed
         if (permission !== 'granted') {
-          console.log('📢 Showing slidedown prompt...');
+          // console.log('📢 Showing slidedown prompt...');
           await OneSignal.Slidedown.promptPush();
         } else {
           console.log('✅ User already subscribed');
@@ -106,15 +104,15 @@ export const useOneSignal = () => {
 
         // Listen for notification clicks
         OneSignal.Notifications.addEventListener('click', (event) => {
-          console.log('🖱️ Notification clicked:', event);
+          // console.log('🖱️ Notification clicked:', event);
           try {
             const notification = event.notification;
             if (notification) {
-              console.log('  - Title:', notification.title);
-              console.log('  - Body:', notification.body);
+              // console.log('  - Title:', notification.title);
+              // console.log('  - Body:', notification.body);
               const data = notification.additionalData as any;
               if (data?.url) {
-                console.log('  - Opening URL:', data.url);
+                // console.log('  - Opening URL:', data.url);
                 window.location.href = data.url;
               }
             }

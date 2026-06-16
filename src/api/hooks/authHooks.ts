@@ -303,8 +303,6 @@ export function useUserData() {
 
   // reading can be number (0) or string ('0'), count both as unread
   const unreadCount = notificationItems.filter((n: any) => n.reading === '0' || n.reading === 0).length || 0;
-  console.log('unreadCount calculated:', unreadCount);
-
   return {
     profile: profile.data?.result,
     userInfo: decodeToken.data,

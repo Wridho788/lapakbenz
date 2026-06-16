@@ -33,7 +33,6 @@ const OrderDetail: React.FC = () => {
   const { data: orderDetail, isLoading, error, refetch } = useOrderByCode(orderCode);
   const cancelOrderMutation = useCancelOrder();
   const [isCancelling, setIsCancelling] = useState(false);
-  console.log(orderDetail, 'orderDetail'); // Debugging log
   const handleBackClick = () => {
     navigate('/orders');
   };
@@ -438,7 +437,6 @@ const OrderDetail: React.FC = () => {
             {/* Order Items */}
             <div className="order-items-list">
               {orderItems.map((item: any) => {
-                console.log( imageBaseUrl + item.product_image, 'imageBaseUrl + item.product_image')
                 return ( 
                 <div key={item.id} className="order-item-card">
                   <div className="order-item-main">

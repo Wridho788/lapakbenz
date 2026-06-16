@@ -30,8 +30,8 @@
 }
 
 .appbar-avatar {
-  width: 48px; /* Increased from 40px */
-  height: 48px; /* Increased from 40px */
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -61,7 +61,7 @@
   font-weight: 600;
   font-size: 1.1rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  color: #161129
+  color: #161129;
 }
 
 /* Actions container */
@@ -71,6 +71,7 @@
   gap: 0.75rem;
 }
 
+/* Notification button */
 .appbar-notif-btn {
   background: rgba(255, 255, 255, 0);
   border: none;
@@ -95,6 +96,28 @@
 }
 
 .appbar-notif-btn:active {
+  transform: scale(0.75);
+}
+
+/* Partner button — same styling as cart button */
+.appbar-partner-btn {
+  background: rgba(255, 255, 255, 0);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 100%;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.appbar-partner-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.appbar-partner-btn:active {
   transform: scale(0.75);
 }
 
@@ -181,12 +204,11 @@
   background: #ff4757;
   border-radius: 50%;
   border: 2px solid #161129;
-  /* Show only when there are notifications but no badge */
   display: none;
 }
 
 .appbar-notif-btn.has-notification::after {
-  display: none; /* Hide dot when badge is shown */
+  display: none;
 }
 
 /* Animations */
@@ -216,7 +238,6 @@
   }
 }
 
-/* Responsive */
 /* Large desktop styling (min 1200px) */
 @media (min-width: 1200px) {
   .appbar-homepage {
@@ -229,16 +250,21 @@
     width: 44px;
     height: 44px;
   }
-  
+
   .appbar-name {
     font-size: 1.2rem;
   }
-  
+
   .appbar-actions {
     gap: 0rem;
   }
-  
-  .appbar-notif-btn,
+
+  .appbar-notif-btn {
+    font-size: 1.6rem;
+    padding: 6px;
+  }
+
+  .appbar-partner-btn,
   .appbar-cart-btn {
     font-size: 1.6rem;
     padding: 6px;
@@ -257,16 +283,21 @@
     width: 42px;
     height: 42px;
   }
-  
+
   .appbar-name {
     font-size: 1.15rem;
   }
-  
+
   .appbar-actions {
     gap: 0rem;
   }
-  
-  .appbar-notif-btn,
+
+  .appbar-notif-btn {
+    font-size: 1.55rem;
+    padding: 6px;
+  }
+
+  .appbar-partner-btn,
   .appbar-cart-btn {
     font-size: 1.55rem;
     padding: 6px;
@@ -279,21 +310,26 @@
     padding: 0.7rem 0.9rem;
     min-height: 54px;
   }
-  
+
   .appbar-avatar {
     width: 38px;
     height: 38px;
   }
-  
+
   .appbar-name {
     font-size: 1.05rem;
   }
-  
+
   .appbar-actions {
     gap: 0rem;
   }
-  
-  .appbar-notif-btn,
+
+  .appbar-notif-btn {
+    font-size: 1.4rem;
+    padding: 6px;
+  }
+
+  .appbar-partner-btn,
   .appbar-cart-btn {
     font-size: 1.4rem;
     padding: 6px;
@@ -306,21 +342,26 @@
     padding: 0.6rem 0.8rem;
     min-height: 52px;
   }
-  
+
   .appbar-avatar {
     width: 36px;
     height: 36px;
   }
-  
+
   .appbar-name {
     font-size: 1rem;
   }
-  
+
   .appbar-actions {
     gap: 0rem;
   }
-  
-  .appbar-notif-btn,
+
+  .appbar-notif-btn {
+    font-size: 1.3rem;
+    padding: 0.4rem;
+  }
+
+  .appbar-partner-btn,
   .appbar-cart-btn {
     font-size: 1.3rem;
     padding: 0.4rem;
@@ -340,10 +381,11 @@
   .appbar-homepage,
   .appbar-avatar,
   .appbar-notif-btn,
+  .appbar-partner-btn,
   .appbar-cart-btn {
     transition: none;
   }
-  
+
   .appbar-notif-btn.has-notification::after,
   .cart-badge,
   .notification-badge {

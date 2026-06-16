@@ -20,8 +20,6 @@ const Notifications: React.FC = () => {
     error, 
     refetch 
   } = useNotifications();
-  console.log('Notifications data:', notificationsData);
-  
   const [refreshing, setRefreshing] = useState(false);
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
   const [activeNotification, setActiveNotification] = useState<NotificationItem | null>(null);
@@ -105,7 +103,6 @@ const Notifications: React.FC = () => {
   // Process notifications data
   const notifications: NotificationItem[] = React.useMemo(() => {
     const content = normalizeNotificationResult(notificationsData);
-    console.log('Processing notifications content:', notificationsData);
 
     if (!content.length) {
       return [];
