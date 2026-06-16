@@ -14,7 +14,7 @@ import { useOrderByCode, useCancelOrder } from '../api/hooks/index';
 import { toast } from 'react-toastify';
 import OrderTracking from '../components/OrderTracking';
 import './OrderDetail.css';
-import './OrderDetailItems.css';
+import './Orderdetailitems.css';
 
 const OrderDetail: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
