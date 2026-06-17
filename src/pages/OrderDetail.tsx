@@ -228,7 +228,7 @@ const OrderDetail: React.FC = () => {
 
   const order = orderDetail.content || {};
   const orderItems = orderDetail.content?.items || [];
-  const imageBaseUrl = orderDetail.content?.imageurl || '';
+  // const imageBaseUrl = orderDetail.content?.imageurl || '';
   // Ringkasan Pesanan hanya relevan untuk order produk (bukan EVN/event)
   // dan hanya jika ada item yang bisa ditampilkan.
   const showOrderSummary = order.transcode !== 'EVN' && orderItems.length > 0;
@@ -443,8 +443,8 @@ const OrderDetail: React.FC = () => {
                     <div className="order-item-image">
                       <img
                         src={
-                          imageBaseUrl + item.product_image
-                            ? `${imageBaseUrl}${item.product_image}`
+                          item.product_image_url + item.product_image
+                            ? `${item.product_image_url}${item.product_image}`
                             : '/nodata.png'
                         }
                         alt={item.product_name || item.product || 'Produk'}
