@@ -30,6 +30,14 @@ interface PartnerCardProps {
   onClick: () => void;
 }
 
+const capitalizeName = (name: string) => {
+  if (!name) return 'User';
+  return name
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 const PartnerCard: React.FC<PartnerCardProps> = React.memo(({ partner, onClick }) => (
   <div
     className="partner-card"
@@ -48,13 +56,14 @@ const PartnerCard: React.FC<PartnerCardProps> = React.memo(({ partner, onClick }
       <FaHandshake size={22} aria-hidden="true" />
     </div>
     <div className="card-body">
-      <div className="partner-name">{partner.name}</div>
+      <div className="partner-name">{capitalizeName(partner.name)}</div>
       <div className="partner-address">
         <MdLocationOn size={13} aria-hidden="true" />
         <span>{partner.address}</span>
       </div>
       <div className="card-pills">
-        <span className="pill pill--category">{partner.category}</span>
+        <span className="pill pill--category">{capitalizeName(partner.category)}</span>
+        <br />
         <span className="pill pill--city">{partner.city_name}</span>
       </div>
     </div>
@@ -94,9 +103,9 @@ const PartnerPage: React.FC = () => {
   const filtersDisabled = categoriesLoading || citiesLoading;
   const hasActiveFilter = selectedCategory !== '' || selectedCity !== '';
 
-   // Base URL for partner images, forwarded to the detail page via navigation state
+  // Base URL for partner images, forwarded to the detail page via navigation state
   const imageBaseUrl = useMemo(
-    () => (partnerData as unknown as Record<string, unknown>)?.image_url as string ?? '',
+    () => ((partnerData as unknown as Record<string, unknown>)?.image_url as string) ?? '',
     [partnerData],
   );
   const handleClearFilters = () => {
@@ -114,8 +123,7 @@ const PartnerPage: React.FC = () => {
 
   // Pass the full partner object + imageBaseUrl via navigation state – no ID in the URL
   const handlePartnerClick = useCallback(
-    (partner: PartnerItem) =>
-      navigate('/partner/detail', { state: { partner, imageBaseUrl } }),
+    (partner: PartnerItem) => navigate('/partner/detail', { state: { partner, imageBaseUrl } }),
     [navigate, imageBaseUrl],
   );
   return (

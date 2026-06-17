@@ -188,8 +188,8 @@ const PartnerDetail: React.FC = () => {
             <div className="partner-detail-column">
               {cpVal && (
                 <div className="partner-info-item">
-                  <b>👤 Narahubung</b>
-                  <span className="partner-info-value">{cpVal}</span>
+                  <b>👤 Contact Person</b>
+                  <span className="partner-info-value">{capitalize(cpVal)}</span>
                 </div>
               )}
               {phone1 && (
