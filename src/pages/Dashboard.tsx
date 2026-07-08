@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
     data: ledgerData,
     error: ledgerError,
     refetch: ledgerRefetch,
-  } = useLedger();
+  } = useLedger({ ismoney: '0', limit: '10', offset: '0' });
 
   // Panggil useFrontChapters hook
   const { data: frontChaptersData, refetch: frontChaptersRefetch } = useFrontChapters({

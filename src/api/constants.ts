@@ -22,8 +22,8 @@ export const ENDPOINT_CHANGE_PASSWORD = 'password'; // method put parameter: { n
 export const ENDPOINT_REGISTER = 'register'; // method post parameter: { cchapter, tname, taddress, tzip, tphone1, temail, ccity, tpassword, tdob, tnik, tcartype, tpoliceno }
 export const ENDPOINT_UPDATE = 'update'; // method put parameter: {  address,cartype, city, name, vehicleno, zip  }
 export const ENDPOINT_GET_PROFILE = 'user'; // method get parameter: none
-export const ENDPOINT_LEDGER = 'wallet'; // method post parameter: { limit, offset }
-
+export const ENDPOINT_LEDGER = 'wallet'; // method post parameter: { ismoney, limit, offset }
+export const ENDPOINT_REFUND = 'refund'; // method post parameter: { acc_name, acc_no, bank }
 // event endpoints
 export const ENDPOINT_EVENT = 'event'; // method post parameter: { chapter,limit, offset, status }
 export const ENDPOINT_EVENT_BY_ID = 'event'; // method get parameter: { event id }

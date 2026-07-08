@@ -5,11 +5,20 @@ import type { LedgerResponse, SliderResponse, SplashResponse, CityListResponse }
 
 const getAuthToken = (): string | null => localStorage.getItem('authToken');
 
-export function useLedger(authToken?: string | null): UseQueryResult<LedgerResponse, Error> {
-  const token = authToken || getAuthToken();
+interface UseLedgerOptions {
+  ismoney?: string;
+  limit?: string;
+  offset?: string;
+}
+
+export function useLedger(
+  options: UseLedgerOptions = {}
+): UseQueryResult<LedgerResponse, Error> {
+  const { ismoney = '0', limit = '10', offset = '0' } = options;
+  const token = getAuthToken();
   return useQuery({
-    queryKey: ['ledger', token],
-    queryFn: () => generalApi.getLedger(token!),
+    queryKey: ['ledger', ismoney, limit, offset, token],
+    queryFn: () => generalApi.getLedger(token!, { ismoney, limit, offset }),
     enabled: !!token,
     staleTime: 1000 * 60 * 5,
     retry: 2,

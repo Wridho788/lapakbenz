@@ -8,16 +8,22 @@ import {
 } from './constants';
 import type { LedgerResponse, SliderResponse, SplashResponse, CityListResponse } from './types';
 
+interface LedgerPayload {
+  ismoney?: string;
+  limit?: string;
+  offset?: string;
+}
+
 const apiClient = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
 });
 
 export const generalApi = {
-  getLedger: async (authToken: string): Promise<LedgerResponse> => {
+  getLedger: async (authToken: string, payload: LedgerPayload = {}): Promise<LedgerResponse> => {
     const response = await apiClient.post(
       ENDPOINT_LEDGER,
-      {},
+      payload,
       {
         headers: {
           Authorization: `Bearer ${authToken}`,

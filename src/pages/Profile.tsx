@@ -35,7 +35,7 @@ const Profile: React.FC = () => {
 
   // API hooks
   const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile();
-  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger();
+  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger({ ismoney: '0', limit: '10', offset: '0' });
   const { data: apiCartData } = useCart();
 
   const membershipTabs = ['BASIC', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
