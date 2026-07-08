@@ -1,10 +1,18 @@
-// General types
+// Ledger entry item
+export interface LedgerEntry {
+  id?: string | number;
+  title?: string;
+  description?: string;
+  amount?: number | string;
+  type?: string; // 'credit' | 'debit'
+  created_at?: string;
+  [key: string]: any;
+}
 
 export interface LedgerResponse {
-  content?: {
-    balance: number;
-    [key: string]: any;
-  };
+  result?: LedgerEntry[];
+  total?: number;
+  balance?: number;
   [key: string]: any;
 }
 

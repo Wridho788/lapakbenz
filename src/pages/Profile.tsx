@@ -87,8 +87,10 @@ const Profile: React.FC = () => {
 
     // Extract points from ledger data
     let points = 0;
-    if (ledgerData?.content?.balance !== undefined) {
-      points = ledgerData.content.balance;
+    if (ledgerData?.balance !== undefined) {
+      points = ledgerData.balance;
+    } else if (ledgerData?.total !== undefined) {
+      points = ledgerData.total;
     }
 
     // Extract profile data

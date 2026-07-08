@@ -214,7 +214,7 @@ const Dashboard: React.FC = () => {
 
   // Log ledger response and update points in Zustand store
   useEffect(() => {
-      console.log(ledgerData,'✅ Ledger API Response:');
+    console.log('✅ Ledger API Response:', ledgerData);
 
     if (ledgerData) {
       if (ledgerData.error && ledgerData.error.includes('Invalid Token')) {
@@ -223,7 +223,7 @@ const Dashboard: React.FC = () => {
         return;
       }
 
-      const points = ledgerData.point || 0;
+      const points = ledgerData.balance ?? ledgerData.total ?? 0;
       updatePoints(points);
     }
 
