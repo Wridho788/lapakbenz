@@ -2,8 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { generalApi } from '../generalApi';
 import type { LedgerResponse, SliderResponse, SplashResponse, CityListResponse } from '../types';
-
-const getAuthToken = (): string | null => localStorage.getItem('authToken');
+import { useAuthStore } from '../../stores/authStore';
 
 interface UseLedgerOptions {
   ismoney?: string;
@@ -15,7 +14,7 @@ export function useLedger(
   options: UseLedgerOptions = {}
 ): UseQueryResult<LedgerResponse, Error> {
   const { ismoney = '0', limit = '10', offset = '0' } = options;
-  const token = getAuthToken();
+  const token = useAuthStore((state) => state.token);
   return useQuery({
     queryKey: ['ledger', ismoney, limit, offset, token],
     queryFn: () => generalApi.getLedger(token!, { ismoney, limit, offset }),

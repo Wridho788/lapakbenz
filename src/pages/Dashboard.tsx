@@ -214,6 +214,8 @@ const Dashboard: React.FC = () => {
 
   // Log ledger response and update points in Zustand store
   useEffect(() => {
+      console.log(ledgerData,'✅ Ledger API Response:');
+
     if (ledgerData) {
       if (ledgerData.error && ledgerData.error.includes('Invalid Token')) {
         logout();
