@@ -21,7 +21,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const [activeMembershipTab, setActiveMembershipTab] = useState(0);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  
+
   // Auth state
   const { isAuthenticated, logout: authLogout } = useAuthStore();
   const logoutMutation = useLogout();
@@ -35,7 +35,11 @@ const Profile: React.FC = () => {
 
   // API hooks
   const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile();
-  const { data: ledgerData, isLoading: ledgerLoading, error: ledgerError } = useLedger({ ismoney: '0', limit: '10', offset: '0' });
+  const {
+    data: ledgerData,
+    isLoading: ledgerLoading,
+    error: ledgerError,
+  } = useLedger({ ismoney: '0', limit: '10', offset: '0' });
   const { data: apiCartData } = useCart();
 
   const membershipTabs = ['BASIC', 'BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
@@ -129,7 +133,7 @@ const Profile: React.FC = () => {
         } catch {
           expiry = profile.expired;
         }
-      }  else {
+      } else {
         // Check if membership has no expiry (like lifetime membership)
         if (profile.type === 'member' && profile.premium === 0) {
           expiry = 'No Expiry';
@@ -151,7 +155,7 @@ const Profile: React.FC = () => {
   const handleLogout = async () => {
     // Show confirmation toast with custom buttons
     const confirmLogout = window.confirm('Apakah Anda yakin ingin keluar?');
-    
+
     if (!confirmLogout) {
       return;
     }
@@ -179,7 +183,7 @@ const Profile: React.FC = () => {
         theme: 'dark',
         onClose: () => {
           navigate('/login');
-        }
+        },
       });
     } catch (error) {
       console.error('Logout failed:', error);
@@ -191,7 +195,7 @@ const Profile: React.FC = () => {
         theme: 'dark',
         onClose: () => {
           navigate('/login');
-        }
+        },
       });
     } finally {
       setIsLoggingOut(false);
@@ -201,6 +205,7 @@ const Profile: React.FC = () => {
   // Account menu items
   const accountMenuItems = [
     { id: 'profile', title: 'Profil Saya', icon: MdPerson },
+    { id: 'wallet', title: 'Wallet Saya', icon: MdSwapHoriz },
     // { id: 'payment', title: 'Konfirmasi Pembayaran', icon: MdPayment },
     { id: 'event-history', title: 'Riwayat Event Saya', icon: MdHistory },
     { id: 'transaction', title: 'Riwayat Transaksi Saya', icon: MdSwapHoriz },
@@ -215,6 +220,9 @@ const Profile: React.FC = () => {
     switch (menuId) {
       case 'profile':
         navigate('/profile/my-profile');
+        break;
+      case 'wallet':
+        navigate('/wallet');
         break;
       // case 'payment':
       //   navigate('/profile/payment-confirmation');
@@ -241,15 +249,15 @@ const Profile: React.FC = () => {
         handleLogout();
         break;
       default:
-        // console.log('Unknown menu item:', menuId);
+      // console.log('Unknown menu item:', menuId);
     }
   };
 
   const getApiCartCount = () => {
     return apiCartData?.content?.result?.reduce((total, item) => total + item.qty, 0) || 0;
   };
-  
-      const apiCartCount = getApiCartCount();
+
+  const apiCartCount = getApiCartCount();
 
   const handleNotificationClick = () => {
     navigate('/notifications');
@@ -257,7 +265,7 @@ const Profile: React.FC = () => {
 
   const handleRefresh = () => {
     // Force refresh data - Zustand handles token management
-    toast.info('Memuat ulang data...', { 
+    toast.info('Memuat ulang data...', {
       position: 'bottom-right',
       autoClose: 1500,
       theme: 'dark',
@@ -275,7 +283,7 @@ const Profile: React.FC = () => {
           onBack={handleBackClick}
           onCartClick={handleCartClick}
           cartCount={apiCartCount}
-          defaultBack="/dashboard" 
+          defaultBack="/dashboard"
         />
         <div className="profile-">
           <div>Loading...</div>
@@ -294,7 +302,7 @@ const Profile: React.FC = () => {
       />
 
       <div className="profile-">
-        <div 
+        <div
           className={`user-card ${isError ? 'error-state' : ''}`}
           onClick={isError ? handleRefresh : undefined}
           style={{ cursor: isError ? 'pointer' : 'default' }}
@@ -302,14 +310,18 @@ const Profile: React.FC = () => {
           <div className="user-card-row">
             <div className="user-card-item">
               <div className="user-card-label">Poin</div>
-              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
-                {(profileLoading || ledgerLoading) ? '...' : userData.points}
+              <div
+                className={`user-card-value ${profileLoading || ledgerLoading ? 'loading' : ''}`}
+              >
+                {profileLoading || ledgerLoading ? '...' : userData.points}
               </div>
             </div>
             <div className="user-card-item">
               <div className="user-card-label">Keanggotaan</div>
-              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
-                {(profileLoading || ledgerLoading) ? '...' : userData.membership}
+              <div
+                className={`user-card-value ${profileLoading || ledgerLoading ? 'loading' : ''}`}
+              >
+                {profileLoading || ledgerLoading ? '...' : userData.membership}
               </div>
             </div>
           </div>
@@ -317,14 +329,18 @@ const Profile: React.FC = () => {
           <div className="user-card-row">
             <div className="user-card-item">
               <div className="user-card-label">Nama</div>
-              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
-                {(profileLoading || ledgerLoading) ? 'Memuat...' : userData.name}
+              <div
+                className={`user-card-value ${profileLoading || ledgerLoading ? 'loading' : ''}`}
+              >
+                {profileLoading || ledgerLoading ? 'Memuat...' : userData.name}
               </div>
             </div>
             <div className="user-card-item">
               <div className="user-card-label">Berlaku Sampai</div>
-              <div className={`user-card-value ${(profileLoading || ledgerLoading) ? 'loading' : ''}`}>
-                {(profileLoading || ledgerLoading) ? '...' : userData.expiry}
+              <div
+                className={`user-card-value ${profileLoading || ledgerLoading ? 'loading' : ''}`}
+              >
+                {profileLoading || ledgerLoading ? '...' : userData.expiry}
               </div>
             </div>
           </div>
@@ -342,12 +358,18 @@ const Profile: React.FC = () => {
               >
                 {(() => {
                   switch (tab) {
-                    case 'BASIC': return 'BASIC';
-                    case 'BRONZE': return 'BRONZE';
-                    case 'SILVER': return 'SILVER';
-                    case 'GOLD': return 'GOLD';
-                    case 'PLATINUM': return 'PLATINUM';
-                    default: return tab;
+                    case 'BASIC':
+                      return 'BASIC';
+                    case 'BRONZE':
+                      return 'BRONZE';
+                    case 'SILVER':
+                      return 'SILVER';
+                    case 'GOLD':
+                      return 'GOLD';
+                    case 'PLATINUM':
+                      return 'PLATINUM';
+                    default:
+                      return tab;
                   }
                 })()}
               </button>
