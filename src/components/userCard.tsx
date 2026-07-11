@@ -6,6 +6,7 @@ export type UserCardProps = {
   points: number;
   userName?: string;
   onProfileClick?: () => void;
+  onPointsClick?: () => void;
   onEventHistoryClick?: () => void;
   onTransactionClick?: () => void;
 };
@@ -14,6 +15,7 @@ export const UserCard: React.FC<UserCardProps> = ({
   points,
   userName = 'User',
   onProfileClick,
+  onPointsClick,
   onEventHistoryClick,
   onTransactionClick,
 }) => {
@@ -30,7 +32,7 @@ export const UserCard: React.FC<UserCardProps> = ({
        
         <span className="avatar-name">{capitalizeName(userName || 'User')}</span>
       </div>
-      <div className="user-card-points">
+      <button type="button" className="user-card-points" onClick={onPointsClick}>
         <div className="point-text">
           <h3 className="point-label">My Point</h3>
           <p className="point-value">{formatPoints(points)}</p>
@@ -38,7 +40,7 @@ export const UserCard: React.FC<UserCardProps> = ({
         <div className="point-image">
           <img src="/lapakbenz.png" alt="Merci Points" width={110} height={'9vh'} />
         </div>
-      </div>
+      </button>
 
       <div className="user-card-divider"></div>
 

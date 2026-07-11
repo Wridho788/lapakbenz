@@ -71,8 +71,16 @@ const Dashboard: React.FC = () => {
     return sessionStorage.getItem('splashShown') === 'true';
   });
 
-  // Get current user points from auth store
-  const userPoints = user?.points || 0;
+  // Panggil useLedger hook - use total only for My Points
+  const {
+    data: ledgerData,
+    error: ledgerError,
+    refetch: ledgerRefetch,
+  } = useLedger({ ismoney: '0', limit: '0', offset: '0' });
+
+  // Get current user points from auth store or ledger total
+  const ledgerTotalPoints = typeof ledgerData?.total === 'number' ? ledgerData.total : undefined;
+  const userPoints = ledgerTotalPoints ?? user?.points ?? 0;
 
   // Helper function to capitalize name
   const capitalizeName = (name: string) => {
@@ -88,13 +96,6 @@ const Dashboard: React.FC = () => {
   const userImage = userInfo?.image ? `${userInfo.image}` : '/merci.png';
   // Panggil useSlider hook untuk Partnership
   const { data: sliderData, refetch: sliderRefetch } = useSlider();
-
-  // Panggil useLedger hook - now uses Zustand auth store internally
-  const {
-    data: ledgerData,
-    error: ledgerError,
-    refetch: ledgerRefetch,
-  } = useLedger({ ismoney: '0', limit: '10', offset: '0' });
 
   // Panggil useFrontChapters hook
   const { data: frontChaptersData, refetch: frontChaptersRefetch } = useFrontChapters({
@@ -277,6 +278,10 @@ const Dashboard: React.FC = () => {
     requireAuth(() => navigate('/profile'), 'access profile');
   };
 
+  const handlePointsClick = () => {
+    requireAuth(() => navigate('/wallet/points-history'), 'view poin saya');
+  };
+
   const handleEventHistoryClick = () => {
     requireAuth(() => navigate('/profile/event-history'), 'view event history');
   };
@@ -396,6 +401,7 @@ const Dashboard: React.FC = () => {
             onProfileClick={handleProfileClick}
             onEventHistoryClick={handleEventHistoryClick}
             onTransactionClick={handleTransactionClick}
+            onPointsClick={handlePointsClick}
           />
 
           {/* Conditionally render Partnership section */}

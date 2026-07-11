@@ -181,6 +181,7 @@
 .product-rating-section {
   display: flex;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 6px;
 }
 
@@ -207,6 +208,18 @@
 .rating-text {
   font-size: 14px;
   color: #666;
+}
+
+.product-detail-sold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+  color: #1f2640;
+}
+
+.product-detail-sold strong {
+  font-weight: 700;
 }
 
 .product-price {

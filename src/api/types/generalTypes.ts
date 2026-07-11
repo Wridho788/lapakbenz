@@ -34,6 +34,16 @@ export interface SplashResponse {
   [key: string]: any;
 }
 
+export interface RefundRequest {
+  acc_name: string;
+  acc_no: string;
+  bank: string;
+}
+
+export interface RefundResponse {
+  message: string;
+}
+
 // City item from Indonesia region API
 export interface CityItem {
   id: number;

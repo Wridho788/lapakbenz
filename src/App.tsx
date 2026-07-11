@@ -32,6 +32,9 @@ import PublicRegistration from './pages/PublicRegistration';
 import VerifyOtp from './pages/VerifyOtp';
 import SetShipping from './pages/SetShipping';
 import ProfileWishlist from './pages/Wishlist';
+import Wallet from './pages/Wallet';
+import WalletPointsHistory from './pages/WalletPointsHistory';
+import WalletRefundHistory from './pages/WalletRefundHistory';
 import OneSignalDebug from './pages/OneSignalDebug';
 import './App.css';
 import EventDetail from './pages/EventDetail';
@@ -79,6 +82,9 @@ function App() {
                 <Route path="/partner" element={<PartnerPage />} />
                 <Route path="/onesignal-debug" element={<OneSignalDebug />} />
                 <Route path="/profile/wishlist" element={<ProfileWishlist />} />
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/wallet/points-history" element={<WalletPointsHistory />} />
+                <Route path="/wallet/refund-history" element={<WalletRefundHistory />} />
                 <Route path="/partner/detail" element={<PartnerDetail />} />
               </Routes>
             </MainLayout>

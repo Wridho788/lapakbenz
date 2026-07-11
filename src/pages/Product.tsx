@@ -715,6 +715,10 @@ const Product: React.FC = () => {
                         {renderStars(product.rating || 0)}
                         <span className="rating-number">{product.rating ? product.rating.toFixed(1) : '0.0'}</span>
                       </div>
+                      <div className="product-sold-row">
+                        <span>Terjual:</span>
+                        <strong>{(product.total_sold ?? 0).toLocaleString('id-ID')}</strong>
+                      </div>
                     </div>
 
                     <div className="product-meta-row">

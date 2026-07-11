@@ -5,6 +5,7 @@ import {
   ENDPOINT_SLIDER,
   ENDPOINT_SPLASH,
   ENDPOINT_CITY,
+  ENDPOINT_REFUND
 } from './constants';
 import type { LedgerResponse, SliderResponse, SplashResponse, CityListResponse } from './types';
 
@@ -51,6 +52,23 @@ export const generalApi = {
     const response = await apiClient.get(`${ENDPOINT_CITY}`);
     return response.data;
   },
+
+  postRefund: async (
+    authToken: string,
+    payload: { acc_name: string; acc_no: string; bank: string }
+  ): Promise<{ message: string }> => {
+    const response = await apiClient.post(
+      ENDPOINT_REFUND,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response.data;
+  }
 };
 
 export default generalApi;

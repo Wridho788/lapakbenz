@@ -42,6 +42,7 @@ interface ProductDetailType {
   image: string;
   category: string;
   rating: number;
+  total_sold?: number;
   description: string;
   specifications: string[];
   stock: number;
@@ -986,6 +987,10 @@ const ProductDetail: React.FC = () => {
               <div className="product-rating-section">
                 <div className="rating-stars">{renderStars(productData.rating)}</div>
                 <span className="rating-text">({productData.rating})</span>
+                <div className="product-detail-sold">
+                  <span>Terjual:</span>
+                  <strong>{(productData.total_sold ?? 0).toLocaleString('id-ID')}</strong>
+                </div>
               </div>
             </div>
 

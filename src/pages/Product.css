@@ -465,6 +465,19 @@
   margin-left: 0;
 }
 
+.product-sold-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #444;
+  margin-left: auto;
+}
+
+.product-sold-row strong {
+  font-weight: 700;
+}
+
 .product-prices {
   font-family: 'Lato', sans-serif;
   font-weight: 400;

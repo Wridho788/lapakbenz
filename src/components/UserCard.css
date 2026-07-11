@@ -13,11 +13,21 @@
 }
 
 /* Point Section */
-.user-card-points {
+button.user-card-points {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.user-card-points:hover {
+  opacity: 0.95;
 }
 
 .point-text {

@@ -1,7 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
-import type { UseQueryResult } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import type { UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { generalApi } from '../generalApi';
-import type { LedgerResponse, SliderResponse, SplashResponse, CityListResponse } from '../types';
+import type {
+  LedgerResponse,
+  SliderResponse,
+  SplashResponse,
+  CityListResponse,
+  RefundRequest,
+  RefundResponse,
+} from '../types';
 import { useAuthStore } from '../../stores/authStore';
 
 interface UseLedgerOptions {
@@ -48,5 +55,18 @@ export function useCityList(): UseQueryResult<CityListResponse, Error> {
     queryFn: () => generalApi.getCityList(),
     staleTime: 1000 * 60 * 10,
     retry: 2,
+  });
+}
+
+export function useRefund(): UseMutationResult<RefundResponse, Error, RefundRequest> {
+  const token = useAuthStore((state) => state.token);
+
+  return useMutation({
+    mutationFn: async (payload: RefundRequest) => {
+      if (!token) {
+        throw new Error('User must be authenticated to request refund');
+      }
+      return generalApi.postRefund(token, payload);
+    },
   });
 }
