@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdChevronRight, MdRefresh, MdMoney, MdStar } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
+import SEO from '../components/SEO';
 import { useLedger } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import './Wallet.css';
@@ -63,7 +64,15 @@ const Wallet: React.FC = () => {
         cartCount={0}
       />
 
-      <div className="wallet-content">
+      <SEO
+        title="Wallet | lapakBenz"
+        description="Lihat ringkasan poin dan refund Anda di dompet lapakBenz. Pantau saldo poin, refund, dan riwayat transaksi dengan cepat dan aman."
+        keywords="wallet, dompet, poin, refund, lapakBenz, riwayat transaksi, saldo poin, refund uang"
+        schemaType="WebPage"
+        breadcrumbs={[{ name: 'Wallet', url: '/wallet' }]}
+      />
+
+      <div className="wallet-content" role="main" aria-label="Ringkasan dompet saya">
         <div className="wallet-header">
           <h2>Dompet Saya</h2>
           <p>Ringkasan poin dan refund Anda.</p>
@@ -109,7 +118,7 @@ const Wallet: React.FC = () => {
                 </div>
               </button>
 
-              <div className="wallet-card wallet-card-refund">
+              <div className="wallet-card wallet-card-refund" aria-label="Ringkasan refund">
                 <div className="wallet-card-icon">
                   <MdMoney />
                 </div>
@@ -122,6 +131,7 @@ const Wallet: React.FC = () => {
                     type="button"
                     className="wallet-card-action-link"
                     onClick={() => navigate('/wallet/refund-history')}
+                    aria-label="Lihat riwayat uang refund"
                   >
                     <span>Riwayat uang refund</span>
                     <MdChevronRight />

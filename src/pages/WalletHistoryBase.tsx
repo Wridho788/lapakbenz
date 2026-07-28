@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MdChevronRight, MdRefresh, MdSearchOff } from 'react-icons/md';
 import { AppbarDefault } from '../components/AppbarDefault';
 import { FAB } from '../components/FAB';
+import SEO from '../components/SEO';
 import { useLedger } from '../api/hooks/index';
 import { useAuthStore } from '../stores/authStore';
 import { formatDate } from '../utils/dateUtils';
@@ -41,6 +42,7 @@ const WalletHistoryBase: React.FC<WalletHistoryBaseProps> = ({ historyType }) =>
   useEffect(() => {
     if (!isAuthenticated) return;
     const interval = window.setInterval(() => {
+      if (document.hidden) return;
       refetch();
     }, 3000);
 
@@ -93,10 +95,23 @@ const WalletHistoryBase: React.FC<WalletHistoryBaseProps> = ({ historyType }) =>
         cartCount={0}
       />
 
-      <div className="wallet-content">
+      <SEO
+        title={`${title} | lapakBenz`}
+        description={`Halaman ${subtitle} pada lapakBenz. Lihat riwayat transaksi ${historyType === 'points' ? 'poin' : 'refund'} Anda dengan cepat.`}
+        keywords={`wallet, ${historyType === 'points' ? 'riwayat poin' : 'riwayat refund'}, lapakBenz, dompet`}
+        schemaType="WebPage"
+        breadcrumbs={[
+          { name: 'Wallet', url: '/wallet' },
+          { name: title, url: `/wallet/${historyType}-history` }
+        ]}
+      />
+      <div className="wallet-content" role="main" aria-label={title}>
         <div className="wallet-header wallet-header-small">
+          <div>
+
           <h2>{title}</h2>
           <p>{subtitle}</p>
+          </div>
         </div>
 
         {isFetching && !isLoading && (
@@ -106,16 +121,16 @@ const WalletHistoryBase: React.FC<WalletHistoryBaseProps> = ({ historyType }) =>
           </div>
         )}
 
-        <div className="wallet-history-actions">
-          <button type="button" onClick={handleRetry} className="wallet-button">
+        <nav className="wallet-history-actions" aria-label="Aksi riwayat wallet">
+          <button type="button" onClick={handleRetry} className="wallet-button" aria-label="Segarkan riwayat wallet">
             <MdRefresh />
             Segarkan
           </button>
-          <button type="button" onClick={() => navigate('/wallet')} className="wallet-button secondary">
+          <button type="button" onClick={() => navigate('/wallet')} className="wallet-button secondary" aria-label="Kembali ke wallet utama">
             <MdChevronRight />
             Kembali ke Wallet
           </button>
-        </div>
+        </nav>
 
         {isLoading ? (
           <div className="wallet-loading">
@@ -136,15 +151,30 @@ const WalletHistoryBase: React.FC<WalletHistoryBaseProps> = ({ historyType }) =>
             <p>Belum ada {historyType === 'points' ? 'transaksi poin' : 'data refund'} untuk ditampilkan.</p>
           </div>
         ) : (
-          <div className="wallet-table">
+          <div className="wallet-table" aria-label="Daftar riwayat transaksi">
             {ledgerRecords.map((item: any) => (
               <div key={`${item.id}-${item.dates}-${item.no}`} className="wallet-row">
                 <div className="wallet-row-left">
-                  <span className="wallet-row-label">{item.no || item.code || 'No'}</span>
+                  <span className="wallet-row-field-label">
+                    {historyType === 'points' ? 'Transaksi Poin' : 'Transaksi Refund'}
+                  </span>
+                  <span className="wallet-row-label" title={item.no || item.code || item.description || 'Transaksi'}>
+                    {item.no || item.code || item.description || 'Transaksi'}
+                  </span>
+                </div>
+                <div className="wallet-row-date-block">
+                  <span className="wallet-row-field-label">Tanggal</span>
                   <span className="wallet-row-date">{item.dates ? formatDate(item.dates) : '-'}</span>
                 </div>
                 <div className="wallet-row-right">
-                  <span className="wallet-row-amount">{(item.vamount ?? 0).toLocaleString('id-ID')}</span>
+                  <span className="wallet-row-field-label">
+                    {historyType === 'points' ? 'Jumlah Poin' : 'Jumlah Refund'}
+                  </span>
+                  <span className="wallet-row-amount">
+                    {historyType === 'refund'
+                      ? `Rp ${(item.vamount ?? 0).toLocaleString('id-ID')}`
+                      : (item.vamount ?? 0).toLocaleString('id-ID')}
+                  </span>
                 </div>
               </div>
             ))}
