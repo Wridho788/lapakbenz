@@ -1,69 +1,56 @@
-# React + TypeScript + Vite
+# lapakBenz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Community, event, and marketplace platform for Indonesian UMKM and automotive communities**
 
-Currently, two official plugins are available:
+lapakBenz is a React SPA that combines a multi-vendor marketplace, event discovery, and community/merchant onboarding in one application — built for UMKM (small businesses), automotive communities, and other Indonesian community groups to sell, host events, and connect in one place.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Live: [lapakbenz.com](https://lapakbenz.com) · Demo: [lapakbenzz.vercel.app](https://lapakbenzz.vercel.app/)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Marketplace**
+- Product catalog, product detail, cart, and checkout
+- Order tracking, order history, and invoices
+- Wishlist and wallet (points, refund history)
+- Voucher redemption
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+**Merchants & Partners**
+- Merchant registration
+- Partner/store pages and detail views
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+**Community & Events**
+- Event listings and event detail pages
+- Public registration flow
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**Platform**
+- Authentication (login, register, OTP verification, password reset)
+- Notifications with filtering
+- Live chat
+- Push notifications (OneSignal)
+- Installable PWA
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tech Stack
+
+- **React 19** + **TypeScript**, bundled with **Vite**
+- **React Router v7** for routing
+- **TanStack Query (React Query)** for server state, **Zustand** for client state
+- **Axios** for API access, with hooks/types organized per domain (product, cart, order, event, voucher, wishlist, shipping, partner)
+- **Tailwind CSS** for styling
+- **react-helmet-async** for per-route meta tags
+- **OneSignal** for push notifications
+- **vite-plugin-pwa** for PWA support
+
+## Architecture Notes
+
+lapakBenz is a client-rendered SPA, which normally means search engines and social platforms only see an empty HTML shell. To solve this without moving to a server-rendered framework, the project includes a custom static-generation pipeline (`scripts/generate-static.mjs`) that pre-renders per-route HTML with the correct `<title>`, description, and Open Graph tags for every product, event, and merchant page before deploy.
+
+```bash
+npm run dev          # start dev server
+npm run build         # production build
+npm run build:seo     # generate pre-rendered SEO HTML, then build
+npm run preview        # preview the production build
 ```
