@@ -1,8 +1,8 @@
 # lapakBenz
 
-**Community, event, and marketplace platform for Indonesian UMKM and automotive communities**
+**Vehicle marketplace and community platform for Indonesian automotive communities and UMKM**
 
-lapakBenz is a React SPA that combines a multi-vendor marketplace, event discovery, and community/merchant onboarding in one application — built for UMKM (small businesses), automotive communities, and other Indonesian community groups to sell, host events, and connect in one place.
+lapakBenz is a React SPA that combines a vehicle marketplace, event discovery, and community/merchant onboarding in one application — built for automotive communities, UMKM (small businesses), and other Indonesian community groups to sell, host events, and connect in one place.
 
 Live: [lapakbenz.com](https://lapakbenz.com) · Demo: [lapakbenzz.vercel.app](https://lapakbenzz.vercel.app/)
 
